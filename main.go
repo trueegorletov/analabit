@@ -1,6 +1,7 @@
 package main
 
 import (
+	"analabit/core"
 	"analabit/source"
 	"analabit/source/hse"
 	"fmt"
@@ -15,16 +16,16 @@ func main() {
 // PrintHseFileHeadingSourceData prints the sample heading source data for HSE.
 func PrintHseFileHeadingSourceData() {
 	s := hse.FileHeadingSource{
-		RCListPath: "./sample_data/hse/rc.xlsx",
-		TQListPath: "./sample_data/hse/tq.xlsx",
-		DQListPath: "./sample_data/hse/dq.xlsx",
-		SQListPath: "./sample_data/hse/sq.xlsx",
-		BListPath:  "./sample_data/hse/bvi.xlsx",
-		Capacity:   10, // Arbitrary capacity, as it's part of the struct
+		RCListPath:        "./sample_data/hse/rc.xlsx",
+		TQListPath:        "./sample_data/hse/tq.xlsx",
+		DQListPath:        "./sample_data/hse/dq.xlsx",
+		SQListPath:        "./sample_data/hse/sq.xlsx",
+		BListPath:         "./sample_data/hse/bvi.xlsx",
+		HeadingCapacities: core.Capacities{25, 2, 2, 2}, // Arbitrary capacity, as it's part of the struct
 	}
 
-	headingsChan := make(chan source.HeadingData, s.Capacity)           // Buffer size can be adjusted
-	applicationsChan := make(chan source.ApplicationData, s.Capacity*5) // Buffer size can be adjusted
+	headingsChan := make(chan source.HeadingData, 3)          // Buffer size can be adjusted
+	applicationsChan := make(chan source.ApplicationData, 15) // Buffer size can be adjusted
 
 	var wg sync.WaitGroup
 	var loadErr error
@@ -68,7 +69,7 @@ func PrintHseFileHeadingSourceData() {
 		fmt.Println("No heading data loaded.")
 	}
 	for _, h := range headings {
-		fmt.Printf("Code: %s, Name: %s, Capacity: %d\n", h.Code, h.PrettyName, h.Capacity)
+		fmt.Printf("Code: %s, Name: %s, Capacities: %d\n", h.Code, h.PrettyName, h.Capacities)
 	}
 
 	fmt.Printf("--- Applications --- (%d loaded)", len(applications))

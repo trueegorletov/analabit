@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"log"
+	"net/url"
 )
 
 // PrepareStudentID Removes all non-numeric characters from the student ID and returns it
@@ -32,3 +34,13 @@ func GenerateHeadingCode(name string) string {
 	hasher.Write([]byte(name))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
+
+func MustParseURL(rawURL string) url.URL {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		log.Fatalf("failed to parse URL %q: %v", rawURL, err)
+	}
+	return *u
+}
+
+// PrintRvalueHttpHeadingSource was moved to analabit/source/hse/http.go to resolve cyclic imports

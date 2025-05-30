@@ -1,512 +1,493 @@
 package core
 
 import (
-	"reflect"
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"sort"
 	"testing"
 )
 
 // Helper to get admitted student IDs for a specific heading code from results.
 func getAdmittedStudentIDs(results []CalculationResult, headingCode string) []string {
-	var ids []string
 	for _, res := range results {
-		if res.heading.code == headingCode {
-			for _, s := range res.admitted {
-				ids = append(ids, s.id)
+		if res.Heading.Code() == headingCode { // Use exported field Heading
+			ids := make([]string, len(res.Admitted))
+			for i, s := range res.Admitted { // Use exported field Admitted
+				ids[i] = s.Id // Use exported field Id
 			}
 			return ids
 		}
 	}
-	return ids // Should not happen if headingCode exists
+	return []string{} // Return empty slice if heading not found or no admitted students
 }
 
-func TestVarsityCalculator_AddHeading(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 1, "Computer Science")
-
-	if len(vc.headings) != 1 {
-		t.Errorf("Expected 1 heading, got %d", len(vc.headings))
-	}
-	if _, ok := vc.headings["CS101"]; !ok {
-		t.Errorf("Heading CS101 not found")
-	}
-	if vc.headings["CS101"].capacity != 1 {
-		t.Errorf("Expected capacity 1 for CS101, got %d", vc.headings["CS101"].capacity)
-	}
-	if vc.headings["CS101"].prettyName != "Computer Science" {
-		t.Errorf("Expected prettyName 'Computer Science', got '%s'", vc.headings["CS101"].prettyName)
-	}
+// Helper to create a student ID string.
+func sid(i int) string {
+	return fmt.Sprintf("student%d", i)
 }
 
-func TestVarsityCalculator_AddApplication(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 1, "Computer Science")
-	vc.AddApplication("CS101", "1", 100, 1, CompetitionRegular)
+// TestCalculateAdmissions_BasicQuotas tests basic quota filling.
+func TestCalculateAdmissions_BasicQuotas(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H1", Capacities{General: 0, TargetQuota: 1, DedicatedQuota: 1, SpecialQuota: 1}, "Heading 1")
 
-	if len(vc.students) != 1 {
-		t.Errorf("Expected 1 student, got %d", len(vc.students))
-	}
-	studentS1, ok := vc.students["1"]
-	if !ok {
-		t.Errorf("Student %s not found", prepareStudentID("1"))
-	}
-	if len(studentS1.applications) != 1 {
-		t.Errorf("Expected 1 application for %s, got %d", prepareStudentID("1"), len(studentS1.applications))
-	}
-	app := studentS1.applications[0]
-	if app.heading.code != "CS101" {
-		t.Errorf("Expected application for CS101, got %s", app.heading.code)
-	}
-	if app.ratingPlace != 100 {
-		t.Errorf("Expected ratingPlace 100, got %d", app.ratingPlace)
-	}
-	if app.priority != 1 {
-		t.Errorf("Expected priority 1, got %d", app.priority)
-	}
+	// Target Quota
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota) // Should be admitted
+	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota)  // Should be admitted, displacing student1
+	v.AddApplication("H1", sid(3), 15, 1, CompetitionTargetQuota) // Should not be admitted
+
+	// Dedicated Quota
+	v.AddApplication("H1", sid(4), 10, 1, CompetitionDedicatedQuota) // Should be admitted
+	v.AddApplication("H1", sid(5), 5, 1, CompetitionDedicatedQuota)  // Should be admitted, displacing student4
+
+	// Special Quota
+	v.AddApplication("H1", sid(6), 10, 1, CompetitionSpecialQuota) // Should be admitted
+
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
+
+	// Expected: student2 (Target), student5 (Dedicated), student6 (Special)
+	// Order within quotas is by rating, but here we check presence.
+	// The final list is sorted by outscores, so Quota types then rating.
+	// Since all are different quota types, their original rating place determines order among them if they had same quota type.
+	// Here, they are distinct quotas, so the order is Target, Dedicated, Special (due to enum values) then rating.
+	// However, getAdmittedStudentIDs doesn't guarantee order based on internal admission logic,
+	// so we check for presence and count.
+	assert.Len(t, admittedH1, 3, "H1 should have 3 admitted students")
+	assert.Contains(t, admittedH1, sid(2)) // Best Target
+	assert.Contains(t, admittedH1, sid(5)) // Best Dedicated
+	assert.Contains(t, admittedH1, sid(6)) // Only Special
 }
 
-func TestVarsityCalculator_SetQuit(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 1, "Computer Science")
-	vc.AddApplication("CS101", "1", 100, 1, CompetitionRegular)
+// TestCalculateAdmissions_QuotaFailureNoFallback tests that students failing a quota don't fall back.
+func TestCalculateAdmissions_QuotaFailureNoFallback(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H1", Capacities{General: 1, TargetQuota: 1}, "Heading 1")
 
-	if vc.students["1"].quit {
-		t.Errorf("Student %s should not be quit initially", prepareStudentID("1"))
-	}
-	vc.SetQuit("1")
-	if !vc.students["1"].quit {
-		t.Errorf("Student %s should be quit after SetQuit", prepareStudentID("1"))
-	}
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota) // Admitted to Target
+	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota)  // Admitted to Target (displaces s1)
+	v.AddApplication("H1", sid(3), 15, 1, CompetitionTargetQuota) // Fails Target, should not get General
+	v.AddApplication("H1", sid(4), 20, 1, CompetitionRegular)     // Admitted to General
 
-	// Test SetQuit for non-existent student (should not panic)
-	vc.SetQuit("S_NonExistent")
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
+
+	assert.Len(t, admittedH1, 2, "H1 should have 2 admitted students")
+	assert.Contains(t, admittedH1, sid(2)) // student2 from TargetQuota
+	assert.Contains(t, admittedH1, sid(4)) // student4 from General
+	assert.NotContains(t, admittedH1, sid(1))
+	assert.NotContains(t, admittedH1, sid(3))
 }
 
-func TestCalculateAdmissions_BasicAdmission(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 2, "Computer Science")
-	vc.AddHeading("MA101", 1, "Mathematics")
+// TestCalculateAdmissions_UnfilledQuotasAddToGeneral tests that unfilled quota spots go to General.
+func TestCalculateAdmissions_UnfilledQuotasAddToGeneral(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	// Target:1, Dedicated:1, Special:1, General:1. Total initial: 4
+	// Effective General should be 1 (base) + 2 (unfilled TQ, DQ) = 3
+	v.AddHeading("H1", Capacities{General: 1, TargetQuota: 2, DedicatedQuota: 2, SpecialQuota: 1}, "Heading 1")
 
-	vc.AddApplication("CS101", "1", 10, 1, CompetitionRegular)
-	vc.AddApplication("MA101", "2", 5, 1, CompetitionRegular)
-	vc.AddApplication("CS101", "3", 12, 1, CompetitionRegular)
+	// Special Quota (1 spot)
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionSpecialQuota) // Admitted to Special
 
-	results := vc.CalculateAdmissions()
+	// Target Quota (2 spots) - 0 applicants, 2 unfilled
+	// Dedicated Quota (2 spots) - 0 applicants, 2 unfilled
 
-	csAdmitted := getAdmittedStudentIDs(results, "CS101")
-	maAdmitted := getAdmittedStudentIDs(results, "MA101")
+	// General Competition (Base 1 + 2 TQ_unfilled + 2 DQ_unfilled = 5 effective spots)
+	v.AddApplication("H1", sid(2), 100, 1, CompetitionBVI)    // Admitted BVI
+	v.AddApplication("H1", sid(3), 50, 1, CompetitionBVI)     // Admitted BVI (better rating)
+	v.AddApplication("H1", sid(4), 10, 1, CompetitionRegular) // Admitted Regular
+	v.AddApplication("H1", sid(5), 5, 1, CompetitionRegular)  // Admitted Regular (better rating)
+	v.AddApplication("H1", sid(6), 1, 1, CompetitionRegular)  // Admitted Regular (best rating)
+	v.AddApplication("H1", sid(7), 20, 1, CompetitionRegular) // Not admitted (General full)
 
-	expectedCS := []string{prepareStudentID("1"), prepareStudentID("3")}
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
 
-	if !reflect.DeepEqual(csAdmitted, expectedCS) {
-		t.Errorf("CS101: Expected %v, got %v", expectedCS, csAdmitted)
-	}
-
-	expectedMA := []string{prepareStudentID("2")}
-	if !reflect.DeepEqual(maAdmitted, expectedMA) {
-		t.Errorf("MA101: Expected %v, got %v", expectedMA, maAdmitted)
-	}
+	// Expected: s1 (SQ), s3 (BVI), s2 (BVI), s6 (Reg), s5 (Reg), s4 (Reg)
+	// Total 1 (SQ) + 2 (BVI) + 3 (Regular from effective general) = 6
+	// Capacities: General:1, TQ:2, DQ:2, SQ:1.
+	// SQ: s1 (1/1 filled)
+	// TQ: 0/2 filled (2 unfilled)
+	// DQ: 0/2 filled (2 unfilled)
+	// General: Base 1 + 2 (from TQ) + 2 (from DQ) = 5 spots
+	// BVI: s3 (50), s2 (100) -> both admitted
+	// Regular: s6 (1), s5 (5), s4 (10) -> all 3 admitted
+	// Total admitted: 1 (SQ) + 2 (BVI) + 3 (Regular) = 6
+	assert.Len(t, admittedH1, 6, "H1 should have 6 admitted students")
+	assert.Contains(t, admittedH1, sid(1)) // Special
+	assert.Contains(t, admittedH1, sid(2)) // BVI
+	assert.Contains(t, admittedH1, sid(3)) // BVI
+	assert.Contains(t, admittedH1, sid(4)) // Regular
+	assert.Contains(t, admittedH1, sid(5)) // Regular
+	assert.Contains(t, admittedH1, sid(6)) // Regular
+	assert.NotContains(t, admittedH1, sid(7))
 }
 
-func TestCalculateAdmissions_CapacityLimit(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 1, "Software Engineering") // Capacity 1
+// TestCalculateAdmissions_BVIvsRegular tests BVI priority over Regular in General competition.
+func TestCalculateAdmissions_BVIvsRegular(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H1", Capacities{General: 2}, "Heading 1") // 2 General spots
 
-	vc.AddApplication("CS101", "1", 10, 1, CompetitionRegular)
-	vc.AddApplication("CS101", "2", 5, 1, CompetitionRegular)
-	vc.AddApplication("CS101", "3", 12, 1, CompetitionRegular)
+	v.AddApplication("H1", sid(1), 200, 1, CompetitionRegular) // Regular
+	v.AddApplication("H1", sid(2), 100, 1, CompetitionBVI)     // BVI (better rating than s1, also BVI)
+	v.AddApplication("H1", sid(3), 10, 1, CompetitionRegular)  // Regular (better rating than s1)
+	v.AddApplication("H1", sid(4), 50, 1, CompetitionBVI)      // BVI (better rating than s2)
 
-	results := vc.CalculateAdmissions()
-	csAdmitted := getAdmittedStudentIDs(results, "CS101")
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
 
-	expectedCS := []string{prepareStudentID("2")}
-	if !reflect.DeepEqual(csAdmitted, expectedCS) {
-		t.Errorf("CS101: Expected %v, got %v", expectedCS, csAdmitted)
-	}
+	// Expected: s4 (BVI, 50), s2 (BVI, 100). s3 and s1 (Regulars) should not be admitted.
+	assert.Len(t, admittedH1, 2, "H1 should have 2 admitted students")
+	assert.Contains(t, admittedH1, sid(4)) // BVI, rating 50
+	assert.Contains(t, admittedH1, sid(2)) // BVI, rating 100
+	assert.NotContains(t, admittedH1, sid(1))
+	assert.NotContains(t, admittedH1, sid(3))
 }
 
-func TestCalculateAdmissions_PriorityHandling(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 1, "Data Science")
-	vc.AddHeading("MA101", 1, "Pure Mathematics")
+// TestCalculateAdmissions_StudentPriorities tests student choosing higher priority application.
+func TestCalculateAdmissions_StudentPriorities(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H1", Capacities{General: 1}, "Heading 1")
+	v.AddHeading("H2", Capacities{General: 1}, "Heading 2")
 
-	vc.AddApplication("CS101", "1", 10, 1, CompetitionRegular)
-	vc.AddApplication("MA101", "1", 5, 2, CompetitionRegular)
+	// Student1: Prefers H1 (priority 1) over H2 (priority 2)
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular)
+	v.AddApplication("H2", sid(1), 5, 2, CompetitionRegular) // Better rating, but lower priority
 
-	vc.AddApplication("MA101", "2", 8, 1, CompetitionRegular)
+	// Student2: Can only go to H2
+	v.AddApplication("H2", sid(2), 20, 1, CompetitionRegular)
 
-	results := vc.CalculateAdmissions()
-	csAdmitted := getAdmittedStudentIDs(results, "CS101")
-	maAdmitted := getAdmittedStudentIDs(results, "MA101")
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
+	admittedH2 := getAdmittedStudentIDs(results, "H2")
 
-	expectedCS := []string{prepareStudentID("1")}
-	if !reflect.DeepEqual(csAdmitted, expectedCS) {
-		t.Errorf("CS101: Expected %v, got %v for student %s by priority", expectedCS, csAdmitted, prepareStudentID("1"))
-	}
+	assert.Len(t, admittedH1, 1, "H1 should have 1 student")
+	assert.Contains(t, admittedH1, sid(1), "Student1 should be in H1")
 
-	expectedMA := []string{prepareStudentID("2")}
-	if !reflect.DeepEqual(maAdmitted, expectedMA) {
-		t.Errorf("MA101: Expected %v, got %v", expectedMA, maAdmitted)
-	}
+	assert.Len(t, admittedH2, 1, "H2 should have 1 student")
+	assert.Contains(t, admittedH2, sid(2), "Student2 should be in H2")
 }
 
-func TestCalculateAdmissions_Displacement(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 1, "Cybersecurity") // Capacity 1
+// TestCalculateAdmissions_DisplacementAndReconsideration tests displacement and subsequent reconsideration.
+func TestCalculateAdmissions_DisplacementAndReconsideration(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H1", Capacities{General: 1}, "Heading 1")
+	v.AddHeading("H2", Capacities{General: 1}, "Heading 2")
 
-	vc.AddApplication("CS101", "1", 10, 1, CompetitionRegular)
-	vc.AddApplication("CS101", "2", 5, 1, CompetitionRegular)
+	// Student1: H1 (Prio 1), H2 (Prio 2)
+	v.AddApplication("H1", sid(1), 100, 1, CompetitionRegular)
+	v.AddApplication("H2", sid(1), 10, 2, CompetitionRegular)
 
-	_ = vc.student("1")
-	_ = vc.student("2")
+	// Student2: H1 (Prio 1) - better rating than Student1 for H1
+	v.AddApplication("H1", sid(2), 50, 1, CompetitionRegular)
 
-	results := vc.CalculateAdmissions()
-	csAdmitted := getAdmittedStudentIDs(results, "CS101")
+	// Student3: H2 (Prio 1) - will initially take H2
+	v.AddApplication("H2", sid(3), 20, 1, CompetitionRegular)
 
-	expectedCS := []string{prepareStudentID("2")}
-	if !reflect.DeepEqual(csAdmitted, expectedCS) {
-		t.Errorf("CS101: Expected %v to be admitted (student %s displaces %s), got %v", expectedCS, prepareStudentID("2"), prepareStudentID("1"), csAdmitted)
-	}
+	// Initial state (conceptual):
+	// H1: Student1 (100) - provisional
+	// H2: Student3 (20) - provisional
+	// Student1 best: H1 (100)
+
+	// Process Student2:
+	// Student2 (50) applies to H1, outscores Student1 (100).
+	// H1: Student2 (50)
+	// Student1 is displaced from H1. Student1 needs reconsideration.
+
+	// Reconsider Student1:
+	// Student1's next best is H2 (Prio 2, rating 10).
+	// Student1 (10) applies to H2, outscores Student3 (20).
+	// H2: Student1 (10)
+	// Student3 is displaced from H2. Student3 has no other applications.
+
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
+	admittedH2 := getAdmittedStudentIDs(results, "H2")
+
+	assert.Len(t, admittedH1, 1, "H1 should have 1 student")
+	assert.Contains(t, admittedH1, sid(2), "Student2 should be in H1")
+
+	assert.Len(t, admittedH2, 1, "H2 should have 1 student")
+	assert.Contains(t, admittedH2, sid(1), "Student1 should be in H2 after displacement")
+
+	assert.NotContains(t, admittedH1, sid(1))
+	assert.NotContains(t, admittedH2, sid(3))
 }
 
-func TestCalculateAdmissions_StudentQuit(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 1, "Information Technology")
-	vc.AddHeading("MA101", 1, "Theoretical Physics")
+// TestCalculateAdmissions_FullScenarioWithQuotasAndGeneral tests a more complex scenario.
+func TestCalculateAdmissions_FullScenarioWithQuotasAndGeneral(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	// H1: TQ=1, DQ=1, SQ=1, Gen=1. Total initial capacity = 4.
+	v.AddHeading("H1", Capacities{TargetQuota: 1, DedicatedQuota: 1, SpecialQuota: 1, General: 1}, "H1")
+	// H2: Gen=2
+	v.AddHeading("H2", Capacities{General: 2}, "H2")
 
-	vc.AddApplication("CS101", "1", 10, 1, CompetitionRegular)
-	vc.AddApplication("MA101", "2", 5, 1, CompetitionRegular)
-	vc.AddApplication("CS101", "3", 12, 1, CompetitionRegular)
+	// Student Applications:
+	// S1: H1 (TQ, 10, P1), H2 (Reg, 20, P2)
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota)
+	v.AddApplication("H2", sid(1), 20, 2, CompetitionRegular)
 
-	vc.SetQuit("1")
+	// S2: H1 (TQ, 5, P1) -> better TQ for H1
+	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota)
 
-	results := vc.CalculateAdmissions()
-	csAdmitted := getAdmittedStudentIDs(results, "CS101")
-	maAdmitted := getAdmittedStudentIDs(results, "MA101")
+	// S3: H1 (DQ, 100, P1)
+	v.AddApplication("H1", sid(3), 100, 1, CompetitionDedicatedQuota)
 
-	expectedCS := []string{prepareStudentID("3")}
-	if !reflect.DeepEqual(csAdmitted, expectedCS) {
-		t.Errorf("CS101: Expected %v, got %v", expectedCS, csAdmitted)
-	}
-	expectedMA := []string{prepareStudentID("2")}
-	if !reflect.DeepEqual(maAdmitted, expectedMA) {
-		t.Errorf("MA101: Expected %v, got %v", expectedMA, maAdmitted)
-	}
+	// S4: H1 (SQ, 100, P1)
+	v.AddApplication("H1", sid(4), 100, 1, CompetitionSpecialQuota)
+
+	// S5: H1 (BVI, 100, P1), H2 (BVI, 5, P2)
+	v.AddApplication("H1", sid(5), 100, 1, CompetitionBVI)
+	v.AddApplication("H2", sid(5), 5, 2, CompetitionBVI)
+
+	// S6: H1 (Reg, 10, P1)
+	v.AddApplication("H1", sid(6), 10, 1, CompetitionRegular) // Will compete for general H1
+
+	// S7: H2 (Reg, 10, P1)
+	v.AddApplication("H2", sid(7), 10, 1, CompetitionRegular)
+
+	// S8: H2 (BVI, 1, P1) -> best BVI for H2
+	v.AddApplication("H2", sid(8), 1, 1, CompetitionBVI)
+
+	// Expected H1 admissions:
+	// TQ: S2 (5) - S1 (10) is outbid for TQ, S1 will try H2.
+	// DQ: S3 (100)
+	// SQ: S4 (100)
+	// General (1 spot, no unfilled quotas): S5 (BVI, 100) beats S6 (Regular, 10)
+	// H1: S2, S3, S4, S5. (4 students)
+
+	// Expected H2 admissions (2 spots):
+	// S1 (Reg, 20, P2 from H1 TQ failure)
+	// S5 (BVI, 5, P2 from H1 General failure - but S5 got into H1 General, so this H2 app is moot for S5)
+	// S7 (Reg, 10, P1)
+	// S8 (BVI, 1, P1)
+	//
+	// Iteration:
+	// Student S2 gets H1 TQ.
+	// Student S3 gets H1 DQ.
+	// Student S4 gets H1 SQ.
+	// Student S5 applies H1 BVI (P1). H1 General has 1 spot. S5 gets it. studentBestPlacement[S5] = H1/BVI.
+	// Student S1 applies H1 TQ (P1), rating 10. S2 (rating 5) already has it. S1 fails H1 TQ.
+	// Student S6 applies H1 Reg (P1). H1 General is full (S5). S6 fails H1 General.
+	//
+	// Student S1 now tries H2 (Reg, 20, P2). H2 has 2 spots. S1 gets one. studentBestPlacement[S1] = H2/Reg.
+	// Student S7 applies H2 (Reg, 10, P1). H2 has 1 spot left. S7 gets it. studentBestPlacement[S7] = H2/Reg.
+	// Student S8 applies H2 (BVI, 1, P1). H2 is full (S1, S7). S8 (BVI) outscores S1 (Reg) and S7 (Reg).
+	//   S8 outscores S1 (rating 20). S1 is displaced. studentBestPlacement[S8] = H2/BVI.
+	//   S8 outscores S7 (rating 10). S7 is displaced. (S8 takes one spot, one more to fill or re-evaluate)
+	//   Let's trace carefully: H2 spots: 2.
+	//   S1 (Reg 20 P2), S7 (Reg 10 P1), S8 (BVI 1 P1).
+	//   S8 (BVI 1 P1) is best. Takes a spot.
+	//   S7 (Reg 10 P1) is next best of remaining. Takes a spot.
+	//   S1 (Reg 20 P2) is out.
+	//   So H2: S8, S7.
+	//
+	// S1 was displaced from H2. S1 has no more applications.
+	// S5 is happy in H1 (BVI). Its H2 app (BVI 5 P2) is lower priority.
+	//
+	// Final H1: S2 (TQ), S3 (DQ), S4 (SQ), S5 (BVI).
+	// Final H2: S8 (BVI), S7 (Reg).
+
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
+	admittedH2 := getAdmittedStudentIDs(results, "H2")
+
+	// Sort for consistent comparison if needed, though Contains checks are primary.
+	sort.Strings(admittedH1)
+	sort.Strings(admittedH2)
+
+	expectedH1 := []string{sid(2), sid(3), sid(4), sid(5)}
+	sort.Strings(expectedH1)
+	assert.Equal(t, expectedH1, admittedH1, "H1 admitted students mismatch")
+
+	expectedH2 := []string{sid(7), sid(8)}
+	sort.Strings(expectedH2)
+	assert.Equal(t, expectedH2, admittedH2, "H2 admitted students mismatch")
+
+	// Check that S1 (who lost H1 TQ and then H2 Regular) is not admitted anywhere.
+	assert.NotContains(t, admittedH1, sid(1))
+	assert.NotContains(t, admittedH2, sid(1))
+	// Check S6 (lost H1 General)
+	assert.NotContains(t, admittedH1, sid(6))
 }
 
-func TestCalculateAdmissions_ComplexScenario(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 1, "Applied Mathematics and Informatics")
-	vc.AddHeading("H2", 2, "Modern Programming")
-	vc.AddHeading("H3", 1, "System Architecture")
+// TestCalculateAdmissions_QuitStudent tests that a quit student is not admitted.
+func TestCalculateAdmissions_QuitStudent(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H1", Capacities{General: 1}, "H1")
 
-	vc.AddApplication("H1", "104", 10, 1, CompetitionRegular)
-	vc.AddApplication("H2", "104", 5, 2, CompetitionRegular)
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular)
+	v.SetQuit(sid(1)) // Student1 quits
 
-	vc.AddApplication("H2", "102", 8, 1, CompetitionRegular)
-	vc.AddApplication("H3", "102", 10, 2, CompetitionRegular)
+	v.AddApplication("H1", sid(2), 20, 1, CompetitionRegular) // Student2 should get the spot
 
-	vc.AddApplication("H1", "103", 9, 1, CompetitionRegular)
-	vc.AddApplication("H2", "103", 12, 2, CompetitionRegular)
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
 
-	vc.AddApplication("H2", "101", 7, 1, CompetitionRegular)
-
-	vc.AddApplication("H3", "105", 6, 1, CompetitionRegular)
-	vc.AddApplication("H2", "105", 20, 2, CompetitionRegular)
-
-	vc.AddApplication("H1", "106", 1, 1, CompetitionRegular)
-	vc.SetQuit("106")
-
-	results := vc.CalculateAdmissions()
-
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
-	h2Admitted := getAdmittedStudentIDs(results, "H2")
-	h3Admitted := getAdmittedStudentIDs(results, "H3")
-
-	expectedH1 := []string{prepareStudentID("103")}
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected %v, got %v", expectedH1, h1Admitted)
-	}
-
-	expectedH2 := []string{prepareStudentID("104"), prepareStudentID("101")}
-
-	if !reflect.DeepEqual(h2Admitted, expectedH2) {
-		t.Errorf("H2: Expected %v, got %v", expectedH2, h2Admitted)
-	}
-
-	expectedH3 := []string{prepareStudentID("105")}
-	if !reflect.DeepEqual(h3Admitted, expectedH3) {
-		t.Errorf("H3: Expected %v, got %v", expectedH3, h3Admitted)
-	}
+	assert.Len(t, admittedH1, 1, "H1 should have 1 student")
+	assert.Contains(t, admittedH1, sid(2))
+	assert.NotContains(t, admittedH1, sid(1))
 }
 
-func TestCalculateAdmissions_NoApplicants(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 2, "Network Engineering")
-	vc.AddHeading("MA101", 1, "Statistics")
+// TestCalculateAdmissions_OrderOfResults tests that results are sorted by heading code.
+func TestCalculateAdmissions_OrderOfResults(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H2", Capacities{General: 1}, "Heading 2")
+	v.AddHeading("H1", Capacities{General: 1}, "Heading 1") // Added out of order
 
-	results := vc.CalculateAdmissions()
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular)
+	v.AddApplication("H2", sid(2), 10, 1, CompetitionRegular)
 
-	if len(results) != 2 {
-		t.Fatalf("Expected 2 results (one for each heading), got %d", len(results))
-	}
+	results := v.CalculateAdmissions()
 
-	csAdmitted := getAdmittedStudentIDs(results, "CS101")
-	maAdmitted := getAdmittedStudentIDs(results, "MA101")
-
-	if len(csAdmitted) != 0 {
-		t.Errorf("CS101: Expected 0 admitted, got %v", csAdmitted)
-	}
-	if len(maAdmitted) != 0 {
-		t.Errorf("MA101: Expected 0 admitted, got %v", maAdmitted)
-	}
-}
-
-func TestCalculateAdmissions_AllQuit(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("CS101", 1, "Artificial Intelligence")
-
-	vc.AddApplication("CS101", "1", 10, 1, CompetitionRegular)
-	vc.AddApplication("CS101", "2", 5, 1, CompetitionRegular)
-	vc.SetQuit("1")
-	vc.SetQuit("2")
-
-	results := vc.CalculateAdmissions()
-	csAdmitted := getAdmittedStudentIDs(results, "CS101")
-
-	if len(csAdmitted) != 0 {
-		t.Errorf("CS101: Expected 0 admitted as all quit, got %v", csAdmitted)
-	}
-}
-
-func TestCalculateAdmissions_StudentGetsSecondPriorityAfterFirstChoiceFull(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 1, "Biotechnology")
-	vc.AddHeading("H2", 1, "Chemical Engineering")
-
-	vc.AddApplication("H1", "801", 1, 1, CompetitionRegular)
-
-	vc.AddApplication("H1", "802", 10, 1, CompetitionRegular)
-	vc.AddApplication("H2", "802", 5, 2, CompetitionRegular)
-
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
-	h2Admitted := getAdmittedStudentIDs(results, "H2")
-
-	expectedH1 := []string{prepareStudentID("801")}
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected %v, got %v", expectedH1, h1Admitted)
-	}
-
-	expectedH2 := []string{prepareStudentID("802")}
-	if !reflect.DeepEqual(h2Admitted, expectedH2) {
-		t.Errorf("H2: Expected %v, got %v", expectedH2, h2Admitted)
-	}
-}
-
-func TestCalculateAdmissions_DisplacementCascades(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 1, "Mechanical Engineering")
-	vc.AddHeading("H2", 1, "Aerospace Engineering")
-
-	vc.AddApplication("H2", "901", 10, 1, CompetitionRegular)
-
-	vc.AddApplication("H1", "902", 10, 1, CompetitionRegular)
-	vc.AddApplication("H2", "902", 5, 2, CompetitionRegular)
-
-	vc.AddApplication("H1", "903", 1, 1, CompetitionRegular)
-
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
-	h2Admitted := getAdmittedStudentIDs(results, "H2")
-
-	expectedH1 := []string{prepareStudentID("903")}
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected %v, got %v", expectedH1, h1Admitted)
-	}
-
-	expectedH2 := []string{prepareStudentID("902")}
-	if !reflect.DeepEqual(h2Admitted, expectedH2) {
-		t.Errorf("H2: Expected %v, got %v", expectedH2, h2Admitted)
-	}
-}
-
-func TestCalculateAdmissions_EmptyApplicationsForStudent(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 1, "Civil Engineering")
-
-	_ = vc.student("1001")
-
-	vc.AddApplication("H1", "1002", 1, 1, CompetitionRegular)
-
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
-
-	expectedH1 := []string{prepareStudentID("1002")}
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected %v, got %v", expectedH1, h1Admitted)
-	}
-	if len(vc.students["1001"].applications) != 0 {
-		t.Errorf("Student %s should have 0 applications, got %d", prepareStudentID("1001"), len(vc.students["1001"].applications))
+	if len(results) == 2 {
+		assert.Equal(t, "H1", results[0].Heading.Code(), "First result should be H1")  // Use exported field Heading
+		assert.Equal(t, "H2", results[1].Heading.Code(), "Second result should be H2") // Use exported field Heading
+	} else {
+		t.Fatalf("Expected 2 results, got %d", len(results))
 	}
 }
 
-// --- New Quota Test Cases ---
+// TestCalculateAdmissions_SameRatingDifferentCompetitionTypeInGeneral
+// Tests that BVI is preferred over Regular even if Regular has "better" rating number.
+func TestCalculateAdmissions_SameRatingDifferentCompetitionTypeInGeneral(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H1", Capacities{General: 1}, "H1") // Only one spot
 
-func TestCalculateAdmissions_QuotaStudentPrioritizedOverNonQuota(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 1, "Quota Studies")
+	v.AddApplication("H1", sid(1), 1, 1, CompetitionRegular) // Best possible rating, but Regular
+	v.AddApplication("H1", sid(2), 999, 1, CompetitionBVI)   // Worst possible rating, but BVI
 
-	vc.AddApplication("H1", "201", 1, 1, CompetitionRegular)
-	vc.AddApplication("H1", "202", 10, 1, CompetitionTargetQuota)
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
 
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
-
-	expectedH1 := []string{prepareStudentID("202")}
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected quota student %v to be admitted, got %v", expectedH1, h1Admitted)
-	}
+	assert.Len(t, admittedH1, 1)
+	assert.Contains(t, admittedH1, sid(2), "BVI student should be admitted over Regular student")
+	assert.NotContains(t, admittedH1, sid(1))
 }
 
-func TestCalculateAdmissions_QuotaStudentsComparedByQuotaRating(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 1, "Advanced Quota Program")
+// TestCalculateAdmissions_QuotaStudentsDoNotCompeteForGeneralIfQuotaFull
+// Ensures that if a student applies for a quota and it's full (even if they are outranked),
+// they don't automatically compete for general spots for THAT SAME application.
+func TestCalculateAdmissions_QuotaStudentsDoNotCompeteForGeneralIfQuotaFull(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H1", Capacities{TargetQuota: 1, General: 1}, "H1")
 
-	vc.AddApplication("H1", "301", 10, 1, CompetitionTargetQuota)
-	vc.AddApplication("H1", "302", 5, 1, CompetitionTargetQuota)
+	// S1 fills the TargetQuota
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota)
+	// S2 applies for TargetQuota but S1 is better or already there. S2 should NOT get general for this app.
+	v.AddApplication("H1", sid(2), 20, 1, CompetitionTargetQuota)
+	// S3 applies for General and should get it.
+	v.AddApplication("H1", sid(3), 1, 1, CompetitionRegular)
 
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
+	sort.Strings(admittedH1)
 
-	expectedH1 := []string{prepareStudentID("302")}
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected quota student %v with better quota rating to be admitted, got %v", expectedH1, h1Admitted)
-	}
+	expected := []string{sid(1), sid(3)}
+	sort.Strings(expected)
+
+	assert.Equal(t, expected, admittedH1)
+	assert.NotContains(t, admittedH1, sid(2))
 }
 
-func TestCalculateAdmissions_QuotaStudentDisplacesNonQuota(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 1, "Competitive Program")
+// TestCalculateAdmissions_ComplexPrioritiesAndDisplacement
+func TestCalculateAdmissions_ComplexPrioritiesAndDisplacement(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY")
+	v.AddHeading("H_HIGH_CAP", Capacities{General: 3}, "High Capacity Heading")
+	v.AddHeading("H_LOW_CAP_PRIO1", Capacities{General: 1}, "Low Cap Prio 1 Heading")
+	v.AddHeading("H_LOW_CAP_PRIO2", Capacities{General: 1}, "Low Cap Prio 2 Heading")
 
-	vc.AddApplication("H1", "401", 5, 1, CompetitionRegular)
+	// S1:
+	// 1. H_LOW_CAP_PRIO1 (Rating 100, P1)
+	// 2. H_HIGH_CAP (Rating 10, P2)
+	v.AddApplication("H_LOW_CAP_PRIO1", sid(1), 100, 1, CompetitionRegular)
+	v.AddApplication("H_HIGH_CAP", sid(1), 10, 2, CompetitionRegular)
 
-	vc.AddApplication("H1", "402", 8, 1, CompetitionTargetQuota)
+	// S2:
+	// 1. H_LOW_CAP_PRIO1 (Rating 50, P1) -> Will take this spot from S1
+	v.AddApplication("H_LOW_CAP_PRIO1", sid(2), 50, 1, CompetitionRegular)
 
-	_ = vc.student("401")
-	_ = vc.student("402")
+	// S3:
+	// 1. H_HIGH_CAP (Rating 20, P1)
+	v.AddApplication("H_HIGH_CAP", sid(3), 20, 1, CompetitionRegular)
 
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
+	// S4:
+	// 1. H_LOW_CAP_PRIO2 (Rating 10, P1)
+	// 2. H_HIGH_CAP (Rating 5, P2)
+	v.AddApplication("H_LOW_CAP_PRIO2", sid(4), 10, 1, CompetitionRegular)
+	v.AddApplication("H_HIGH_CAP", sid(4), 5, 2, CompetitionRegular)
 
-	expectedH1 := []string{prepareStudentID("402")}
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected quota student %v to displace non-quota, got %v", expectedH1, h1Admitted)
-	}
-}
+	// Expected outcome based on students prioritizing their highest-numbered priority applications
+	// and displacements occurring based on rating. The core logic is that once a student
+	// is placed via an application of a certain priority (e.g., P1), they will not
+	// attempt to take a lower priority application (e.g., P2), even if the P2 application
+	// has a better rating or could displace someone.
+	//
+	// 1. Initial P1 considerations:
+	//    - S1 provisionally takes H_LOW_CAP_PRIO1 (R100).
+	//    - S2 applies to H_LOW_CAP_PRIO1 (R50), displaces S1.
+	//      Result: H_LOW_CAP_PRIO1 = [S2(R50)]. S1 is unplaced. studentBestPlacement[S2] = H_LOW_CAP_PRIO1 (P1)
+	//    - S3 takes H_HIGH_CAP (R20, P1).
+	//      Result: H_HIGH_CAP = [S3(R20)]. (Capacity 3). studentBestPlacement[S3] = H_HIGH_CAP (P1)
+	//    - S4 takes H_LOW_CAP_PRIO2 (R10, P1).
+	//      Result: H_LOW_CAP_PRIO2 = [S4(R10)]. studentBestPlacement[S4] = H_LOW_CAP_PRIO2 (P1)
+	//
+	// Current student placements after initial P1 processing:
+	//    S1: Unplaced
+	//    S2: H_LOW_CAP_PRIO1 (P1)
+	//    S3: H_HIGH_CAP (P1)
+	//    S4: H_LOW_CAP_PRIO2 (P1)
+	//
+	// 2. Reconsider S1 (displaced):
+	//    - S1's P1 (H_LOW_CAP_PRIO1) is taken by S2.
+	//    - S1 considers P2: H_HIGH_CAP (R10).
+	//    - H_HIGH_CAP has S3(R20) and 2 free spots. S1(R10) takes a spot.
+	//      Result: H_HIGH_CAP = [S1(R10), S3(R20)]. (Sorted by rating: S1, S3). studentBestPlacement[S1] = H_HIGH_CAP (P2)
+	//
+	// 3. S4's situation:
+	//    - S4 is placed in H_LOW_CAP_PRIO2 (P1, R10). studentBestPlacement[S4] has priority 1.
+	//    - S4's P2 application is H_HIGH_CAP (R5, priority 2).
+	//    - When the algorithm processes S4's applications, after placing S4 in its P1 choice,
+	//      the check `if existingPlacement.priority < currentApp.priority` (i.e., 1 < 2)
+	//      will be true for S4's P2 application. The loop over S4's applications will `break`.
+	//    - Thus, S4 will NOT attempt to move to H_HIGH_CAP for its P2 application,
+	//      even though its rating (R5) for H_HIGH_CAP is better than S1's (R10) in H_HIGH_CAP.
+	//
+	// Final State:
+	// H_LOW_CAP_PRIO1: S2 (sid2)
+	// H_LOW_CAP_PRIO2: S4 (sid4)
+	// H_HIGH_CAP: S1 (sid1), S3 (sid3)
 
-func TestCalculateAdmissions_HeadingFullWithQuotaNonQuotaCannotEnter(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 1, "Exclusive Program")
+	results := v.CalculateAdmissions()
 
-	vc.AddApplication("H1", "501", 1, 1, CompetitionTargetQuota)
-	vc.AddApplication("H1", "502", 1, 1, CompetitionRegular)
+	admittedPrio1 := getAdmittedStudentIDs(results, "H_LOW_CAP_PRIO1")
+	admittedPrio2 := getAdmittedStudentIDs(results, "H_LOW_CAP_PRIO2")
+	admittedHighCap := getAdmittedStudentIDs(results, "H_HIGH_CAP")
 
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
+	sort.Strings(admittedHighCap) // Ensure order for comparison
 
-	expectedH1 := []string{prepareStudentID("501")}
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected %v (quota) to hold the spot, got %v", expectedH1, h1Admitted)
-	}
-}
+	// H_LOW_CAP_PRIO1: S2 (Rating 50). S1 was displaced.
+	assert.Equal(t, []string{sid(2)}, admittedPrio1, "H_LOW_CAP_PRIO1 mismatch: S2 should be admitted")
 
-func TestCalculateAdmissions_MixedQuotaAndNonQuotaMultipleSpots(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 3, "Interdisciplinary Studies")
+	// H_LOW_CAP_PRIO2: S4 (Rating 10, P1 for S4). S4 takes its P1.
+	assert.Equal(t, []string{sid(4)}, admittedPrio2, "H_LOW_CAP_PRIO2 mismatch: S4 should be admitted via P1")
 
-	vc.AddApplication("H1", "601", 5, 1, CompetitionTargetQuota)
-	vc.AddApplication("H1", "602", 2, 1, CompetitionRegular)
-	vc.AddApplication("H1", "603", 2, 1, CompetitionTargetQuota)
-	vc.AddApplication("H1", "604", 8, 1, CompetitionRegular)
-	vc.AddApplication("H1", "605", 1, 1, CompetitionRegular)
+	// H_HIGH_CAP:
+	// S1 (displaced from H_LOW_CAP_PRIO1) takes P2 to H_HIGH_CAP (Rating 10).
+	// S3 takes P1 to H_HIGH_CAP (Rating 20).
+	// Both fit. Admitted list internally sorted by rating (S1 then S3).
+	// getAdmittedStudentIDs preserves this order.
+	expectedHighCap := []string{sid(1), sid(3)}
+	// sort.Strings(expectedHighCap) // Not strictly needed as sid(1) then sid(3) is already sorted.
+	assert.Equal(t, expectedHighCap, admittedHighCap, "H_HIGH_CAP mismatch: S1 (P2) and S3 (P1) should be admitted")
 
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
+	// S1 should be in H_HIGH_CAP
+	assert.NotContains(t, admittedPrio1, sid(1), "S1 should not be in H_LOW_CAP_PRIO1")
+	assert.NotContains(t, admittedPrio2, sid(1), "S1 should not be in H_LOW_CAP_PRIO2")
+	assert.Contains(t, admittedHighCap, sid(1), "S1 should be in H_HIGH_CAP")
 
-	expectedH1 := []string{prepareStudentID("603"), prepareStudentID("601"), prepareStudentID("605")}
-
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected admitted %v, got %v", expectedH1, h1Admitted)
-	}
-}
-
-func TestCalculateAdmissions_QuotaStudentLosesToBetterQuotaStudent_ThenNonQuotaGetsSpot(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 2, "Specialized Engineering")
-
-	vc.AddApplication("H1", "701", 10, 1, CompetitionTargetQuota)
-	vc.AddApplication("H1", "702", 3, 1, CompetitionRegular)
-	vc.AddApplication("H1", "703", 1, 1, CompetitionTargetQuota)
-
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
-
-	expectedH1 := []string{prepareStudentID("703"), prepareStudentID("701")}
-
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected admitted %v, got %v", expectedH1, h1Admitted)
-	}
-}
-
-func TestCalculateAdmissions_CompetitionTypePriority(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 5, "Competition Type Priority Test")
-
-	// Add applications with different competition types
-	// Lower rating place is better, but competition type takes precedence
-	vc.AddApplication("H1", "801", 1, 1, CompetitionRegular)         // Best rating but lowest competition type
-	vc.AddApplication("H1", "802", 10, 1, CompetitionTargetQuota)    // Worse rating but better competition type
-	vc.AddApplication("H1", "803", 20, 1, CompetitionDedicatedQuota) // Even worse rating but even better competition type
-	vc.AddApplication("H1", "804", 30, 1, CompetitionSpecialQuota)   // Worst rating but second-best competition type
-	vc.AddApplication("H1", "805", 40, 1, CompetitionBVI)            // Worst rating but best competition type
-
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
-
-	// Students should be admitted in order of competition type (highest to lowest)
-	expectedH1 := []string{
-		prepareStudentID("805"), // CompetitionBVI (highest)
-		prepareStudentID("804"), // CompetitionSpecialQuota
-		prepareStudentID("803"), // CompetitionDedicatedQuota
-		prepareStudentID("802"), // CompetitionTargetQuota
-		prepareStudentID("801"), // CompetitionRegular (lowest)
-	}
-
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected admitted in competition type order %v, got %v", expectedH1, h1Admitted)
-	}
-}
-
-func TestCalculateAdmissions_SameCompetitionTypeDifferentRatings(t *testing.T) {
-	vc := NewVarsityCalculator("TestUni")
-	vc.AddHeading("H1", 3, "Same Competition Type Test")
-
-	// Add applications with the same competition type but different rating places
-	vc.AddApplication("H1", "901", 30, 1, CompetitionSpecialQuota) // Worst rating
-	vc.AddApplication("H1", "902", 20, 1, CompetitionSpecialQuota) // Middle rating
-	vc.AddApplication("H1", "903", 10, 1, CompetitionSpecialQuota) // Best rating
-
-	results := vc.CalculateAdmissions()
-	h1Admitted := getAdmittedStudentIDs(results, "H1")
-
-	// Students should be admitted in order of rating place (best to worst)
-	expectedH1 := []string{
-		prepareStudentID("903"), // Best rating (10)
-		prepareStudentID("902"), // Middle rating (20)
-		prepareStudentID("901"), // Worst rating (30)
-	}
-
-	if !reflect.DeepEqual(h1Admitted, expectedH1) {
-		t.Errorf("H1: Expected admitted in rating order %v, got %v", expectedH1, h1Admitted)
-	}
+	// S4 should be in H_LOW_CAP_PRIO2 and NOT H_HIGH_CAP
+	assert.NotContains(t, admittedPrio1, sid(4), "S4 should not be in H_LOW_CAP_PRIO1")
+	assert.Contains(t, admittedPrio2, sid(4), "S4 should be in H_LOW_CAP_PRIO2")
+	assert.NotContains(t, admittedHighCap, sid(4), "S4 should not have taken its P2 to H_HIGH_CAP")
 }

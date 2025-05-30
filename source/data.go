@@ -16,7 +16,7 @@ type ApplicationData struct {
 
 // HeadingData mirrors the data needed for core.VarsityCalculator.AddHeading.
 type HeadingData struct {
-	Code       string // Unique code for the heading
-	Capacity   int    // Number of places available in this heading
-	PrettyName string // Name of the heading
+	Code       string          // Unique code for the heading
+	Capacities core.Capacities // Number of places available in this heading
+	PrettyName string          // Name of the heading
 }

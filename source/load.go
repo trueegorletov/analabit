@@ -20,11 +20,6 @@ func (v *Varsity) ResetCalculator() {
 // Load loads data from all providen HeadingSources asynchronously, starting one goroutine per source.
 // It sets Calculator to the clean VarsityCalculator instance and adds received data to it.
 func (v *Varsity) Load() map[string]bool {
-	// note: use channels to collect data from goroutines, add instantly to the VarsityCalculator,
-	// as AddHeading and AddApplication methods are thread-safe and it's guaranteed that
-	// a source will send HeadingData and ApplicationData in the same order as VarsityCalculator expects them,
-	// implying heading first then all its applications.
-
 	v.ResetCalculator()
 
 	submittedOriginals := make(map[string]bool)
@@ -48,13 +43,17 @@ func (v *Varsity) Load() map[string]bool {
 				if !ok {
 					headingDataChan = nil // Mark as drained
 				} else {
-					v.Calculator.AddHeading(hd.Code, hd.Capacity, hd.PrettyName)
+					v.Calculator.AddHeading(hd.Code, hd.Capacities, hd.PrettyName)
 				}
 			case ad, ok := <-applicationDataChan:
 				if !ok {
 					applicationDataChan = nil // Mark as drained
 				} else {
 					// Assuming ad.StudentID is the ORIGINAL student ID
+					if ad.CompetitionType > core.CompetitionBVI && !ad.OriginalSubmitted {
+						continue // Most of the quota guys never submit their originals, so consider only those who did
+					}
+
 					v.Calculator.AddApplication(ad.HeadingCode, ad.StudentID, ad.RatingPlace, ad.Priority, ad.CompetitionType)
 					if ad.OriginalSubmitted {
 						submittedOriginalsMu.Lock()
@@ -94,7 +93,7 @@ func (v *Varsity) Load() map[string]bool {
 // and saves students who submitted there their original to a map (student ID -> Varsity.Code).
 // If there are multiple Varsities for a student, uses the first one and logs a warning about that.
 // Finally it sets student.quit to true for all students who submitted their original to a *different* varsity.
-func LoadAll(varsities []Varsity) []Varsity {
+func LoadAll(varsities []*Varsity) []*Varsity {
 	studentOriginals := make(map[string]string) // original StudentID -> Varsity.Code
 	var studentOriginalsMu sync.Mutex
 	var varsityLoadWg sync.WaitGroup
@@ -103,7 +102,7 @@ func LoadAll(varsities []Varsity) []Varsity {
 		varsityLoadWg.Add(1)
 		go func(idx int) {
 			defer varsityLoadWg.Done()
-			currentVarsity := &varsities[idx] // Operate on the pointer to modify the slice element
+			currentVarsity := varsities[idx] // Operate on the pointer
 
 			// Load data for this varsity and get students who submitted originals here
 			submittedInThisVarsity := currentVarsity.Load() // This returns map[originalStudentID]bool
@@ -127,7 +126,7 @@ func LoadAll(varsities []Varsity) []Varsity {
 	// Set student.quit status
 	for studentID, varsityCode := range studentOriginals {
 		for i := range varsities {
-			v := &varsities[i]
+			v := varsities[i]
 			if v.Code == varsityCode || v.Calculator == nil {
 				continue
 			}

@@ -15,12 +15,12 @@ import (
 // HttpHeadingSource defines how to load HSE heading data from URLs.
 // It assumes RCListURL is the primary source for the heading name.
 type HttpHeadingSource struct {
-	RCListURL url.URL // For "Основные конкурсные места" (CompetitionRegular)
-	TQListURL url.URL // For "Целевая квота" (CompetitionTargetQuota)
-	DQListURL url.URL // For "Отдельная квота" (CompetitionDedicatedQuota)
-	SQListURL url.URL // For "Особая квота" (CompetitionSpecialQuota)
-	BListURL  url.URL // For "Без вступительных испытаний" (CompetitionBVI)
-	Capacity  int
+	RCListURL         url.URL // For "Основные конкурсные места" (CompetitionRegular)
+	TQListURL         url.URL // For "Целевая квота" (CompetitionTargetQuota)
+	DQListURL         url.URL // For "Отдельная квота" (CompetitionDedicatedQuota)
+	SQListURL         url.URL // For "Особая квота" (CompetitionSpecialQuota)
+	BListURL          url.URL // For "Без вступительных испытаний" (CompetitionBVI)
+	HeadingCapacities core.Capacities
 }
 
 // openHttpExcelFile downloads and opens an Excel file from a URL.
@@ -86,16 +86,16 @@ func (s *HttpHeadingSource) LoadTo(headings chan<- source.HeadingData, applicati
 	// Send HeadingData to the channel
 	headings <- source.HeadingData{
 		Code:       headingCode,
-		Capacity:   s.Capacity,
+		Capacities: s.HeadingCapacities,
 		PrettyName: prettyName,
 	}
-	log.Printf("Sent heading: %s (Code: %s, Capacity: %d) using name from %s", prettyName, headingCode, s.Capacity, rcListURLString)
+	log.Printf("Sent heading: %s (Code: %s, Caps: %d) using name from %s", prettyName, headingCode, s.HeadingCapacities, rcListURLString)
 
 	definitions := []listDefinition{
-		{Source: s.BListURL.String(), CompetitionType: core.CompetitionBVI, ListName: "BVI List"},
 		{Source: s.SQListURL.String(), CompetitionType: core.CompetitionSpecialQuota, ListName: "Special Quota List"},
 		{Source: s.DQListURL.String(), CompetitionType: core.CompetitionDedicatedQuota, ListName: "Dedicated Quota List"},
 		{Source: s.TQListURL.String(), CompetitionType: core.CompetitionTargetQuota, ListName: "Target Quota List"},
+		{Source: s.BListURL.String(), CompetitionType: core.CompetitionBVI, ListName: "BVI List"},
 		{Source: rcListURLString, CompetitionType: core.CompetitionRegular, ListName: "Common List"},
 	}
 

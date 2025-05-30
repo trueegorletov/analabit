@@ -14,12 +14,12 @@ import (
 // FileHeadingSource defines how to load HSE heading data from local file paths.
 // It assumes RCListPath is the primary source for the heading name.
 type FileHeadingSource struct {
-	RCListPath string // For "Основные конкурсные места" (CompetitionRegular)
-	TQListPath string // For "Целевая квота" (CompetitionTargetQuota)
-	DQListPath string // For "Отдельная квота" (CompetitionDedicatedQuota)
-	SQListPath string // For "Особая квота" (CompetitionSpecialQuota)
-	BListPath  string // For "Без вступительных испытаний" (CompetitionBVI)
-	Capacity   int
+	RCListPath        string // For "Основные конкурсные места" (CompetitionRegular)
+	TQListPath        string // For "Целевая квота" (CompetitionTargetQuota)
+	DQListPath        string // For "Отдельная квота" (CompetitionDedicatedQuota)
+	SQListPath        string // For "Особая квота" (CompetitionSpecialQuota)
+	BListPath         string // For "Без вступительных испытаний" (CompetitionBVI)
+	HeadingCapacities core.Capacities
 }
 
 // openLocalExcelFile opens an Excel file from the local filesystem.
@@ -75,10 +75,10 @@ func (s *FileHeadingSource) LoadTo(headings chan<- source.HeadingData, applicati
 	// Send HeadingData to the channel
 	headings <- source.HeadingData{
 		Code:       headingCode,
-		Capacity:   s.Capacity,
+		Capacities: s.HeadingCapacities,
 		PrettyName: prettyName,
 	}
-	log.Printf("Sent heading: %s (Code: %s, Capacity: %d) using name from %s", prettyName, headingCode, s.Capacity, s.RCListPath)
+	log.Printf("Sent heading: %s (Code: %s, HeadingCapacities: %d) using name from %s", prettyName, headingCode, s.HeadingCapacities, s.RCListPath)
 
 	definitions := []listDefinition{
 		{Source: s.BListPath, CompetitionType: core.CompetitionBVI, ListName: "BVI List"},
