@@ -1,0 +1,82 @@
+package main
+
+import (
+	"analabit/source"
+	"analabit/source/hse"
+	"fmt"
+	"log"
+	"sync"
+)
+
+func main() {
+	PrintHseFileHeadingSourceData()
+}
+
+// PrintHseFileHeadingSourceData prints the sample heading source data for HSE.
+func PrintHseFileHeadingSourceData() {
+	s := hse.FileHeadingSource{
+		RCListPath: "./sample_data/hse/rc.xlsx",
+		TQListPath: "./sample_data/hse/tq.xlsx",
+		DQListPath: "./sample_data/hse/dq.xlsx",
+		SQListPath: "./sample_data/hse/sq.xlsx",
+		BListPath:  "./sample_data/hse/bvi.xlsx",
+		Capacity:   10, // Arbitrary capacity, as it's part of the struct
+	}
+
+	headingsChan := make(chan source.HeadingData, s.Capacity)           // Buffer size can be adjusted
+	applicationsChan := make(chan source.ApplicationData, s.Capacity*5) // Buffer size can be adjusted
+
+	var wg sync.WaitGroup
+	var loadErr error
+
+	// Goroutine to load data
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		loadErr = s.LoadTo(headingsChan, applicationsChan)
+	}()
+
+	// Goroutines to process data from channels
+	var headings []source.HeadingData
+	var applications []source.ApplicationData
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for h := range headingsChan {
+			headings = append(headings, h)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for a := range applicationsChan {
+			applications = append(applications, a)
+		}
+	}()
+
+	// Wait for all goroutines to complete
+	wg.Wait()
+
+	if loadErr != nil {
+		log.Fatalf("Error loading data: %v", loadErr)
+	}
+
+	fmt.Printf("--- Headings --- (%d loaded)", len(headings))
+	if len(headings) == 0 {
+		fmt.Println("No heading data loaded.")
+	}
+	for _, h := range headings {
+		fmt.Printf("Code: %s, Name: %s, Capacity: %d\n", h.Code, h.PrettyName, h.Capacity)
+	}
+
+	fmt.Printf("--- Applications --- (%d loaded)", len(applications))
+	if len(applications) == 0 {
+		fmt.Println("No application data loaded.")
+	}
+	for _, a := range applications {
+		fmt.Printf("HeadingCode: %s, StudentID: %s, Scores: %d, Place: %d, Priority: %d, Competition: %s, Original: %t\n",
+			a.HeadingCode, a.StudentID, a.ScoresSum, a.RatingPlace, a.Priority, a.CompetitionType, a.OriginalSubmitted)
+	}
+}
