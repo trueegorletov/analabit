@@ -1,0 +1,13 @@
+[upload]
+drain_simuls = [0, 33, 50, 66, 100]
+
+[upload.database]
+host = "localhost"
+port = 5432
+user = "username"
+dbname = "database_name"
+password = "password"
+
+[cache]
+directory = "./cache"
+ttl_minutes = 10
