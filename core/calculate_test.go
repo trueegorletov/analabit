@@ -13,7 +13,7 @@ func getAdmittedStudentIDs(results []CalculationResult, headingCode string) []st
 		if res.Heading.Code() == headingCode { // Use exported field Heading
 			ids := make([]string, len(res.Admitted))
 			for i, s := range res.Admitted { // Use exported field Admitted
-				ids[i] = s.Id // Use exported field Id
+				ids[i] = s.id // Use exported field ID
 			}
 			return ids
 		}
@@ -28,20 +28,20 @@ func sid(i int) string {
 
 // TestCalculateAdmissions_BasicQuotas tests basic quota filling.
 func TestCalculateAdmissions_BasicQuotas(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H1", Capacities{General: 0, TargetQuota: 1, DedicatedQuota: 1, SpecialQuota: 1}, "Heading 1")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{Regular: 0, TargetQuota: 1, DedicatedQuota: 1, SpecialQuota: 1}, "Heading 1")
 
 	// Target Quota
-	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota) // Should be admitted
-	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota)  // Should be admitted, displacing student1
-	v.AddApplication("H1", sid(3), 15, 1, CompetitionTargetQuota) // Should not be admitted
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota, 0) // Should be admitted
+	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota, 0)  // Should be admitted, displacing student1
+	v.AddApplication("H1", sid(3), 15, 1, CompetitionTargetQuota, 0) // Should not be admitted
 
 	// Dedicated Quota
-	v.AddApplication("H1", sid(4), 10, 1, CompetitionDedicatedQuota) // Should be admitted
-	v.AddApplication("H1", sid(5), 5, 1, CompetitionDedicatedQuota)  // Should be admitted, displacing student4
+	v.AddApplication("H1", sid(4), 10, 1, CompetitionDedicatedQuota, 0) // Should be admitted
+	v.AddApplication("H1", sid(5), 5, 1, CompetitionDedicatedQuota, 0)  // Should be admitted, displacing student4
 
 	// Special Quota
-	v.AddApplication("H1", sid(6), 10, 1, CompetitionSpecialQuota) // Should be admitted
+	v.AddApplication("H1", sid(6), 10, 1, CompetitionSpecialQuota, 0) // Should be admitted
 
 	results := v.CalculateAdmissions()
 	admittedH1 := getAdmittedStudentIDs(results, "H1")
@@ -61,55 +61,55 @@ func TestCalculateAdmissions_BasicQuotas(t *testing.T) {
 
 // TestCalculateAdmissions_QuotaFailureNoFallback tests that students failing a quota don't fall back.
 func TestCalculateAdmissions_QuotaFailureNoFallback(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H1", Capacities{General: 1, TargetQuota: 1}, "Heading 1")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{Regular: 1, TargetQuota: 1}, "Heading 1")
 
-	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota) // Admitted to Target
-	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota)  // Admitted to Target (displaces s1)
-	v.AddApplication("H1", sid(3), 15, 1, CompetitionTargetQuota) // Fails Target, should not get General
-	v.AddApplication("H1", sid(4), 20, 1, CompetitionRegular)     // Admitted to General
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota, 0) // Admitted to Target
+	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota, 0)  // Admitted to Target (displaces s1)
+	v.AddApplication("H1", sid(3), 15, 1, CompetitionTargetQuota, 0) // Fails Target, should not get Regular
+	v.AddApplication("H1", sid(4), 20, 1, CompetitionRegular, 0)     // Admitted to Regular
 
 	results := v.CalculateAdmissions()
 	admittedH1 := getAdmittedStudentIDs(results, "H1")
 
 	assert.Len(t, admittedH1, 2, "H1 should have 2 admitted students")
 	assert.Contains(t, admittedH1, sid(2)) // student2 from TargetQuota
-	assert.Contains(t, admittedH1, sid(4)) // student4 from General
+	assert.Contains(t, admittedH1, sid(4)) // student4 from Regular
 	assert.NotContains(t, admittedH1, sid(1))
 	assert.NotContains(t, admittedH1, sid(3))
 }
 
-// TestCalculateAdmissions_UnfilledQuotasAddToGeneral tests that unfilled quota spots go to General.
+// TestCalculateAdmissions_UnfilledQuotasAddToGeneral tests that unfilled quota spots go to Regular.
 func TestCalculateAdmissions_UnfilledQuotasAddToGeneral(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	// Target:1, Dedicated:1, Special:1, General:1. Total initial: 4
-	// Effective General should be 1 (base) + 2 (unfilled TQ, DQ) = 3
-	v.AddHeading("H1", Capacities{General: 1, TargetQuota: 2, DedicatedQuota: 2, SpecialQuota: 1}, "Heading 1")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	// Target:1, Dedicated:1, Special:1, Regular:1. Total initial: 4
+	// Effective Regular should be 1 (base) + 2 (unfilled TQ, DQ) = 3
+	v.AddHeading("H1", Capacities{Regular: 1, TargetQuota: 2, DedicatedQuota: 2, SpecialQuota: 1}, "Heading 1")
 
 	// Special Quota (1 spot)
-	v.AddApplication("H1", sid(1), 10, 1, CompetitionSpecialQuota) // Admitted to Special
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionSpecialQuota, 0) // Admitted to Special
 
 	// Target Quota (2 spots) - 0 applicants, 2 unfilled
 	// Dedicated Quota (2 spots) - 0 applicants, 2 unfilled
 
-	// General Competition (Base 1 + 2 TQ_unfilled + 2 DQ_unfilled = 5 effective spots)
-	v.AddApplication("H1", sid(2), 100, 1, CompetitionBVI)    // Admitted BVI
-	v.AddApplication("H1", sid(3), 50, 1, CompetitionBVI)     // Admitted BVI (better rating)
-	v.AddApplication("H1", sid(4), 10, 1, CompetitionRegular) // Admitted Regular
-	v.AddApplication("H1", sid(5), 5, 1, CompetitionRegular)  // Admitted Regular (better rating)
-	v.AddApplication("H1", sid(6), 1, 1, CompetitionRegular)  // Admitted Regular (best rating)
-	v.AddApplication("H1", sid(7), 20, 1, CompetitionRegular) // Not admitted (General full)
+	// Regular Competition (Base 1 + 2 TQ_unfilled + 2 DQ_unfilled = 5 effective spots)
+	v.AddApplication("H1", sid(2), 100, 1, CompetitionBVI, 0)    // Admitted BVI
+	v.AddApplication("H1", sid(3), 50, 1, CompetitionBVI, 0)     // Admitted BVI (better rating)
+	v.AddApplication("H1", sid(4), 10, 1, CompetitionRegular, 0) // Admitted Regular
+	v.AddApplication("H1", sid(5), 5, 1, CompetitionRegular, 0)  // Admitted Regular (better rating)
+	v.AddApplication("H1", sid(6), 1, 1, CompetitionRegular, 0)  // Admitted Regular (best rating)
+	v.AddApplication("H1", sid(7), 20, 1, CompetitionRegular, 0) // Not admitted (Regular full)
 
 	results := v.CalculateAdmissions()
 	admittedH1 := getAdmittedStudentIDs(results, "H1")
 
 	// Expected: s1 (SQ), s3 (BVI), s2 (BVI), s6 (Reg), s5 (Reg), s4 (Reg)
 	// Total 1 (SQ) + 2 (BVI) + 3 (Regular from effective general) = 6
-	// Capacities: General:1, TQ:2, DQ:2, SQ:1.
+	// Capacities: Regular:1, TQ:2, DQ:2, SQ:1.
 	// SQ: s1 (1/1 filled)
 	// TQ: 0/2 filled (2 unfilled)
 	// DQ: 0/2 filled (2 unfilled)
-	// General: Base 1 + 2 (from TQ) + 2 (from DQ) = 5 spots
+	// Regular: Base 1 + 2 (from TQ) + 2 (from DQ) = 5 spots
 	// BVI: s3 (50), s2 (100) -> both admitted
 	// Regular: s6 (1), s5 (5), s4 (10) -> all 3 admitted
 	// Total admitted: 1 (SQ) + 2 (BVI) + 3 (Regular) = 6
@@ -123,15 +123,15 @@ func TestCalculateAdmissions_UnfilledQuotasAddToGeneral(t *testing.T) {
 	assert.NotContains(t, admittedH1, sid(7))
 }
 
-// TestCalculateAdmissions_BVIvsRegular tests BVI priority over Regular in General competition.
+// TestCalculateAdmissions_BVIvsRegular tests BVI priority over Regular in Regular competition.
 func TestCalculateAdmissions_BVIvsRegular(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H1", Capacities{General: 2}, "Heading 1") // 2 General spots
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{Regular: 2}, "Heading 1") // 2 Regular spots
 
-	v.AddApplication("H1", sid(1), 200, 1, CompetitionRegular) // Regular
-	v.AddApplication("H1", sid(2), 100, 1, CompetitionBVI)     // BVI (better rating than s1, also BVI)
-	v.AddApplication("H1", sid(3), 10, 1, CompetitionRegular)  // Regular (better rating than s1)
-	v.AddApplication("H1", sid(4), 50, 1, CompetitionBVI)      // BVI (better rating than s2)
+	v.AddApplication("H1", sid(1), 200, 1, CompetitionRegular, 0) // Regular
+	v.AddApplication("H1", sid(2), 100, 1, CompetitionBVI, 0)     // BVI (better rating than s1, also BVI)
+	v.AddApplication("H1", sid(3), 10, 1, CompetitionRegular, 0)  // Regular (better rating than s1)
+	v.AddApplication("H1", sid(4), 50, 1, CompetitionBVI, 0)      // BVI (better rating than s2)
 
 	results := v.CalculateAdmissions()
 	admittedH1 := getAdmittedStudentIDs(results, "H1")
@@ -146,16 +146,16 @@ func TestCalculateAdmissions_BVIvsRegular(t *testing.T) {
 
 // TestCalculateAdmissions_StudentPriorities tests student choosing higher priority application.
 func TestCalculateAdmissions_StudentPriorities(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H1", Capacities{General: 1}, "Heading 1")
-	v.AddHeading("H2", Capacities{General: 1}, "Heading 2")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{Regular: 1}, "Heading 1")
+	v.AddHeading("H2", Capacities{Regular: 1}, "Heading 2")
 
 	// Student1: Prefers H1 (priority 1) over H2 (priority 2)
-	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular)
-	v.AddApplication("H2", sid(1), 5, 2, CompetitionRegular) // Better rating, but lower priority
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular, 0)
+	v.AddApplication("H2", sid(1), 5, 2, CompetitionRegular, 0) // Better rating, but lower priority
 
 	// Student2: Can only go to H2
-	v.AddApplication("H2", sid(2), 20, 1, CompetitionRegular)
+	v.AddApplication("H2", sid(2), 20, 1, CompetitionRegular, 0)
 
 	results := v.CalculateAdmissions()
 	admittedH1 := getAdmittedStudentIDs(results, "H1")
@@ -170,19 +170,19 @@ func TestCalculateAdmissions_StudentPriorities(t *testing.T) {
 
 // TestCalculateAdmissions_DisplacementAndReconsideration tests displacement and subsequent reconsideration.
 func TestCalculateAdmissions_DisplacementAndReconsideration(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H1", Capacities{General: 1}, "Heading 1")
-	v.AddHeading("H2", Capacities{General: 1}, "Heading 2")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{Regular: 1}, "Heading 1")
+	v.AddHeading("H2", Capacities{Regular: 1}, "Heading 2")
 
 	// Student1: H1 (Prio 1), H2 (Prio 2)
-	v.AddApplication("H1", sid(1), 100, 1, CompetitionRegular)
-	v.AddApplication("H2", sid(1), 10, 2, CompetitionRegular)
+	v.AddApplication("H1", sid(1), 100, 1, CompetitionRegular, 0)
+	v.AddApplication("H2", sid(1), 10, 2, CompetitionRegular, 0)
 
 	// Student2: H1 (Prio 1) - better rating than Student1 for H1
-	v.AddApplication("H1", sid(2), 50, 1, CompetitionRegular)
+	v.AddApplication("H1", sid(2), 50, 1, CompetitionRegular, 0)
 
 	// Student3: H2 (Prio 1) - will initially take H2
-	v.AddApplication("H2", sid(3), 20, 1, CompetitionRegular)
+	v.AddApplication("H2", sid(3), 20, 1, CompetitionRegular, 0)
 
 	// Initial state (conceptual):
 	// H1: Student1 (100) - provisional
@@ -216,49 +216,49 @@ func TestCalculateAdmissions_DisplacementAndReconsideration(t *testing.T) {
 
 // TestCalculateAdmissions_FullScenarioWithQuotasAndGeneral tests a more complex scenario.
 func TestCalculateAdmissions_FullScenarioWithQuotasAndGeneral(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
 	// H1: TQ=1, DQ=1, SQ=1, Gen=1. Total initial capacity = 4.
-	v.AddHeading("H1", Capacities{TargetQuota: 1, DedicatedQuota: 1, SpecialQuota: 1, General: 1}, "H1")
+	v.AddHeading("H1", Capacities{TargetQuota: 1, DedicatedQuota: 1, SpecialQuota: 1, Regular: 1}, "H1")
 	// H2: Gen=2
-	v.AddHeading("H2", Capacities{General: 2}, "H2")
+	v.AddHeading("H2", Capacities{Regular: 2}, "H2")
 
 	// Student Applications:
 	// S1: H1 (TQ, 10, P1), H2 (Reg, 20, P2)
-	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota)
-	v.AddApplication("H2", sid(1), 20, 2, CompetitionRegular)
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota, 0)
+	v.AddApplication("H2", sid(1), 20, 2, CompetitionRegular, 0)
 
 	// S2: H1 (TQ, 5, P1) -> better TQ for H1
-	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota)
+	v.AddApplication("H1", sid(2), 5, 1, CompetitionTargetQuota, 0)
 
 	// S3: H1 (DQ, 100, P1)
-	v.AddApplication("H1", sid(3), 100, 1, CompetitionDedicatedQuota)
+	v.AddApplication("H1", sid(3), 100, 1, CompetitionDedicatedQuota, 0)
 
 	// S4: H1 (SQ, 100, P1)
-	v.AddApplication("H1", sid(4), 100, 1, CompetitionSpecialQuota)
+	v.AddApplication("H1", sid(4), 100, 1, CompetitionSpecialQuota, 0)
 
 	// S5: H1 (BVI, 100, P1), H2 (BVI, 5, P2)
-	v.AddApplication("H1", sid(5), 100, 1, CompetitionBVI)
-	v.AddApplication("H2", sid(5), 5, 2, CompetitionBVI)
+	v.AddApplication("H1", sid(5), 100, 1, CompetitionBVI, 0)
+	v.AddApplication("H2", sid(5), 5, 2, CompetitionBVI, 0)
 
 	// S6: H1 (Reg, 10, P1)
-	v.AddApplication("H1", sid(6), 10, 1, CompetitionRegular) // Will compete for general H1
+	v.AddApplication("H1", sid(6), 10, 1, CompetitionRegular, 0) // Will compete for general H1
 
 	// S7: H2 (Reg, 10, P1)
-	v.AddApplication("H2", sid(7), 10, 1, CompetitionRegular)
+	v.AddApplication("H2", sid(7), 10, 1, CompetitionRegular, 0)
 
 	// S8: H2 (BVI, 1, P1) -> best BVI for H2
-	v.AddApplication("H2", sid(8), 1, 1, CompetitionBVI)
+	v.AddApplication("H2", sid(8), 1, 1, CompetitionBVI, 0)
 
 	// Expected H1 admissions:
 	// TQ: S2 (5) - S1 (10) is outbid for TQ, S1 will try H2.
 	// DQ: S3 (100)
 	// SQ: S4 (100)
-	// General (1 spot, no unfilled quotas): S5 (BVI, 100) beats S6 (Regular, 10)
+	// Regular (1 spot, no unfilled quotas): S5 (BVI, 100) beats S6 (Regular, 10)
 	// H1: S2, S3, S4, S5. (4 students)
 
 	// Expected H2 admissions (2 spots):
 	// S1 (Reg, 20, P2 from H1 TQ failure)
-	// S5 (BVI, 5, P2 from H1 General failure - but S5 got into H1 General, so this H2 app is moot for S5)
+	// S5 (BVI, 5, P2 from H1 Regular failure - but S5 got into H1 Regular, so this H2 app is moot for S5)
 	// S7 (Reg, 10, P1)
 	// S8 (BVI, 1, P1)
 	//
@@ -266,9 +266,9 @@ func TestCalculateAdmissions_FullScenarioWithQuotasAndGeneral(t *testing.T) {
 	// Student S2 gets H1 TQ.
 	// Student S3 gets H1 DQ.
 	// Student S4 gets H1 SQ.
-	// Student S5 applies H1 BVI (P1). H1 General has 1 spot. S5 gets it. studentBestPlacement[S5] = H1/BVI.
+	// Student S5 applies H1 BVI (P1). H1 Regular has 1 spot. S5 gets it. studentBestPlacement[S5] = H1/BVI.
 	// Student S1 applies H1 TQ (P1), rating 10. S2 (rating 5) already has it. S1 fails H1 TQ.
-	// Student S6 applies H1 Reg (P1). H1 General is full (S5). S6 fails H1 General.
+	// Student S6 applies H1 Reg (P1). H1 Regular is full (S5). S6 fails H1 Regular.
 	//
 	// Student S1 now tries H2 (Reg, 20, P2). H2 has 2 spots. S1 gets one. studentBestPlacement[S1] = H2/Reg.
 	// Student S7 applies H2 (Reg, 10, P1). H2 has 1 spot left. S7 gets it. studentBestPlacement[S7] = H2/Reg.
@@ -307,19 +307,19 @@ func TestCalculateAdmissions_FullScenarioWithQuotasAndGeneral(t *testing.T) {
 	// Check that S1 (who lost H1 TQ and then H2 Regular) is not admitted anywhere.
 	assert.NotContains(t, admittedH1, sid(1))
 	assert.NotContains(t, admittedH2, sid(1))
-	// Check S6 (lost H1 General)
+	// Check S6 (lost H1 Regular)
 	assert.NotContains(t, admittedH1, sid(6))
 }
 
 // TestCalculateAdmissions_QuitStudent tests that a quit student is not admitted.
 func TestCalculateAdmissions_QuitStudent(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H1", Capacities{General: 1}, "H1")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{Regular: 1}, "H1")
 
-	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular)
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular, 0)
 	v.SetQuit(sid(1)) // Student1 quits
 
-	v.AddApplication("H1", sid(2), 20, 1, CompetitionRegular) // Student2 should get the spot
+	v.AddApplication("H1", sid(2), 20, 1, CompetitionRegular, 0) // Student2 should get the spot
 
 	results := v.CalculateAdmissions()
 	admittedH1 := getAdmittedStudentIDs(results, "H1")
@@ -331,12 +331,12 @@ func TestCalculateAdmissions_QuitStudent(t *testing.T) {
 
 // TestCalculateAdmissions_OrderOfResults tests that results are sorted by heading code.
 func TestCalculateAdmissions_OrderOfResults(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H2", Capacities{General: 1}, "Heading 2")
-	v.AddHeading("H1", Capacities{General: 1}, "Heading 1") // Added out of order
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H2", Capacities{Regular: 1}, "Heading 2")
+	v.AddHeading("H1", Capacities{Regular: 1}, "Heading 1") // Added out of order
 
-	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular)
-	v.AddApplication("H2", sid(2), 10, 1, CompetitionRegular)
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular, 0)
+	v.AddApplication("H2", sid(2), 10, 1, CompetitionRegular, 0)
 
 	results := v.CalculateAdmissions()
 
@@ -351,11 +351,11 @@ func TestCalculateAdmissions_OrderOfResults(t *testing.T) {
 // TestCalculateAdmissions_SameRatingDifferentCompetitionTypeInGeneral
 // Tests that BVI is preferred over Regular even if Regular has "better" rating number.
 func TestCalculateAdmissions_SameRatingDifferentCompetitionTypeInGeneral(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H1", Capacities{General: 1}, "H1") // Only one spot
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{Regular: 1}, "H1") // Only one spot
 
-	v.AddApplication("H1", sid(1), 1, 1, CompetitionRegular) // Best possible rating, but Regular
-	v.AddApplication("H1", sid(2), 999, 1, CompetitionBVI)   // Worst possible rating, but BVI
+	v.AddApplication("H1", sid(1), 1, 1, CompetitionRegular, 0) // Best possible rating, but Regular
+	v.AddApplication("H1", sid(2), 999, 1, CompetitionBVI, 0)   // Worst possible rating, but BVI
 
 	results := v.CalculateAdmissions()
 	admittedH1 := getAdmittedStudentIDs(results, "H1")
@@ -369,15 +369,15 @@ func TestCalculateAdmissions_SameRatingDifferentCompetitionTypeInGeneral(t *test
 // Ensures that if a student applies for a quota and it's full (even if they are outranked),
 // they don't automatically compete for general spots for THAT SAME application.
 func TestCalculateAdmissions_QuotaStudentsDoNotCompeteForGeneralIfQuotaFull(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H1", Capacities{TargetQuota: 1, General: 1}, "H1")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{TargetQuota: 1, Regular: 1}, "H1")
 
 	// S1 fills the TargetQuota
-	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota)
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota, 0)
 	// S2 applies for TargetQuota but S1 is better or already there. S2 should NOT get general for this app.
-	v.AddApplication("H1", sid(2), 20, 1, CompetitionTargetQuota)
-	// S3 applies for General and should get it.
-	v.AddApplication("H1", sid(3), 1, 1, CompetitionRegular)
+	v.AddApplication("H1", sid(2), 20, 1, CompetitionTargetQuota, 0)
+	// S3 applies for Regular and should get it.
+	v.AddApplication("H1", sid(3), 1, 1, CompetitionRegular, 0)
 
 	results := v.CalculateAdmissions()
 	admittedH1 := getAdmittedStudentIDs(results, "H1")
@@ -392,30 +392,30 @@ func TestCalculateAdmissions_QuotaStudentsDoNotCompeteForGeneralIfQuotaFull(t *t
 
 // TestCalculateAdmissions_ComplexPrioritiesAndDisplacement
 func TestCalculateAdmissions_ComplexPrioritiesAndDisplacement(t *testing.T) {
-	v := NewVarsityCalculator("TEST_VARSITY")
-	v.AddHeading("H_HIGH_CAP", Capacities{General: 3}, "High Capacity Heading")
-	v.AddHeading("H_LOW_CAP_PRIO1", Capacities{General: 1}, "Low Cap Prio 1 Heading")
-	v.AddHeading("H_LOW_CAP_PRIO2", Capacities{General: 1}, "Low Cap Prio 2 Heading")
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H_HIGH_CAP", Capacities{Regular: 3}, "High Capacity Heading")
+	v.AddHeading("H_LOW_CAP_PRIO1", Capacities{Regular: 1}, "Low Cap Prio 1 Heading")
+	v.AddHeading("H_LOW_CAP_PRIO2", Capacities{Regular: 1}, "Low Cap Prio 2 Heading")
 
 	// S1:
 	// 1. H_LOW_CAP_PRIO1 (Rating 100, P1)
 	// 2. H_HIGH_CAP (Rating 10, P2)
-	v.AddApplication("H_LOW_CAP_PRIO1", sid(1), 100, 1, CompetitionRegular)
-	v.AddApplication("H_HIGH_CAP", sid(1), 10, 2, CompetitionRegular)
+	v.AddApplication("H_LOW_CAP_PRIO1", sid(1), 100, 1, CompetitionRegular, 0)
+	v.AddApplication("H_HIGH_CAP", sid(1), 10, 2, CompetitionRegular, 0)
 
 	// S2:
 	// 1. H_LOW_CAP_PRIO1 (Rating 50, P1) -> Will take this spot from S1
-	v.AddApplication("H_LOW_CAP_PRIO1", sid(2), 50, 1, CompetitionRegular)
+	v.AddApplication("H_LOW_CAP_PRIO1", sid(2), 50, 1, CompetitionRegular, 0)
 
 	// S3:
 	// 1. H_HIGH_CAP (Rating 20, P1)
-	v.AddApplication("H_HIGH_CAP", sid(3), 20, 1, CompetitionRegular)
+	v.AddApplication("H_HIGH_CAP", sid(3), 20, 1, CompetitionRegular, 0)
 
 	// S4:
 	// 1. H_LOW_CAP_PRIO2 (Rating 10, P1)
 	// 2. H_HIGH_CAP (Rating 5, P2)
-	v.AddApplication("H_LOW_CAP_PRIO2", sid(4), 10, 1, CompetitionRegular)
-	v.AddApplication("H_HIGH_CAP", sid(4), 5, 2, CompetitionRegular)
+	v.AddApplication("H_LOW_CAP_PRIO2", sid(4), 10, 1, CompetitionRegular, 0)
+	v.AddApplication("H_HIGH_CAP", sid(4), 5, 2, CompetitionRegular, 0)
 
 	// Expected outcome based on students prioritizing their highest-numbered priority applications
 	// and displacements occurring based on rating. The core logic is that once a student

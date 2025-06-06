@@ -2,8 +2,8 @@ package main
 
 import (
 	"analabit/core"
-	"analabit/source"
-	"analabit/source/hse"
+	"analabit/core/source"
+	"analabit/core/source/hse"
 	"fmt"
 	"log"
 	"sync"
@@ -16,11 +16,11 @@ func main() {
 // PrintHseFileHeadingSourceData prints the sample heading source data for HSE.
 func PrintHseFileHeadingSourceData() {
 	s := hse.FileHeadingSource{
-		RCListPath:        "./sample_data/hse/rc.xlsx",
-		TQListPath:        "./sample_data/hse/tq.xlsx",
-		DQListPath:        "./sample_data/hse/dq.xlsx",
-		SQListPath:        "./sample_data/hse/sq.xlsx",
-		BListPath:         "./sample_data/hse/bvi.xlsx",
+		RCListPath:        "./sample_data/main/rc.xlsx",
+		TQListPath:        "./sample_data/main/tq.xlsx",
+		DQListPath:        "./sample_data/main/dq.xlsx",
+		SQListPath:        "./sample_data/main/sq.xlsx",
+		BListPath:         "./sample_data/main/bvi.xlsx",
 		HeadingCapacities: core.Capacities{25, 2, 2, 2}, // Arbitrary capacity, as it's part of the struct
 	}
 
@@ -34,7 +34,7 @@ func PrintHseFileHeadingSourceData() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		loadErr = s.LoadTo(headingsChan, applicationsChan)
+		loadErr = s.LoadTo(nil)
 	}()
 
 	// Goroutines to process data from channels

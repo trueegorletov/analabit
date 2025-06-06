@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 )
 
 // Capacities hold the quotas and capacities of a heading for different competition types.
 // If any quota is not used fully, the remaining places are available for Regular and BVI competitors.
-// Max num of students who can be admitted to a heading is the sum of all quotas and the General capacity.
+// Max num of students who can be admitted to a heading is the sum of all quotas and the Regular capacity.
 // Max num of students who can be admitted using each quota is limited by the corresponding field in Capacities.
 // If a student fails to be admitted to a heading using their quota, they fail at all;
-// quotas don't fall back to each other nor to the General capacity.
+// quotas don't fall back to each other nor to the Regular capacity.
 type Capacities struct {
-	General        int // Guaranteed number of places for Regular & BVI competitors
+	Regular        int // Guaranteed number of places for Regular & BVI competitors
 	TargetQuota    int
 	DedicatedQuota int
 	SpecialQuota   int
@@ -23,18 +24,18 @@ type Capacities struct {
 
 func (c Capacities) String() string {
 	return fmt.Sprintf("[S%d/D%d/T%d/G%d]",
-		c.SpecialQuota, c.DedicatedQuota, c.TargetQuota, c.General,
+		c.SpecialQuota, c.DedicatedQuota, c.TargetQuota, c.Regular,
 	)
 }
 
 // PrintRvalue returns a string representation of the Capacities struct as a Go literal.
 func (c Capacities) PrintRvalue() string {
 	return fmt.Sprintf(`Capacities{
-			General:        %d,
+			Regular:        %d,
 			TargetQuota:    %d,
 			DedicatedQuota: %d,
 			SpecialQuota:   %d,
-		}`, c.General, c.TargetQuota, c.DedicatedQuota, c.SpecialQuota)
+		}`, c.Regular, c.TargetQuota, c.DedicatedQuota, c.SpecialQuota)
 }
 
 // maxInt returns the greater of two integers.
@@ -85,13 +86,39 @@ type Application struct {
 	priority int
 	// The type of competition for this application.
 	competitionType Competition
+	// The score of the student in this application, used for further uploading
+	score int
+}
+
+func (a *Application) RatingPlace() int {
+	return a.ratingPlace
+}
+
+func (a *Application) Priority() int {
+	return a.priority
+}
+
+func (a *Application) CompetitionType() Competition {
+	return a.competitionType
+}
+
+func (a *Application) HeadingCode() string {
+	return a.heading.code
+}
+
+func (a *Application) StudentID() string {
+	return a.student.id
+}
+
+func (a *Application) Score() int {
+	return a.score
 }
 
 // Student represents a student in the system.
 type Student struct {
 	mu sync.Mutex
 	// Unique identifier of the student.
-	Id string // Exported field
+	id string // Exported field
 	// List of applications made by the student, sorted by priority (ascending, e.g., priority 1 first).
 	applications []Application
 	// If true, the student has withdrawn their application from this varsity and is ignored in calculations.
@@ -99,6 +126,18 @@ type Student struct {
 	// If true, the student has submitted their original documents for this varsity. Students who did can't be
 	// thrown out when simulating percentage-drain of original certificates
 	originalSubmitted bool
+}
+
+func (s *Student) Applications() []Application {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.applications
+}
+
+func (s *Student) ID() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.id // Exported field
 }
 
 // application retrieves the student's highest priority application details for a specific heading.
@@ -118,7 +157,7 @@ func (s *Student) application(heading *Heading) Application {
 }
 
 // addApplication adds a new application for the student and keeps the applications list sorted by priority.
-func (s *Student) addApplication(heading *Heading, ratingPlace int, priority int, competitionType Competition) {
+func (s *Student) addApplication(heading *Heading, ratingPlace int, priority int, competitionType Competition, score int) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -128,6 +167,7 @@ func (s *Student) addApplication(heading *Heading, ratingPlace int, priority int
 		ratingPlace:     ratingPlace,
 		priority:        priority,
 		competitionType: competitionType,
+		score:           score,
 	}
 	s.applications = append(s.applications, app)
 	// Ensure applications are sorted by priority (ascending).
@@ -144,7 +184,7 @@ type Heading struct {
 	varsity *VarsityCalculator
 	// Maximum number of students that can be admitted to this heading using various quotas and general competition.
 	capacities Capacities
-	// A human-readable name or identifier for the heading.
+	// A human-readable code or identifier for the heading.
 	prettyName string
 }
 
@@ -153,7 +193,7 @@ func (h *Heading) Capacities() Capacities {
 	return h.capacities
 }
 
-// PrettyName returns the human-readable name of the heading.
+// PrettyName returns the human-readable code of the heading.
 func (h *Heading) PrettyName() string {
 	return h.prettyName
 }
@@ -161,6 +201,18 @@ func (h *Heading) PrettyName() string {
 // Code returns the unique identifier of the heading.
 func (h *Heading) Code() string {
 	return h.code
+}
+
+func (h *Heading) FullCode() string {
+	return fmt.Sprintf("%s:%s", h.varsity.code, h.code)
+}
+
+func (h *Heading) VarsityCode() string {
+	return h.varsity.code
+}
+
+func (h *Heading) VarsityPrettyName() string {
+	return h.varsity.prettyName
 }
 
 // outscores determines if application app1 is better than application app2 for this heading.
@@ -262,17 +314,19 @@ func removeStudentFromOldPlacement(
 }
 
 type VarsityCalculator struct {
-	name     string
-	students sync.Map // Stores *Student, keyed by student ID (string)
-	headings sync.Map // Stores *Heading, keyed by heading code (string)
+	code       string
+	prettyName string
+	students   sync.Map // Stores *Student, keyed by student ID (string)
+	headings   sync.Map // Stores *Heading, keyed by heading code (string)
 }
 
 // NewVarsityCalculator creates a new varsity calculator.
-func NewVarsityCalculator(name string) *VarsityCalculator {
+func NewVarsityCalculator(code, prettyName string) *VarsityCalculator {
 	return &VarsityCalculator{
-		name:     name,
-		students: sync.Map{},
-		headings: sync.Map{},
+		code:       strings.TrimSpace(code),
+		prettyName: strings.TrimSpace(prettyName),
+		students:   sync.Map{},
+		headings:   sync.Map{},
 	}
 }
 
@@ -280,7 +334,7 @@ func NewVarsityCalculator(name string) *VarsityCalculator {
 func (v *VarsityCalculator) student(id string) *Student {
 	s, ok := v.students.Load(id)
 	if !ok {
-		newStudent := &Student{Id: id, applications: make([]Application, 0)} // Use exported Id
+		newStudent := &Student{id: id, applications: make([]Application, 0)} // Use exported ID
 		s, _ = v.students.LoadOrStore(id, newStudent)
 	}
 	return s.(*Student)
@@ -288,6 +342,9 @@ func (v *VarsityCalculator) student(id string) *Student {
 
 // AddHeading adds a new heading to the varsity.
 func (v *VarsityCalculator) AddHeading(code string, capacities Capacities, prettyName string) {
+	code = strings.TrimSpace(code)
+	prettyName = strings.TrimSpace(prettyName)
+
 	heading := &Heading{
 		code:       code,
 		varsity:    v, // Link back to varsity
@@ -298,13 +355,15 @@ func (v *VarsityCalculator) AddHeading(code string, capacities Capacities, prett
 }
 
 // AddApplication adds a student's application to a specific heading.
-func (v *VarsityCalculator) AddApplication(headingCode string, studentID string, ratingPlace int, priority int, competitionType Competition) {
+func (v *VarsityCalculator) AddApplication(headingCode string, studentID string, ratingPlace int, priority int, competitionType Competition, score int) {
+	headingCode = strings.TrimSpace(headingCode)
+
 	h, ok := v.headings.Load(headingCode)
 	if !ok {
 		panic(fmt.Sprintf("heading with code %s not found", headingCode))
 	}
 	s := v.student(studentID)
-	s.addApplication(h.(*Heading), ratingPlace, priority, competitionType)
+	s.addApplication(h.(*Heading), ratingPlace, priority, competitionType, score)
 }
 
 // SetQuit marks a student as having quit.
@@ -333,7 +392,7 @@ func (v *VarsityCalculator) GetStudents() []*Student {
 	})
 	// Sort students by ID for deterministic behavior, although not strictly required by all logic
 	sort.Slice(students, func(i, j int) bool {
-		return students[i].Id < students[j].Id // Use exported Id
+		return students[i].id < students[j].id // Use exported ID
 	})
 	return students
 }
@@ -375,7 +434,7 @@ func (v *VarsityCalculator) GetStudents() []*Student {
 //   - The current applicant is added to the quota list (sorted by ratingPlace), and their `studentBestPlacement` is updated.
 //   - `madeChangeInIteration` is set to true.
 //   - The algorithm breaks from processing this student's lower-priority applications, as they have found their best possible placement for now.
-//   - General Competition Applications (BVI, Regular):
+//   - Regular Competition Applications (BVI, Regular):
 //   - The effective general capacity is calculated by summing the base general capacity and any unfilled spots
 //     from all quota types for that heading.
 //   - If there's space in the effective general capacity, or if the current applicant outscores
@@ -519,7 +578,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 					unfilledQuotaPlaces += maxInt(0, targetHeading.capacities.TargetQuota-len(currentHeadingState.quotaAdmitted[CompetitionTargetQuota]))
 					unfilledQuotaPlaces += maxInt(0, targetHeading.capacities.DedicatedQuota-len(currentHeadingState.quotaAdmitted[CompetitionDedicatedQuota]))
 					unfilledQuotaPlaces += maxInt(0, targetHeading.capacities.SpecialQuota-len(currentHeadingState.quotaAdmitted[CompetitionSpecialQuota]))
-					effectiveGeneralCapacity := targetHeading.capacities.General + unfilledQuotaPlaces
+					effectiveGeneralCapacity := targetHeading.capacities.Regular + unfilledQuotaPlaces
 
 					generalAdmittedAppList := currentHeadingState.generalAdmitted
 
