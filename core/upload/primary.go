@@ -11,11 +11,10 @@ import (
 	"log/slog"
 )
 
-func Do(ctx context.Context, client *ent.Client, origin *core.VarsityCalculator, results []core.CalculationResult) error {
-	tx := &transaction{
-		origin:       origin,
-		calculations: results,
-		client:       client,
+func Primary(ctx context.Context, client *ent.Client, origin *core.VarsityCalculator, results []core.CalculationResult) error {
+	tx := &helper{
+		origin: origin,
+		client: client,
 	}
 
 	if err := tx.initMetadata(ctx); err != nil {
@@ -23,26 +22,25 @@ func Do(ctx context.Context, client *ent.Client, origin *core.VarsityCalculator,
 	}
 
 	if err := tx.initTx(ctx); err != nil {
-		return fmt.Errorf("failed to initialize transaction: %w", err)
+		return fmt.Errorf("failed to initialize helper: %w", err)
 	}
 
-	if err := tx.do(ctx); err != nil {
+	if err := tx.doUploadPrimary(ctx, results); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-type transaction struct {
-	origin       *core.VarsityCalculator
-	calculations []core.CalculationResult
-	client       *ent.Client
+type helper struct {
+	origin *core.VarsityCalculator
+	client *ent.Client
 
 	metadata *ent.Metadata
 	tx       *ent.Tx
 }
 
-func (u *transaction) initMetadata(ctx context.Context) error {
+func (u *helper) initMetadata(ctx context.Context) error {
 	if u.metadata != nil {
 		return fmt.Errorf("metadata is already initialized")
 	}
@@ -61,7 +59,7 @@ func (u *transaction) initMetadata(ctx context.Context) error {
 	}
 
 	if metadata.UploadingLock {
-		return fmt.Errorf("uploading lock is active, cannot proceed with transaction")
+		return fmt.Errorf("uploading lock is active, cannot proceed with helper")
 	}
 
 	u.metadata = metadata
@@ -72,6 +70,7 @@ func createMetadata(ctx context.Context, client *ent.Client) (*ent.Metadata, err
 	metadata, err := client.Metadata.Create().
 		SetLastApplicationsIteration(0).
 		SetLastCalculationsIteration(0).
+		SetLastDrainedResultsIteration(0).
 		SetUploadingLock(false).
 		Save(ctx)
 
@@ -82,56 +81,55 @@ func createMetadata(ctx context.Context, client *ent.Client) (*ent.Metadata, err
 	return metadata, nil
 }
 
-func (u *transaction) initTx(ctx context.Context) error {
+func (u *helper) initTx(ctx context.Context) error {
 	if u.tx != nil {
-		return fmt.Errorf("transaction is already initialized")
+		return fmt.Errorf("helper is already initialized")
 	}
 
 	tx, err := u.client.Tx(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to start transaction: %w", err)
+		return fmt.Errorf("failed to start helper: %w", err)
 	}
 	u.tx = tx
-	slog.Info("transaction initialized successfully")
+	slog.Info("helper initialized successfully")
 	return nil
 }
 
-func (u *transaction) do(ctx context.Context) (err error) {
+func (u *helper) doUploadPrimary(ctx context.Context, calculations []core.CalculationResult) (err error) {
 	if err := u.initMetadata(ctx); err != nil {
 		return err
 	}
 
 	if err := utils.WithTx(ctx, u.client, func(tx *ent.Tx) error {
-		return u.upload(ctx, tx.Client())
+		return u.uploadPrimary(ctx, tx.Client(), calculations)
 	}); err != nil {
 		return err
 	}
 
-	slog.Info("upload transaction completed successfully")
 	return nil
 }
 
-func (u *transaction) lockMetadata(ctx context.Context) (err error) {
+func (u *helper) lockMetadata(ctx context.Context) (err error) {
 	u.metadata, err = u.metadata.Update().SetUploadingLock(true).Save(ctx)
 	return
 }
 
-func (u *transaction) unlockMetadata(ctx context.Context) (err error) {
+func (u *helper) unlockMetadata(ctx context.Context) (err error) {
 	u.metadata, err = u.metadata.Update().SetUploadingLock(false).Save(ctx)
 	return
 }
 
-func (u *transaction) upload(ctx context.Context, client *ent.Client) error {
+func (u *helper) uploadPrimary(ctx context.Context, client *ent.Client, calculations []core.CalculationResult) error {
 	if err := u.lockMetadata(ctx); err != nil {
 		return fmt.Errorf("failed to lock metadata: %w", err)
 	}
 
 	if err := u.uploadApplications(ctx, client); err != nil {
-		return fmt.Errorf("failed to upload applications: %w", err)
+		return fmt.Errorf("failed to uploadPrimary applications: %w", err)
 	}
 
-	if err := u.uploadCalculations(ctx, client); err != nil {
-		return fmt.Errorf("failed to upload calculations: %w", err)
+	if err := u.uploadCalculations(ctx, client, calculations); err != nil {
+		return fmt.Errorf("failed to uploadPrimary calculations: %w", err)
 	}
 
 	if err := u.unlockMetadata(ctx); err != nil {
@@ -141,22 +139,30 @@ func (u *transaction) upload(ctx context.Context, client *ent.Client) error {
 	return nil
 }
 
-func (u *transaction) uploadApplications(ctx context.Context, client *ent.Client) error {
+func (u *helper) uploadApplications(ctx context.Context, client *ent.Client) error {
 	nextIteration := u.metadata.LastApplicationsIteration + 1
 
-	for _, student := range u.origin.GetStudents() {
+	for _, student := range u.origin.Students() {
 		applications := student.Applications()
 
 		for i := range applications {
 			a := &applications[i]
 
-			err := client.Application.Create().
+			h, err := u.heading(a.Heading())
+
+			if err != nil {
+				return err
+			}
+
+			err = client.Application.Create().
 				SetStudentID(a.StudentID()).
 				SetPriority(a.Priority()).
 				SetCompetitionType(a.CompetitionType()).
 				SetRatingPlace(a.RatingPlace()).
 				SetScore(a.Score()).
-				SetIteration(nextIteration).Exec(ctx)
+				SetIteration(nextIteration).
+				SetHeading(h).
+				Exec(ctx)
 
 			if err != nil {
 				return fmt.Errorf("failed to create application for student %s: %w", a.StudentID(), err)
@@ -175,25 +181,16 @@ func (u *transaction) uploadApplications(ctx context.Context, client *ent.Client
 	return nil
 }
 
-func (u *transaction) uploadCalculations(ctx context.Context, client *ent.Client) error {
+func (u *helper) uploadCalculations(ctx context.Context, client *ent.Client, calculations []core.CalculationResult) error {
 	nextIteration := u.metadata.LastCalculationsIteration + 1
 
-	for i := range u.calculations {
-		result := &u.calculations[i]
+	for i := range calculations {
+		result := &calculations[i]
 
-		h, err := client.Heading.Query().Where(
-			heading.Code(result.Heading.FullCode())).First(ctx)
+		h, err := u.heading(result.Heading)
 
-		if err != nil && !ent.IsNotFound(err) {
-			return fmt.Errorf("failed to query heading %s: %w", result.Heading.FullCode(), err)
-		}
-
-		if h == nil {
-			h, err = u.createHeading(ctx, client, result.Heading)
-
-			if err != nil {
-				return err
-			}
+		if err != nil {
+			return err
 		}
 
 		for j, student := range result.Admitted {
@@ -224,7 +221,30 @@ func (u *transaction) uploadCalculations(ctx context.Context, client *ent.Client
 	return nil
 }
 
-func (u *transaction) createHeading(ctx context.Context, client *ent.Client, h *core.Heading) (*ent.Heading, error) {
+func (u *helper) heading(h *core.Heading) (*ent.Heading, error) {
+	if h == nil {
+		return nil, fmt.Errorf("heading is nil")
+	}
+
+	ctx := context.Background()
+	client := u.client
+
+	// Try to find the heading by its full code
+	existingHeading, err := client.Heading.Query().Where(heading.Code(h.FullCode())).First(ctx)
+
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, fmt.Errorf("failed to query heading %s: %w", h.FullCode(), err)
+	}
+
+	if existingHeading != nil {
+		return existingHeading, nil
+	}
+
+	// If not found, create a new heading
+	return u.createHeading(ctx, client, h)
+}
+
+func (u *helper) createHeading(ctx context.Context, client *ent.Client, h *core.Heading) (*ent.Heading, error) {
 	v, err := client.Varsity.Query().Where(varsity.Code(h.VarsityCode())).First(ctx)
 
 	if err != nil && !ent.IsNotFound(err) {
@@ -258,7 +278,7 @@ func (u *transaction) createHeading(ctx context.Context, client *ent.Client, h *
 	return save, nil
 }
 
-func (u *transaction) createVarsity(ctx context.Context, client *ent.Client, code, prettyName string) (*ent.Varsity, error) {
+func (u *helper) createVarsity(ctx context.Context, client *ent.Client, code, prettyName string) (*ent.Varsity, error) {
 	save, err := client.Varsity.Create().
 		SetCode(code).
 		SetName(prettyName).

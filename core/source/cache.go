@@ -6,16 +6,16 @@ import (
 )
 
 type VarsityDataCache struct {
-	Definition   *VarsityDefinition
-	Headings     []*HeadingData
-	Applications []*ApplicationData
+	Definition        *VarsityDefinition
+	HeadingsCache     []*HeadingData
+	ApplicationsCache []*ApplicationData
 }
 
 func NewVarsityDataCache(definition *VarsityDefinition) *VarsityDataCache {
 	return &VarsityDataCache{
-		Definition:   definition,
-		Headings:     make([]*HeadingData, 0),
-		Applications: make([]*ApplicationData, 0),
+		Definition:        definition,
+		HeadingsCache:     make([]*HeadingData, 0),
+		ApplicationsCache: make([]*ApplicationData, 0),
 	}
 }
 
@@ -23,19 +23,19 @@ func (c *VarsityDataCache) SaveHeadingData(heading *HeadingData) {
 	if heading == nil {
 		return
 	}
-	c.Headings = append(c.Headings, heading)
+	c.HeadingsCache = append(c.HeadingsCache, heading)
 }
 
 func (c *VarsityDataCache) SaveApplicationData(application *ApplicationData) {
 	if application == nil {
 		return
 	}
-	c.Applications = append(c.Applications, application)
+	c.ApplicationsCache = append(c.ApplicationsCache, application)
 }
 
 func (c *VarsityDataCache) Reset() {
-	c.Headings = nil
-	c.Applications = nil
+	c.HeadingsCache = nil
+	c.ApplicationsCache = nil
 }
 
 func SerializeList(caches []*VarsityDataCache, w io.Writer) error {

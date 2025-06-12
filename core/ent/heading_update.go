@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
+	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/predicate"
 	"analabit/core/ent/varsity"
@@ -183,6 +184,21 @@ func (hu *HeadingUpdate) AddCalculations(c ...*Calculation) *HeadingUpdate {
 	return hu.AddCalculationIDs(ids...)
 }
 
+// AddDrainedResultIDs adds the "drained_results" edge to the DrainedResult entity by IDs.
+func (hu *HeadingUpdate) AddDrainedResultIDs(ids ...int) *HeadingUpdate {
+	hu.mutation.AddDrainedResultIDs(ids...)
+	return hu
+}
+
+// AddDrainedResults adds the "drained_results" edges to the DrainedResult entity.
+func (hu *HeadingUpdate) AddDrainedResults(d ...*DrainedResult) *HeadingUpdate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return hu.AddDrainedResultIDs(ids...)
+}
+
 // Mutation returns the HeadingMutation object of the builder.
 func (hu *HeadingUpdate) Mutation() *HeadingMutation {
 	return hu.mutation
@@ -234,6 +250,27 @@ func (hu *HeadingUpdate) RemoveCalculations(c ...*Calculation) *HeadingUpdate {
 		ids[i] = c[i].ID
 	}
 	return hu.RemoveCalculationIDs(ids...)
+}
+
+// ClearDrainedResults clears all "drained_results" edges to the DrainedResult entity.
+func (hu *HeadingUpdate) ClearDrainedResults() *HeadingUpdate {
+	hu.mutation.ClearDrainedResults()
+	return hu
+}
+
+// RemoveDrainedResultIDs removes the "drained_results" edge to DrainedResult entities by IDs.
+func (hu *HeadingUpdate) RemoveDrainedResultIDs(ids ...int) *HeadingUpdate {
+	hu.mutation.RemoveDrainedResultIDs(ids...)
+	return hu
+}
+
+// RemoveDrainedResults removes "drained_results" edges to DrainedResult entities.
+func (hu *HeadingUpdate) RemoveDrainedResults(d ...*DrainedResult) *HeadingUpdate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return hu.RemoveDrainedResultIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -432,6 +469,51 @@ func (hu *HeadingUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if hu.mutation.DrainedResultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   heading.DrainedResultsTable,
+			Columns: []string{heading.DrainedResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(drainedresult.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := hu.mutation.RemovedDrainedResultsIDs(); len(nodes) > 0 && !hu.mutation.DrainedResultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   heading.DrainedResultsTable,
+			Columns: []string{heading.DrainedResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(drainedresult.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := hu.mutation.DrainedResultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   heading.DrainedResultsTable,
+			Columns: []string{heading.DrainedResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(drainedresult.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, hu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{heading.Label}
@@ -605,6 +687,21 @@ func (huo *HeadingUpdateOne) AddCalculations(c ...*Calculation) *HeadingUpdateOn
 	return huo.AddCalculationIDs(ids...)
 }
 
+// AddDrainedResultIDs adds the "drained_results" edge to the DrainedResult entity by IDs.
+func (huo *HeadingUpdateOne) AddDrainedResultIDs(ids ...int) *HeadingUpdateOne {
+	huo.mutation.AddDrainedResultIDs(ids...)
+	return huo
+}
+
+// AddDrainedResults adds the "drained_results" edges to the DrainedResult entity.
+func (huo *HeadingUpdateOne) AddDrainedResults(d ...*DrainedResult) *HeadingUpdateOne {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return huo.AddDrainedResultIDs(ids...)
+}
+
 // Mutation returns the HeadingMutation object of the builder.
 func (huo *HeadingUpdateOne) Mutation() *HeadingMutation {
 	return huo.mutation
@@ -656,6 +753,27 @@ func (huo *HeadingUpdateOne) RemoveCalculations(c ...*Calculation) *HeadingUpdat
 		ids[i] = c[i].ID
 	}
 	return huo.RemoveCalculationIDs(ids...)
+}
+
+// ClearDrainedResults clears all "drained_results" edges to the DrainedResult entity.
+func (huo *HeadingUpdateOne) ClearDrainedResults() *HeadingUpdateOne {
+	huo.mutation.ClearDrainedResults()
+	return huo
+}
+
+// RemoveDrainedResultIDs removes the "drained_results" edge to DrainedResult entities by IDs.
+func (huo *HeadingUpdateOne) RemoveDrainedResultIDs(ids ...int) *HeadingUpdateOne {
+	huo.mutation.RemoveDrainedResultIDs(ids...)
+	return huo
+}
+
+// RemoveDrainedResults removes "drained_results" edges to DrainedResult entities.
+func (huo *HeadingUpdateOne) RemoveDrainedResults(d ...*DrainedResult) *HeadingUpdateOne {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return huo.RemoveDrainedResultIDs(ids...)
 }
 
 // Where appends a list predicates to the HeadingUpdate builder.
@@ -877,6 +995,51 @@ func (huo *HeadingUpdateOne) sqlSave(ctx context.Context) (_node *Heading, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(calculation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if huo.mutation.DrainedResultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   heading.DrainedResultsTable,
+			Columns: []string{heading.DrainedResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(drainedresult.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := huo.mutation.RemovedDrainedResultsIDs(); len(nodes) > 0 && !huo.mutation.DrainedResultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   heading.DrainedResultsTable,
+			Columns: []string{heading.DrainedResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(drainedresult.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := huo.mutation.DrainedResultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   heading.DrainedResultsTable,
+			Columns: []string{heading.DrainedResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(drainedresult.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

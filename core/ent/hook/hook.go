@@ -32,6 +32,18 @@ func (f CalculationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CalculationMutation", m)
 }
 
+// The DrainedResultFunc type is an adapter to allow the use of ordinary
+// function as DrainedResult mutator.
+type DrainedResultFunc func(context.Context, *ent.DrainedResultMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DrainedResultFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.DrainedResultMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DrainedResultMutation", m)
+}
+
 // The HeadingFunc type is an adapter to allow the use of ordinary
 // function as Heading mutator.
 type HeadingFunc func(context.Context, *ent.HeadingMutation) (ent.Value, error)
@@ -45,7 +57,7 @@ func (f HeadingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 }
 
 // The MetadataFunc type is an adapter to allow the use of ordinary
-// function as metadata mutator.
+// function as Metadata mutator.
 type MetadataFunc func(context.Context, *ent.MetadataMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).

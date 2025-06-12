@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+	"log" // Added import
+	"log/slog"
 	"math/rand"
 	"sort"
 	"strings"
@@ -102,8 +104,8 @@ func (a *Application) CompetitionType() Competition {
 	return a.competitionType
 }
 
-func (a *Application) HeadingCode() string {
-	return a.heading.code
+func (a *Application) Heading() *Heading {
+	return a.heading
 }
 
 func (a *Application) StudentID() string {
@@ -126,6 +128,10 @@ type Student struct {
 	// If true, the student has submitted their original documents for this varsity. Students who did can't be
 	// thrown out when simulating percentage-drain of original certificates
 	originalSubmitted bool
+}
+
+func (s *Student) Quit() bool {
+	return s.quit
 }
 
 func (s *Student) Applications() []Application {
@@ -193,6 +199,14 @@ func (h *Heading) Capacities() Capacities {
 	return h.capacities
 }
 
+func (h *Heading) TotalCapacity() int {
+	// Total capacity is the sum of all quotas and the Regular capacity.
+	return h.capacities.Regular +
+		h.capacities.TargetQuota +
+		h.capacities.DedicatedQuota +
+		h.capacities.SpecialQuota
+}
+
 // PrettyName returns the human-readable code of the heading.
 func (h *Heading) PrettyName() string {
 	return h.prettyName
@@ -217,7 +231,7 @@ func (h *Heading) VarsityPrettyName() string {
 
 // outscores determines if application app1 is better than application app2 for this heading.
 // A lower ratingPlace is considered better.
-// Applications of better competition type beat applications of any lower one.
+// ApplicationsCache of better competition type beat applications of any lower one.
 func (h *Heading) outscores(app1 Application, app2 Application) bool {
 	// First, compare competition types
 	if app1.competitionType < app2.competitionType {
@@ -239,6 +253,40 @@ type CalculationResult struct {
 	Heading *Heading // Changed to uppercase for export
 	// List of students admitted to the heading, sorted according to admission criteria (e.g., quota, BVI, Regular, then rating).
 	Admitted []*Student // Changed to uppercase for export
+}
+
+func (r *CalculationResult) PassingScore() (int, error) {
+	if len(r.Admitted) == 0 {
+		return 0, fmt.Errorf("no students admitted for heading %s", r.Heading.FullCode())
+	}
+
+	// return score of the last admitted student with heading code == r's heading code
+	lastAdmitted := r.Admitted[len(r.Admitted)-1]
+
+	for _, app := range lastAdmitted.applications {
+		if app.heading.FullCode() == r.Heading.FullCode() {
+			return app.score, nil
+		}
+	}
+
+	return 0, fmt.Errorf("no needle application found for last admitted student %s in heading %s", lastAdmitted.ID(), r.Heading.FullCode())
+}
+
+func (r *CalculationResult) LastAdmittedRatingPlace() (int, error) {
+	if len(r.Admitted) == 0 {
+		return 0, fmt.Errorf("no students admitted for heading %s", r.Heading.FullCode())
+	}
+
+	// return ratingPlace of the last admitted student with heading code == r's heading code
+	lastAdmitted := r.Admitted[len(r.Admitted)-1]
+
+	for _, app := range lastAdmitted.applications {
+		if app.heading.FullCode() == r.Heading.FullCode() {
+			return app.ratingPlace, nil
+		}
+	}
+
+	return 0, fmt.Errorf("no needle application found for last admitted student %s in heading %s", lastAdmitted.ID(), r.Heading.FullCode())
 }
 
 // HeadingAdmissionState tracks the admission status for a single heading.
@@ -314,19 +362,37 @@ func removeStudentFromOldPlacement(
 }
 
 type VarsityCalculator struct {
+	mu         sync.Mutex // Added mutex for the calculator instance
 	code       string
 	prettyName string
 	students   sync.Map // Stores *Student, keyed by student ID (string)
 	headings   sync.Map // Stores *Heading, keyed by heading code (string)
+
+	quitStudentsMu sync.RWMutex
+	quitStudents   map[string]bool
+
+	originalSubmittedStudentsMu sync.RWMutex
+	originalSubmittedStudents   map[string]bool
+
+	drainedPercent int
+	wasted         bool
 }
 
 // NewVarsityCalculator creates a new varsity calculator.
 func NewVarsityCalculator(code, prettyName string) *VarsityCalculator {
 	return &VarsityCalculator{
-		code:       strings.TrimSpace(code),
-		prettyName: strings.TrimSpace(prettyName),
-		students:   sync.Map{},
-		headings:   sync.Map{},
+		code:                      strings.TrimSpace(code),
+		prettyName:                strings.TrimSpace(prettyName),
+		students:                  sync.Map{},
+		headings:                  sync.Map{},
+		quitStudents:              make(map[string]bool),
+		originalSubmittedStudents: make(map[string]bool),
+	}
+}
+
+func (v *VarsityCalculator) checkNotWasted() {
+	if v.wasted {
+		panic("varsity calculator instance was already used for calculations, cannot be reused")
 	}
 }
 
@@ -338,6 +404,15 @@ func (v *VarsityCalculator) student(id string) *Student {
 		s, _ = v.students.LoadOrStore(id, newStudent)
 	}
 	return s.(*Student)
+}
+
+func (v *VarsityCalculator) GetHeading(code string) *Heading {
+	code = strings.TrimSpace(code)
+	h, ok := v.headings.Load(code)
+	if !ok {
+		return nil // Heading not found
+	}
+	return h.(*Heading) // Return the heading if found
 }
 
 // AddHeading adds a new heading to the varsity.
@@ -372,6 +447,10 @@ func (v *VarsityCalculator) SetQuit(studentID string) {
 	s.mu.Lock()
 	s.quit = true
 	s.mu.Unlock()
+
+	v.quitStudentsMu.Lock()
+	v.quitStudents[studentID] = true
+	v.quitStudentsMu.Unlock()
 }
 
 // SetOriginalSubmitted marks a student as submitting their original.
@@ -380,11 +459,15 @@ func (v *VarsityCalculator) SetOriginalSubmitted(studentID string) {
 	s.mu.Lock()
 	s.originalSubmitted = true
 	s.mu.Unlock()
+
+	v.originalSubmittedStudentsMu.Lock()
+	v.originalSubmittedStudents[studentID] = true
+	v.originalSubmittedStudentsMu.Unlock()
 }
 
-// GetStudents returns a slice of all students in the varsity.
+// Students returns a slice of all students in the varsity.
 // Useful for iterating over all students in a stable manner.
-func (v *VarsityCalculator) GetStudents() []*Student {
+func (v *VarsityCalculator) Students() []*Student {
 	var students []*Student
 	v.students.Range(func(key, value interface{}) bool {
 		students = append(students, value.(*Student))
@@ -397,274 +480,168 @@ func (v *VarsityCalculator) GetStudents() []*Student {
 	return students
 }
 
-// CalculateAdmissions processes student applications and determines admissions for each heading
-// within the varsity. The algorithm works as follows:
-//
-// 1. Initialization:
-//   - For each heading, an `HeadingAdmissionState` is created to track admitted applications
-//     for different competition types (quotas and general).
-//   - A map `studentBestPlacement` is initialized to store the best (highest priority, best rating/competition type)
-//     application through which a student is currently admitted.
-//
-// 2. Iterative Admission Process:
-//   - The core of the algorithm is an iterative loop that continues as long as any student's
-//     admission status changes in a pass. This ensures that displacements and subsequent
-//     re-placements are handled correctly until a stable state is reached.
-//   - In each iteration, the algorithm processes all non-quit students.
-//   - For each student, it iterates through their applications, sorted by priority (highest priority first).
-//
-// 3. Application Processing for a Student:
-//   - If a student is already placed via an application of a strictly higher priority than the current
-//     application being considered, the algorithm skips to the student's next application (or next student
-//     if no more applications for this one).
-//   - If the current application is for the same heading, priority, and competition type as the student's
-//     existing best placement, it's skipped as they are already optimally placed for this specific application.
-//
-// 4. Admission Attempt for an Application:
-//   - Quota Applications (Target, Dedicated, Special):
-//   - The specific quota capacity for the heading is checked.
-//   - If there's space, or if the current applicant outranks the worst-ranked applicant currently
-//     admitted to that quota (by ratingPlace), the applicant can be placed.
-//   - If placement occurs:
-//   - If the student was previously placed via a different (lower priority or worse rank) application,
-//     that old placement is vacated (removed from the respective heading/list, and `studentBestPlacement` updated for the displaced student).
-//   - If this placement displaces another student from the quota, that displaced student is removed
-//     from the quota list and their `studentBestPlacement` entry is cleared, making them eligible for
-//     reconsideration in subsequent iterations or for their lower-priority applications.
-//   - The current applicant is added to the quota list (sorted by ratingPlace), and their `studentBestPlacement` is updated.
-//   - `madeChangeInIteration` is set to true.
-//   - The algorithm breaks from processing this student's lower-priority applications, as they have found their best possible placement for now.
-//   - Regular Competition Applications (BVI, Regular):
-//   - The effective general capacity is calculated by summing the base general capacity and any unfilled spots
-//     from all quota types for that heading.
-//   - If there's space in the effective general capacity, or if the current applicant outscores
-//     (BVI > Regular, then by ratingPlace) the worst applicant in the general admission list, they can be placed.
-//   - Placement logic (vacating old spots, displacing others, updating lists and `studentBestPlacement`)
-//     is similar to quota admissions, using `outscores` for comparison.
-//   - `madeChangeInIteration` is set to true, and the algorithm breaks from this student's lower-priority apps.
-//
-// 5. Stabilization and Result Finalization:
-//   - The iterative process (step 2-4) repeats until an entire pass over all students and their applications
-//     results in no changes to any student's admission status (`madeChangeInIteration` remains false).
-//   - Once stable, the final list of admitted students for each heading is compiled:
-//   - All applications that resulted in admission (from `quotaAdmitted` and `generalAdmitted` in each `HeadingAdmissionState`)
-//     are collected for each heading.
-//   - These applications are then sorted using `outscores` to determine the final ranking order within the heading.
-//   - The student objects are extracted from these sorted applications.
-//   - The overall results are then sorted by heading code for deterministic output.
-//
-// Key Principles:
-//   - Student Priority: Students always aim for their highest possible priority application.
-//   - Separate Quotas: Quotas have distinct capacities. Failure in one quota does not grant access to another or general for that specific application.
-//   - Unfilled Quotas: Unused quota spots augment the general competition capacity for that heading.
-//   - Iterative Refinement: Displacements trigger re-evaluation, ensuring a globally (within the rules) optimal placement for students.
-func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
-	admissionStates := make(map[*Heading]*HeadingAdmissionState)
+func (v *VarsityCalculator) GetStudent(studentID string) *Student {
+	studentID = strings.TrimSpace(studentID)
+	s, ok := v.students.Load(studentID)
+	if !ok {
+		return nil // Student not found
+	}
+	return s.(*Student) // Return the student if found
+}
+
+func (v *VarsityCalculator) ForEachQuit(f func(studentID string)) {
+	v.quitStudentsMu.RLock()
+
+	for id, val := range v.quitStudents {
+		if !val {
+			slog.Warn("Found non-quit student in quitStudents map", "studentID", id)
+			continue
+		}
+
+		f(id)
+	}
+
+	v.quitStudentsMu.RUnlock()
+}
+
+func (v *VarsityCalculator) ForEachOriginalSubmitted(f func(studentID string)) {
+	v.originalSubmittedStudentsMu.RLock()
+
+	for id, val := range v.originalSubmittedStudents {
+		if !val {
+			slog.Warn("Found non-original-submitted student in originalSubmittedStudents map", "studentID", id)
+			continue
+		}
+
+		f(id)
+	}
+
+	v.originalSubmittedStudentsMu.RUnlock()
+}
+
+func (v *VarsityCalculator) DrainedPercent() int {
+	return v.drainedPercent
+}
+
+func (v *VarsityCalculator) Headings() []*Heading {
+	var headings []*Heading
 	v.headings.Range(func(_, value interface{}) bool {
-		h := value.(*Heading)
-		admissionStates[h] = NewHeadingAdmissionState(h)
+		headings = append(headings, value.(*Heading))
 		return true
 	})
+	// Sort headings by code for deterministic behavior
+	sort.Slice(headings, func(i, j int) bool {
+		return headings[i].prettyName < headings[j].prettyName
+	})
+	return headings
+}
 
-	studentBestPlacement := make(map[*Student]Application) // Stores the Application object
-	madeChangeInIteration := true
+// CalculateAdmissions performs the main admission calculation logic for the varsity.
+// It processes all students and their applications, considering quotas and competition types,
+// to determine which students are admitted to which headings.
+// The current implementation involves iterating through students, then their applications,
+// attempting admission which may involve sorting lists of admitted candidates for each quota/general competition
+// and potentially re-evaluating other applications if a student is displaced.
+// Complexity: Potentially high, roughly S * A * (C_log_C + D), where S is students, A is applications per student,
+// C is heading capacity (due to sorting admitted lists), and D is cost of handling displacements (which can be recursive).
+// For N total applications, and H headings, sorting final admitted lists per heading adds H * C_log_C.
+func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
+	log.Println("CalculateAdmissions: Starting...")
+	v.mu.Lock() // Use the new mutex
+	log.Println("CalculateAdmissions: VarsityCalculator mutex locked.")
+	defer func() {
+		v.mu.Unlock() // Use the new mutex
+		log.Println("CalculateAdmissions: VarsityCalculator mutex unlocked.")
+	}()
 
-	for madeChangeInIteration {
-		madeChangeInIteration = false
-		allStudents := v.GetStudents() // Get a stable list for the iteration
+	if v.wasted {
+		panic(fmt.Errorf("attempt to use a wasted calculator for varsity %s", v.code))
+	}
+	defer func() { v.wasted = true }()
 
-		for _, student := range allStudents {
-			student.mu.Lock()
-			quitStatus := student.quit
-			// Create a snapshot of applications to iterate over (they are sorted by priority)
-			currentApplicationsSnapshot := make([]Application, len(student.applications))
-			copy(currentApplicationsSnapshot, student.applications)
-			student.mu.Unlock()
+	// Initialize admission states for each heading
+	admissionStates := make(map[*Heading]*HeadingAdmissionState) // Corrected type to HeadingAdmissionState
+	log.Println("CalculateAdmissions: Initializing admission states for headings...")
+	headingsCount := 0
+	for _, h := range v.Headings() { // Corrected: Call Headings() method
+		admissionStates[h] = NewHeadingAdmissionState(h) // Corrected: Use NewHeadingAdmissionState(h)
+		headingsCount++
+	}
+	log.Printf("CalculateAdmissions: Initialized admission states for %d headings.", headingsCount)
 
-			if quitStatus {
-				continue
-			}
+	// studentBestPlacement tracks the best (highest priority) heading a student is currently admitted to.
+	// Key: student ID, Value: *admissionInfo
+	studentBestPlacement := make(map[string]*admissionInfo) // Assuming admissionInfo is defined elsewhere or should be defined.
 
-			for _, currentApp := range currentApplicationsSnapshot { // currentApp is a copy
-				targetHeading := currentApp.heading
-				currentHeadingState := admissionStates[targetHeading]
+	// Process all students
+	// Convert sync.Map to slice for deterministic processing and length calculation
+	var studentsToProcess []*Student
+	v.students.Range(func(key, value interface{}) bool {
+		studentsToProcess = append(studentsToProcess, value.(*Student))
+		return true
+	})
+	// Optionally sort studentsToProcess by ID if deterministic order is critical here
+	// sort.Slice(studentsToProcess, func(i, j int) bool { return studentsToProcess[i].ID() < studentsToProcess[j].ID() })
 
-				// 1. Check if student is already better placed or equally placed for this app
-				if existingPlacement, hasPlacement := studentBestPlacement[student]; hasPlacement {
-					if existingPlacement.priority < currentApp.priority {
-						break // Already in a strictly higher priority placement
-					}
-					// If currentApp is for the same heading, priority, and competition type,
-					// they are already optimally placed regarding this specific application.
-					if existingPlacement.priority == currentApp.priority &&
-						existingPlacement.heading == targetHeading &&
-						existingPlacement.competitionType == currentApp.competitionType {
-						continue
-					}
-				}
+	log.Printf("CalculateAdmissions: Starting to process %d students...", len(studentsToProcess))
+	studentProcessingTimes := make(map[string]time.Duration)
 
-				canBePlaced := false
-				var displacedApp Application // Stores the application that gets displaced
-				isDisplacedAppSet := false
+	for i, student := range studentsToProcess { // Iterate over the slice
+		studentProcessingStart := time.Now()
+		log.Printf("CalculateAdmissions: Processing student %d/%d ID: %s (Quit: %t, OriginalSubmitted: %t, Apps: %d)",
+			i+1, len(studentsToProcess), student.ID(), student.Quit(), student.originalSubmitted, len(student.Applications()))
 
-				// 2. Attempt to place based on competition type
-				switch currentApp.competitionType {
-				case CompetitionTargetQuota, CompetitionDedicatedQuota, CompetitionSpecialQuota:
-					quotaType := currentApp.competitionType
-					admittedAppList := currentHeadingState.quotaAdmitted[quotaType]
-					capacity := 0
-					switch quotaType {
-					case CompetitionTargetQuota:
-						capacity = targetHeading.capacities.TargetQuota
-					case CompetitionDedicatedQuota:
-						capacity = targetHeading.capacities.DedicatedQuota
-					case CompetitionSpecialQuota:
-						capacity = targetHeading.capacities.SpecialQuota
-					// Add a default case to handle other competition types, though logically
-					// this switch is only entered for the explicit quota types above.
-					default:
-						// This case should ideally not be reached if the outer switch correctly routes only quota types here.
-						// However, to satisfy the compiler warning about missing iota consts.
-						capacity = 0
-					}
+		if student.Quit() {
+			log.Printf("CalculateAdmissions: Student %s quit, skipping.", student.ID())
+			continue
+		}
+		v.processStudentApplications(student, admissionStates, studentBestPlacement)
+		studentProcessingTimes[student.ID()] = time.Since(studentProcessingStart)
+		log.Printf("CalculateAdmissions: Finished processing student %s in %v.", student.ID(), studentProcessingTimes[student.ID()])
+	}
+	log.Println("CalculateAdmissions: Finished processing all students.")
 
-					if len(admittedAppList) < capacity {
-						canBePlaced = true
-					} else if capacity > 0 { // Only check for displacement if quota has capacity > 0
-						worstAdmittedApp := admittedAppList[len(admittedAppList)-1] // Assumes sorted by rating
-						if currentApp.ratingPlace < worstAdmittedApp.ratingPlace {
-							canBePlaced = true
-							displacedApp = worstAdmittedApp
-							isDisplacedAppSet = true
-						}
-					}
-
-					if canBePlaced {
-						// If student was already placed in a different application, remove that old placement
-						if existingPlacement, hasPlacement := studentBestPlacement[student]; hasPlacement {
-							// Check if it's truly a different placement to avoid unnecessary removal
-							if existingPlacement.student != currentApp.student || // Should be same student
-								existingPlacement.heading != currentApp.heading ||
-								existingPlacement.priority != currentApp.priority || // Should be different if moving
-								existingPlacement.competitionType != currentApp.competitionType {
-								removeStudentFromOldPlacement(existingPlacement, admissionStates)
-							}
-						}
-
-						if isDisplacedAppSet {
-							// Remove displacedApp from its quota list
-							newList := make([]Application, 0, len(admittedAppList))
-							for _, appInList := range admittedAppList {
-								if !(appInList.student == displacedApp.student && appInList.priority == displacedApp.priority) {
-									newList = append(newList, appInList)
-								}
-							}
-							currentHeadingState.quotaAdmitted[quotaType] = newList
-							delete(studentBestPlacement, displacedApp.student) // Displaced student loses their spot
-						}
-
-						// Add current student's application to this quota
-						currentHeadingState.quotaAdmitted[quotaType] = append(currentHeadingState.quotaAdmitted[quotaType], currentApp)
-						sort.Slice(currentHeadingState.quotaAdmitted[quotaType], func(i, j int) bool {
-							return currentHeadingState.quotaAdmitted[quotaType][i].ratingPlace < currentHeadingState.quotaAdmitted[quotaType][j].ratingPlace
-						})
-						studentBestPlacement[student] = currentApp
-						madeChangeInIteration = true
-						break // Student placed for this app, move to next student or stop processing this student's apps
-					}
-
-				case CompetitionBVI, CompetitionRegular:
-					unfilledQuotaPlaces := 0
-					unfilledQuotaPlaces += maxInt(0, targetHeading.capacities.TargetQuota-len(currentHeadingState.quotaAdmitted[CompetitionTargetQuota]))
-					unfilledQuotaPlaces += maxInt(0, targetHeading.capacities.DedicatedQuota-len(currentHeadingState.quotaAdmitted[CompetitionDedicatedQuota]))
-					unfilledQuotaPlaces += maxInt(0, targetHeading.capacities.SpecialQuota-len(currentHeadingState.quotaAdmitted[CompetitionSpecialQuota]))
-					effectiveGeneralCapacity := targetHeading.capacities.Regular + unfilledQuotaPlaces
-
-					generalAdmittedAppList := currentHeadingState.generalAdmitted
-
-					if len(generalAdmittedAppList) < effectiveGeneralCapacity {
-						canBePlaced = true
-					} else if effectiveGeneralCapacity > 0 { // Only check for displacement if capacity > 0
-						worstAdmittedApp := generalAdmittedAppList[len(generalAdmittedAppList)-1] // Assumes sorted by outscores
-						if targetHeading.outscores(currentApp, worstAdmittedApp) {
-							canBePlaced = true
-							displacedApp = worstAdmittedApp
-							isDisplacedAppSet = true
-						}
-					}
-
-					if canBePlaced {
-						if existingPlacement, hasPlacement := studentBestPlacement[student]; hasPlacement {
-							if existingPlacement.student != currentApp.student ||
-								existingPlacement.heading != currentApp.heading ||
-								existingPlacement.priority != currentApp.priority ||
-								existingPlacement.competitionType != currentApp.competitionType {
-								removeStudentFromOldPlacement(existingPlacement, admissionStates)
-							}
-						}
-
-						if isDisplacedAppSet {
-							newList := make([]Application, 0, len(generalAdmittedAppList))
-							for _, appInList := range generalAdmittedAppList {
-								if !(appInList.student == displacedApp.student && appInList.priority == displacedApp.priority) {
-									newList = append(newList, appInList)
-								}
-							}
-							currentHeadingState.generalAdmitted = newList
-							delete(studentBestPlacement, displacedApp.student)
-						}
-
-						currentHeadingState.generalAdmitted = append(currentHeadingState.generalAdmitted, currentApp)
-						sort.Slice(currentHeadingState.generalAdmitted, func(i, j int) bool {
-							return targetHeading.outscores(currentHeadingState.generalAdmitted[i], currentHeadingState.generalAdmitted[j])
-						})
-						studentBestPlacement[student] = currentApp
-						madeChangeInIteration = true
-						break // Student placed
-					}
-				} // End switch currentApp.competitionType
-
-				// If student was placed via currentApp, their higher-priority applications are satisfied.
-				// Break from iterating this student's lower-priority applications.
-				if placement, ok := studentBestPlacement[student]; ok && placement.priority == currentApp.priority && placement.heading == currentApp.heading && placement.competitionType == currentApp.competitionType {
-					break
-				}
-			} // End loop over student's applications
-		} // End loop over all students
-	} // End main iteration loop
-
-	// Prepare final results
-	results := make([]CalculationResult, 0)
-	v.headings.Range(func(_, value interface{}) bool {
-		h := value.(*Heading)
+	// Collect results
+	log.Println("CalculateAdmissions: Collecting results...")
+	var results []CalculationResult
+	for _, h := range v.Headings() { // Corrected: Iterate over the slice returned by v.Headings()
+		log.Printf("CalculateAdmissions: Collecting results for heading %s (%s)", h.PrettyName(), h.Code())
 		state := admissionStates[h]
+		if state == nil { // Add a nil check for safety, though it shouldn't happen if initialized correctly
+			log.Printf("CalculateAdmissions: WARNING - nil admissionState for heading %s (%s). Skipping.", h.PrettyName(), h.Code())
+			continue
+		}
 
 		var admittedAppsForHeading []Application
 		// Collect all applications that resulted in admission for this heading
-		for _, quotaAppList := range state.quotaAdmitted {
+		for competitionType, quotaAppList := range state.quotaAdmitted {
+			log.Printf("CalculateAdmissions: Heading %s, Quota %s, Admitted count: %d", h.Code(), competitionType, len(quotaAppList))
 			admittedAppsForHeading = append(admittedAppsForHeading, quotaAppList...)
 		}
+		log.Printf("CalculateAdmissions: Heading %s, General Admitted count: %d", h.Code(), len(state.generalAdmitted))
 		admittedAppsForHeading = append(admittedAppsForHeading, state.generalAdmitted...)
+		log.Printf("CalculateAdmissions: Heading %s, Total admitted apps before final sort: %d", h.Code(), len(admittedAppsForHeading))
 
 		// Sort all admitted applications for this heading by the unified outscores logic
+		log.Printf("CalculateAdmissions: Sorting %d admitted applications for heading %s...", len(admittedAppsForHeading), h.Code())
+		sortStart := time.Now()
 		sort.Slice(admittedAppsForHeading, func(i, j int) bool {
 			return h.outscores(admittedAppsForHeading[i], admittedAppsForHeading[j])
 		})
+		log.Printf("CalculateAdmissions: Sorted admitted applications for heading %s in %v.", h.Code(), time.Since(sortStart))
 
 		// Extract unique students from the sorted applications for the final list
-		// studentBestPlacement ensures a student is in at most one list (or one spot),
-		// so all apps in admittedAppsForHeading are from different students.
 		finalAdmittedStudents := make([]*Student, 0, len(admittedAppsForHeading))
 		for _, app := range admittedAppsForHeading {
 			finalAdmittedStudents = append(finalAdmittedStudents, app.student)
 		}
+		log.Printf("CalculateAdmissions: Heading %s, Final admitted student count: %d", h.Code(), len(finalAdmittedStudents))
 
 		results = append(results, CalculationResult{
 			Heading:  h,
-			Admitted: finalAdmittedStudents, // This list of students is now sorted based on their winning applications
+			Admitted: finalAdmittedStudents,
 		})
-		return true
-	})
+	}
 
 	// Sort final results by heading code for deterministic output
 	sort.Slice(results, func(i, j int) bool {
@@ -674,22 +651,287 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 	return results
 }
 
+// processStudentApplications processes a single student's applications.
+func (v *VarsityCalculator) processStudentApplications(
+	student *Student,
+	admissionStates map[*Heading]*HeadingAdmissionState,
+	studentBestPlacement map[string]*admissionInfo,
+) {
+	log.Printf("processStudentApplications: Starting for student %s.", student.ID())
+	// Iterate through the student's applications, sorted by priority
+	apps := student.Applications() // Applications are already sorted by priority
+	log.Printf("processStudentApplications: Student %s has %d applications.", student.ID(), len(apps))
+
+	for i, app := range apps {
+		log.Printf("processStudentApplications: Student %s, processing app %d/%d to heading %s (Priority: %d, Type: %s, Rating: %d)",
+			student.ID(), i+1, len(apps), app.Heading().Code(), app.Priority(), app.CompetitionType(), app.RatingPlace())
+
+		// Check if student can be admitted to this heading based on current best placement
+		if !v.canAdmit(student, app, studentBestPlacement) {
+			log.Printf("processStudentApplications: Student %s cannot be admitted to heading %s due to better current placement or same priority.", student.ID(), app.Heading().Code())
+			continue // Student is already admitted to a higher or same priority heading
+		}
+
+		state := admissionStates[app.Heading()]
+		if state == nil { // Add a nil check for safety
+			log.Printf("processStudentApplications: WARNING - nil admissionState for heading %s (%s) for student %s. Skipping app.", app.Heading().PrettyName(), app.Heading().Code(), student.ID())
+			continue
+		}
+
+		var admitted bool
+		var displacedStudent *Student
+		var displacedApplication Application // To store the actual application that was displaced
+
+		switch app.CompetitionType() {
+		case CompetitionTargetQuota, CompetitionDedicatedQuota, CompetitionSpecialQuota:
+			log.Printf("processStudentApplications: Student %s, attempting quota admission to %s for type %s.", student.ID(), app.Heading().Code(), app.CompetitionType())
+			admitted, displacedStudent, displacedApplication = v.tryAdmitQuota(app, state, studentBestPlacement)
+		case CompetitionRegular, CompetitionBVI: // BVI is treated like regular but with higher "score"
+			log.Printf("processStudentApplications: Student %s, attempting general admission to %s for type %s.", student.ID(), app.Heading().Code(), app.CompetitionType())
+			admitted, displacedStudent, displacedApplication = v.tryAdmitGeneral(app, state, studentBestPlacement)
+		default:
+			log.Printf("processStudentApplications: Student %s, unknown competition type %s for app to %s.", student.ID(), app.CompetitionType(), app.Heading().Code())
+			continue
+		}
+
+		if admitted {
+			log.Printf("processStudentApplications: Student %s ADMITTED to heading %s via app (Priority: %d, Type: %s). Updating best placement.",
+				student.ID(), app.Heading().Code(), app.Priority(), app.CompetitionType())
+			// Update student's best placement
+			// Before updating, if this student was already in studentBestPlacement for a *different, lower-priority* heading,
+			// they need to be removed from that old heading's admission list.
+			if oldPlacement, ok := studentBestPlacement[student.ID()]; ok && oldPlacement.app.Heading() != app.Heading() {
+				log.Printf("processStudentApplications: Student %s was previously admitted to %s (Priority: %d), now admitted to %s (Priority: %d). Removing from old heading.",
+					student.ID(), oldPlacement.app.Heading().Code(), oldPlacement.app.Priority(), app.Heading().Code(), app.Priority())
+				removeStudentFromOldPlacement(oldPlacement.app, admissionStates)
+			}
+			studentBestPlacement[student.ID()] = &admissionInfo{app: app, headingState: state}
+
+			if displacedStudent != nil {
+				log.Printf("processStudentApplications: Student %s was displaced from heading %s by student %s. Finding new placement for %s.",
+					displacedStudent.ID(), displacedApplication.Heading().Code(), student.ID(), displacedStudent.ID())
+				// If a student was displaced, try to find a new best placement for them
+				// The student is already removed from the specific heading's list by tryAdmitQuota/tryAdmitGeneral.
+				// We need to remove them from studentBestPlacement map as their previous best is gone.
+				delete(studentBestPlacement, displacedStudent.ID())
+				v.processStudentApplications(displacedStudent, admissionStates, studentBestPlacement) // Recursive call
+			}
+		} else {
+			log.Printf("processStudentApplications: Student %s could not be admitted to heading %s (Quota: %s, General: %s).",
+				student.ID(), app.Heading().Code(), app.competitionType, app.competitionType)
+		}
+	}
+}
+
+// Returns true if admitted, the displaced student (if any), and the displaced application (if any).
+func (v *VarsityCalculator) tryAdmitQuota(
+	app Application,
+	state *HeadingAdmissionState,
+	studentBestPlacement map[string]*admissionInfo,
+) (bool, *Student, Application) {
+	log.Printf("tryAdmitQuota: Student %s, App to %s (Rating: %d, Type: %s)",
+		app.student.ID(), app.heading.Code(), app.ratingPlace, app.competitionType)
+
+	quotaCapacity := 0
+	switch app.competitionType {
+	case CompetitionTargetQuota:
+		quotaCapacity = state.heading.Capacities().TargetQuota
+	case CompetitionDedicatedQuota:
+		quotaCapacity = state.heading.Capacities().DedicatedQuota
+	case CompetitionSpecialQuota:
+		quotaCapacity = state.heading.Capacities().SpecialQuota
+	default:
+		log.Printf("tryAdmitQuota: Unknown quota type %s for student %s", app.competitionType, app.student.ID())
+		return false, nil, Application{}
+	}
+
+	log.Printf("tryAdmitQuota: Heading %s, Quota Type %s, Capacity: %d, Currently Admitted in this quota: %d",
+		app.heading.Code(), app.competitionType, quotaCapacity, len(state.quotaAdmitted[app.competitionType]))
+
+	// **** THIS IS THE CRUCIAL FIX for tryAdmitQuota ****
+	if quotaCapacity == 0 {
+		log.Printf("tryAdmitQuota: Quota capacity for type %s is 0 for heading %s. Cannot admit student %s.", app.competitionType, app.heading.Code(), app.student.ID())
+		return false, nil, Application{}
+	}
+	// **** END OF FIX ****
+
+	currentAdmittedInQuota := state.quotaAdmitted[app.competitionType]
+
+	if len(currentAdmittedInQuota) < quotaCapacity {
+		// Quota not full, admit student
+		log.Printf("tryAdmitQuota: Admitting student %s to %s (Type: %s) - quota not full.", app.student.ID(), app.heading.Code(), app.competitionType)
+		state.quotaAdmitted[app.competitionType] = append(currentAdmittedInQuota, app)
+		// Sort by ratingPlace (lower is better)
+		sort.Slice(state.quotaAdmitted[app.competitionType], func(i, j int) bool {
+			return state.quotaAdmitted[app.competitionType][i].ratingPlace < state.quotaAdmitted[app.competitionType][j].ratingPlace
+		})
+		return true, nil, Application{}
+	}
+
+	// Quota is full, check if this student outscores the worst student in quota
+	worstAdmittedApp := currentAdmittedInQuota[len(currentAdmittedInQuota)-1] // Assumes sorted by ratingPlace, worst is last
+	if app.ratingPlace < worstAdmittedApp.ratingPlace {
+		// This student is better than the worst admitted student
+		log.Printf("tryAdmitQuota: Student %s (Rating: %d) outscores worst student %s (Rating: %d) in quota %s for %s. Admitting and displacing.",
+			app.student.ID(), app.ratingPlace, worstAdmittedApp.student.ID(), worstAdmittedApp.ratingPlace, app.competitionType, app.heading.Code())
+
+		displacedStudent := worstAdmittedApp.student
+		// Remove worst student
+		state.quotaAdmitted[app.competitionType] = currentAdmittedInQuota[:len(currentAdmittedInQuota)-1]
+		// Add new student
+		state.quotaAdmitted[app.competitionType] = append(state.quotaAdmitted[app.competitionType], app)
+		// Re-sort
+		sort.Slice(state.quotaAdmitted[app.competitionType], func(i, j int) bool {
+			return state.quotaAdmitted[app.competitionType][i].ratingPlace < state.quotaAdmitted[app.competitionType][j].ratingPlace
+		})
+		// Remove displaced student from their overall best placement
+		if currentBest, ok := studentBestPlacement[displacedStudent.ID()]; ok && currentBest.app.student.ID() == displacedStudent.ID() && currentBest.app.Heading() == worstAdmittedApp.Heading() {
+			log.Printf("tryAdmitQuota: Removing displaced student %s from their best placement map for heading %s.", displacedStudent.ID(), worstAdmittedApp.Heading().Code())
+			delete(studentBestPlacement, displacedStudent.ID())
+		}
+		return true, displacedStudent, worstAdmittedApp // Return the displaced application
+	}
+	log.Printf("tryAdmitQuota: Student %s (Rating: %d) does not outscore worst student %s (Rating: %d) in quota %s for %s. Not admitting.",
+		app.student.ID(), app.ratingPlace, worstAdmittedApp.student.ID(), worstAdmittedApp.ratingPlace, app.competitionType, app.heading.Code())
+	return false, nil, Application{} // Return empty Application if no displacement
+}
+
+// tryAdmitGeneral attempts to admit a student to general competition (Regular or BVI).
+// Returns true if admitted, the displaced student (if any), and the displaced application (if any).
+func (v *VarsityCalculator) tryAdmitGeneral(
+	app Application,
+	state *HeadingAdmissionState,
+	studentBestPlacement map[string]*admissionInfo,
+) (bool, *Student, Application) { // Added displacedApplication to return
+	log.Printf("tryAdmitGeneral: Student %s, App to %s (Rating: %d, Type: %s), General Capacity: %d, Currently Admitted: %d",
+		app.student.ID(), app.heading.Code(), app.ratingPlace, app.competitionType,
+		state.heading.Capacities().Regular, // BVI uses Regular capacity
+		len(state.generalAdmitted))
+
+	generalCapacity := state.heading.Capacities().Regular
+
+	// **** THIS IS THE CRUCIAL FIX ****
+	if generalCapacity == 0 {
+		log.Printf("tryAdmitGeneral: General capacity is 0 for heading %s. Cannot admit student %s.", app.heading.Code(), app.student.ID())
+		return false, nil, Application{}
+	}
+	// **** END OF FIX ****
+
+	if len(state.generalAdmitted) < generalCapacity {
+		// General capacity not full, admit student
+		log.Printf("tryAdmitGeneral: Admitting student %s to %s (Type: %s) - general capacity not full.", app.student.ID(), app.heading.Code(), app.competitionType)
+		state.generalAdmitted = append(state.generalAdmitted, app)
+		// Sort by BVI > Regular, then ratingPlace
+		sort.Slice(state.generalAdmitted, func(i, j int) bool {
+			return state.heading.outscores(state.generalAdmitted[i], state.generalAdmitted[j])
+		})
+		return true, nil, Application{}
+	}
+
+	// General capacity is full, check if this student outscores the worst student
+	// The list is sorted by outscores, so the "worst" is the last one.
+	worstAdmittedApp := state.generalAdmitted[len(state.generalAdmitted)-1]
+	if state.heading.outscores(app, worstAdmittedApp) {
+		// This student is better
+		log.Printf("tryAdmitGeneral: Student %s (App: %v) outscores worst student %s (App: %v) in general for %s. Admitting and displacing.",
+			app.student.ID(), app, worstAdmittedApp.student.ID(), worstAdmittedApp, app.heading.Code())
+		displacedStudent := worstAdmittedApp.student
+		// Remove worst student
+		state.generalAdmitted = state.generalAdmitted[:len(state.generalAdmitted)-1]
+		// Add new student
+		state.generalAdmitted = append(state.generalAdmitted, app)
+		// Re-sort
+		sort.Slice(state.generalAdmitted, func(i, j int) bool {
+			return state.heading.outscores(state.generalAdmitted[i], state.generalAdmitted[j])
+		})
+		// Remove displaced student from their overall best placement
+		if currentBest, ok := studentBestPlacement[displacedStudent.ID()]; ok && currentBest.app.student.ID() == displacedStudent.ID() && currentBest.app.Heading() == worstAdmittedApp.Heading() {
+			log.Printf("tryAdmitGeneral: Removing displaced student %s from their best placement map for heading %s.", displacedStudent.ID(), worstAdmittedApp.Heading().Code())
+			delete(studentBestPlacement, displacedStudent.ID())
+		}
+		return true, displacedStudent, worstAdmittedApp // Return the displaced application
+	}
+	log.Printf("tryAdmitGeneral: Student %s (App: %v) does not outscore worst student %s (App: %v) in general for %s. Not admitting.",
+		app.student.ID(), app, worstAdmittedApp.student.ID(), worstAdmittedApp, app.heading.Code())
+	return false, nil, Application{} // Return empty Application if no displacement
+}
+
+// canAdmit checks if a student can be admitted to a heading based on their current best placement.
+// A student can be admitted if the new application's heading has higher priority than their current best,
+// or if they have no current best placement.
+func (v *VarsityCalculator) canAdmit(
+	student *Student,
+	newApp Application,
+	studentBestPlacement map[string]*admissionInfo, // Assuming admissionInfo is defined
+) bool {
+	currentBest, ok := studentBestPlacement[student.ID()]
+	if !ok {
+		log.Printf("canAdmit: Student %s has no current best placement. Can attempt admission to %s (Priority: %d).", student.ID(), newApp.heading.Code(), newApp.priority)
+		return true // No current placement, can always try
+	}
+	// Student has a current placement. Can only admit to newApp if newApp has strictly higher priority.
+	// Lower priority number means higher priority.
+	can := newApp.priority < currentBest.app.priority
+	if can {
+		log.Printf("canAdmit: Student %s current best is %s (Priority: %d). New app to %s (Priority: %d) is HIGHER priority. Can attempt.",
+			student.ID(), currentBest.app.heading.Code(), currentBest.app.priority, newApp.heading.Code(), newApp.priority)
+	} else {
+		log.Printf("canAdmit: Student %s current best is %s (Priority: %d). New app to %s (Priority: %d) is LOWER or SAME priority. Cannot attempt.",
+			student.ID(), currentBest.app.heading.Code(), currentBest.app.priority, newApp.heading.Code(), newApp.priority)
+	}
+	return can
+}
+
+// This struct was assumed by the logging I added. It needs to be defined.
+// It stores information about a student's admission to a particular heading.
+type admissionInfo struct {
+	app          Application            // The specific application that led to admission
+	headingState *HeadingAdmissionState // The state of the heading they were admitted to
+}
+
+// Helper for Capacities to get quota capacity by type, assuming it might be useful.
+// This is not part of the original code but added for clarity in tryAdmitQuota.
+func (c Capacities) quotaCapacity(compType Competition) int {
+	switch compType {
+	case CompetitionTargetQuota:
+		return c.TargetQuota
+	case CompetitionDedicatedQuota:
+		return c.DedicatedQuota
+	case CompetitionSpecialQuota:
+		return c.SpecialQuota
+	}
+	return 0
+}
+
 // SimulateOriginalsDrain drains randomly selected drainPercent% of students who DID not submit their original but
 // who hasn't already quit the varsity.
-func (v *VarsityCalculator) SimulateOriginalsDrain(drainPercentage int) {
-	if drainPercentage == 0 {
+func (v *VarsityCalculator) SimulateOriginalsDrain(drainPercent int) {
+	v.checkNotWasted()
+
+	if drainPercent == 0 {
 		return
 	}
 
-	if drainPercentage < 0 || drainPercentage > 100 {
-		fmt.Printf("Invalid drain percentage: %d. Must be between 0 and 100.\n", drainPercentage)
+	if drainPercent < 0 || drainPercent > 100 {
+		slog.Warn("Invalid value, must be in [0, 100]", "drainPercent", drainPercent)
 		return
 	}
+
+	if v.drainedPercent != 0 {
+		slog.Warn("Already drained students, cannot drain again", "drainedPercent", v.drainedPercent)
+		return
+	}
+
+	nonQuitCount := 0
 
 	var eligibleStudents []*Student
 	v.students.Range(func(key, value interface{}) bool {
 		student := value.(*Student)
 		student.mu.Lock()
+		if !student.quit {
+			nonQuitCount += 1
+		}
+
 		if !student.quit && !student.originalSubmitted {
 			eligibleStudents = append(eligibleStudents, student)
 		}
@@ -701,7 +943,7 @@ func (v *VarsityCalculator) SimulateOriginalsDrain(drainPercentage int) {
 		return
 	}
 
-	numToDrain := (len(eligibleStudents) * drainPercentage) / 100
+	numToDrain := (len(eligibleStudents) * drainPercent) / 100
 
 	// Shuffle eligible students to pick randomly
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -715,4 +957,6 @@ func (v *VarsityCalculator) SimulateOriginalsDrain(drainPercentage int) {
 		studentToDrain.quit = true
 		studentToDrain.mu.Unlock()
 	}
+
+	v.drainedPercent = drainPercent
 }

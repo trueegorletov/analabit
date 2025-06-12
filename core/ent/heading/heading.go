@@ -30,6 +30,8 @@ const (
 	EdgeApplications = "applications"
 	// EdgeCalculations holds the string denoting the calculations edge name in mutations.
 	EdgeCalculations = "calculations"
+	// EdgeDrainedResults holds the string denoting the drained_results edge name in mutations.
+	EdgeDrainedResults = "drained_results"
 	// Table holds the table name of the heading in the database.
 	Table = "headings"
 	// VarsityTable is the table that holds the varsity relation/edge.
@@ -53,6 +55,13 @@ const (
 	CalculationsInverseTable = "calculations"
 	// CalculationsColumn is the table column denoting the calculations relation/edge.
 	CalculationsColumn = "heading_calculations"
+	// DrainedResultsTable is the table that holds the drained_results relation/edge.
+	DrainedResultsTable = "drained_results"
+	// DrainedResultsInverseTable is the table name for the DrainedResult entity.
+	// It exists in this package in order to avoid circular dependency with the "drainedresult" package.
+	DrainedResultsInverseTable = "drained_results"
+	// DrainedResultsColumn is the table column denoting the drained_results relation/edge.
+	DrainedResultsColumn = "heading_drained_results"
 )
 
 // Columns holds all SQL columns for heading fields.
@@ -159,6 +168,20 @@ func ByCalculations(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCalculationsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByDrainedResultsCount orders the results by drained_results count.
+func ByDrainedResultsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newDrainedResultsStep(), opts...)
+	}
+}
+
+// ByDrainedResults orders the results by drained_results terms.
+func ByDrainedResults(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDrainedResultsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newVarsityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -178,5 +201,12 @@ func newCalculationsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CalculationsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CalculationsTable, CalculationsColumn),
+	)
+}
+func newDrainedResultsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DrainedResultsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, DrainedResultsTable, DrainedResultsColumn),
 	)
 }

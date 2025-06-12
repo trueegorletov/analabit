@@ -63,6 +63,11 @@ func LastCalculationsIteration(v int) predicate.Metadata {
 	return predicate.Metadata(sql.FieldEQ(FieldLastCalculationsIteration, v))
 }
 
+// LastDrainedResultsIteration applies equality check predicate on the "last_drained_results_iteration" field. It's identical to LastDrainedResultsIterationEQ.
+func LastDrainedResultsIteration(v int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldEQ(FieldLastDrainedResultsIteration, v))
+}
+
 // UploadingLock applies equality check predicate on the "uploading_lock" field. It's identical to UploadingLockEQ.
 func UploadingLock(v bool) predicate.Metadata {
 	return predicate.Metadata(sql.FieldEQ(FieldUploadingLock, v))
@@ -146,6 +151,46 @@ func LastCalculationsIterationLT(v int) predicate.Metadata {
 // LastCalculationsIterationLTE applies the LTE predicate on the "last_calculations_iteration" field.
 func LastCalculationsIterationLTE(v int) predicate.Metadata {
 	return predicate.Metadata(sql.FieldLTE(FieldLastCalculationsIteration, v))
+}
+
+// LastDrainedResultsIterationEQ applies the EQ predicate on the "last_drained_results_iteration" field.
+func LastDrainedResultsIterationEQ(v int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldEQ(FieldLastDrainedResultsIteration, v))
+}
+
+// LastDrainedResultsIterationNEQ applies the NEQ predicate on the "last_drained_results_iteration" field.
+func LastDrainedResultsIterationNEQ(v int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldNEQ(FieldLastDrainedResultsIteration, v))
+}
+
+// LastDrainedResultsIterationIn applies the In predicate on the "last_drained_results_iteration" field.
+func LastDrainedResultsIterationIn(vs ...int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldIn(FieldLastDrainedResultsIteration, vs...))
+}
+
+// LastDrainedResultsIterationNotIn applies the NotIn predicate on the "last_drained_results_iteration" field.
+func LastDrainedResultsIterationNotIn(vs ...int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldNotIn(FieldLastDrainedResultsIteration, vs...))
+}
+
+// LastDrainedResultsIterationGT applies the GT predicate on the "last_drained_results_iteration" field.
+func LastDrainedResultsIterationGT(v int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldGT(FieldLastDrainedResultsIteration, v))
+}
+
+// LastDrainedResultsIterationGTE applies the GTE predicate on the "last_drained_results_iteration" field.
+func LastDrainedResultsIterationGTE(v int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldGTE(FieldLastDrainedResultsIteration, v))
+}
+
+// LastDrainedResultsIterationLT applies the LT predicate on the "last_drained_results_iteration" field.
+func LastDrainedResultsIterationLT(v int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldLT(FieldLastDrainedResultsIteration, v))
+}
+
+// LastDrainedResultsIterationLTE applies the LTE predicate on the "last_drained_results_iteration" field.
+func LastDrainedResultsIterationLTE(v int) predicate.Metadata {
+	return predicate.Metadata(sql.FieldLTE(FieldLastDrainedResultsIteration, v))
 }
 
 // UploadingLockEQ applies the EQ predicate on the "uploading_lock" field.

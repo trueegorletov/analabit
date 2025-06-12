@@ -1,7 +1,7 @@
-package defs
+package registry
 
 import (
-	"analabit/core/defs/hse"
+	"analabit/core/registry/hse"
 	"analabit/core/source"
 )
 

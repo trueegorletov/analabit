@@ -35,8 +35,8 @@ func (ac *ApplicationCreate) SetPriority(i int) *ApplicationCreate {
 }
 
 // SetCompetitionType sets the "competition_type" field.
-func (ac *ApplicationCreate) SetCompetitionType(a core.Competition) *ApplicationCreate {
-	ac.mutation.SetCompetitionType(a)
+func (ac *ApplicationCreate) SetCompetitionType(c core.Competition) *ApplicationCreate {
+	ac.mutation.SetCompetitionType(c)
 	return ac
 }
 

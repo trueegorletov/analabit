@@ -12,6 +12,9 @@ type Application func(*sql.Selector)
 // Calculation is the predicate function for calculation builders.
 type Calculation func(*sql.Selector)
 
+// DrainedResult is the predicate function for drainedresult builders.
+type DrainedResult func(*sql.Selector)
+
 // Heading is the predicate function for heading builders.
 type Heading func(*sql.Selector)
 

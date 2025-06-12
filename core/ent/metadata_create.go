@@ -31,6 +31,12 @@ func (mc *MetadataCreate) SetLastCalculationsIteration(i int) *MetadataCreate {
 	return mc
 }
 
+// SetLastDrainedResultsIteration sets the "last_drained_results_iteration" field.
+func (mc *MetadataCreate) SetLastDrainedResultsIteration(i int) *MetadataCreate {
+	mc.mutation.SetLastDrainedResultsIteration(i)
+	return mc
+}
+
 // SetUploadingLock sets the "uploading_lock" field.
 func (mc *MetadataCreate) SetUploadingLock(b bool) *MetadataCreate {
 	mc.mutation.SetUploadingLock(b)
@@ -72,13 +78,16 @@ func (mc *MetadataCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (mc *MetadataCreate) check() error {
 	if _, ok := mc.mutation.LastApplicationsIteration(); !ok {
-		return &ValidationError{Name: "last_applications_iteration", err: errors.New(`ent: missing required field "metadata.last_applications_iteration"`)}
+		return &ValidationError{Name: "last_applications_iteration", err: errors.New(`ent: missing required field "Metadata.last_applications_iteration"`)}
 	}
 	if _, ok := mc.mutation.LastCalculationsIteration(); !ok {
-		return &ValidationError{Name: "last_calculations_iteration", err: errors.New(`ent: missing required field "metadata.last_calculations_iteration"`)}
+		return &ValidationError{Name: "last_calculations_iteration", err: errors.New(`ent: missing required field "Metadata.last_calculations_iteration"`)}
+	}
+	if _, ok := mc.mutation.LastDrainedResultsIteration(); !ok {
+		return &ValidationError{Name: "last_drained_results_iteration", err: errors.New(`ent: missing required field "Metadata.last_drained_results_iteration"`)}
 	}
 	if _, ok := mc.mutation.UploadingLock(); !ok {
-		return &ValidationError{Name: "uploading_lock", err: errors.New(`ent: missing required field "metadata.uploading_lock"`)}
+		return &ValidationError{Name: "uploading_lock", err: errors.New(`ent: missing required field "Metadata.uploading_lock"`)}
 	}
 	return nil
 }
@@ -113,6 +122,10 @@ func (mc *MetadataCreate) createSpec() (*Metadata, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.LastCalculationsIteration(); ok {
 		_spec.SetField(metadata.FieldLastCalculationsIteration, field.TypeInt, value)
 		_node.LastCalculationsIteration = value
+	}
+	if value, ok := mc.mutation.LastDrainedResultsIteration(); ok {
+		_spec.SetField(metadata.FieldLastDrainedResultsIteration, field.TypeInt, value)
+		_node.LastDrainedResultsIteration = value
 	}
 	if value, ok := mc.mutation.UploadingLock(); ok {
 		_spec.SetField(metadata.FieldUploadingLock, field.TypeBool, value)

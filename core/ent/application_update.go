@@ -66,23 +66,23 @@ func (au *ApplicationUpdate) AddPriority(i int) *ApplicationUpdate {
 }
 
 // SetCompetitionType sets the "competition_type" field.
-func (au *ApplicationUpdate) SetCompetitionType(a core.Competition) *ApplicationUpdate {
+func (au *ApplicationUpdate) SetCompetitionType(c core.Competition) *ApplicationUpdate {
 	au.mutation.ResetCompetitionType()
-	au.mutation.SetCompetitionType(a)
+	au.mutation.SetCompetitionType(c)
 	return au
 }
 
 // SetNillableCompetitionType sets the "competition_type" field if the given value is not nil.
-func (au *ApplicationUpdate) SetNillableCompetitionType(a *core.Competition) *ApplicationUpdate {
-	if a != nil {
-		au.SetCompetitionType(*a)
+func (au *ApplicationUpdate) SetNillableCompetitionType(c *core.Competition) *ApplicationUpdate {
+	if c != nil {
+		au.SetCompetitionType(*c)
 	}
 	return au
 }
 
-// AddCompetitionType adds a to the "competition_type" field.
-func (au *ApplicationUpdate) AddCompetitionType(a core.Competition) *ApplicationUpdate {
-	au.mutation.AddCompetitionType(a)
+// AddCompetitionType adds c to the "competition_type" field.
+func (au *ApplicationUpdate) AddCompetitionType(c core.Competition) *ApplicationUpdate {
+	au.mutation.AddCompetitionType(c)
 	return au
 }
 
@@ -354,23 +354,23 @@ func (auo *ApplicationUpdateOne) AddPriority(i int) *ApplicationUpdateOne {
 }
 
 // SetCompetitionType sets the "competition_type" field.
-func (auo *ApplicationUpdateOne) SetCompetitionType(a core.Competition) *ApplicationUpdateOne {
+func (auo *ApplicationUpdateOne) SetCompetitionType(c core.Competition) *ApplicationUpdateOne {
 	auo.mutation.ResetCompetitionType()
-	auo.mutation.SetCompetitionType(a)
+	auo.mutation.SetCompetitionType(c)
 	return auo
 }
 
 // SetNillableCompetitionType sets the "competition_type" field if the given value is not nil.
-func (auo *ApplicationUpdateOne) SetNillableCompetitionType(a *core.Competition) *ApplicationUpdateOne {
-	if a != nil {
-		auo.SetCompetitionType(*a)
+func (auo *ApplicationUpdateOne) SetNillableCompetitionType(c *core.Competition) *ApplicationUpdateOne {
+	if c != nil {
+		auo.SetCompetitionType(*c)
 	}
 	return auo
 }
 
-// AddCompetitionType adds a to the "competition_type" field.
-func (auo *ApplicationUpdateOne) AddCompetitionType(a core.Competition) *ApplicationUpdateOne {
-	auo.mutation.AddCompetitionType(a)
+// AddCompetitionType adds c to the "competition_type" field.
+func (auo *ApplicationUpdateOne) AddCompetitionType(c core.Competition) *ApplicationUpdateOne {
+	auo.mutation.AddCompetitionType(c)
 	return auo
 }
 

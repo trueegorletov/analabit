@@ -15,6 +15,8 @@ const (
 	FieldLastApplicationsIteration = "last_applications_iteration"
 	// FieldLastCalculationsIteration holds the string denoting the last_calculations_iteration field in the database.
 	FieldLastCalculationsIteration = "last_calculations_iteration"
+	// FieldLastDrainedResultsIteration holds the string denoting the last_drained_results_iteration field in the database.
+	FieldLastDrainedResultsIteration = "last_drained_results_iteration"
 	// FieldUploadingLock holds the string denoting the uploading_lock field in the database.
 	FieldUploadingLock = "uploading_lock"
 	// Table holds the table name of the metadata in the database.
@@ -26,6 +28,7 @@ var Columns = []string{
 	FieldID,
 	FieldLastApplicationsIteration,
 	FieldLastCalculationsIteration,
+	FieldLastDrainedResultsIteration,
 	FieldUploadingLock,
 }
 
@@ -39,7 +42,7 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-// OrderOption defines the ordering options for the metadata queries.
+// OrderOption defines the ordering options for the Metadata queries.
 type OrderOption func(*sql.Selector)
 
 // ByID orders the results by the id field.
@@ -55,6 +58,11 @@ func ByLastApplicationsIteration(opts ...sql.OrderTermOption) OrderOption {
 // ByLastCalculationsIteration orders the results by the last_calculations_iteration field.
 func ByLastCalculationsIteration(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastCalculationsIteration, opts...).ToFunc()
+}
+
+// ByLastDrainedResultsIteration orders the results by the last_drained_results_iteration field.
+func ByLastDrainedResultsIteration(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastDrainedResultsIteration, opts...).ToFunc()
 }
 
 // ByUploadingLock orders the results by the uploading_lock field.

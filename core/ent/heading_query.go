@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
+	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/predicate"
 	"analabit/core/ent/varsity"
@@ -22,14 +23,15 @@ import (
 // HeadingQuery is the builder for querying Heading entities.
 type HeadingQuery struct {
 	config
-	ctx              *QueryContext
-	order            []heading.OrderOption
-	inters           []Interceptor
-	predicates       []predicate.Heading
-	withVarsity      *VarsityQuery
-	withApplications *ApplicationQuery
-	withCalculations *CalculationQuery
-	withFKs          bool
+	ctx                *QueryContext
+	order              []heading.OrderOption
+	inters             []Interceptor
+	predicates         []predicate.Heading
+	withVarsity        *VarsityQuery
+	withApplications   *ApplicationQuery
+	withCalculations   *CalculationQuery
+	withDrainedResults *DrainedResultQuery
+	withFKs            bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -125,6 +127,28 @@ func (hq *HeadingQuery) QueryCalculations() *CalculationQuery {
 			sqlgraph.From(heading.Table, heading.FieldID, selector),
 			sqlgraph.To(calculation.Table, calculation.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, heading.CalculationsTable, heading.CalculationsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(hq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDrainedResults chains the current query on the "drained_results" edge.
+func (hq *HeadingQuery) QueryDrainedResults() *DrainedResultQuery {
+	query := (&DrainedResultClient{config: hq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := hq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := hq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(heading.Table, heading.FieldID, selector),
+			sqlgraph.To(drainedresult.Table, drainedresult.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, heading.DrainedResultsTable, heading.DrainedResultsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(hq.driver.Dialect(), step)
 		return fromU, nil
@@ -319,14 +343,15 @@ func (hq *HeadingQuery) Clone() *HeadingQuery {
 		return nil
 	}
 	return &HeadingQuery{
-		config:           hq.config,
-		ctx:              hq.ctx.Clone(),
-		order:            append([]heading.OrderOption{}, hq.order...),
-		inters:           append([]Interceptor{}, hq.inters...),
-		predicates:       append([]predicate.Heading{}, hq.predicates...),
-		withVarsity:      hq.withVarsity.Clone(),
-		withApplications: hq.withApplications.Clone(),
-		withCalculations: hq.withCalculations.Clone(),
+		config:             hq.config,
+		ctx:                hq.ctx.Clone(),
+		order:              append([]heading.OrderOption{}, hq.order...),
+		inters:             append([]Interceptor{}, hq.inters...),
+		predicates:         append([]predicate.Heading{}, hq.predicates...),
+		withVarsity:        hq.withVarsity.Clone(),
+		withApplications:   hq.withApplications.Clone(),
+		withCalculations:   hq.withCalculations.Clone(),
+		withDrainedResults: hq.withDrainedResults.Clone(),
 		// clone intermediate query.
 		sql:  hq.sql.Clone(),
 		path: hq.path,
@@ -363,6 +388,17 @@ func (hq *HeadingQuery) WithCalculations(opts ...func(*CalculationQuery)) *Headi
 		opt(query)
 	}
 	hq.withCalculations = query
+	return hq
+}
+
+// WithDrainedResults tells the query-builder to eager-load the nodes that are connected to
+// the "drained_results" edge. The optional arguments are used to configure the query builder of the edge.
+func (hq *HeadingQuery) WithDrainedResults(opts ...func(*DrainedResultQuery)) *HeadingQuery {
+	query := (&DrainedResultClient{config: hq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	hq.withDrainedResults = query
 	return hq
 }
 
@@ -445,10 +481,11 @@ func (hq *HeadingQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Head
 		nodes       = []*Heading{}
 		withFKs     = hq.withFKs
 		_spec       = hq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			hq.withVarsity != nil,
 			hq.withApplications != nil,
 			hq.withCalculations != nil,
+			hq.withDrainedResults != nil,
 		}
 	)
 	if hq.withVarsity != nil {
@@ -492,6 +529,13 @@ func (hq *HeadingQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Head
 		if err := hq.loadCalculations(ctx, query, nodes,
 			func(n *Heading) { n.Edges.Calculations = []*Calculation{} },
 			func(n *Heading, e *Calculation) { n.Edges.Calculations = append(n.Edges.Calculations, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := hq.withDrainedResults; query != nil {
+		if err := hq.loadDrainedResults(ctx, query, nodes,
+			func(n *Heading) { n.Edges.DrainedResults = []*DrainedResult{} },
+			func(n *Heading, e *DrainedResult) { n.Edges.DrainedResults = append(n.Edges.DrainedResults, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -587,6 +631,37 @@ func (hq *HeadingQuery) loadCalculations(ctx context.Context, query *Calculation
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "heading_calculations" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (hq *HeadingQuery) loadDrainedResults(ctx context.Context, query *DrainedResultQuery, nodes []*Heading, init func(*Heading), assign func(*Heading, *DrainedResult)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Heading)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.DrainedResult(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(heading.DrainedResultsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.heading_drained_results
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "heading_drained_results" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "heading_drained_results" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

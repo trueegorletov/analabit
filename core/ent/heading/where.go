@@ -443,6 +443,29 @@ func HasCalculationsWith(preds ...predicate.Calculation) predicate.Heading {
 	})
 }
 
+// HasDrainedResults applies the HasEdge predicate on the "drained_results" edge.
+func HasDrainedResults() predicate.Heading {
+	return predicate.Heading(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DrainedResultsTable, DrainedResultsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDrainedResultsWith applies the HasEdge predicate on the "drained_results" edge with a given conditions (other predicates).
+func HasDrainedResultsWith(preds ...predicate.DrainedResult) predicate.Heading {
+	return predicate.Heading(func(s *sql.Selector) {
+		step := newDrainedResultsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Heading) predicate.Heading {
 	return predicate.Heading(sql.AndPredicates(predicates...))

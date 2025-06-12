@@ -57,6 +57,29 @@ var (
 			},
 		},
 	}
+	// DrainedResultsColumns holds the columns for the "drained_results" table.
+	DrainedResultsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "drained_percent", Type: field.TypeInt},
+		{Name: "passing_score", Type: field.TypeInt},
+		{Name: "last_admitted_rating_place", Type: field.TypeInt},
+		{Name: "iteration", Type: field.TypeInt},
+		{Name: "heading_drained_results", Type: field.TypeInt},
+	}
+	// DrainedResultsTable holds the schema information for the "drained_results" table.
+	DrainedResultsTable = &schema.Table{
+		Name:       "drained_results",
+		Columns:    DrainedResultsColumns,
+		PrimaryKey: []*schema.Column{DrainedResultsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "drained_results_headings_drained_results",
+				Columns:    []*schema.Column{DrainedResultsColumns[5]},
+				RefColumns: []*schema.Column{HeadingsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// HeadingsColumns holds the columns for the "headings" table.
 	HeadingsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -87,6 +110,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "last_applications_iteration", Type: field.TypeInt},
 		{Name: "last_calculations_iteration", Type: field.TypeInt},
+		{Name: "last_drained_results_iteration", Type: field.TypeInt},
 		{Name: "uploading_lock", Type: field.TypeBool},
 	}
 	// MetadataTable holds the schema information for the "metadata" table.
@@ -111,6 +135,7 @@ var (
 	Tables = []*schema.Table{
 		ApplicationsTable,
 		CalculationsTable,
+		DrainedResultsTable,
 		HeadingsTable,
 		MetadataTable,
 		VarsitiesTable,
@@ -120,5 +145,6 @@ var (
 func init() {
 	ApplicationsTable.ForeignKeys[0].RefTable = HeadingsTable
 	CalculationsTable.ForeignKeys[0].RefTable = HeadingsTable
+	DrainedResultsTable.ForeignKeys[0].RefTable = HeadingsTable
 	HeadingsTable.ForeignKeys[0].RefTable = VarsitiesTable
 }

@@ -3,6 +3,7 @@ package source
 import (
 	"analabit/core"
 	"log"
+	"log/slog"
 	"sync"
 )
 
@@ -24,6 +25,27 @@ func (v *Varsity) Prepare() {
 	if v.VarsityDataCache == nil {
 		v.VarsityDataCache = NewVarsityDataCache(v.VarsityDefinition)
 	}
+}
+
+func (v *Varsity) Clone() *Varsity {
+	if v.VarsityDataCache == nil {
+		panic("trying to copy an unloaded varsity")
+	}
+
+	clone := Varsity{
+		v.VarsityDefinition, nil, v.VarsityDataCache,
+	}
+	clone.loadFromCache()
+
+	vc := clone.VarsityCalculator
+	v.VarsityCalculator.ForEachQuit(func(studentID string) {
+		vc.SetQuit(studentID)
+	})
+	v.VarsityCalculator.ForEachOriginalSubmitted(func(studentID string) {
+		vc.SetOriginalSubmitted(studentID)
+	})
+
+	return &clone
 }
 
 type channelledReceiver struct {
@@ -131,11 +153,11 @@ func (v *Varsity) loadFromCache() map[string]bool {
 
 	submittedOriginals := make(map[string]bool)
 
-	for _, hd := range v.Headings {
+	for _, hd := range v.HeadingsCache {
 		v.AddHeading(hd)
 	}
 
-	for _, ad := range v.Applications {
+	for _, ad := range v.ApplicationsCache {
 		v.AddApplication(ad)
 
 		if ad.OriginalSubmitted {
@@ -151,7 +173,7 @@ func (v *Varsity) loadFromCache() map[string]bool {
 // and saves students who submitted there their original to a map (student ID -> Varsity.Code).
 // If there are multiple Varsities for a student, uses the first one and logs a warning about that.
 // Finally it sets student.quit to true for all students who submitted their original to a *different* varsity.
-func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) []*Varsity {
+func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) ([]*Varsity, map[string]string) {
 	studentOriginals := make(map[string]string) // original StudentID -> Varsity.Code
 	var studentOriginalsMu sync.Mutex
 	var varsityLoadWg sync.WaitGroup
@@ -186,6 +208,10 @@ func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) []*V
 		for i := range varsities {
 			v := varsities[i]
 			if v.Code == varsityCode || v.VarsityCalculator == nil {
+				if v.VarsityCalculator != nil {
+					v.SetOriginalSubmitted(studentID)
+				}
+
 				continue
 			}
 
@@ -193,12 +219,12 @@ func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) []*V
 		}
 	}
 
-	return varsities
+	return varsities, studentOriginals
 }
 
-func LoadFromDefinitions(varsityDefinitions []VarsityDefinition) []*Varsity {
+func LoadFromDefinitions(defs []VarsityDefinition) []*Varsity {
 	var varsities []*Varsity
-	for _, def := range varsityDefinitions {
+	for _, def := range defs {
 		v := &Varsity{
 			VarsityDefinition: &def,
 			VarsityCalculator: nil,
@@ -206,24 +232,77 @@ func LoadFromDefinitions(varsityDefinitions []VarsityDefinition) []*Varsity {
 		varsities = append(varsities, v)
 	}
 
-	return loadAll(varsities, func(v *Varsity) map[string]bool {
+	vs, _ := loadAll(varsities, func(v *Varsity) map[string]bool {
 		return v.loadFromSources()
 	})
+
+	return vs
 }
 
-func LoadFromCaches(caches []*VarsityDataCache) []*Varsity {
-	var varsities []*Varsity
+func LoadWithCaches(defs []VarsityDefinition, caches []*VarsityDataCache) []*Varsity {
+	codeToCache := make(map[string]*VarsityDataCache)
 	for _, cache := range caches {
+		codeToCache[cache.Definition.Code] = cache
+	}
+
+	var newVarsities []*Varsity
+	var cacheVarsities []*Varsity
+
+	for _, def := range defs {
 		v := &Varsity{
-			VarsityDefinition: cache.Definition,
-			VarsityDataCache:  cache,
+			VarsityDefinition: &def,
 			VarsityCalculator: nil,
 		}
 
-		varsities = append(varsities, v)
+		if cache, found := codeToCache[def.Code]; found {
+			v.VarsityDataCache = cache
+			cacheVarsities = append(cacheVarsities, v)
+		} else {
+			newVarsities = append(newVarsities, v)
+		}
 	}
 
-	return loadAll(varsities, func(v *Varsity) map[string]bool {
+	cached, cachedOrigs := loadAll(cacheVarsities, func(v *Varsity) map[string]bool {
+		return v.loadFromCache()
+	})
+
+	added, addedOrigs := loadAll(newVarsities, func(v *Varsity) map[string]bool {
 		return v.loadFromSources()
 	})
+
+	removedFromCached := make(map[string]bool)
+
+	for studentID, varsityCode := range addedOrigs {
+		for _, v := range cached {
+			if v.Code == varsityCode || v.VarsityCalculator == nil {
+				if v.VarsityCalculator != nil {
+					v.SetOriginalSubmitted(studentID)
+				}
+
+				continue
+			}
+			v.SetQuit(studentID)
+			removedFromCached[studentID] = true
+		}
+	}
+
+	for studentID, varsityCode := range cachedOrigs {
+		if _, found := removedFromCached[studentID]; found {
+			slog.Warn("Student submitted original to multiple varsities", "studentID", studentID)
+			continue
+		}
+
+		for _, v := range added {
+			if v.Code == varsityCode || v.VarsityCalculator == nil {
+				if v.VarsityCalculator != nil {
+					v.SetOriginalSubmitted(studentID)
+				}
+
+				continue
+			}
+			v.SetQuit(studentID)
+		}
+	}
+
+	return append(cached, added...)
 }

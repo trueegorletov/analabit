@@ -6,6 +6,7 @@ import (
 	"analabit/core"
 	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
+	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/metadata"
 	"analabit/core/ent/predicate"
@@ -29,11 +30,12 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeApplication = "Application"
-	TypeCalculation = "Calculation"
-	TypeHeading     = "Heading"
-	TypeMetadata    = "metadata"
-	TypeVarsity     = "Varsity"
+	TypeApplication   = "Application"
+	TypeCalculation   = "Calculation"
+	TypeDrainedResult = "DrainedResult"
+	TypeHeading       = "Heading"
+	TypeMetadata      = "Metadata"
+	TypeVarsity       = "Varsity"
 )
 
 // ApplicationMutation represents an operation that mutates the Application nodes in the graph.
@@ -253,8 +255,8 @@ func (m *ApplicationMutation) ResetPriority() {
 }
 
 // SetCompetitionType sets the "competition_type" field.
-func (m *ApplicationMutation) SetCompetitionType(a core.Competition) {
-	m.competition_type = &a
+func (m *ApplicationMutation) SetCompetitionType(c core.Competition) {
+	m.competition_type = &c
 	m.addcompetition_type = nil
 }
 
@@ -284,12 +286,12 @@ func (m *ApplicationMutation) OldCompetitionType(ctx context.Context) (v core.Co
 	return oldValue.CompetitionType, nil
 }
 
-// AddCompetitionType adds a to the "competition_type" field.
-func (m *ApplicationMutation) AddCompetitionType(a core.Competition) {
+// AddCompetitionType adds c to the "competition_type" field.
+func (m *ApplicationMutation) AddCompetitionType(c core.Competition) {
 	if m.addcompetition_type != nil {
-		*m.addcompetition_type += a
+		*m.addcompetition_type += c
 	} else {
-		m.addcompetition_type = &a
+		m.addcompetition_type = &c
 	}
 }
 
@@ -1545,6 +1547,696 @@ func (m *CalculationMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Calculation edge %s", name)
 }
 
+// DrainedResultMutation represents an operation that mutates the DrainedResult nodes in the graph.
+type DrainedResultMutation struct {
+	config
+	op                            Op
+	typ                           string
+	id                            *int
+	drained_percent               *int
+	adddrained_percent            *int
+	passing_score                 *int
+	addpassing_score              *int
+	last_admitted_rating_place    *int
+	addlast_admitted_rating_place *int
+	iteration                     *int
+	additeration                  *int
+	clearedFields                 map[string]struct{}
+	heading                       *int
+	clearedheading                bool
+	done                          bool
+	oldValue                      func(context.Context) (*DrainedResult, error)
+	predicates                    []predicate.DrainedResult
+}
+
+var _ ent.Mutation = (*DrainedResultMutation)(nil)
+
+// drainedresultOption allows management of the mutation configuration using functional options.
+type drainedresultOption func(*DrainedResultMutation)
+
+// newDrainedResultMutation creates new mutation for the DrainedResult entity.
+func newDrainedResultMutation(c config, op Op, opts ...drainedresultOption) *DrainedResultMutation {
+	m := &DrainedResultMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDrainedResult,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDrainedResultID sets the ID field of the mutation.
+func withDrainedResultID(id int) drainedresultOption {
+	return func(m *DrainedResultMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DrainedResult
+		)
+		m.oldValue = func(ctx context.Context) (*DrainedResult, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DrainedResult.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDrainedResult sets the old DrainedResult of the mutation.
+func withDrainedResult(node *DrainedResult) drainedresultOption {
+	return func(m *DrainedResultMutation) {
+		m.oldValue = func(context.Context) (*DrainedResult, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DrainedResultMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DrainedResultMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DrainedResultMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DrainedResultMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DrainedResult.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetDrainedPercent sets the "drained_percent" field.
+func (m *DrainedResultMutation) SetDrainedPercent(i int) {
+	m.drained_percent = &i
+	m.adddrained_percent = nil
+}
+
+// DrainedPercent returns the value of the "drained_percent" field in the mutation.
+func (m *DrainedResultMutation) DrainedPercent() (r int, exists bool) {
+	v := m.drained_percent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDrainedPercent returns the old "drained_percent" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldDrainedPercent(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDrainedPercent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDrainedPercent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDrainedPercent: %w", err)
+	}
+	return oldValue.DrainedPercent, nil
+}
+
+// AddDrainedPercent adds i to the "drained_percent" field.
+func (m *DrainedResultMutation) AddDrainedPercent(i int) {
+	if m.adddrained_percent != nil {
+		*m.adddrained_percent += i
+	} else {
+		m.adddrained_percent = &i
+	}
+}
+
+// AddedDrainedPercent returns the value that was added to the "drained_percent" field in this mutation.
+func (m *DrainedResultMutation) AddedDrainedPercent() (r int, exists bool) {
+	v := m.adddrained_percent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDrainedPercent resets all changes to the "drained_percent" field.
+func (m *DrainedResultMutation) ResetDrainedPercent() {
+	m.drained_percent = nil
+	m.adddrained_percent = nil
+}
+
+// SetPassingScore sets the "passing_score" field.
+func (m *DrainedResultMutation) SetPassingScore(i int) {
+	m.passing_score = &i
+	m.addpassing_score = nil
+}
+
+// PassingScore returns the value of the "passing_score" field in the mutation.
+func (m *DrainedResultMutation) PassingScore() (r int, exists bool) {
+	v := m.passing_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPassingScore returns the old "passing_score" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldPassingScore(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPassingScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPassingScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPassingScore: %w", err)
+	}
+	return oldValue.PassingScore, nil
+}
+
+// AddPassingScore adds i to the "passing_score" field.
+func (m *DrainedResultMutation) AddPassingScore(i int) {
+	if m.addpassing_score != nil {
+		*m.addpassing_score += i
+	} else {
+		m.addpassing_score = &i
+	}
+}
+
+// AddedPassingScore returns the value that was added to the "passing_score" field in this mutation.
+func (m *DrainedResultMutation) AddedPassingScore() (r int, exists bool) {
+	v := m.addpassing_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPassingScore resets all changes to the "passing_score" field.
+func (m *DrainedResultMutation) ResetPassingScore() {
+	m.passing_score = nil
+	m.addpassing_score = nil
+}
+
+// SetLastAdmittedRatingPlace sets the "last_admitted_rating_place" field.
+func (m *DrainedResultMutation) SetLastAdmittedRatingPlace(i int) {
+	m.last_admitted_rating_place = &i
+	m.addlast_admitted_rating_place = nil
+}
+
+// LastAdmittedRatingPlace returns the value of the "last_admitted_rating_place" field in the mutation.
+func (m *DrainedResultMutation) LastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAdmittedRatingPlace returns the old "last_admitted_rating_place" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldLastAdmittedRatingPlace(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAdmittedRatingPlace is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAdmittedRatingPlace requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAdmittedRatingPlace: %w", err)
+	}
+	return oldValue.LastAdmittedRatingPlace, nil
+}
+
+// AddLastAdmittedRatingPlace adds i to the "last_admitted_rating_place" field.
+func (m *DrainedResultMutation) AddLastAdmittedRatingPlace(i int) {
+	if m.addlast_admitted_rating_place != nil {
+		*m.addlast_admitted_rating_place += i
+	} else {
+		m.addlast_admitted_rating_place = &i
+	}
+}
+
+// AddedLastAdmittedRatingPlace returns the value that was added to the "last_admitted_rating_place" field in this mutation.
+func (m *DrainedResultMutation) AddedLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.addlast_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLastAdmittedRatingPlace resets all changes to the "last_admitted_rating_place" field.
+func (m *DrainedResultMutation) ResetLastAdmittedRatingPlace() {
+	m.last_admitted_rating_place = nil
+	m.addlast_admitted_rating_place = nil
+}
+
+// SetIteration sets the "iteration" field.
+func (m *DrainedResultMutation) SetIteration(i int) {
+	m.iteration = &i
+	m.additeration = nil
+}
+
+// Iteration returns the value of the "iteration" field in the mutation.
+func (m *DrainedResultMutation) Iteration() (r int, exists bool) {
+	v := m.iteration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIteration returns the old "iteration" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldIteration(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIteration is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIteration requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIteration: %w", err)
+	}
+	return oldValue.Iteration, nil
+}
+
+// AddIteration adds i to the "iteration" field.
+func (m *DrainedResultMutation) AddIteration(i int) {
+	if m.additeration != nil {
+		*m.additeration += i
+	} else {
+		m.additeration = &i
+	}
+}
+
+// AddedIteration returns the value that was added to the "iteration" field in this mutation.
+func (m *DrainedResultMutation) AddedIteration() (r int, exists bool) {
+	v := m.additeration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetIteration resets all changes to the "iteration" field.
+func (m *DrainedResultMutation) ResetIteration() {
+	m.iteration = nil
+	m.additeration = nil
+}
+
+// SetHeadingID sets the "heading" edge to the Heading entity by id.
+func (m *DrainedResultMutation) SetHeadingID(id int) {
+	m.heading = &id
+}
+
+// ClearHeading clears the "heading" edge to the Heading entity.
+func (m *DrainedResultMutation) ClearHeading() {
+	m.clearedheading = true
+}
+
+// HeadingCleared reports if the "heading" edge to the Heading entity was cleared.
+func (m *DrainedResultMutation) HeadingCleared() bool {
+	return m.clearedheading
+}
+
+// HeadingID returns the "heading" edge ID in the mutation.
+func (m *DrainedResultMutation) HeadingID() (id int, exists bool) {
+	if m.heading != nil {
+		return *m.heading, true
+	}
+	return
+}
+
+// HeadingIDs returns the "heading" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// HeadingID instead. It exists only for internal usage by the builders.
+func (m *DrainedResultMutation) HeadingIDs() (ids []int) {
+	if id := m.heading; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetHeading resets all changes to the "heading" edge.
+func (m *DrainedResultMutation) ResetHeading() {
+	m.heading = nil
+	m.clearedheading = false
+}
+
+// Where appends a list predicates to the DrainedResultMutation builder.
+func (m *DrainedResultMutation) Where(ps ...predicate.DrainedResult) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DrainedResultMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DrainedResultMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DrainedResult, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DrainedResultMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DrainedResultMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DrainedResult).
+func (m *DrainedResultMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DrainedResultMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.drained_percent != nil {
+		fields = append(fields, drainedresult.FieldDrainedPercent)
+	}
+	if m.passing_score != nil {
+		fields = append(fields, drainedresult.FieldPassingScore)
+	}
+	if m.last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldLastAdmittedRatingPlace)
+	}
+	if m.iteration != nil {
+		fields = append(fields, drainedresult.FieldIteration)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DrainedResultMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case drainedresult.FieldDrainedPercent:
+		return m.DrainedPercent()
+	case drainedresult.FieldPassingScore:
+		return m.PassingScore()
+	case drainedresult.FieldLastAdmittedRatingPlace:
+		return m.LastAdmittedRatingPlace()
+	case drainedresult.FieldIteration:
+		return m.Iteration()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DrainedResultMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case drainedresult.FieldDrainedPercent:
+		return m.OldDrainedPercent(ctx)
+	case drainedresult.FieldPassingScore:
+		return m.OldPassingScore(ctx)
+	case drainedresult.FieldLastAdmittedRatingPlace:
+		return m.OldLastAdmittedRatingPlace(ctx)
+	case drainedresult.FieldIteration:
+		return m.OldIteration(ctx)
+	}
+	return nil, fmt.Errorf("unknown DrainedResult field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DrainedResultMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case drainedresult.FieldDrainedPercent:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDrainedPercent(v)
+		return nil
+	case drainedresult.FieldPassingScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPassingScore(v)
+		return nil
+	case drainedresult.FieldLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAdmittedRatingPlace(v)
+		return nil
+	case drainedresult.FieldIteration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIteration(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DrainedResult field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DrainedResultMutation) AddedFields() []string {
+	var fields []string
+	if m.adddrained_percent != nil {
+		fields = append(fields, drainedresult.FieldDrainedPercent)
+	}
+	if m.addpassing_score != nil {
+		fields = append(fields, drainedresult.FieldPassingScore)
+	}
+	if m.addlast_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldLastAdmittedRatingPlace)
+	}
+	if m.additeration != nil {
+		fields = append(fields, drainedresult.FieldIteration)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DrainedResultMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case drainedresult.FieldDrainedPercent:
+		return m.AddedDrainedPercent()
+	case drainedresult.FieldPassingScore:
+		return m.AddedPassingScore()
+	case drainedresult.FieldLastAdmittedRatingPlace:
+		return m.AddedLastAdmittedRatingPlace()
+	case drainedresult.FieldIteration:
+		return m.AddedIteration()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DrainedResultMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case drainedresult.FieldDrainedPercent:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDrainedPercent(v)
+		return nil
+	case drainedresult.FieldPassingScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPassingScore(v)
+		return nil
+	case drainedresult.FieldLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLastAdmittedRatingPlace(v)
+		return nil
+	case drainedresult.FieldIteration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddIteration(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DrainedResult numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DrainedResultMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DrainedResultMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DrainedResultMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown DrainedResult nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DrainedResultMutation) ResetField(name string) error {
+	switch name {
+	case drainedresult.FieldDrainedPercent:
+		m.ResetDrainedPercent()
+		return nil
+	case drainedresult.FieldPassingScore:
+		m.ResetPassingScore()
+		return nil
+	case drainedresult.FieldLastAdmittedRatingPlace:
+		m.ResetLastAdmittedRatingPlace()
+		return nil
+	case drainedresult.FieldIteration:
+		m.ResetIteration()
+		return nil
+	}
+	return fmt.Errorf("unknown DrainedResult field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DrainedResultMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.heading != nil {
+		edges = append(edges, drainedresult.EdgeHeading)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DrainedResultMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case drainedresult.EdgeHeading:
+		if id := m.heading; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DrainedResultMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DrainedResultMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DrainedResultMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedheading {
+		edges = append(edges, drainedresult.EdgeHeading)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DrainedResultMutation) EdgeCleared(name string) bool {
+	switch name {
+	case drainedresult.EdgeHeading:
+		return m.clearedheading
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DrainedResultMutation) ClearEdge(name string) error {
+	switch name {
+	case drainedresult.EdgeHeading:
+		m.ClearHeading()
+		return nil
+	}
+	return fmt.Errorf("unknown DrainedResult unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DrainedResultMutation) ResetEdge(name string) error {
+	switch name {
+	case drainedresult.EdgeHeading:
+		m.ResetHeading()
+		return nil
+	}
+	return fmt.Errorf("unknown DrainedResult edge %s", name)
+}
+
 // HeadingMutation represents an operation that mutates the Heading nodes in the graph.
 type HeadingMutation struct {
 	config
@@ -1570,6 +2262,9 @@ type HeadingMutation struct {
 	calculations                map[int]struct{}
 	removedcalculations         map[int]struct{}
 	clearedcalculations         bool
+	drained_results             map[int]struct{}
+	removeddrained_results      map[int]struct{}
+	cleareddrained_results      bool
 	done                        bool
 	oldValue                    func(context.Context) (*Heading, error)
 	predicates                  []predicate.Heading
@@ -2116,6 +2811,60 @@ func (m *HeadingMutation) ResetCalculations() {
 	m.removedcalculations = nil
 }
 
+// AddDrainedResultIDs adds the "drained_results" edge to the DrainedResult entity by ids.
+func (m *HeadingMutation) AddDrainedResultIDs(ids ...int) {
+	if m.drained_results == nil {
+		m.drained_results = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.drained_results[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDrainedResults clears the "drained_results" edge to the DrainedResult entity.
+func (m *HeadingMutation) ClearDrainedResults() {
+	m.cleareddrained_results = true
+}
+
+// DrainedResultsCleared reports if the "drained_results" edge to the DrainedResult entity was cleared.
+func (m *HeadingMutation) DrainedResultsCleared() bool {
+	return m.cleareddrained_results
+}
+
+// RemoveDrainedResultIDs removes the "drained_results" edge to the DrainedResult entity by IDs.
+func (m *HeadingMutation) RemoveDrainedResultIDs(ids ...int) {
+	if m.removeddrained_results == nil {
+		m.removeddrained_results = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.drained_results, ids[i])
+		m.removeddrained_results[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDrainedResults returns the removed IDs of the "drained_results" edge to the DrainedResult entity.
+func (m *HeadingMutation) RemovedDrainedResultsIDs() (ids []int) {
+	for id := range m.removeddrained_results {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DrainedResultsIDs returns the "drained_results" edge IDs in the mutation.
+func (m *HeadingMutation) DrainedResultsIDs() (ids []int) {
+	for id := range m.drained_results {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDrainedResults resets all changes to the "drained_results" edge.
+func (m *HeadingMutation) ResetDrainedResults() {
+	m.drained_results = nil
+	m.cleareddrained_results = false
+	m.removeddrained_results = nil
+}
+
 // Where appends a list predicates to the HeadingMutation builder.
 func (m *HeadingMutation) Where(ps ...predicate.Heading) {
 	m.predicates = append(m.predicates, ps...)
@@ -2385,7 +3134,7 @@ func (m *HeadingMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *HeadingMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.varsity != nil {
 		edges = append(edges, heading.EdgeVarsity)
 	}
@@ -2394,6 +3143,9 @@ func (m *HeadingMutation) AddedEdges() []string {
 	}
 	if m.calculations != nil {
 		edges = append(edges, heading.EdgeCalculations)
+	}
+	if m.drained_results != nil {
+		edges = append(edges, heading.EdgeDrainedResults)
 	}
 	return edges
 }
@@ -2418,18 +3170,27 @@ func (m *HeadingMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case heading.EdgeDrainedResults:
+		ids := make([]ent.Value, 0, len(m.drained_results))
+		for id := range m.drained_results {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *HeadingMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedapplications != nil {
 		edges = append(edges, heading.EdgeApplications)
 	}
 	if m.removedcalculations != nil {
 		edges = append(edges, heading.EdgeCalculations)
+	}
+	if m.removeddrained_results != nil {
+		edges = append(edges, heading.EdgeDrainedResults)
 	}
 	return edges
 }
@@ -2450,13 +3211,19 @@ func (m *HeadingMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case heading.EdgeDrainedResults:
+		ids := make([]ent.Value, 0, len(m.removeddrained_results))
+		for id := range m.removeddrained_results {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *HeadingMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedvarsity {
 		edges = append(edges, heading.EdgeVarsity)
 	}
@@ -2465,6 +3232,9 @@ func (m *HeadingMutation) ClearedEdges() []string {
 	}
 	if m.clearedcalculations {
 		edges = append(edges, heading.EdgeCalculations)
+	}
+	if m.cleareddrained_results {
+		edges = append(edges, heading.EdgeDrainedResults)
 	}
 	return edges
 }
@@ -2479,6 +3249,8 @@ func (m *HeadingMutation) EdgeCleared(name string) bool {
 		return m.clearedapplications
 	case heading.EdgeCalculations:
 		return m.clearedcalculations
+	case heading.EdgeDrainedResults:
+		return m.cleareddrained_results
 	}
 	return false
 }
@@ -2507,6 +3279,9 @@ func (m *HeadingMutation) ResetEdge(name string) error {
 	case heading.EdgeCalculations:
 		m.ResetCalculations()
 		return nil
+	case heading.EdgeDrainedResults:
+		m.ResetDrainedResults()
+		return nil
 	}
 	return fmt.Errorf("unknown Heading edge %s", name)
 }
@@ -2514,18 +3289,20 @@ func (m *HeadingMutation) ResetEdge(name string) error {
 // MetadataMutation represents an operation that mutates the Metadata nodes in the graph.
 type MetadataMutation struct {
 	config
-	op                             Op
-	typ                            string
-	id                             *int
-	last_applications_iteration    *int
-	addlast_applications_iteration *int
-	last_calculations_iteration    *int
-	addlast_calculations_iteration *int
-	uploading_lock                 *bool
-	clearedFields                  map[string]struct{}
-	done                           bool
-	oldValue                       func(context.Context) (*Metadata, error)
-	predicates                     []predicate.Metadata
+	op                                Op
+	typ                               string
+	id                                *int
+	last_applications_iteration       *int
+	addlast_applications_iteration    *int
+	last_calculations_iteration       *int
+	addlast_calculations_iteration    *int
+	last_drained_results_iteration    *int
+	addlast_drained_results_iteration *int
+	uploading_lock                    *bool
+	clearedFields                     map[string]struct{}
+	done                              bool
+	oldValue                          func(context.Context) (*Metadata, error)
+	predicates                        []predicate.Metadata
 }
 
 var _ ent.Mutation = (*MetadataMutation)(nil)
@@ -2738,6 +3515,62 @@ func (m *MetadataMutation) ResetLastCalculationsIteration() {
 	m.addlast_calculations_iteration = nil
 }
 
+// SetLastDrainedResultsIteration sets the "last_drained_results_iteration" field.
+func (m *MetadataMutation) SetLastDrainedResultsIteration(i int) {
+	m.last_drained_results_iteration = &i
+	m.addlast_drained_results_iteration = nil
+}
+
+// LastDrainedResultsIteration returns the value of the "last_drained_results_iteration" field in the mutation.
+func (m *MetadataMutation) LastDrainedResultsIteration() (r int, exists bool) {
+	v := m.last_drained_results_iteration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastDrainedResultsIteration returns the old "last_drained_results_iteration" field's value of the Metadata entity.
+// If the Metadata object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MetadataMutation) OldLastDrainedResultsIteration(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastDrainedResultsIteration is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastDrainedResultsIteration requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastDrainedResultsIteration: %w", err)
+	}
+	return oldValue.LastDrainedResultsIteration, nil
+}
+
+// AddLastDrainedResultsIteration adds i to the "last_drained_results_iteration" field.
+func (m *MetadataMutation) AddLastDrainedResultsIteration(i int) {
+	if m.addlast_drained_results_iteration != nil {
+		*m.addlast_drained_results_iteration += i
+	} else {
+		m.addlast_drained_results_iteration = &i
+	}
+}
+
+// AddedLastDrainedResultsIteration returns the value that was added to the "last_drained_results_iteration" field in this mutation.
+func (m *MetadataMutation) AddedLastDrainedResultsIteration() (r int, exists bool) {
+	v := m.addlast_drained_results_iteration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLastDrainedResultsIteration resets all changes to the "last_drained_results_iteration" field.
+func (m *MetadataMutation) ResetLastDrainedResultsIteration() {
+	m.last_drained_results_iteration = nil
+	m.addlast_drained_results_iteration = nil
+}
+
 // SetUploadingLock sets the "uploading_lock" field.
 func (m *MetadataMutation) SetUploadingLock(b bool) {
 	m.uploading_lock = &b
@@ -2808,12 +3641,15 @@ func (m *MetadataMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MetadataMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.last_applications_iteration != nil {
 		fields = append(fields, metadata.FieldLastApplicationsIteration)
 	}
 	if m.last_calculations_iteration != nil {
 		fields = append(fields, metadata.FieldLastCalculationsIteration)
+	}
+	if m.last_drained_results_iteration != nil {
+		fields = append(fields, metadata.FieldLastDrainedResultsIteration)
 	}
 	if m.uploading_lock != nil {
 		fields = append(fields, metadata.FieldUploadingLock)
@@ -2830,6 +3666,8 @@ func (m *MetadataMutation) Field(name string) (ent.Value, bool) {
 		return m.LastApplicationsIteration()
 	case metadata.FieldLastCalculationsIteration:
 		return m.LastCalculationsIteration()
+	case metadata.FieldLastDrainedResultsIteration:
+		return m.LastDrainedResultsIteration()
 	case metadata.FieldUploadingLock:
 		return m.UploadingLock()
 	}
@@ -2845,10 +3683,12 @@ func (m *MetadataMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldLastApplicationsIteration(ctx)
 	case metadata.FieldLastCalculationsIteration:
 		return m.OldLastCalculationsIteration(ctx)
+	case metadata.FieldLastDrainedResultsIteration:
+		return m.OldLastDrainedResultsIteration(ctx)
 	case metadata.FieldUploadingLock:
 		return m.OldUploadingLock(ctx)
 	}
-	return nil, fmt.Errorf("unknown metadata field %s", name)
+	return nil, fmt.Errorf("unknown Metadata field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
@@ -2870,6 +3710,13 @@ func (m *MetadataMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastCalculationsIteration(v)
 		return nil
+	case metadata.FieldLastDrainedResultsIteration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastDrainedResultsIteration(v)
+		return nil
 	case metadata.FieldUploadingLock:
 		v, ok := value.(bool)
 		if !ok {
@@ -2878,7 +3725,7 @@ func (m *MetadataMutation) SetField(name string, value ent.Value) error {
 		m.SetUploadingLock(v)
 		return nil
 	}
-	return fmt.Errorf("unknown metadata field %s", name)
+	return fmt.Errorf("unknown Metadata field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
@@ -2890,6 +3737,9 @@ func (m *MetadataMutation) AddedFields() []string {
 	}
 	if m.addlast_calculations_iteration != nil {
 		fields = append(fields, metadata.FieldLastCalculationsIteration)
+	}
+	if m.addlast_drained_results_iteration != nil {
+		fields = append(fields, metadata.FieldLastDrainedResultsIteration)
 	}
 	return fields
 }
@@ -2903,6 +3753,8 @@ func (m *MetadataMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedLastApplicationsIteration()
 	case metadata.FieldLastCalculationsIteration:
 		return m.AddedLastCalculationsIteration()
+	case metadata.FieldLastDrainedResultsIteration:
+		return m.AddedLastDrainedResultsIteration()
 	}
 	return nil, false
 }
@@ -2926,8 +3778,15 @@ func (m *MetadataMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddLastCalculationsIteration(v)
 		return nil
+	case metadata.FieldLastDrainedResultsIteration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLastDrainedResultsIteration(v)
+		return nil
 	}
-	return fmt.Errorf("unknown metadata numeric field %s", name)
+	return fmt.Errorf("unknown Metadata numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
@@ -2946,7 +3805,7 @@ func (m *MetadataMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *MetadataMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown metadata nullable field %s", name)
+	return fmt.Errorf("unknown Metadata nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
@@ -2959,11 +3818,14 @@ func (m *MetadataMutation) ResetField(name string) error {
 	case metadata.FieldLastCalculationsIteration:
 		m.ResetLastCalculationsIteration()
 		return nil
+	case metadata.FieldLastDrainedResultsIteration:
+		m.ResetLastDrainedResultsIteration()
+		return nil
 	case metadata.FieldUploadingLock:
 		m.ResetUploadingLock()
 		return nil
 	}
-	return fmt.Errorf("unknown metadata field %s", name)
+	return fmt.Errorf("unknown Metadata field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
@@ -3005,13 +3867,13 @@ func (m *MetadataMutation) EdgeCleared(name string) bool {
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *MetadataMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown metadata unique edge %s", name)
+	return fmt.Errorf("unknown Metadata unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *MetadataMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown metadata edge %s", name)
+	return fmt.Errorf("unknown Metadata edge %s", name)
 }
 
 // VarsityMutation represents an operation that mutates the Varsity nodes in the graph.

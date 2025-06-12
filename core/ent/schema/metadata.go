@@ -15,6 +15,7 @@ func (Metadata) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("last_applications_iteration"),
 		field.Int("last_calculations_iteration"),
+		field.Int("last_drained_results_iteration"),
 		field.Bool("uploading_lock"),
 	}
 }

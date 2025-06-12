@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
+	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/metadata"
 	"analabit/core/ent/varsity"
@@ -77,11 +78,12 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			application.Table: application.ValidColumn,
-			calculation.Table: calculation.ValidColumn,
-			heading.Table:     heading.ValidColumn,
-			metadata.Table:    metadata.ValidColumn,
-			varsity.Table:     varsity.ValidColumn,
+			application.Table:   application.ValidColumn,
+			calculation.Table:   calculation.ValidColumn,
+			drainedresult.Table: drainedresult.ValidColumn,
+			heading.Table:       heading.ValidColumn,
+			metadata.Table:      metadata.ValidColumn,
+			varsity.Table:       varsity.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

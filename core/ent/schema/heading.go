@@ -29,5 +29,6 @@ func (Heading) Edges() []ent.Edge {
 		edge.From("varsity", Varsity.Type).Ref("headings").Unique().Required(),
 		edge.To("applications", Application.Type),
 		edge.To("calculations", Calculation.Type),
+		edge.To("drained_results", DrainedResult.Type),
 	}
 }

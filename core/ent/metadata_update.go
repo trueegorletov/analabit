@@ -69,6 +69,27 @@ func (mu *MetadataUpdate) AddLastCalculationsIteration(i int) *MetadataUpdate {
 	return mu
 }
 
+// SetLastDrainedResultsIteration sets the "last_drained_results_iteration" field.
+func (mu *MetadataUpdate) SetLastDrainedResultsIteration(i int) *MetadataUpdate {
+	mu.mutation.ResetLastDrainedResultsIteration()
+	mu.mutation.SetLastDrainedResultsIteration(i)
+	return mu
+}
+
+// SetNillableLastDrainedResultsIteration sets the "last_drained_results_iteration" field if the given value is not nil.
+func (mu *MetadataUpdate) SetNillableLastDrainedResultsIteration(i *int) *MetadataUpdate {
+	if i != nil {
+		mu.SetLastDrainedResultsIteration(*i)
+	}
+	return mu
+}
+
+// AddLastDrainedResultsIteration adds i to the "last_drained_results_iteration" field.
+func (mu *MetadataUpdate) AddLastDrainedResultsIteration(i int) *MetadataUpdate {
+	mu.mutation.AddLastDrainedResultsIteration(i)
+	return mu
+}
+
 // SetUploadingLock sets the "uploading_lock" field.
 func (mu *MetadataUpdate) SetUploadingLock(b bool) *MetadataUpdate {
 	mu.mutation.SetUploadingLock(b)
@@ -136,6 +157,12 @@ func (mu *MetadataUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := mu.mutation.AddedLastCalculationsIteration(); ok {
 		_spec.AddField(metadata.FieldLastCalculationsIteration, field.TypeInt, value)
 	}
+	if value, ok := mu.mutation.LastDrainedResultsIteration(); ok {
+		_spec.SetField(metadata.FieldLastDrainedResultsIteration, field.TypeInt, value)
+	}
+	if value, ok := mu.mutation.AddedLastDrainedResultsIteration(); ok {
+		_spec.AddField(metadata.FieldLastDrainedResultsIteration, field.TypeInt, value)
+	}
 	if value, ok := mu.mutation.UploadingLock(); ok {
 		_spec.SetField(metadata.FieldUploadingLock, field.TypeBool, value)
 	}
@@ -198,6 +225,27 @@ func (muo *MetadataUpdateOne) SetNillableLastCalculationsIteration(i *int) *Meta
 // AddLastCalculationsIteration adds i to the "last_calculations_iteration" field.
 func (muo *MetadataUpdateOne) AddLastCalculationsIteration(i int) *MetadataUpdateOne {
 	muo.mutation.AddLastCalculationsIteration(i)
+	return muo
+}
+
+// SetLastDrainedResultsIteration sets the "last_drained_results_iteration" field.
+func (muo *MetadataUpdateOne) SetLastDrainedResultsIteration(i int) *MetadataUpdateOne {
+	muo.mutation.ResetLastDrainedResultsIteration()
+	muo.mutation.SetLastDrainedResultsIteration(i)
+	return muo
+}
+
+// SetNillableLastDrainedResultsIteration sets the "last_drained_results_iteration" field if the given value is not nil.
+func (muo *MetadataUpdateOne) SetNillableLastDrainedResultsIteration(i *int) *MetadataUpdateOne {
+	if i != nil {
+		muo.SetLastDrainedResultsIteration(*i)
+	}
+	return muo
+}
+
+// AddLastDrainedResultsIteration adds i to the "last_drained_results_iteration" field.
+func (muo *MetadataUpdateOne) AddLastDrainedResultsIteration(i int) *MetadataUpdateOne {
+	muo.mutation.AddLastDrainedResultsIteration(i)
 	return muo
 }
 
@@ -264,7 +312,7 @@ func (muo *MetadataUpdateOne) sqlSave(ctx context.Context) (_node *Metadata, err
 	_spec := sqlgraph.NewUpdateSpec(metadata.Table, metadata.Columns, sqlgraph.NewFieldSpec(metadata.FieldID, field.TypeInt))
 	id, ok := muo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "metadata.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Metadata.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := muo.fields; len(fields) > 0 {
@@ -297,6 +345,12 @@ func (muo *MetadataUpdateOne) sqlSave(ctx context.Context) (_node *Metadata, err
 	}
 	if value, ok := muo.mutation.AddedLastCalculationsIteration(); ok {
 		_spec.AddField(metadata.FieldLastCalculationsIteration, field.TypeInt, value)
+	}
+	if value, ok := muo.mutation.LastDrainedResultsIteration(); ok {
+		_spec.SetField(metadata.FieldLastDrainedResultsIteration, field.TypeInt, value)
+	}
+	if value, ok := muo.mutation.AddedLastDrainedResultsIteration(); ok {
+		_spec.AddField(metadata.FieldLastDrainedResultsIteration, field.TypeInt, value)
 	}
 	if value, ok := muo.mutation.UploadingLock(); ok {
 		_spec.SetField(metadata.FieldUploadingLock, field.TypeBool, value)

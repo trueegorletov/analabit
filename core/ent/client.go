@@ -13,6 +13,7 @@ import (
 
 	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
+	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/metadata"
 	"analabit/core/ent/varsity"
@@ -32,6 +33,8 @@ type Client struct {
 	Application *ApplicationClient
 	// Calculation is the client for interacting with the Calculation builders.
 	Calculation *CalculationClient
+	// DrainedResult is the client for interacting with the DrainedResult builders.
+	DrainedResult *DrainedResultClient
 	// Heading is the client for interacting with the Heading builders.
 	Heading *HeadingClient
 	// Metadata is the client for interacting with the Metadata builders.
@@ -51,6 +54,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Application = NewApplicationClient(c.config)
 	c.Calculation = NewCalculationClient(c.config)
+	c.DrainedResult = NewDrainedResultClient(c.config)
 	c.Heading = NewHeadingClient(c.config)
 	c.Metadata = NewMetadataClient(c.config)
 	c.Varsity = NewVarsityClient(c.config)
@@ -144,13 +148,14 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:         ctx,
-		config:      cfg,
-		Application: NewApplicationClient(cfg),
-		Calculation: NewCalculationClient(cfg),
-		Heading:     NewHeadingClient(cfg),
-		Metadata:    NewMetadataClient(cfg),
-		Varsity:     NewVarsityClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Application:   NewApplicationClient(cfg),
+		Calculation:   NewCalculationClient(cfg),
+		DrainedResult: NewDrainedResultClient(cfg),
+		Heading:       NewHeadingClient(cfg),
+		Metadata:      NewMetadataClient(cfg),
+		Varsity:       NewVarsityClient(cfg),
 	}, nil
 }
 
@@ -168,13 +173,14 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:         ctx,
-		config:      cfg,
-		Application: NewApplicationClient(cfg),
-		Calculation: NewCalculationClient(cfg),
-		Heading:     NewHeadingClient(cfg),
-		Metadata:    NewMetadataClient(cfg),
-		Varsity:     NewVarsityClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Application:   NewApplicationClient(cfg),
+		Calculation:   NewCalculationClient(cfg),
+		DrainedResult: NewDrainedResultClient(cfg),
+		Heading:       NewHeadingClient(cfg),
+		Metadata:      NewMetadataClient(cfg),
+		Varsity:       NewVarsityClient(cfg),
 	}, nil
 }
 
@@ -203,21 +209,21 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Application.Use(hooks...)
-	c.Calculation.Use(hooks...)
-	c.Heading.Use(hooks...)
-	c.Metadata.Use(hooks...)
-	c.Varsity.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Application, c.Calculation, c.DrainedResult, c.Heading, c.Metadata, c.Varsity,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Application.Intercept(interceptors...)
-	c.Calculation.Intercept(interceptors...)
-	c.Heading.Intercept(interceptors...)
-	c.Metadata.Intercept(interceptors...)
-	c.Varsity.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Application, c.Calculation, c.DrainedResult, c.Heading, c.Metadata, c.Varsity,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -227,6 +233,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Application.mutate(ctx, m)
 	case *CalculationMutation:
 		return c.Calculation.mutate(ctx, m)
+	case *DrainedResultMutation:
+		return c.DrainedResult.mutate(ctx, m)
 	case *HeadingMutation:
 		return c.Heading.mutate(ctx, m)
 	case *MetadataMutation:
@@ -536,6 +544,155 @@ func (c *CalculationClient) mutate(ctx context.Context, m *CalculationMutation) 
 	}
 }
 
+// DrainedResultClient is a client for the DrainedResult schema.
+type DrainedResultClient struct {
+	config
+}
+
+// NewDrainedResultClient returns a client for the DrainedResult from the given config.
+func NewDrainedResultClient(c config) *DrainedResultClient {
+	return &DrainedResultClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `drainedresult.Hooks(f(g(h())))`.
+func (c *DrainedResultClient) Use(hooks ...Hook) {
+	c.hooks.DrainedResult = append(c.hooks.DrainedResult, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `drainedresult.Intercept(f(g(h())))`.
+func (c *DrainedResultClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DrainedResult = append(c.inters.DrainedResult, interceptors...)
+}
+
+// Create returns a builder for creating a DrainedResult entity.
+func (c *DrainedResultClient) Create() *DrainedResultCreate {
+	mutation := newDrainedResultMutation(c.config, OpCreate)
+	return &DrainedResultCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DrainedResult entities.
+func (c *DrainedResultClient) CreateBulk(builders ...*DrainedResultCreate) *DrainedResultCreateBulk {
+	return &DrainedResultCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DrainedResultClient) MapCreateBulk(slice any, setFunc func(*DrainedResultCreate, int)) *DrainedResultCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DrainedResultCreateBulk{err: fmt.Errorf("calling to DrainedResultClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DrainedResultCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DrainedResultCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DrainedResult.
+func (c *DrainedResultClient) Update() *DrainedResultUpdate {
+	mutation := newDrainedResultMutation(c.config, OpUpdate)
+	return &DrainedResultUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DrainedResultClient) UpdateOne(dr *DrainedResult) *DrainedResultUpdateOne {
+	mutation := newDrainedResultMutation(c.config, OpUpdateOne, withDrainedResult(dr))
+	return &DrainedResultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DrainedResultClient) UpdateOneID(id int) *DrainedResultUpdateOne {
+	mutation := newDrainedResultMutation(c.config, OpUpdateOne, withDrainedResultID(id))
+	return &DrainedResultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DrainedResult.
+func (c *DrainedResultClient) Delete() *DrainedResultDelete {
+	mutation := newDrainedResultMutation(c.config, OpDelete)
+	return &DrainedResultDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DrainedResultClient) DeleteOne(dr *DrainedResult) *DrainedResultDeleteOne {
+	return c.DeleteOneID(dr.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DrainedResultClient) DeleteOneID(id int) *DrainedResultDeleteOne {
+	builder := c.Delete().Where(drainedresult.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DrainedResultDeleteOne{builder}
+}
+
+// Query returns a query builder for DrainedResult.
+func (c *DrainedResultClient) Query() *DrainedResultQuery {
+	return &DrainedResultQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDrainedResult},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DrainedResult entity by its id.
+func (c *DrainedResultClient) Get(ctx context.Context, id int) (*DrainedResult, error) {
+	return c.Query().Where(drainedresult.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DrainedResultClient) GetX(ctx context.Context, id int) *DrainedResult {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryHeading queries the heading edge of a DrainedResult.
+func (c *DrainedResultClient) QueryHeading(dr *DrainedResult) *HeadingQuery {
+	query := (&HeadingClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := dr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(drainedresult.Table, drainedresult.FieldID, id),
+			sqlgraph.To(heading.Table, heading.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, drainedresult.HeadingTable, drainedresult.HeadingColumn),
+		)
+		fromV = sqlgraph.Neighbors(dr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DrainedResultClient) Hooks() []Hook {
+	return c.hooks.DrainedResult
+}
+
+// Interceptors returns the client interceptors.
+func (c *DrainedResultClient) Interceptors() []Interceptor {
+	return c.inters.DrainedResult
+}
+
+func (c *DrainedResultClient) mutate(ctx context.Context, m *DrainedResultMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DrainedResultCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DrainedResultUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DrainedResultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DrainedResultDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown DrainedResult mutation op: %q", m.Op())
+	}
+}
+
 // HeadingClient is a client for the Heading schema.
 type HeadingClient struct {
 	config
@@ -685,6 +842,22 @@ func (c *HeadingClient) QueryCalculations(h *Heading) *CalculationQuery {
 			sqlgraph.From(heading.Table, heading.FieldID, id),
 			sqlgraph.To(calculation.Table, calculation.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, heading.CalculationsTable, heading.CalculationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(h.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDrainedResults queries the drained_results edge of a Heading.
+func (c *HeadingClient) QueryDrainedResults(h *Heading) *DrainedResultQuery {
+	query := (&DrainedResultClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := h.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(heading.Table, heading.FieldID, id),
+			sqlgraph.To(drainedresult.Table, drainedresult.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, heading.DrainedResultsTable, heading.DrainedResultsColumn),
 		)
 		fromV = sqlgraph.Neighbors(h.driver.Dialect(), step)
 		return fromV, nil
@@ -846,7 +1019,7 @@ func (c *MetadataClient) mutate(ctx context.Context, m *MetadataMutation) (Value
 	case OpDelete, OpDeleteOne:
 		return (&MetadataDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown metadata mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Metadata mutation op: %q", m.Op())
 	}
 }
 
@@ -1002,9 +1175,10 @@ func (c *VarsityClient) mutate(ctx context.Context, m *VarsityMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Application, Calculation, Heading, Metadata, Varsity []ent.Hook
+		Application, Calculation, DrainedResult, Heading, Metadata, Varsity []ent.Hook
 	}
 	inters struct {
-		Application, Calculation, Heading, Metadata, Varsity []ent.Interceptor
+		Application, Calculation, DrainedResult, Heading, Metadata,
+		Varsity []ent.Interceptor
 	}
 )

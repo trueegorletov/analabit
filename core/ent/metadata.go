@@ -20,6 +20,8 @@ type Metadata struct {
 	LastApplicationsIteration int `json:"last_applications_iteration,omitempty"`
 	// LastCalculationsIteration holds the value of the "last_calculations_iteration" field.
 	LastCalculationsIteration int `json:"last_calculations_iteration,omitempty"`
+	// LastDrainedResultsIteration holds the value of the "last_drained_results_iteration" field.
+	LastDrainedResultsIteration int `json:"last_drained_results_iteration,omitempty"`
 	// UploadingLock holds the value of the "uploading_lock" field.
 	UploadingLock bool `json:"uploading_lock,omitempty"`
 	selectValues  sql.SelectValues
@@ -32,7 +34,7 @@ func (*Metadata) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case metadata.FieldUploadingLock:
 			values[i] = new(sql.NullBool)
-		case metadata.FieldID, metadata.FieldLastApplicationsIteration, metadata.FieldLastCalculationsIteration:
+		case metadata.FieldID, metadata.FieldLastApplicationsIteration, metadata.FieldLastCalculationsIteration, metadata.FieldLastDrainedResultsIteration:
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -67,6 +69,12 @@ func (m *Metadata) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.LastCalculationsIteration = int(value.Int64)
 			}
+		case metadata.FieldLastDrainedResultsIteration:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field last_drained_results_iteration", values[i])
+			} else if value.Valid {
+				m.LastDrainedResultsIteration = int(value.Int64)
+			}
 		case metadata.FieldUploadingLock:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field uploading_lock", values[i])
@@ -98,7 +106,7 @@ func (m *Metadata) Update() *MetadataUpdateOne {
 func (m *Metadata) Unwrap() *Metadata {
 	_tx, ok := m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: metadata is not a transactional entity")
+		panic("ent: Metadata is not a transactional entity")
 	}
 	m.config.driver = _tx.drv
 	return m
@@ -107,13 +115,16 @@ func (m *Metadata) Unwrap() *Metadata {
 // String implements the fmt.Stringer.
 func (m *Metadata) String() string {
 	var builder strings.Builder
-	builder.WriteString("metadata(")
+	builder.WriteString("Metadata(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
 	builder.WriteString("last_applications_iteration=")
 	builder.WriteString(fmt.Sprintf("%v", m.LastApplicationsIteration))
 	builder.WriteString(", ")
 	builder.WriteString("last_calculations_iteration=")
 	builder.WriteString(fmt.Sprintf("%v", m.LastCalculationsIteration))
+	builder.WriteString(", ")
+	builder.WriteString("last_drained_results_iteration=")
+	builder.WriteString(fmt.Sprintf("%v", m.LastDrainedResultsIteration))
 	builder.WriteString(", ")
 	builder.WriteString("uploading_lock=")
 	builder.WriteString(fmt.Sprintf("%v", m.UploadingLock))

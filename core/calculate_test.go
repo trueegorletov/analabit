@@ -222,7 +222,7 @@ func TestCalculateAdmissions_FullScenarioWithQuotasAndGeneral(t *testing.T) {
 	// H2: Gen=2
 	v.AddHeading("H2", Capacities{Regular: 2}, "H2")
 
-	// Student Applications:
+	// Student ApplicationsCache:
 	// S1: H1 (TQ, 10, P1), H2 (Reg, 20, P2)
 	v.AddApplication("H1", sid(1), 10, 1, CompetitionTargetQuota, 0)
 	v.AddApplication("H2", sid(1), 20, 2, CompetitionRegular, 0)

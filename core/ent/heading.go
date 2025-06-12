@@ -44,9 +44,11 @@ type HeadingEdges struct {
 	Applications []*Application `json:"applications,omitempty"`
 	// Calculations holds the value of the calculations edge.
 	Calculations []*Calculation `json:"calculations,omitempty"`
+	// DrainedResults holds the value of the drained_results edge.
+	DrainedResults []*DrainedResult `json:"drained_results,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // VarsityOrErr returns the Varsity value or an error if the edge
@@ -76,6 +78,15 @@ func (e HeadingEdges) CalculationsOrErr() ([]*Calculation, error) {
 		return e.Calculations, nil
 	}
 	return nil, &NotLoadedError{edge: "calculations"}
+}
+
+// DrainedResultsOrErr returns the DrainedResults value or an error if the edge
+// was not loaded in eager-loading.
+func (e HeadingEdges) DrainedResultsOrErr() ([]*DrainedResult, error) {
+	if e.loadedTypes[3] {
+		return e.DrainedResults, nil
+	}
+	return nil, &NotLoadedError{edge: "drained_results"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -179,6 +190,11 @@ func (h *Heading) QueryApplications() *ApplicationQuery {
 // QueryCalculations queries the "calculations" edge of the Heading entity.
 func (h *Heading) QueryCalculations() *CalculationQuery {
 	return NewHeadingClient(h.config).QueryCalculations(h)
+}
+
+// QueryDrainedResults queries the "drained_results" edge of the Heading entity.
+func (h *Heading) QueryDrainedResults() *DrainedResultQuery {
+	return NewHeadingClient(h.config).QueryDrainedResults(h)
 }
 
 // Update returns a builder for updating this Heading.

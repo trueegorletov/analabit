@@ -16,6 +16,8 @@ type Tx struct {
 	Application *ApplicationClient
 	// Calculation is the client for interacting with the Calculation builders.
 	Calculation *CalculationClient
+	// DrainedResult is the client for interacting with the DrainedResult builders.
+	DrainedResult *DrainedResultClient
 	// Heading is the client for interacting with the Heading builders.
 	Heading *HeadingClient
 	// Metadata is the client for interacting with the Metadata builders.
@@ -48,7 +50,7 @@ type (
 	//	hook := func(next ent.Committer) ent.Committer {
 	//		return ent.CommitFunc(func(ctx context.Context, tx *ent.Tx) error {
 	//			// Do some stuff before.
-	//			if err := next.commit(ctx, tx); err != nil {
+	//			if err := next.Commit(ctx, tx); err != nil {
 	//				return err
 	//			}
 	//			// Do some stuff after.
@@ -155,6 +157,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Application = NewApplicationClient(tx.config)
 	tx.Calculation = NewCalculationClient(tx.config)
+	tx.DrainedResult = NewDrainedResultClient(tx.config)
 	tx.Heading = NewHeadingClient(tx.config)
 	tx.Metadata = NewMetadataClient(tx.config)
 	tx.Varsity = NewVarsityClient(tx.config)

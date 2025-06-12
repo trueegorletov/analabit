@@ -1,6 +1,21 @@
-[upload]
-drain_simuls = [0, 33, 50, 66, 100]
+# Configuration file for the CLI application
 
+# Used varsities configuration
+[varsities]
+# List of codes of universities to use, "all" for all universities
+list = ["all"]
+# List of codes of universities to exclude
+# Example:
+# excluded = ["spbu", "hse_msk"]
+excluded = []
+
+[drain_sim]
+# Percentage of the total capacity to drain at each separate simulation
+stages = [33, 50, 66, 100]
+# Number of iterations for each stage, result will be averaged
+iterations = 100
+
+# Database configuration for uploading results, PostgreSQL
 [upload.database]
 host = "localhost"
 port = 5432
@@ -9,5 +24,15 @@ dbname = "database_name"
 password = "password"
 
 [cache]
+# Directory for saving cache files into
+# The cache files are named with Unix timestamp and has .gob extension
+# Like: ./cache/1700000000.gob
+# They are encoded by functions source.SerializeList and source.DeserializeList defined in core/source/cache.go
 directory = "./cache"
+# Time to live for cache files in minutes
+# On cli application shell startup, if there are any cache files younger than this time,
+# they will be used instead of making new crawling requests
 ttl_minutes = 10
+
+[logging]
+file = "cli.log"

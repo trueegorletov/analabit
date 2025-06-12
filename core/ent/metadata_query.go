@@ -266,7 +266,7 @@ func (mq *MetadataQuery) Clone() *MetadataQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.metadata.Query().
+//	client.Metadata.Query().
 //		GroupBy(metadata.FieldLastApplicationsIteration).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
@@ -288,7 +288,7 @@ func (mq *MetadataQuery) GroupBy(field string, fields ...string) *MetadataGroupB
 //		LastApplicationsIteration int `json:"last_applications_iteration,omitempty"`
 //	}
 //
-//	client.metadata.Query().
+//	client.Metadata.Query().
 //		Select(metadata.FieldLastApplicationsIteration).
 //		Scan(ctx, &v)
 func (mq *MetadataQuery) Select(fields ...string) *MetadataSelect {

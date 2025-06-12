@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
+	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/varsity"
 	"context"
@@ -97,6 +98,21 @@ func (hc *HeadingCreate) AddCalculations(c ...*Calculation) *HeadingCreate {
 		ids[i] = c[i].ID
 	}
 	return hc.AddCalculationIDs(ids...)
+}
+
+// AddDrainedResultIDs adds the "drained_results" edge to the DrainedResult entity by IDs.
+func (hc *HeadingCreate) AddDrainedResultIDs(ids ...int) *HeadingCreate {
+	hc.mutation.AddDrainedResultIDs(ids...)
+	return hc
+}
+
+// AddDrainedResults adds the "drained_results" edges to the DrainedResult entity.
+func (hc *HeadingCreate) AddDrainedResults(d ...*DrainedResult) *HeadingCreate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return hc.AddDrainedResultIDs(ids...)
 }
 
 // Mutation returns the HeadingMutation object of the builder.
@@ -246,6 +262,22 @@ func (hc *HeadingCreate) createSpec() (*Heading, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(calculation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := hc.mutation.DrainedResultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   heading.DrainedResultsTable,
+			Columns: []string{heading.DrainedResultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(drainedresult.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
