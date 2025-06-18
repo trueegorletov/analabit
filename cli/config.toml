@@ -13,15 +13,15 @@ excluded = []
 # Percentage of the total capacity to drain at each separate simulation
 stages = [33, 50, 66, 100]
 # Number of iterations for each stage, result will be averaged
-iterations = 100
+iterations = 1000
 
 # Database configuration for uploading results, PostgreSQL
 [upload.database]
 host = "localhost"
 port = 5432
-user = "username"
-dbname = "database_name"
-password = "password"
+user = "analabit"
+dbname = "analabit"
+password = ""
 
 [cache]
 # Directory for saving cache files into
