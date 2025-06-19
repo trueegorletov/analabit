@@ -24,7 +24,7 @@ func New(prototype *source.Varsity, drainPercent int) *Drainer {
 	}
 }
 
-const maxComputeGoroutines = 128
+const maxComputeGoroutines = 50
 
 func (d *Drainer) Run(iterations int) []DrainedResult {
 	type headingResults struct {
@@ -35,7 +35,7 @@ func (d *Drainer) Run(iterations int) []DrainedResult {
 
 	codeToResult := make(map[string]headingResults)
 
-	resultsChan := make(chan []core.CalculationResult, maxComputeGoroutines*2)
+	resultsChan := make(chan []core.CalculationResult, iterations)
 
 	sema := make(chan struct{}, maxComputeGoroutines)
 
