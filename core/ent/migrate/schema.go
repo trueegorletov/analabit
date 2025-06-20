@@ -61,8 +61,14 @@ var (
 	DrainedResultsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "drained_percent", Type: field.TypeInt},
-		{Name: "passing_score", Type: field.TypeInt},
-		{Name: "last_admitted_rating_place", Type: field.TypeInt},
+		{Name: "avg_passing_score", Type: field.TypeInt},
+		{Name: "min_passing_score", Type: field.TypeInt},
+		{Name: "max_passing_score", Type: field.TypeInt},
+		{Name: "med_passing_score", Type: field.TypeInt},
+		{Name: "avg_last_admitted_rating_place", Type: field.TypeInt},
+		{Name: "min_last_admitted_rating_place", Type: field.TypeInt},
+		{Name: "max_last_admitted_rating_place", Type: field.TypeInt},
+		{Name: "med_last_admitted_rating_place", Type: field.TypeInt},
 		{Name: "iteration", Type: field.TypeInt},
 		{Name: "heading_drained_results", Type: field.TypeInt},
 	}
@@ -74,7 +80,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "drained_results_headings_drained_results",
-				Columns:    []*schema.Column{DrainedResultsColumns[5]},
+				Columns:    []*schema.Column{DrainedResultsColumns[11]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -105,20 +111,6 @@ var (
 			},
 		},
 	}
-	// MetadataColumns holds the columns for the "metadata" table.
-	MetadataColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "last_applications_iteration", Type: field.TypeInt},
-		{Name: "last_calculations_iteration", Type: field.TypeInt},
-		{Name: "last_drained_results_iteration", Type: field.TypeInt},
-		{Name: "uploading_lock", Type: field.TypeBool},
-	}
-	// MetadataTable holds the schema information for the "metadata" table.
-	MetadataTable = &schema.Table{
-		Name:       "metadata",
-		Columns:    MetadataColumns,
-		PrimaryKey: []*schema.Column{MetadataColumns[0]},
-	}
 	// VarsitiesColumns holds the columns for the "varsities" table.
 	VarsitiesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -137,7 +129,6 @@ var (
 		CalculationsTable,
 		DrainedResultsTable,
 		HeadingsTable,
-		MetadataTable,
 		VarsitiesTable,
 	}
 )

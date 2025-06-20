@@ -19,10 +19,22 @@ type DrainedResult struct {
 	ID int `json:"id,omitempty"`
 	// DrainedPercent holds the value of the "drained_percent" field.
 	DrainedPercent int `json:"drained_percent,omitempty"`
-	// PassingScore holds the value of the "passing_score" field.
-	PassingScore int `json:"passing_score,omitempty"`
-	// LastAdmittedRatingPlace holds the value of the "last_admitted_rating_place" field.
-	LastAdmittedRatingPlace int `json:"last_admitted_rating_place,omitempty"`
+	// AvgPassingScore holds the value of the "avg_passing_score" field.
+	AvgPassingScore int `json:"avg_passing_score,omitempty"`
+	// MinPassingScore holds the value of the "min_passing_score" field.
+	MinPassingScore int `json:"min_passing_score,omitempty"`
+	// MaxPassingScore holds the value of the "max_passing_score" field.
+	MaxPassingScore int `json:"max_passing_score,omitempty"`
+	// MedPassingScore holds the value of the "med_passing_score" field.
+	MedPassingScore int `json:"med_passing_score,omitempty"`
+	// AvgLastAdmittedRatingPlace holds the value of the "avg_last_admitted_rating_place" field.
+	AvgLastAdmittedRatingPlace int `json:"avg_last_admitted_rating_place,omitempty"`
+	// MinLastAdmittedRatingPlace holds the value of the "min_last_admitted_rating_place" field.
+	MinLastAdmittedRatingPlace int `json:"min_last_admitted_rating_place,omitempty"`
+	// MaxLastAdmittedRatingPlace holds the value of the "max_last_admitted_rating_place" field.
+	MaxLastAdmittedRatingPlace int `json:"max_last_admitted_rating_place,omitempty"`
+	// MedLastAdmittedRatingPlace holds the value of the "med_last_admitted_rating_place" field.
+	MedLastAdmittedRatingPlace int `json:"med_last_admitted_rating_place,omitempty"`
 	// Iteration holds the value of the "iteration" field.
 	Iteration int `json:"iteration,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -57,7 +69,7 @@ func (*DrainedResult) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case drainedresult.FieldID, drainedresult.FieldDrainedPercent, drainedresult.FieldPassingScore, drainedresult.FieldLastAdmittedRatingPlace, drainedresult.FieldIteration:
+		case drainedresult.FieldID, drainedresult.FieldDrainedPercent, drainedresult.FieldAvgPassingScore, drainedresult.FieldMinPassingScore, drainedresult.FieldMaxPassingScore, drainedresult.FieldMedPassingScore, drainedresult.FieldAvgLastAdmittedRatingPlace, drainedresult.FieldMinLastAdmittedRatingPlace, drainedresult.FieldMaxLastAdmittedRatingPlace, drainedresult.FieldMedLastAdmittedRatingPlace, drainedresult.FieldIteration:
 			values[i] = new(sql.NullInt64)
 		case drainedresult.ForeignKeys[0]: // heading_drained_results
 			values[i] = new(sql.NullInt64)
@@ -88,17 +100,53 @@ func (dr *DrainedResult) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				dr.DrainedPercent = int(value.Int64)
 			}
-		case drainedresult.FieldPassingScore:
+		case drainedresult.FieldAvgPassingScore:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field passing_score", values[i])
+				return fmt.Errorf("unexpected type %T for field avg_passing_score", values[i])
 			} else if value.Valid {
-				dr.PassingScore = int(value.Int64)
+				dr.AvgPassingScore = int(value.Int64)
 			}
-		case drainedresult.FieldLastAdmittedRatingPlace:
+		case drainedresult.FieldMinPassingScore:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field last_admitted_rating_place", values[i])
+				return fmt.Errorf("unexpected type %T for field min_passing_score", values[i])
 			} else if value.Valid {
-				dr.LastAdmittedRatingPlace = int(value.Int64)
+				dr.MinPassingScore = int(value.Int64)
+			}
+		case drainedresult.FieldMaxPassingScore:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field max_passing_score", values[i])
+			} else if value.Valid {
+				dr.MaxPassingScore = int(value.Int64)
+			}
+		case drainedresult.FieldMedPassingScore:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field med_passing_score", values[i])
+			} else if value.Valid {
+				dr.MedPassingScore = int(value.Int64)
+			}
+		case drainedresult.FieldAvgLastAdmittedRatingPlace:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field avg_last_admitted_rating_place", values[i])
+			} else if value.Valid {
+				dr.AvgLastAdmittedRatingPlace = int(value.Int64)
+			}
+		case drainedresult.FieldMinLastAdmittedRatingPlace:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field min_last_admitted_rating_place", values[i])
+			} else if value.Valid {
+				dr.MinLastAdmittedRatingPlace = int(value.Int64)
+			}
+		case drainedresult.FieldMaxLastAdmittedRatingPlace:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field max_last_admitted_rating_place", values[i])
+			} else if value.Valid {
+				dr.MaxLastAdmittedRatingPlace = int(value.Int64)
+			}
+		case drainedresult.FieldMedLastAdmittedRatingPlace:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field med_last_admitted_rating_place", values[i])
+			} else if value.Valid {
+				dr.MedLastAdmittedRatingPlace = int(value.Int64)
 			}
 		case drainedresult.FieldIteration:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -157,11 +205,29 @@ func (dr *DrainedResult) String() string {
 	builder.WriteString("drained_percent=")
 	builder.WriteString(fmt.Sprintf("%v", dr.DrainedPercent))
 	builder.WriteString(", ")
-	builder.WriteString("passing_score=")
-	builder.WriteString(fmt.Sprintf("%v", dr.PassingScore))
+	builder.WriteString("avg_passing_score=")
+	builder.WriteString(fmt.Sprintf("%v", dr.AvgPassingScore))
 	builder.WriteString(", ")
-	builder.WriteString("last_admitted_rating_place=")
-	builder.WriteString(fmt.Sprintf("%v", dr.LastAdmittedRatingPlace))
+	builder.WriteString("min_passing_score=")
+	builder.WriteString(fmt.Sprintf("%v", dr.MinPassingScore))
+	builder.WriteString(", ")
+	builder.WriteString("max_passing_score=")
+	builder.WriteString(fmt.Sprintf("%v", dr.MaxPassingScore))
+	builder.WriteString(", ")
+	builder.WriteString("med_passing_score=")
+	builder.WriteString(fmt.Sprintf("%v", dr.MedPassingScore))
+	builder.WriteString(", ")
+	builder.WriteString("avg_last_admitted_rating_place=")
+	builder.WriteString(fmt.Sprintf("%v", dr.AvgLastAdmittedRatingPlace))
+	builder.WriteString(", ")
+	builder.WriteString("min_last_admitted_rating_place=")
+	builder.WriteString(fmt.Sprintf("%v", dr.MinLastAdmittedRatingPlace))
+	builder.WriteString(", ")
+	builder.WriteString("max_last_admitted_rating_place=")
+	builder.WriteString(fmt.Sprintf("%v", dr.MaxLastAdmittedRatingPlace))
+	builder.WriteString(", ")
+	builder.WriteString("med_last_admitted_rating_place=")
+	builder.WriteString(fmt.Sprintf("%v", dr.MedLastAdmittedRatingPlace))
 	builder.WriteString(", ")
 	builder.WriteString("iteration=")
 	builder.WriteString(fmt.Sprintf("%v", dr.Iteration))

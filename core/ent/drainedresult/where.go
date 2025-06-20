@@ -59,14 +59,44 @@ func DrainedPercent(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldEQ(FieldDrainedPercent, v))
 }
 
-// PassingScore applies equality check predicate on the "passing_score" field. It's identical to PassingScoreEQ.
-func PassingScore(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldEQ(FieldPassingScore, v))
+// AvgPassingScore applies equality check predicate on the "avg_passing_score" field. It's identical to AvgPassingScoreEQ.
+func AvgPassingScore(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldAvgPassingScore, v))
 }
 
-// LastAdmittedRatingPlace applies equality check predicate on the "last_admitted_rating_place" field. It's identical to LastAdmittedRatingPlaceEQ.
-func LastAdmittedRatingPlace(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldEQ(FieldLastAdmittedRatingPlace, v))
+// MinPassingScore applies equality check predicate on the "min_passing_score" field. It's identical to MinPassingScoreEQ.
+func MinPassingScore(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMinPassingScore, v))
+}
+
+// MaxPassingScore applies equality check predicate on the "max_passing_score" field. It's identical to MaxPassingScoreEQ.
+func MaxPassingScore(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMaxPassingScore, v))
+}
+
+// MedPassingScore applies equality check predicate on the "med_passing_score" field. It's identical to MedPassingScoreEQ.
+func MedPassingScore(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMedPassingScore, v))
+}
+
+// AvgLastAdmittedRatingPlace applies equality check predicate on the "avg_last_admitted_rating_place" field. It's identical to AvgLastAdmittedRatingPlaceEQ.
+func AvgLastAdmittedRatingPlace(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldAvgLastAdmittedRatingPlace, v))
+}
+
+// MinLastAdmittedRatingPlace applies equality check predicate on the "min_last_admitted_rating_place" field. It's identical to MinLastAdmittedRatingPlaceEQ.
+func MinLastAdmittedRatingPlace(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMinLastAdmittedRatingPlace, v))
+}
+
+// MaxLastAdmittedRatingPlace applies equality check predicate on the "max_last_admitted_rating_place" field. It's identical to MaxLastAdmittedRatingPlaceEQ.
+func MaxLastAdmittedRatingPlace(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMaxLastAdmittedRatingPlace, v))
+}
+
+// MedLastAdmittedRatingPlace applies equality check predicate on the "med_last_admitted_rating_place" field. It's identical to MedLastAdmittedRatingPlaceEQ.
+func MedLastAdmittedRatingPlace(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMedLastAdmittedRatingPlace, v))
 }
 
 // Iteration applies equality check predicate on the "iteration" field. It's identical to IterationEQ.
@@ -114,84 +144,324 @@ func DrainedPercentLTE(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldLTE(FieldDrainedPercent, v))
 }
 
-// PassingScoreEQ applies the EQ predicate on the "passing_score" field.
-func PassingScoreEQ(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldEQ(FieldPassingScore, v))
+// AvgPassingScoreEQ applies the EQ predicate on the "avg_passing_score" field.
+func AvgPassingScoreEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldAvgPassingScore, v))
 }
 
-// PassingScoreNEQ applies the NEQ predicate on the "passing_score" field.
-func PassingScoreNEQ(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldNEQ(FieldPassingScore, v))
+// AvgPassingScoreNEQ applies the NEQ predicate on the "avg_passing_score" field.
+func AvgPassingScoreNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldAvgPassingScore, v))
 }
 
-// PassingScoreIn applies the In predicate on the "passing_score" field.
-func PassingScoreIn(vs ...int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldIn(FieldPassingScore, vs...))
+// AvgPassingScoreIn applies the In predicate on the "avg_passing_score" field.
+func AvgPassingScoreIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldAvgPassingScore, vs...))
 }
 
-// PassingScoreNotIn applies the NotIn predicate on the "passing_score" field.
-func PassingScoreNotIn(vs ...int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldNotIn(FieldPassingScore, vs...))
+// AvgPassingScoreNotIn applies the NotIn predicate on the "avg_passing_score" field.
+func AvgPassingScoreNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldAvgPassingScore, vs...))
 }
 
-// PassingScoreGT applies the GT predicate on the "passing_score" field.
-func PassingScoreGT(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldGT(FieldPassingScore, v))
+// AvgPassingScoreGT applies the GT predicate on the "avg_passing_score" field.
+func AvgPassingScoreGT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGT(FieldAvgPassingScore, v))
 }
 
-// PassingScoreGTE applies the GTE predicate on the "passing_score" field.
-func PassingScoreGTE(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldGTE(FieldPassingScore, v))
+// AvgPassingScoreGTE applies the GTE predicate on the "avg_passing_score" field.
+func AvgPassingScoreGTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGTE(FieldAvgPassingScore, v))
 }
 
-// PassingScoreLT applies the LT predicate on the "passing_score" field.
-func PassingScoreLT(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldLT(FieldPassingScore, v))
+// AvgPassingScoreLT applies the LT predicate on the "avg_passing_score" field.
+func AvgPassingScoreLT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLT(FieldAvgPassingScore, v))
 }
 
-// PassingScoreLTE applies the LTE predicate on the "passing_score" field.
-func PassingScoreLTE(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldLTE(FieldPassingScore, v))
+// AvgPassingScoreLTE applies the LTE predicate on the "avg_passing_score" field.
+func AvgPassingScoreLTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLTE(FieldAvgPassingScore, v))
 }
 
-// LastAdmittedRatingPlaceEQ applies the EQ predicate on the "last_admitted_rating_place" field.
-func LastAdmittedRatingPlaceEQ(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldEQ(FieldLastAdmittedRatingPlace, v))
+// MinPassingScoreEQ applies the EQ predicate on the "min_passing_score" field.
+func MinPassingScoreEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMinPassingScore, v))
 }
 
-// LastAdmittedRatingPlaceNEQ applies the NEQ predicate on the "last_admitted_rating_place" field.
-func LastAdmittedRatingPlaceNEQ(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldNEQ(FieldLastAdmittedRatingPlace, v))
+// MinPassingScoreNEQ applies the NEQ predicate on the "min_passing_score" field.
+func MinPassingScoreNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldMinPassingScore, v))
 }
 
-// LastAdmittedRatingPlaceIn applies the In predicate on the "last_admitted_rating_place" field.
-func LastAdmittedRatingPlaceIn(vs ...int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldIn(FieldLastAdmittedRatingPlace, vs...))
+// MinPassingScoreIn applies the In predicate on the "min_passing_score" field.
+func MinPassingScoreIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldMinPassingScore, vs...))
 }
 
-// LastAdmittedRatingPlaceNotIn applies the NotIn predicate on the "last_admitted_rating_place" field.
-func LastAdmittedRatingPlaceNotIn(vs ...int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldNotIn(FieldLastAdmittedRatingPlace, vs...))
+// MinPassingScoreNotIn applies the NotIn predicate on the "min_passing_score" field.
+func MinPassingScoreNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldMinPassingScore, vs...))
 }
 
-// LastAdmittedRatingPlaceGT applies the GT predicate on the "last_admitted_rating_place" field.
-func LastAdmittedRatingPlaceGT(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldGT(FieldLastAdmittedRatingPlace, v))
+// MinPassingScoreGT applies the GT predicate on the "min_passing_score" field.
+func MinPassingScoreGT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGT(FieldMinPassingScore, v))
 }
 
-// LastAdmittedRatingPlaceGTE applies the GTE predicate on the "last_admitted_rating_place" field.
-func LastAdmittedRatingPlaceGTE(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldGTE(FieldLastAdmittedRatingPlace, v))
+// MinPassingScoreGTE applies the GTE predicate on the "min_passing_score" field.
+func MinPassingScoreGTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGTE(FieldMinPassingScore, v))
 }
 
-// LastAdmittedRatingPlaceLT applies the LT predicate on the "last_admitted_rating_place" field.
-func LastAdmittedRatingPlaceLT(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldLT(FieldLastAdmittedRatingPlace, v))
+// MinPassingScoreLT applies the LT predicate on the "min_passing_score" field.
+func MinPassingScoreLT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLT(FieldMinPassingScore, v))
 }
 
-// LastAdmittedRatingPlaceLTE applies the LTE predicate on the "last_admitted_rating_place" field.
-func LastAdmittedRatingPlaceLTE(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldLTE(FieldLastAdmittedRatingPlace, v))
+// MinPassingScoreLTE applies the LTE predicate on the "min_passing_score" field.
+func MinPassingScoreLTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLTE(FieldMinPassingScore, v))
+}
+
+// MaxPassingScoreEQ applies the EQ predicate on the "max_passing_score" field.
+func MaxPassingScoreEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMaxPassingScore, v))
+}
+
+// MaxPassingScoreNEQ applies the NEQ predicate on the "max_passing_score" field.
+func MaxPassingScoreNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldMaxPassingScore, v))
+}
+
+// MaxPassingScoreIn applies the In predicate on the "max_passing_score" field.
+func MaxPassingScoreIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldMaxPassingScore, vs...))
+}
+
+// MaxPassingScoreNotIn applies the NotIn predicate on the "max_passing_score" field.
+func MaxPassingScoreNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldMaxPassingScore, vs...))
+}
+
+// MaxPassingScoreGT applies the GT predicate on the "max_passing_score" field.
+func MaxPassingScoreGT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGT(FieldMaxPassingScore, v))
+}
+
+// MaxPassingScoreGTE applies the GTE predicate on the "max_passing_score" field.
+func MaxPassingScoreGTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGTE(FieldMaxPassingScore, v))
+}
+
+// MaxPassingScoreLT applies the LT predicate on the "max_passing_score" field.
+func MaxPassingScoreLT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLT(FieldMaxPassingScore, v))
+}
+
+// MaxPassingScoreLTE applies the LTE predicate on the "max_passing_score" field.
+func MaxPassingScoreLTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLTE(FieldMaxPassingScore, v))
+}
+
+// MedPassingScoreEQ applies the EQ predicate on the "med_passing_score" field.
+func MedPassingScoreEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMedPassingScore, v))
+}
+
+// MedPassingScoreNEQ applies the NEQ predicate on the "med_passing_score" field.
+func MedPassingScoreNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldMedPassingScore, v))
+}
+
+// MedPassingScoreIn applies the In predicate on the "med_passing_score" field.
+func MedPassingScoreIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldMedPassingScore, vs...))
+}
+
+// MedPassingScoreNotIn applies the NotIn predicate on the "med_passing_score" field.
+func MedPassingScoreNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldMedPassingScore, vs...))
+}
+
+// MedPassingScoreGT applies the GT predicate on the "med_passing_score" field.
+func MedPassingScoreGT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGT(FieldMedPassingScore, v))
+}
+
+// MedPassingScoreGTE applies the GTE predicate on the "med_passing_score" field.
+func MedPassingScoreGTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGTE(FieldMedPassingScore, v))
+}
+
+// MedPassingScoreLT applies the LT predicate on the "med_passing_score" field.
+func MedPassingScoreLT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLT(FieldMedPassingScore, v))
+}
+
+// MedPassingScoreLTE applies the LTE predicate on the "med_passing_score" field.
+func MedPassingScoreLTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLTE(FieldMedPassingScore, v))
+}
+
+// AvgLastAdmittedRatingPlaceEQ applies the EQ predicate on the "avg_last_admitted_rating_place" field.
+func AvgLastAdmittedRatingPlaceEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldAvgLastAdmittedRatingPlace, v))
+}
+
+// AvgLastAdmittedRatingPlaceNEQ applies the NEQ predicate on the "avg_last_admitted_rating_place" field.
+func AvgLastAdmittedRatingPlaceNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldAvgLastAdmittedRatingPlace, v))
+}
+
+// AvgLastAdmittedRatingPlaceIn applies the In predicate on the "avg_last_admitted_rating_place" field.
+func AvgLastAdmittedRatingPlaceIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldAvgLastAdmittedRatingPlace, vs...))
+}
+
+// AvgLastAdmittedRatingPlaceNotIn applies the NotIn predicate on the "avg_last_admitted_rating_place" field.
+func AvgLastAdmittedRatingPlaceNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldAvgLastAdmittedRatingPlace, vs...))
+}
+
+// AvgLastAdmittedRatingPlaceGT applies the GT predicate on the "avg_last_admitted_rating_place" field.
+func AvgLastAdmittedRatingPlaceGT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGT(FieldAvgLastAdmittedRatingPlace, v))
+}
+
+// AvgLastAdmittedRatingPlaceGTE applies the GTE predicate on the "avg_last_admitted_rating_place" field.
+func AvgLastAdmittedRatingPlaceGTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGTE(FieldAvgLastAdmittedRatingPlace, v))
+}
+
+// AvgLastAdmittedRatingPlaceLT applies the LT predicate on the "avg_last_admitted_rating_place" field.
+func AvgLastAdmittedRatingPlaceLT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLT(FieldAvgLastAdmittedRatingPlace, v))
+}
+
+// AvgLastAdmittedRatingPlaceLTE applies the LTE predicate on the "avg_last_admitted_rating_place" field.
+func AvgLastAdmittedRatingPlaceLTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLTE(FieldAvgLastAdmittedRatingPlace, v))
+}
+
+// MinLastAdmittedRatingPlaceEQ applies the EQ predicate on the "min_last_admitted_rating_place" field.
+func MinLastAdmittedRatingPlaceEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMinLastAdmittedRatingPlace, v))
+}
+
+// MinLastAdmittedRatingPlaceNEQ applies the NEQ predicate on the "min_last_admitted_rating_place" field.
+func MinLastAdmittedRatingPlaceNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldMinLastAdmittedRatingPlace, v))
+}
+
+// MinLastAdmittedRatingPlaceIn applies the In predicate on the "min_last_admitted_rating_place" field.
+func MinLastAdmittedRatingPlaceIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldMinLastAdmittedRatingPlace, vs...))
+}
+
+// MinLastAdmittedRatingPlaceNotIn applies the NotIn predicate on the "min_last_admitted_rating_place" field.
+func MinLastAdmittedRatingPlaceNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldMinLastAdmittedRatingPlace, vs...))
+}
+
+// MinLastAdmittedRatingPlaceGT applies the GT predicate on the "min_last_admitted_rating_place" field.
+func MinLastAdmittedRatingPlaceGT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGT(FieldMinLastAdmittedRatingPlace, v))
+}
+
+// MinLastAdmittedRatingPlaceGTE applies the GTE predicate on the "min_last_admitted_rating_place" field.
+func MinLastAdmittedRatingPlaceGTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGTE(FieldMinLastAdmittedRatingPlace, v))
+}
+
+// MinLastAdmittedRatingPlaceLT applies the LT predicate on the "min_last_admitted_rating_place" field.
+func MinLastAdmittedRatingPlaceLT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLT(FieldMinLastAdmittedRatingPlace, v))
+}
+
+// MinLastAdmittedRatingPlaceLTE applies the LTE predicate on the "min_last_admitted_rating_place" field.
+func MinLastAdmittedRatingPlaceLTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLTE(FieldMinLastAdmittedRatingPlace, v))
+}
+
+// MaxLastAdmittedRatingPlaceEQ applies the EQ predicate on the "max_last_admitted_rating_place" field.
+func MaxLastAdmittedRatingPlaceEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMaxLastAdmittedRatingPlace, v))
+}
+
+// MaxLastAdmittedRatingPlaceNEQ applies the NEQ predicate on the "max_last_admitted_rating_place" field.
+func MaxLastAdmittedRatingPlaceNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldMaxLastAdmittedRatingPlace, v))
+}
+
+// MaxLastAdmittedRatingPlaceIn applies the In predicate on the "max_last_admitted_rating_place" field.
+func MaxLastAdmittedRatingPlaceIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldMaxLastAdmittedRatingPlace, vs...))
+}
+
+// MaxLastAdmittedRatingPlaceNotIn applies the NotIn predicate on the "max_last_admitted_rating_place" field.
+func MaxLastAdmittedRatingPlaceNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldMaxLastAdmittedRatingPlace, vs...))
+}
+
+// MaxLastAdmittedRatingPlaceGT applies the GT predicate on the "max_last_admitted_rating_place" field.
+func MaxLastAdmittedRatingPlaceGT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGT(FieldMaxLastAdmittedRatingPlace, v))
+}
+
+// MaxLastAdmittedRatingPlaceGTE applies the GTE predicate on the "max_last_admitted_rating_place" field.
+func MaxLastAdmittedRatingPlaceGTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGTE(FieldMaxLastAdmittedRatingPlace, v))
+}
+
+// MaxLastAdmittedRatingPlaceLT applies the LT predicate on the "max_last_admitted_rating_place" field.
+func MaxLastAdmittedRatingPlaceLT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLT(FieldMaxLastAdmittedRatingPlace, v))
+}
+
+// MaxLastAdmittedRatingPlaceLTE applies the LTE predicate on the "max_last_admitted_rating_place" field.
+func MaxLastAdmittedRatingPlaceLTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLTE(FieldMaxLastAdmittedRatingPlace, v))
+}
+
+// MedLastAdmittedRatingPlaceEQ applies the EQ predicate on the "med_last_admitted_rating_place" field.
+func MedLastAdmittedRatingPlaceEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldMedLastAdmittedRatingPlace, v))
+}
+
+// MedLastAdmittedRatingPlaceNEQ applies the NEQ predicate on the "med_last_admitted_rating_place" field.
+func MedLastAdmittedRatingPlaceNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldMedLastAdmittedRatingPlace, v))
+}
+
+// MedLastAdmittedRatingPlaceIn applies the In predicate on the "med_last_admitted_rating_place" field.
+func MedLastAdmittedRatingPlaceIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldMedLastAdmittedRatingPlace, vs...))
+}
+
+// MedLastAdmittedRatingPlaceNotIn applies the NotIn predicate on the "med_last_admitted_rating_place" field.
+func MedLastAdmittedRatingPlaceNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldMedLastAdmittedRatingPlace, vs...))
+}
+
+// MedLastAdmittedRatingPlaceGT applies the GT predicate on the "med_last_admitted_rating_place" field.
+func MedLastAdmittedRatingPlaceGT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGT(FieldMedLastAdmittedRatingPlace, v))
+}
+
+// MedLastAdmittedRatingPlaceGTE applies the GTE predicate on the "med_last_admitted_rating_place" field.
+func MedLastAdmittedRatingPlaceGTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldGTE(FieldMedLastAdmittedRatingPlace, v))
+}
+
+// MedLastAdmittedRatingPlaceLT applies the LT predicate on the "med_last_admitted_rating_place" field.
+func MedLastAdmittedRatingPlaceLT(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLT(FieldMedLastAdmittedRatingPlace, v))
+}
+
+// MedLastAdmittedRatingPlaceLTE applies the LTE predicate on the "med_last_admitted_rating_place" field.
+func MedLastAdmittedRatingPlaceLTE(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldLTE(FieldMedLastAdmittedRatingPlace, v))
 }
 
 // IterationEQ applies the EQ predicate on the "iteration" field.

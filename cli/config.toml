@@ -13,7 +13,7 @@ excluded = []
 # Percentage of the total capacity to drain at each separate simulation
 stages = [33, 50, 66, 100]
 # Number of iterations for each stage, result will be averaged
-iterations = 100
+iterations = 10
 
 # Database configuration for uploading results, PostgreSQL
 [upload.database]

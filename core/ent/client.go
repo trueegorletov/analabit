@@ -15,13 +15,14 @@ import (
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
-	"analabit/core/ent/metadata"
 	"analabit/core/ent/varsity"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+
+	stdsql "database/sql"
 )
 
 // Client is the client that holds all ent builders.
@@ -37,8 +38,6 @@ type Client struct {
 	DrainedResult *DrainedResultClient
 	// Heading is the client for interacting with the Heading builders.
 	Heading *HeadingClient
-	// Metadata is the client for interacting with the Metadata builders.
-	Metadata *MetadataClient
 	// Varsity is the client for interacting with the Varsity builders.
 	Varsity *VarsityClient
 }
@@ -56,7 +55,6 @@ func (c *Client) init() {
 	c.Calculation = NewCalculationClient(c.config)
 	c.DrainedResult = NewDrainedResultClient(c.config)
 	c.Heading = NewHeadingClient(c.config)
-	c.Metadata = NewMetadataClient(c.config)
 	c.Varsity = NewVarsityClient(c.config)
 }
 
@@ -154,7 +152,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Calculation:   NewCalculationClient(cfg),
 		DrainedResult: NewDrainedResultClient(cfg),
 		Heading:       NewHeadingClient(cfg),
-		Metadata:      NewMetadataClient(cfg),
 		Varsity:       NewVarsityClient(cfg),
 	}, nil
 }
@@ -179,7 +176,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Calculation:   NewCalculationClient(cfg),
 		DrainedResult: NewDrainedResultClient(cfg),
 		Heading:       NewHeadingClient(cfg),
-		Metadata:      NewMetadataClient(cfg),
 		Varsity:       NewVarsityClient(cfg),
 	}, nil
 }
@@ -209,21 +205,21 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	for _, n := range []interface{ Use(...Hook) }{
-		c.Application, c.Calculation, c.DrainedResult, c.Heading, c.Metadata, c.Varsity,
-	} {
-		n.Use(hooks...)
-	}
+	c.Application.Use(hooks...)
+	c.Calculation.Use(hooks...)
+	c.DrainedResult.Use(hooks...)
+	c.Heading.Use(hooks...)
+	c.Varsity.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Application, c.Calculation, c.DrainedResult, c.Heading, c.Metadata, c.Varsity,
-	} {
-		n.Intercept(interceptors...)
-	}
+	c.Application.Intercept(interceptors...)
+	c.Calculation.Intercept(interceptors...)
+	c.DrainedResult.Intercept(interceptors...)
+	c.Heading.Intercept(interceptors...)
+	c.Varsity.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -237,8 +233,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DrainedResult.mutate(ctx, m)
 	case *HeadingMutation:
 		return c.Heading.mutate(ctx, m)
-	case *MetadataMutation:
-		return c.Metadata.mutate(ctx, m)
 	case *VarsityMutation:
 		return c.Varsity.mutate(ctx, m)
 	default:
@@ -890,139 +884,6 @@ func (c *HeadingClient) mutate(ctx context.Context, m *HeadingMutation) (Value, 
 	}
 }
 
-// MetadataClient is a client for the Metadata schema.
-type MetadataClient struct {
-	config
-}
-
-// NewMetadataClient returns a client for the Metadata from the given config.
-func NewMetadataClient(c config) *MetadataClient {
-	return &MetadataClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `metadata.Hooks(f(g(h())))`.
-func (c *MetadataClient) Use(hooks ...Hook) {
-	c.hooks.Metadata = append(c.hooks.Metadata, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `metadata.Intercept(f(g(h())))`.
-func (c *MetadataClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Metadata = append(c.inters.Metadata, interceptors...)
-}
-
-// Create returns a builder for creating a Metadata entity.
-func (c *MetadataClient) Create() *MetadataCreate {
-	mutation := newMetadataMutation(c.config, OpCreate)
-	return &MetadataCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Metadata entities.
-func (c *MetadataClient) CreateBulk(builders ...*MetadataCreate) *MetadataCreateBulk {
-	return &MetadataCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *MetadataClient) MapCreateBulk(slice any, setFunc func(*MetadataCreate, int)) *MetadataCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &MetadataCreateBulk{err: fmt.Errorf("calling to MetadataClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*MetadataCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &MetadataCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Metadata.
-func (c *MetadataClient) Update() *MetadataUpdate {
-	mutation := newMetadataMutation(c.config, OpUpdate)
-	return &MetadataUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *MetadataClient) UpdateOne(m *Metadata) *MetadataUpdateOne {
-	mutation := newMetadataMutation(c.config, OpUpdateOne, withMetadata(m))
-	return &MetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *MetadataClient) UpdateOneID(id int) *MetadataUpdateOne {
-	mutation := newMetadataMutation(c.config, OpUpdateOne, withMetadataID(id))
-	return &MetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Metadata.
-func (c *MetadataClient) Delete() *MetadataDelete {
-	mutation := newMetadataMutation(c.config, OpDelete)
-	return &MetadataDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *MetadataClient) DeleteOne(m *Metadata) *MetadataDeleteOne {
-	return c.DeleteOneID(m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *MetadataClient) DeleteOneID(id int) *MetadataDeleteOne {
-	builder := c.Delete().Where(metadata.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &MetadataDeleteOne{builder}
-}
-
-// Query returns a query builder for Metadata.
-func (c *MetadataClient) Query() *MetadataQuery {
-	return &MetadataQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeMetadata},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Metadata entity by its id.
-func (c *MetadataClient) Get(ctx context.Context, id int) (*Metadata, error) {
-	return c.Query().Where(metadata.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *MetadataClient) GetX(ctx context.Context, id int) *Metadata {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *MetadataClient) Hooks() []Hook {
-	return c.hooks.Metadata
-}
-
-// Interceptors returns the client interceptors.
-func (c *MetadataClient) Interceptors() []Interceptor {
-	return c.inters.Metadata
-}
-
-func (c *MetadataClient) mutate(ctx context.Context, m *MetadataMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&MetadataCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&MetadataUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&MetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&MetadataDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Metadata mutation op: %q", m.Op())
-	}
-}
-
 // VarsityClient is a client for the Varsity schema.
 type VarsityClient struct {
 	config
@@ -1175,10 +1036,33 @@ func (c *VarsityClient) mutate(ctx context.Context, m *VarsityMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Application, Calculation, DrainedResult, Heading, Metadata, Varsity []ent.Hook
+		Application, Calculation, DrainedResult, Heading, Varsity []ent.Hook
 	}
 	inters struct {
-		Application, Calculation, DrainedResult, Heading, Metadata,
-		Varsity []ent.Interceptor
+		Application, Calculation, DrainedResult, Heading, Varsity []ent.Interceptor
 	}
 )
+
+// ExecContext allows calling the underlying ExecContext method of the driver if it is supported by it.
+// See, database/sql#DB.ExecContext for more information.
+func (c *config) ExecContext(ctx context.Context, query string, args ...any) (stdsql.Result, error) {
+	ex, ok := c.driver.(interface {
+		ExecContext(context.Context, string, ...any) (stdsql.Result, error)
+	})
+	if !ok {
+		return nil, fmt.Errorf("Driver.ExecContext is not supported")
+	}
+	return ex.ExecContext(ctx, query, args...)
+}
+
+// QueryContext allows calling the underlying QueryContext method of the driver if it is supported by it.
+// See, database/sql#DB.QueryContext for more information.
+func (c *config) QueryContext(ctx context.Context, query string, args ...any) (*stdsql.Rows, error) {
+	q, ok := c.driver.(interface {
+		QueryContext(context.Context, string, ...any) (*stdsql.Rows, error)
+	})
+	if !ok {
+		return nil, fmt.Errorf("Driver.QueryContext is not supported")
+	}
+	return q.QueryContext(ctx, query, args...)
+}

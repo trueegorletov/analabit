@@ -5,6 +5,7 @@ import (
 	"analabit/core/source"
 	"fmt"
 	"log/slog"
+	"sort"
 	"sync"
 )
 
@@ -29,8 +30,10 @@ const maxComputeGoroutines = 50
 func (d *Drainer) Run(iterations int) []DrainedResult {
 	type headingResults struct {
 		prototypeHeading *core.Heading
-		psSum, psN       int
-		larpSum, larpN   int
+		psValues         []int
+		larpValues       []int
+		psSum            int
+		larpSum          int
 	}
 
 	codeToResult := make(map[string]headingResults)
@@ -68,6 +71,8 @@ func (d *Drainer) Run(iterations int) []DrainedResult {
 
 			if !ok {
 				results.prototypeHeading = d.prototype.GetHeading(code)
+				results.psValues = make([]int, 0, iterations)
+				results.larpValues = make([]int, 0, iterations)
 			}
 
 			passingScore, err := result.PassingScore()
@@ -84,10 +89,10 @@ func (d *Drainer) Run(iterations int) []DrainedResult {
 				continue
 			}
 
+			results.psValues = append(results.psValues, passingScore)
+			results.larpValues = append(results.larpValues, lastAdmittedRatingPlace)
 			results.psSum += passingScore
-			results.psN++
 			results.larpSum += lastAdmittedRatingPlace
-			results.larpN++
 
 			codeToResult[code] = results
 		}
@@ -96,20 +101,39 @@ func (d *Drainer) Run(iterations int) []DrainedResult {
 	drained := make([]DrainedResult, 0, len(codeToResult))
 
 	for _, results := range codeToResult {
-		if results.psN == 0 || results.larpN == 0 {
+		if len(results.psValues) == 0 || len(results.larpValues) == 0 {
 			fmt.Println("No results for heading", "heading", results.prototypeHeading.PrettyName())
 			continue
 		}
 
-		avgPassingScore := results.psSum / results.psN
-		avgLastAdmittedRatingPlace := results.larpSum / results.larpN
+		sort.Ints(results.psValues)
+		sort.Ints(results.larpValues)
+
 		drained = append(drained, DrainedResult{
 			Heading:                    results.prototypeHeading,
-			AvgPassingScore:            avgPassingScore,
-			AvgLastAdmittedRatingPlace: avgLastAdmittedRatingPlace,
+			MinPassingScore:            results.psValues[0],
+			MaxPassingScore:            results.psValues[len(results.psValues)-1],
+			AvgPassingScore:            results.psSum / len(results.psValues),
+			MedPassingScore:            median(results.psValues),
+			MinLastAdmittedRatingPlace: results.larpValues[0],
+			MaxLastAdmittedRatingPlace: results.larpValues[len(results.larpValues)-1],
+			AvgLastAdmittedRatingPlace: results.larpSum / len(results.larpValues),
+			MedLastAdmittedRatingPlace: median(results.larpValues),
 			DrainedPercent:             d.drainPercent,
 		})
 	}
 
 	return drained
+}
+
+func median(data []int) int {
+	n := len(data)
+	if n == 0 {
+		return 0
+	}
+	// data is expected to be sorted
+	if n%2 != 0 {
+		return data[n/2]
+	}
+	return (data[n/2-1] + data[n/2]) / 2
 }

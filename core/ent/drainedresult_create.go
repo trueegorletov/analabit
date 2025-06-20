@@ -26,15 +26,51 @@ func (drc *DrainedResultCreate) SetDrainedPercent(i int) *DrainedResultCreate {
 	return drc
 }
 
-// SetPassingScore sets the "passing_score" field.
-func (drc *DrainedResultCreate) SetPassingScore(i int) *DrainedResultCreate {
-	drc.mutation.SetPassingScore(i)
+// SetAvgPassingScore sets the "avg_passing_score" field.
+func (drc *DrainedResultCreate) SetAvgPassingScore(i int) *DrainedResultCreate {
+	drc.mutation.SetAvgPassingScore(i)
 	return drc
 }
 
-// SetLastAdmittedRatingPlace sets the "last_admitted_rating_place" field.
-func (drc *DrainedResultCreate) SetLastAdmittedRatingPlace(i int) *DrainedResultCreate {
-	drc.mutation.SetLastAdmittedRatingPlace(i)
+// SetMinPassingScore sets the "min_passing_score" field.
+func (drc *DrainedResultCreate) SetMinPassingScore(i int) *DrainedResultCreate {
+	drc.mutation.SetMinPassingScore(i)
+	return drc
+}
+
+// SetMaxPassingScore sets the "max_passing_score" field.
+func (drc *DrainedResultCreate) SetMaxPassingScore(i int) *DrainedResultCreate {
+	drc.mutation.SetMaxPassingScore(i)
+	return drc
+}
+
+// SetMedPassingScore sets the "med_passing_score" field.
+func (drc *DrainedResultCreate) SetMedPassingScore(i int) *DrainedResultCreate {
+	drc.mutation.SetMedPassingScore(i)
+	return drc
+}
+
+// SetAvgLastAdmittedRatingPlace sets the "avg_last_admitted_rating_place" field.
+func (drc *DrainedResultCreate) SetAvgLastAdmittedRatingPlace(i int) *DrainedResultCreate {
+	drc.mutation.SetAvgLastAdmittedRatingPlace(i)
+	return drc
+}
+
+// SetMinLastAdmittedRatingPlace sets the "min_last_admitted_rating_place" field.
+func (drc *DrainedResultCreate) SetMinLastAdmittedRatingPlace(i int) *DrainedResultCreate {
+	drc.mutation.SetMinLastAdmittedRatingPlace(i)
+	return drc
+}
+
+// SetMaxLastAdmittedRatingPlace sets the "max_last_admitted_rating_place" field.
+func (drc *DrainedResultCreate) SetMaxLastAdmittedRatingPlace(i int) *DrainedResultCreate {
+	drc.mutation.SetMaxLastAdmittedRatingPlace(i)
+	return drc
+}
+
+// SetMedLastAdmittedRatingPlace sets the "med_last_admitted_rating_place" field.
+func (drc *DrainedResultCreate) SetMedLastAdmittedRatingPlace(i int) *DrainedResultCreate {
+	drc.mutation.SetMedLastAdmittedRatingPlace(i)
 	return drc
 }
 
@@ -92,11 +128,29 @@ func (drc *DrainedResultCreate) check() error {
 	if _, ok := drc.mutation.DrainedPercent(); !ok {
 		return &ValidationError{Name: "drained_percent", err: errors.New(`ent: missing required field "DrainedResult.drained_percent"`)}
 	}
-	if _, ok := drc.mutation.PassingScore(); !ok {
-		return &ValidationError{Name: "passing_score", err: errors.New(`ent: missing required field "DrainedResult.passing_score"`)}
+	if _, ok := drc.mutation.AvgPassingScore(); !ok {
+		return &ValidationError{Name: "avg_passing_score", err: errors.New(`ent: missing required field "DrainedResult.avg_passing_score"`)}
 	}
-	if _, ok := drc.mutation.LastAdmittedRatingPlace(); !ok {
-		return &ValidationError{Name: "last_admitted_rating_place", err: errors.New(`ent: missing required field "DrainedResult.last_admitted_rating_place"`)}
+	if _, ok := drc.mutation.MinPassingScore(); !ok {
+		return &ValidationError{Name: "min_passing_score", err: errors.New(`ent: missing required field "DrainedResult.min_passing_score"`)}
+	}
+	if _, ok := drc.mutation.MaxPassingScore(); !ok {
+		return &ValidationError{Name: "max_passing_score", err: errors.New(`ent: missing required field "DrainedResult.max_passing_score"`)}
+	}
+	if _, ok := drc.mutation.MedPassingScore(); !ok {
+		return &ValidationError{Name: "med_passing_score", err: errors.New(`ent: missing required field "DrainedResult.med_passing_score"`)}
+	}
+	if _, ok := drc.mutation.AvgLastAdmittedRatingPlace(); !ok {
+		return &ValidationError{Name: "avg_last_admitted_rating_place", err: errors.New(`ent: missing required field "DrainedResult.avg_last_admitted_rating_place"`)}
+	}
+	if _, ok := drc.mutation.MinLastAdmittedRatingPlace(); !ok {
+		return &ValidationError{Name: "min_last_admitted_rating_place", err: errors.New(`ent: missing required field "DrainedResult.min_last_admitted_rating_place"`)}
+	}
+	if _, ok := drc.mutation.MaxLastAdmittedRatingPlace(); !ok {
+		return &ValidationError{Name: "max_last_admitted_rating_place", err: errors.New(`ent: missing required field "DrainedResult.max_last_admitted_rating_place"`)}
+	}
+	if _, ok := drc.mutation.MedLastAdmittedRatingPlace(); !ok {
+		return &ValidationError{Name: "med_last_admitted_rating_place", err: errors.New(`ent: missing required field "DrainedResult.med_last_admitted_rating_place"`)}
 	}
 	if _, ok := drc.mutation.Iteration(); !ok {
 		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "DrainedResult.iteration"`)}
@@ -134,13 +188,37 @@ func (drc *DrainedResultCreate) createSpec() (*DrainedResult, *sqlgraph.CreateSp
 		_spec.SetField(drainedresult.FieldDrainedPercent, field.TypeInt, value)
 		_node.DrainedPercent = value
 	}
-	if value, ok := drc.mutation.PassingScore(); ok {
-		_spec.SetField(drainedresult.FieldPassingScore, field.TypeInt, value)
-		_node.PassingScore = value
+	if value, ok := drc.mutation.AvgPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldAvgPassingScore, field.TypeInt, value)
+		_node.AvgPassingScore = value
 	}
-	if value, ok := drc.mutation.LastAdmittedRatingPlace(); ok {
-		_spec.SetField(drainedresult.FieldLastAdmittedRatingPlace, field.TypeInt, value)
-		_node.LastAdmittedRatingPlace = value
+	if value, ok := drc.mutation.MinPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMinPassingScore, field.TypeInt, value)
+		_node.MinPassingScore = value
+	}
+	if value, ok := drc.mutation.MaxPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMaxPassingScore, field.TypeInt, value)
+		_node.MaxPassingScore = value
+	}
+	if value, ok := drc.mutation.MedPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMedPassingScore, field.TypeInt, value)
+		_node.MedPassingScore = value
+	}
+	if value, ok := drc.mutation.AvgLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldAvgLastAdmittedRatingPlace, field.TypeInt, value)
+		_node.AvgLastAdmittedRatingPlace = value
+	}
+	if value, ok := drc.mutation.MinLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMinLastAdmittedRatingPlace, field.TypeInt, value)
+		_node.MinLastAdmittedRatingPlace = value
+	}
+	if value, ok := drc.mutation.MaxLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMaxLastAdmittedRatingPlace, field.TypeInt, value)
+		_node.MaxLastAdmittedRatingPlace = value
+	}
+	if value, ok := drc.mutation.MedLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
+		_node.MedLastAdmittedRatingPlace = value
 	}
 	if value, ok := drc.mutation.Iteration(); ok {
 		_spec.SetField(drainedresult.FieldIteration, field.TypeInt, value)

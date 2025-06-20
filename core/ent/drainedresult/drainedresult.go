@@ -14,10 +14,22 @@ const (
 	FieldID = "id"
 	// FieldDrainedPercent holds the string denoting the drained_percent field in the database.
 	FieldDrainedPercent = "drained_percent"
-	// FieldPassingScore holds the string denoting the passing_score field in the database.
-	FieldPassingScore = "passing_score"
-	// FieldLastAdmittedRatingPlace holds the string denoting the last_admitted_rating_place field in the database.
-	FieldLastAdmittedRatingPlace = "last_admitted_rating_place"
+	// FieldAvgPassingScore holds the string denoting the avg_passing_score field in the database.
+	FieldAvgPassingScore = "avg_passing_score"
+	// FieldMinPassingScore holds the string denoting the min_passing_score field in the database.
+	FieldMinPassingScore = "min_passing_score"
+	// FieldMaxPassingScore holds the string denoting the max_passing_score field in the database.
+	FieldMaxPassingScore = "max_passing_score"
+	// FieldMedPassingScore holds the string denoting the med_passing_score field in the database.
+	FieldMedPassingScore = "med_passing_score"
+	// FieldAvgLastAdmittedRatingPlace holds the string denoting the avg_last_admitted_rating_place field in the database.
+	FieldAvgLastAdmittedRatingPlace = "avg_last_admitted_rating_place"
+	// FieldMinLastAdmittedRatingPlace holds the string denoting the min_last_admitted_rating_place field in the database.
+	FieldMinLastAdmittedRatingPlace = "min_last_admitted_rating_place"
+	// FieldMaxLastAdmittedRatingPlace holds the string denoting the max_last_admitted_rating_place field in the database.
+	FieldMaxLastAdmittedRatingPlace = "max_last_admitted_rating_place"
+	// FieldMedLastAdmittedRatingPlace holds the string denoting the med_last_admitted_rating_place field in the database.
+	FieldMedLastAdmittedRatingPlace = "med_last_admitted_rating_place"
 	// FieldIteration holds the string denoting the iteration field in the database.
 	FieldIteration = "iteration"
 	// EdgeHeading holds the string denoting the heading edge name in mutations.
@@ -37,8 +49,14 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldDrainedPercent,
-	FieldPassingScore,
-	FieldLastAdmittedRatingPlace,
+	FieldAvgPassingScore,
+	FieldMinPassingScore,
+	FieldMaxPassingScore,
+	FieldMedPassingScore,
+	FieldAvgLastAdmittedRatingPlace,
+	FieldMinLastAdmittedRatingPlace,
+	FieldMaxLastAdmittedRatingPlace,
+	FieldMedLastAdmittedRatingPlace,
 	FieldIteration,
 }
 
@@ -76,14 +94,44 @@ func ByDrainedPercent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDrainedPercent, opts...).ToFunc()
 }
 
-// ByPassingScore orders the results by the passing_score field.
-func ByPassingScore(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPassingScore, opts...).ToFunc()
+// ByAvgPassingScore orders the results by the avg_passing_score field.
+func ByAvgPassingScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAvgPassingScore, opts...).ToFunc()
 }
 
-// ByLastAdmittedRatingPlace orders the results by the last_admitted_rating_place field.
-func ByLastAdmittedRatingPlace(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastAdmittedRatingPlace, opts...).ToFunc()
+// ByMinPassingScore orders the results by the min_passing_score field.
+func ByMinPassingScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMinPassingScore, opts...).ToFunc()
+}
+
+// ByMaxPassingScore orders the results by the max_passing_score field.
+func ByMaxPassingScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMaxPassingScore, opts...).ToFunc()
+}
+
+// ByMedPassingScore orders the results by the med_passing_score field.
+func ByMedPassingScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMedPassingScore, opts...).ToFunc()
+}
+
+// ByAvgLastAdmittedRatingPlace orders the results by the avg_last_admitted_rating_place field.
+func ByAvgLastAdmittedRatingPlace(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAvgLastAdmittedRatingPlace, opts...).ToFunc()
+}
+
+// ByMinLastAdmittedRatingPlace orders the results by the min_last_admitted_rating_place field.
+func ByMinLastAdmittedRatingPlace(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMinLastAdmittedRatingPlace, opts...).ToFunc()
+}
+
+// ByMaxLastAdmittedRatingPlace orders the results by the max_last_admitted_rating_place field.
+func ByMaxLastAdmittedRatingPlace(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMaxLastAdmittedRatingPlace, opts...).ToFunc()
+}
+
+// ByMedLastAdmittedRatingPlace orders the results by the med_last_admitted_rating_place field.
+func ByMedLastAdmittedRatingPlace(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMedLastAdmittedRatingPlace, opts...).ToFunc()
 }
 
 // ByIteration orders the results by the iteration field.

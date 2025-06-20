@@ -18,8 +18,5 @@ type DrainedResult func(*sql.Selector)
 // Heading is the predicate function for heading builders.
 type Heading func(*sql.Selector)
 
-// Metadata is the predicate function for metadata builders.
-type Metadata func(*sql.Selector)
-
 // Varsity is the predicate function for varsity builders.
 type Varsity func(*sql.Selector)

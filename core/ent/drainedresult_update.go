@@ -49,45 +49,171 @@ func (dru *DrainedResultUpdate) AddDrainedPercent(i int) *DrainedResultUpdate {
 	return dru
 }
 
-// SetPassingScore sets the "passing_score" field.
-func (dru *DrainedResultUpdate) SetPassingScore(i int) *DrainedResultUpdate {
-	dru.mutation.ResetPassingScore()
-	dru.mutation.SetPassingScore(i)
+// SetAvgPassingScore sets the "avg_passing_score" field.
+func (dru *DrainedResultUpdate) SetAvgPassingScore(i int) *DrainedResultUpdate {
+	dru.mutation.ResetAvgPassingScore()
+	dru.mutation.SetAvgPassingScore(i)
 	return dru
 }
 
-// SetNillablePassingScore sets the "passing_score" field if the given value is not nil.
-func (dru *DrainedResultUpdate) SetNillablePassingScore(i *int) *DrainedResultUpdate {
+// SetNillableAvgPassingScore sets the "avg_passing_score" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableAvgPassingScore(i *int) *DrainedResultUpdate {
 	if i != nil {
-		dru.SetPassingScore(*i)
+		dru.SetAvgPassingScore(*i)
 	}
 	return dru
 }
 
-// AddPassingScore adds i to the "passing_score" field.
-func (dru *DrainedResultUpdate) AddPassingScore(i int) *DrainedResultUpdate {
-	dru.mutation.AddPassingScore(i)
+// AddAvgPassingScore adds i to the "avg_passing_score" field.
+func (dru *DrainedResultUpdate) AddAvgPassingScore(i int) *DrainedResultUpdate {
+	dru.mutation.AddAvgPassingScore(i)
 	return dru
 }
 
-// SetLastAdmittedRatingPlace sets the "last_admitted_rating_place" field.
-func (dru *DrainedResultUpdate) SetLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
-	dru.mutation.ResetLastAdmittedRatingPlace()
-	dru.mutation.SetLastAdmittedRatingPlace(i)
+// SetMinPassingScore sets the "min_passing_score" field.
+func (dru *DrainedResultUpdate) SetMinPassingScore(i int) *DrainedResultUpdate {
+	dru.mutation.ResetMinPassingScore()
+	dru.mutation.SetMinPassingScore(i)
 	return dru
 }
 
-// SetNillableLastAdmittedRatingPlace sets the "last_admitted_rating_place" field if the given value is not nil.
-func (dru *DrainedResultUpdate) SetNillableLastAdmittedRatingPlace(i *int) *DrainedResultUpdate {
+// SetNillableMinPassingScore sets the "min_passing_score" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableMinPassingScore(i *int) *DrainedResultUpdate {
 	if i != nil {
-		dru.SetLastAdmittedRatingPlace(*i)
+		dru.SetMinPassingScore(*i)
 	}
 	return dru
 }
 
-// AddLastAdmittedRatingPlace adds i to the "last_admitted_rating_place" field.
-func (dru *DrainedResultUpdate) AddLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
-	dru.mutation.AddLastAdmittedRatingPlace(i)
+// AddMinPassingScore adds i to the "min_passing_score" field.
+func (dru *DrainedResultUpdate) AddMinPassingScore(i int) *DrainedResultUpdate {
+	dru.mutation.AddMinPassingScore(i)
+	return dru
+}
+
+// SetMaxPassingScore sets the "max_passing_score" field.
+func (dru *DrainedResultUpdate) SetMaxPassingScore(i int) *DrainedResultUpdate {
+	dru.mutation.ResetMaxPassingScore()
+	dru.mutation.SetMaxPassingScore(i)
+	return dru
+}
+
+// SetNillableMaxPassingScore sets the "max_passing_score" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableMaxPassingScore(i *int) *DrainedResultUpdate {
+	if i != nil {
+		dru.SetMaxPassingScore(*i)
+	}
+	return dru
+}
+
+// AddMaxPassingScore adds i to the "max_passing_score" field.
+func (dru *DrainedResultUpdate) AddMaxPassingScore(i int) *DrainedResultUpdate {
+	dru.mutation.AddMaxPassingScore(i)
+	return dru
+}
+
+// SetMedPassingScore sets the "med_passing_score" field.
+func (dru *DrainedResultUpdate) SetMedPassingScore(i int) *DrainedResultUpdate {
+	dru.mutation.ResetMedPassingScore()
+	dru.mutation.SetMedPassingScore(i)
+	return dru
+}
+
+// SetNillableMedPassingScore sets the "med_passing_score" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableMedPassingScore(i *int) *DrainedResultUpdate {
+	if i != nil {
+		dru.SetMedPassingScore(*i)
+	}
+	return dru
+}
+
+// AddMedPassingScore adds i to the "med_passing_score" field.
+func (dru *DrainedResultUpdate) AddMedPassingScore(i int) *DrainedResultUpdate {
+	dru.mutation.AddMedPassingScore(i)
+	return dru
+}
+
+// SetAvgLastAdmittedRatingPlace sets the "avg_last_admitted_rating_place" field.
+func (dru *DrainedResultUpdate) SetAvgLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
+	dru.mutation.ResetAvgLastAdmittedRatingPlace()
+	dru.mutation.SetAvgLastAdmittedRatingPlace(i)
+	return dru
+}
+
+// SetNillableAvgLastAdmittedRatingPlace sets the "avg_last_admitted_rating_place" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableAvgLastAdmittedRatingPlace(i *int) *DrainedResultUpdate {
+	if i != nil {
+		dru.SetAvgLastAdmittedRatingPlace(*i)
+	}
+	return dru
+}
+
+// AddAvgLastAdmittedRatingPlace adds i to the "avg_last_admitted_rating_place" field.
+func (dru *DrainedResultUpdate) AddAvgLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
+	dru.mutation.AddAvgLastAdmittedRatingPlace(i)
+	return dru
+}
+
+// SetMinLastAdmittedRatingPlace sets the "min_last_admitted_rating_place" field.
+func (dru *DrainedResultUpdate) SetMinLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
+	dru.mutation.ResetMinLastAdmittedRatingPlace()
+	dru.mutation.SetMinLastAdmittedRatingPlace(i)
+	return dru
+}
+
+// SetNillableMinLastAdmittedRatingPlace sets the "min_last_admitted_rating_place" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableMinLastAdmittedRatingPlace(i *int) *DrainedResultUpdate {
+	if i != nil {
+		dru.SetMinLastAdmittedRatingPlace(*i)
+	}
+	return dru
+}
+
+// AddMinLastAdmittedRatingPlace adds i to the "min_last_admitted_rating_place" field.
+func (dru *DrainedResultUpdate) AddMinLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
+	dru.mutation.AddMinLastAdmittedRatingPlace(i)
+	return dru
+}
+
+// SetMaxLastAdmittedRatingPlace sets the "max_last_admitted_rating_place" field.
+func (dru *DrainedResultUpdate) SetMaxLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
+	dru.mutation.ResetMaxLastAdmittedRatingPlace()
+	dru.mutation.SetMaxLastAdmittedRatingPlace(i)
+	return dru
+}
+
+// SetNillableMaxLastAdmittedRatingPlace sets the "max_last_admitted_rating_place" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableMaxLastAdmittedRatingPlace(i *int) *DrainedResultUpdate {
+	if i != nil {
+		dru.SetMaxLastAdmittedRatingPlace(*i)
+	}
+	return dru
+}
+
+// AddMaxLastAdmittedRatingPlace adds i to the "max_last_admitted_rating_place" field.
+func (dru *DrainedResultUpdate) AddMaxLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
+	dru.mutation.AddMaxLastAdmittedRatingPlace(i)
+	return dru
+}
+
+// SetMedLastAdmittedRatingPlace sets the "med_last_admitted_rating_place" field.
+func (dru *DrainedResultUpdate) SetMedLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
+	dru.mutation.ResetMedLastAdmittedRatingPlace()
+	dru.mutation.SetMedLastAdmittedRatingPlace(i)
+	return dru
+}
+
+// SetNillableMedLastAdmittedRatingPlace sets the "med_last_admitted_rating_place" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableMedLastAdmittedRatingPlace(i *int) *DrainedResultUpdate {
+	if i != nil {
+		dru.SetMedLastAdmittedRatingPlace(*i)
+	}
+	return dru
+}
+
+// AddMedLastAdmittedRatingPlace adds i to the "med_last_admitted_rating_place" field.
+func (dru *DrainedResultUpdate) AddMedLastAdmittedRatingPlace(i int) *DrainedResultUpdate {
+	dru.mutation.AddMedLastAdmittedRatingPlace(i)
 	return dru
 }
 
@@ -187,17 +313,53 @@ func (dru *DrainedResultUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if value, ok := dru.mutation.AddedDrainedPercent(); ok {
 		_spec.AddField(drainedresult.FieldDrainedPercent, field.TypeInt, value)
 	}
-	if value, ok := dru.mutation.PassingScore(); ok {
-		_spec.SetField(drainedresult.FieldPassingScore, field.TypeInt, value)
+	if value, ok := dru.mutation.AvgPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldAvgPassingScore, field.TypeInt, value)
 	}
-	if value, ok := dru.mutation.AddedPassingScore(); ok {
-		_spec.AddField(drainedresult.FieldPassingScore, field.TypeInt, value)
+	if value, ok := dru.mutation.AddedAvgPassingScore(); ok {
+		_spec.AddField(drainedresult.FieldAvgPassingScore, field.TypeInt, value)
 	}
-	if value, ok := dru.mutation.LastAdmittedRatingPlace(); ok {
-		_spec.SetField(drainedresult.FieldLastAdmittedRatingPlace, field.TypeInt, value)
+	if value, ok := dru.mutation.MinPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMinPassingScore, field.TypeInt, value)
 	}
-	if value, ok := dru.mutation.AddedLastAdmittedRatingPlace(); ok {
-		_spec.AddField(drainedresult.FieldLastAdmittedRatingPlace, field.TypeInt, value)
+	if value, ok := dru.mutation.AddedMinPassingScore(); ok {
+		_spec.AddField(drainedresult.FieldMinPassingScore, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.MaxPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMaxPassingScore, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.AddedMaxPassingScore(); ok {
+		_spec.AddField(drainedresult.FieldMaxPassingScore, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.MedPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMedPassingScore, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.AddedMedPassingScore(); ok {
+		_spec.AddField(drainedresult.FieldMedPassingScore, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.AvgLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldAvgLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.AddedAvgLastAdmittedRatingPlace(); ok {
+		_spec.AddField(drainedresult.FieldAvgLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.MinLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMinLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.AddedMinLastAdmittedRatingPlace(); ok {
+		_spec.AddField(drainedresult.FieldMinLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.MaxLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMaxLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.AddedMaxLastAdmittedRatingPlace(); ok {
+		_spec.AddField(drainedresult.FieldMaxLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.MedLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.AddedMedLastAdmittedRatingPlace(); ok {
+		_spec.AddField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
 	}
 	if value, ok := dru.mutation.Iteration(); ok {
 		_spec.SetField(drainedresult.FieldIteration, field.TypeInt, value)
@@ -275,45 +437,171 @@ func (druo *DrainedResultUpdateOne) AddDrainedPercent(i int) *DrainedResultUpdat
 	return druo
 }
 
-// SetPassingScore sets the "passing_score" field.
-func (druo *DrainedResultUpdateOne) SetPassingScore(i int) *DrainedResultUpdateOne {
-	druo.mutation.ResetPassingScore()
-	druo.mutation.SetPassingScore(i)
+// SetAvgPassingScore sets the "avg_passing_score" field.
+func (druo *DrainedResultUpdateOne) SetAvgPassingScore(i int) *DrainedResultUpdateOne {
+	druo.mutation.ResetAvgPassingScore()
+	druo.mutation.SetAvgPassingScore(i)
 	return druo
 }
 
-// SetNillablePassingScore sets the "passing_score" field if the given value is not nil.
-func (druo *DrainedResultUpdateOne) SetNillablePassingScore(i *int) *DrainedResultUpdateOne {
+// SetNillableAvgPassingScore sets the "avg_passing_score" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableAvgPassingScore(i *int) *DrainedResultUpdateOne {
 	if i != nil {
-		druo.SetPassingScore(*i)
+		druo.SetAvgPassingScore(*i)
 	}
 	return druo
 }
 
-// AddPassingScore adds i to the "passing_score" field.
-func (druo *DrainedResultUpdateOne) AddPassingScore(i int) *DrainedResultUpdateOne {
-	druo.mutation.AddPassingScore(i)
+// AddAvgPassingScore adds i to the "avg_passing_score" field.
+func (druo *DrainedResultUpdateOne) AddAvgPassingScore(i int) *DrainedResultUpdateOne {
+	druo.mutation.AddAvgPassingScore(i)
 	return druo
 }
 
-// SetLastAdmittedRatingPlace sets the "last_admitted_rating_place" field.
-func (druo *DrainedResultUpdateOne) SetLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
-	druo.mutation.ResetLastAdmittedRatingPlace()
-	druo.mutation.SetLastAdmittedRatingPlace(i)
+// SetMinPassingScore sets the "min_passing_score" field.
+func (druo *DrainedResultUpdateOne) SetMinPassingScore(i int) *DrainedResultUpdateOne {
+	druo.mutation.ResetMinPassingScore()
+	druo.mutation.SetMinPassingScore(i)
 	return druo
 }
 
-// SetNillableLastAdmittedRatingPlace sets the "last_admitted_rating_place" field if the given value is not nil.
-func (druo *DrainedResultUpdateOne) SetNillableLastAdmittedRatingPlace(i *int) *DrainedResultUpdateOne {
+// SetNillableMinPassingScore sets the "min_passing_score" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableMinPassingScore(i *int) *DrainedResultUpdateOne {
 	if i != nil {
-		druo.SetLastAdmittedRatingPlace(*i)
+		druo.SetMinPassingScore(*i)
 	}
 	return druo
 }
 
-// AddLastAdmittedRatingPlace adds i to the "last_admitted_rating_place" field.
-func (druo *DrainedResultUpdateOne) AddLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
-	druo.mutation.AddLastAdmittedRatingPlace(i)
+// AddMinPassingScore adds i to the "min_passing_score" field.
+func (druo *DrainedResultUpdateOne) AddMinPassingScore(i int) *DrainedResultUpdateOne {
+	druo.mutation.AddMinPassingScore(i)
+	return druo
+}
+
+// SetMaxPassingScore sets the "max_passing_score" field.
+func (druo *DrainedResultUpdateOne) SetMaxPassingScore(i int) *DrainedResultUpdateOne {
+	druo.mutation.ResetMaxPassingScore()
+	druo.mutation.SetMaxPassingScore(i)
+	return druo
+}
+
+// SetNillableMaxPassingScore sets the "max_passing_score" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableMaxPassingScore(i *int) *DrainedResultUpdateOne {
+	if i != nil {
+		druo.SetMaxPassingScore(*i)
+	}
+	return druo
+}
+
+// AddMaxPassingScore adds i to the "max_passing_score" field.
+func (druo *DrainedResultUpdateOne) AddMaxPassingScore(i int) *DrainedResultUpdateOne {
+	druo.mutation.AddMaxPassingScore(i)
+	return druo
+}
+
+// SetMedPassingScore sets the "med_passing_score" field.
+func (druo *DrainedResultUpdateOne) SetMedPassingScore(i int) *DrainedResultUpdateOne {
+	druo.mutation.ResetMedPassingScore()
+	druo.mutation.SetMedPassingScore(i)
+	return druo
+}
+
+// SetNillableMedPassingScore sets the "med_passing_score" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableMedPassingScore(i *int) *DrainedResultUpdateOne {
+	if i != nil {
+		druo.SetMedPassingScore(*i)
+	}
+	return druo
+}
+
+// AddMedPassingScore adds i to the "med_passing_score" field.
+func (druo *DrainedResultUpdateOne) AddMedPassingScore(i int) *DrainedResultUpdateOne {
+	druo.mutation.AddMedPassingScore(i)
+	return druo
+}
+
+// SetAvgLastAdmittedRatingPlace sets the "avg_last_admitted_rating_place" field.
+func (druo *DrainedResultUpdateOne) SetAvgLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
+	druo.mutation.ResetAvgLastAdmittedRatingPlace()
+	druo.mutation.SetAvgLastAdmittedRatingPlace(i)
+	return druo
+}
+
+// SetNillableAvgLastAdmittedRatingPlace sets the "avg_last_admitted_rating_place" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableAvgLastAdmittedRatingPlace(i *int) *DrainedResultUpdateOne {
+	if i != nil {
+		druo.SetAvgLastAdmittedRatingPlace(*i)
+	}
+	return druo
+}
+
+// AddAvgLastAdmittedRatingPlace adds i to the "avg_last_admitted_rating_place" field.
+func (druo *DrainedResultUpdateOne) AddAvgLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
+	druo.mutation.AddAvgLastAdmittedRatingPlace(i)
+	return druo
+}
+
+// SetMinLastAdmittedRatingPlace sets the "min_last_admitted_rating_place" field.
+func (druo *DrainedResultUpdateOne) SetMinLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
+	druo.mutation.ResetMinLastAdmittedRatingPlace()
+	druo.mutation.SetMinLastAdmittedRatingPlace(i)
+	return druo
+}
+
+// SetNillableMinLastAdmittedRatingPlace sets the "min_last_admitted_rating_place" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableMinLastAdmittedRatingPlace(i *int) *DrainedResultUpdateOne {
+	if i != nil {
+		druo.SetMinLastAdmittedRatingPlace(*i)
+	}
+	return druo
+}
+
+// AddMinLastAdmittedRatingPlace adds i to the "min_last_admitted_rating_place" field.
+func (druo *DrainedResultUpdateOne) AddMinLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
+	druo.mutation.AddMinLastAdmittedRatingPlace(i)
+	return druo
+}
+
+// SetMaxLastAdmittedRatingPlace sets the "max_last_admitted_rating_place" field.
+func (druo *DrainedResultUpdateOne) SetMaxLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
+	druo.mutation.ResetMaxLastAdmittedRatingPlace()
+	druo.mutation.SetMaxLastAdmittedRatingPlace(i)
+	return druo
+}
+
+// SetNillableMaxLastAdmittedRatingPlace sets the "max_last_admitted_rating_place" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableMaxLastAdmittedRatingPlace(i *int) *DrainedResultUpdateOne {
+	if i != nil {
+		druo.SetMaxLastAdmittedRatingPlace(*i)
+	}
+	return druo
+}
+
+// AddMaxLastAdmittedRatingPlace adds i to the "max_last_admitted_rating_place" field.
+func (druo *DrainedResultUpdateOne) AddMaxLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
+	druo.mutation.AddMaxLastAdmittedRatingPlace(i)
+	return druo
+}
+
+// SetMedLastAdmittedRatingPlace sets the "med_last_admitted_rating_place" field.
+func (druo *DrainedResultUpdateOne) SetMedLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
+	druo.mutation.ResetMedLastAdmittedRatingPlace()
+	druo.mutation.SetMedLastAdmittedRatingPlace(i)
+	return druo
+}
+
+// SetNillableMedLastAdmittedRatingPlace sets the "med_last_admitted_rating_place" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableMedLastAdmittedRatingPlace(i *int) *DrainedResultUpdateOne {
+	if i != nil {
+		druo.SetMedLastAdmittedRatingPlace(*i)
+	}
+	return druo
+}
+
+// AddMedLastAdmittedRatingPlace adds i to the "med_last_admitted_rating_place" field.
+func (druo *DrainedResultUpdateOne) AddMedLastAdmittedRatingPlace(i int) *DrainedResultUpdateOne {
+	druo.mutation.AddMedLastAdmittedRatingPlace(i)
 	return druo
 }
 
@@ -443,17 +731,53 @@ func (druo *DrainedResultUpdateOne) sqlSave(ctx context.Context) (_node *Drained
 	if value, ok := druo.mutation.AddedDrainedPercent(); ok {
 		_spec.AddField(drainedresult.FieldDrainedPercent, field.TypeInt, value)
 	}
-	if value, ok := druo.mutation.PassingScore(); ok {
-		_spec.SetField(drainedresult.FieldPassingScore, field.TypeInt, value)
+	if value, ok := druo.mutation.AvgPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldAvgPassingScore, field.TypeInt, value)
 	}
-	if value, ok := druo.mutation.AddedPassingScore(); ok {
-		_spec.AddField(drainedresult.FieldPassingScore, field.TypeInt, value)
+	if value, ok := druo.mutation.AddedAvgPassingScore(); ok {
+		_spec.AddField(drainedresult.FieldAvgPassingScore, field.TypeInt, value)
 	}
-	if value, ok := druo.mutation.LastAdmittedRatingPlace(); ok {
-		_spec.SetField(drainedresult.FieldLastAdmittedRatingPlace, field.TypeInt, value)
+	if value, ok := druo.mutation.MinPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMinPassingScore, field.TypeInt, value)
 	}
-	if value, ok := druo.mutation.AddedLastAdmittedRatingPlace(); ok {
-		_spec.AddField(drainedresult.FieldLastAdmittedRatingPlace, field.TypeInt, value)
+	if value, ok := druo.mutation.AddedMinPassingScore(); ok {
+		_spec.AddField(drainedresult.FieldMinPassingScore, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.MaxPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMaxPassingScore, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.AddedMaxPassingScore(); ok {
+		_spec.AddField(drainedresult.FieldMaxPassingScore, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.MedPassingScore(); ok {
+		_spec.SetField(drainedresult.FieldMedPassingScore, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.AddedMedPassingScore(); ok {
+		_spec.AddField(drainedresult.FieldMedPassingScore, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.AvgLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldAvgLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.AddedAvgLastAdmittedRatingPlace(); ok {
+		_spec.AddField(drainedresult.FieldAvgLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.MinLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMinLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.AddedMinLastAdmittedRatingPlace(); ok {
+		_spec.AddField(drainedresult.FieldMinLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.MaxLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMaxLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.AddedMaxLastAdmittedRatingPlace(); ok {
+		_spec.AddField(drainedresult.FieldMaxLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.MedLastAdmittedRatingPlace(); ok {
+		_spec.SetField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.AddedMedLastAdmittedRatingPlace(); ok {
+		_spec.AddField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
 	}
 	if value, ok := druo.mutation.Iteration(); ok {
 		_spec.SetField(drainedresult.FieldIteration, field.TypeInt, value)

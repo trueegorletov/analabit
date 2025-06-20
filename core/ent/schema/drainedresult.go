@@ -15,8 +15,14 @@ type DrainedResult struct {
 func (DrainedResult) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("drained_percent"),
-		field.Int("passing_score"),
-		field.Int("last_admitted_rating_place"),
+		field.Int("avg_passing_score"),
+		field.Int("min_passing_score"),
+		field.Int("max_passing_score"),
+		field.Int("med_passing_score"),
+		field.Int("avg_last_admitted_rating_place"),
+		field.Int("min_last_admitted_rating_place"),
+		field.Int("max_last_admitted_rating_place"),
+		field.Int("med_last_admitted_rating_place"),
 		field.Int("iteration"),
 	}
 }

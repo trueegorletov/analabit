@@ -8,7 +8,6 @@ import (
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
-	"analabit/core/ent/metadata"
 	"analabit/core/ent/predicate"
 	"analabit/core/ent/varsity"
 	"context"
@@ -34,7 +33,6 @@ const (
 	TypeCalculation   = "Calculation"
 	TypeDrainedResult = "DrainedResult"
 	TypeHeading       = "Heading"
-	TypeMetadata      = "Metadata"
 	TypeVarsity       = "Varsity"
 )
 
@@ -1550,23 +1548,35 @@ func (m *CalculationMutation) ResetEdge(name string) error {
 // DrainedResultMutation represents an operation that mutates the DrainedResult nodes in the graph.
 type DrainedResultMutation struct {
 	config
-	op                            Op
-	typ                           string
-	id                            *int
-	drained_percent               *int
-	adddrained_percent            *int
-	passing_score                 *int
-	addpassing_score              *int
-	last_admitted_rating_place    *int
-	addlast_admitted_rating_place *int
-	iteration                     *int
-	additeration                  *int
-	clearedFields                 map[string]struct{}
-	heading                       *int
-	clearedheading                bool
-	done                          bool
-	oldValue                      func(context.Context) (*DrainedResult, error)
-	predicates                    []predicate.DrainedResult
+	op                                Op
+	typ                               string
+	id                                *int
+	drained_percent                   *int
+	adddrained_percent                *int
+	avg_passing_score                 *int
+	addavg_passing_score              *int
+	min_passing_score                 *int
+	addmin_passing_score              *int
+	max_passing_score                 *int
+	addmax_passing_score              *int
+	med_passing_score                 *int
+	addmed_passing_score              *int
+	avg_last_admitted_rating_place    *int
+	addavg_last_admitted_rating_place *int
+	min_last_admitted_rating_place    *int
+	addmin_last_admitted_rating_place *int
+	max_last_admitted_rating_place    *int
+	addmax_last_admitted_rating_place *int
+	med_last_admitted_rating_place    *int
+	addmed_last_admitted_rating_place *int
+	iteration                         *int
+	additeration                      *int
+	clearedFields                     map[string]struct{}
+	heading                           *int
+	clearedheading                    bool
+	done                              bool
+	oldValue                          func(context.Context) (*DrainedResult, error)
+	predicates                        []predicate.DrainedResult
 }
 
 var _ ent.Mutation = (*DrainedResultMutation)(nil)
@@ -1723,116 +1733,452 @@ func (m *DrainedResultMutation) ResetDrainedPercent() {
 	m.adddrained_percent = nil
 }
 
-// SetPassingScore sets the "passing_score" field.
-func (m *DrainedResultMutation) SetPassingScore(i int) {
-	m.passing_score = &i
-	m.addpassing_score = nil
+// SetAvgPassingScore sets the "avg_passing_score" field.
+func (m *DrainedResultMutation) SetAvgPassingScore(i int) {
+	m.avg_passing_score = &i
+	m.addavg_passing_score = nil
 }
 
-// PassingScore returns the value of the "passing_score" field in the mutation.
-func (m *DrainedResultMutation) PassingScore() (r int, exists bool) {
-	v := m.passing_score
+// AvgPassingScore returns the value of the "avg_passing_score" field in the mutation.
+func (m *DrainedResultMutation) AvgPassingScore() (r int, exists bool) {
+	v := m.avg_passing_score
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldPassingScore returns the old "passing_score" field's value of the DrainedResult entity.
+// OldAvgPassingScore returns the old "avg_passing_score" field's value of the DrainedResult entity.
 // If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DrainedResultMutation) OldPassingScore(ctx context.Context) (v int, err error) {
+func (m *DrainedResultMutation) OldAvgPassingScore(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPassingScore is only allowed on UpdateOne operations")
+		return v, errors.New("OldAvgPassingScore is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPassingScore requires an ID field in the mutation")
+		return v, errors.New("OldAvgPassingScore requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPassingScore: %w", err)
+		return v, fmt.Errorf("querying old value for OldAvgPassingScore: %w", err)
 	}
-	return oldValue.PassingScore, nil
+	return oldValue.AvgPassingScore, nil
 }
 
-// AddPassingScore adds i to the "passing_score" field.
-func (m *DrainedResultMutation) AddPassingScore(i int) {
-	if m.addpassing_score != nil {
-		*m.addpassing_score += i
+// AddAvgPassingScore adds i to the "avg_passing_score" field.
+func (m *DrainedResultMutation) AddAvgPassingScore(i int) {
+	if m.addavg_passing_score != nil {
+		*m.addavg_passing_score += i
 	} else {
-		m.addpassing_score = &i
+		m.addavg_passing_score = &i
 	}
 }
 
-// AddedPassingScore returns the value that was added to the "passing_score" field in this mutation.
-func (m *DrainedResultMutation) AddedPassingScore() (r int, exists bool) {
-	v := m.addpassing_score
+// AddedAvgPassingScore returns the value that was added to the "avg_passing_score" field in this mutation.
+func (m *DrainedResultMutation) AddedAvgPassingScore() (r int, exists bool) {
+	v := m.addavg_passing_score
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetPassingScore resets all changes to the "passing_score" field.
-func (m *DrainedResultMutation) ResetPassingScore() {
-	m.passing_score = nil
-	m.addpassing_score = nil
+// ResetAvgPassingScore resets all changes to the "avg_passing_score" field.
+func (m *DrainedResultMutation) ResetAvgPassingScore() {
+	m.avg_passing_score = nil
+	m.addavg_passing_score = nil
 }
 
-// SetLastAdmittedRatingPlace sets the "last_admitted_rating_place" field.
-func (m *DrainedResultMutation) SetLastAdmittedRatingPlace(i int) {
-	m.last_admitted_rating_place = &i
-	m.addlast_admitted_rating_place = nil
+// SetMinPassingScore sets the "min_passing_score" field.
+func (m *DrainedResultMutation) SetMinPassingScore(i int) {
+	m.min_passing_score = &i
+	m.addmin_passing_score = nil
 }
 
-// LastAdmittedRatingPlace returns the value of the "last_admitted_rating_place" field in the mutation.
-func (m *DrainedResultMutation) LastAdmittedRatingPlace() (r int, exists bool) {
-	v := m.last_admitted_rating_place
+// MinPassingScore returns the value of the "min_passing_score" field in the mutation.
+func (m *DrainedResultMutation) MinPassingScore() (r int, exists bool) {
+	v := m.min_passing_score
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastAdmittedRatingPlace returns the old "last_admitted_rating_place" field's value of the DrainedResult entity.
+// OldMinPassingScore returns the old "min_passing_score" field's value of the DrainedResult entity.
 // If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DrainedResultMutation) OldLastAdmittedRatingPlace(ctx context.Context) (v int, err error) {
+func (m *DrainedResultMutation) OldMinPassingScore(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastAdmittedRatingPlace is only allowed on UpdateOne operations")
+		return v, errors.New("OldMinPassingScore is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastAdmittedRatingPlace requires an ID field in the mutation")
+		return v, errors.New("OldMinPassingScore requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastAdmittedRatingPlace: %w", err)
+		return v, fmt.Errorf("querying old value for OldMinPassingScore: %w", err)
 	}
-	return oldValue.LastAdmittedRatingPlace, nil
+	return oldValue.MinPassingScore, nil
 }
 
-// AddLastAdmittedRatingPlace adds i to the "last_admitted_rating_place" field.
-func (m *DrainedResultMutation) AddLastAdmittedRatingPlace(i int) {
-	if m.addlast_admitted_rating_place != nil {
-		*m.addlast_admitted_rating_place += i
+// AddMinPassingScore adds i to the "min_passing_score" field.
+func (m *DrainedResultMutation) AddMinPassingScore(i int) {
+	if m.addmin_passing_score != nil {
+		*m.addmin_passing_score += i
 	} else {
-		m.addlast_admitted_rating_place = &i
+		m.addmin_passing_score = &i
 	}
 }
 
-// AddedLastAdmittedRatingPlace returns the value that was added to the "last_admitted_rating_place" field in this mutation.
-func (m *DrainedResultMutation) AddedLastAdmittedRatingPlace() (r int, exists bool) {
-	v := m.addlast_admitted_rating_place
+// AddedMinPassingScore returns the value that was added to the "min_passing_score" field in this mutation.
+func (m *DrainedResultMutation) AddedMinPassingScore() (r int, exists bool) {
+	v := m.addmin_passing_score
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetLastAdmittedRatingPlace resets all changes to the "last_admitted_rating_place" field.
-func (m *DrainedResultMutation) ResetLastAdmittedRatingPlace() {
-	m.last_admitted_rating_place = nil
-	m.addlast_admitted_rating_place = nil
+// ResetMinPassingScore resets all changes to the "min_passing_score" field.
+func (m *DrainedResultMutation) ResetMinPassingScore() {
+	m.min_passing_score = nil
+	m.addmin_passing_score = nil
+}
+
+// SetMaxPassingScore sets the "max_passing_score" field.
+func (m *DrainedResultMutation) SetMaxPassingScore(i int) {
+	m.max_passing_score = &i
+	m.addmax_passing_score = nil
+}
+
+// MaxPassingScore returns the value of the "max_passing_score" field in the mutation.
+func (m *DrainedResultMutation) MaxPassingScore() (r int, exists bool) {
+	v := m.max_passing_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaxPassingScore returns the old "max_passing_score" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldMaxPassingScore(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMaxPassingScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMaxPassingScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaxPassingScore: %w", err)
+	}
+	return oldValue.MaxPassingScore, nil
+}
+
+// AddMaxPassingScore adds i to the "max_passing_score" field.
+func (m *DrainedResultMutation) AddMaxPassingScore(i int) {
+	if m.addmax_passing_score != nil {
+		*m.addmax_passing_score += i
+	} else {
+		m.addmax_passing_score = &i
+	}
+}
+
+// AddedMaxPassingScore returns the value that was added to the "max_passing_score" field in this mutation.
+func (m *DrainedResultMutation) AddedMaxPassingScore() (r int, exists bool) {
+	v := m.addmax_passing_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMaxPassingScore resets all changes to the "max_passing_score" field.
+func (m *DrainedResultMutation) ResetMaxPassingScore() {
+	m.max_passing_score = nil
+	m.addmax_passing_score = nil
+}
+
+// SetMedPassingScore sets the "med_passing_score" field.
+func (m *DrainedResultMutation) SetMedPassingScore(i int) {
+	m.med_passing_score = &i
+	m.addmed_passing_score = nil
+}
+
+// MedPassingScore returns the value of the "med_passing_score" field in the mutation.
+func (m *DrainedResultMutation) MedPassingScore() (r int, exists bool) {
+	v := m.med_passing_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMedPassingScore returns the old "med_passing_score" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldMedPassingScore(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMedPassingScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMedPassingScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMedPassingScore: %w", err)
+	}
+	return oldValue.MedPassingScore, nil
+}
+
+// AddMedPassingScore adds i to the "med_passing_score" field.
+func (m *DrainedResultMutation) AddMedPassingScore(i int) {
+	if m.addmed_passing_score != nil {
+		*m.addmed_passing_score += i
+	} else {
+		m.addmed_passing_score = &i
+	}
+}
+
+// AddedMedPassingScore returns the value that was added to the "med_passing_score" field in this mutation.
+func (m *DrainedResultMutation) AddedMedPassingScore() (r int, exists bool) {
+	v := m.addmed_passing_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMedPassingScore resets all changes to the "med_passing_score" field.
+func (m *DrainedResultMutation) ResetMedPassingScore() {
+	m.med_passing_score = nil
+	m.addmed_passing_score = nil
+}
+
+// SetAvgLastAdmittedRatingPlace sets the "avg_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) SetAvgLastAdmittedRatingPlace(i int) {
+	m.avg_last_admitted_rating_place = &i
+	m.addavg_last_admitted_rating_place = nil
+}
+
+// AvgLastAdmittedRatingPlace returns the value of the "avg_last_admitted_rating_place" field in the mutation.
+func (m *DrainedResultMutation) AvgLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.avg_last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAvgLastAdmittedRatingPlace returns the old "avg_last_admitted_rating_place" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldAvgLastAdmittedRatingPlace(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAvgLastAdmittedRatingPlace is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAvgLastAdmittedRatingPlace requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAvgLastAdmittedRatingPlace: %w", err)
+	}
+	return oldValue.AvgLastAdmittedRatingPlace, nil
+}
+
+// AddAvgLastAdmittedRatingPlace adds i to the "avg_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) AddAvgLastAdmittedRatingPlace(i int) {
+	if m.addavg_last_admitted_rating_place != nil {
+		*m.addavg_last_admitted_rating_place += i
+	} else {
+		m.addavg_last_admitted_rating_place = &i
+	}
+}
+
+// AddedAvgLastAdmittedRatingPlace returns the value that was added to the "avg_last_admitted_rating_place" field in this mutation.
+func (m *DrainedResultMutation) AddedAvgLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.addavg_last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAvgLastAdmittedRatingPlace resets all changes to the "avg_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) ResetAvgLastAdmittedRatingPlace() {
+	m.avg_last_admitted_rating_place = nil
+	m.addavg_last_admitted_rating_place = nil
+}
+
+// SetMinLastAdmittedRatingPlace sets the "min_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) SetMinLastAdmittedRatingPlace(i int) {
+	m.min_last_admitted_rating_place = &i
+	m.addmin_last_admitted_rating_place = nil
+}
+
+// MinLastAdmittedRatingPlace returns the value of the "min_last_admitted_rating_place" field in the mutation.
+func (m *DrainedResultMutation) MinLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.min_last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMinLastAdmittedRatingPlace returns the old "min_last_admitted_rating_place" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldMinLastAdmittedRatingPlace(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMinLastAdmittedRatingPlace is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMinLastAdmittedRatingPlace requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMinLastAdmittedRatingPlace: %w", err)
+	}
+	return oldValue.MinLastAdmittedRatingPlace, nil
+}
+
+// AddMinLastAdmittedRatingPlace adds i to the "min_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) AddMinLastAdmittedRatingPlace(i int) {
+	if m.addmin_last_admitted_rating_place != nil {
+		*m.addmin_last_admitted_rating_place += i
+	} else {
+		m.addmin_last_admitted_rating_place = &i
+	}
+}
+
+// AddedMinLastAdmittedRatingPlace returns the value that was added to the "min_last_admitted_rating_place" field in this mutation.
+func (m *DrainedResultMutation) AddedMinLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.addmin_last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMinLastAdmittedRatingPlace resets all changes to the "min_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) ResetMinLastAdmittedRatingPlace() {
+	m.min_last_admitted_rating_place = nil
+	m.addmin_last_admitted_rating_place = nil
+}
+
+// SetMaxLastAdmittedRatingPlace sets the "max_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) SetMaxLastAdmittedRatingPlace(i int) {
+	m.max_last_admitted_rating_place = &i
+	m.addmax_last_admitted_rating_place = nil
+}
+
+// MaxLastAdmittedRatingPlace returns the value of the "max_last_admitted_rating_place" field in the mutation.
+func (m *DrainedResultMutation) MaxLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.max_last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaxLastAdmittedRatingPlace returns the old "max_last_admitted_rating_place" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldMaxLastAdmittedRatingPlace(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMaxLastAdmittedRatingPlace is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMaxLastAdmittedRatingPlace requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaxLastAdmittedRatingPlace: %w", err)
+	}
+	return oldValue.MaxLastAdmittedRatingPlace, nil
+}
+
+// AddMaxLastAdmittedRatingPlace adds i to the "max_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) AddMaxLastAdmittedRatingPlace(i int) {
+	if m.addmax_last_admitted_rating_place != nil {
+		*m.addmax_last_admitted_rating_place += i
+	} else {
+		m.addmax_last_admitted_rating_place = &i
+	}
+}
+
+// AddedMaxLastAdmittedRatingPlace returns the value that was added to the "max_last_admitted_rating_place" field in this mutation.
+func (m *DrainedResultMutation) AddedMaxLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.addmax_last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMaxLastAdmittedRatingPlace resets all changes to the "max_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) ResetMaxLastAdmittedRatingPlace() {
+	m.max_last_admitted_rating_place = nil
+	m.addmax_last_admitted_rating_place = nil
+}
+
+// SetMedLastAdmittedRatingPlace sets the "med_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) SetMedLastAdmittedRatingPlace(i int) {
+	m.med_last_admitted_rating_place = &i
+	m.addmed_last_admitted_rating_place = nil
+}
+
+// MedLastAdmittedRatingPlace returns the value of the "med_last_admitted_rating_place" field in the mutation.
+func (m *DrainedResultMutation) MedLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.med_last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMedLastAdmittedRatingPlace returns the old "med_last_admitted_rating_place" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldMedLastAdmittedRatingPlace(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMedLastAdmittedRatingPlace is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMedLastAdmittedRatingPlace requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMedLastAdmittedRatingPlace: %w", err)
+	}
+	return oldValue.MedLastAdmittedRatingPlace, nil
+}
+
+// AddMedLastAdmittedRatingPlace adds i to the "med_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) AddMedLastAdmittedRatingPlace(i int) {
+	if m.addmed_last_admitted_rating_place != nil {
+		*m.addmed_last_admitted_rating_place += i
+	} else {
+		m.addmed_last_admitted_rating_place = &i
+	}
+}
+
+// AddedMedLastAdmittedRatingPlace returns the value that was added to the "med_last_admitted_rating_place" field in this mutation.
+func (m *DrainedResultMutation) AddedMedLastAdmittedRatingPlace() (r int, exists bool) {
+	v := m.addmed_last_admitted_rating_place
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMedLastAdmittedRatingPlace resets all changes to the "med_last_admitted_rating_place" field.
+func (m *DrainedResultMutation) ResetMedLastAdmittedRatingPlace() {
+	m.med_last_admitted_rating_place = nil
+	m.addmed_last_admitted_rating_place = nil
 }
 
 // SetIteration sets the "iteration" field.
@@ -1964,15 +2310,33 @@ func (m *DrainedResultMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DrainedResultMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 10)
 	if m.drained_percent != nil {
 		fields = append(fields, drainedresult.FieldDrainedPercent)
 	}
-	if m.passing_score != nil {
-		fields = append(fields, drainedresult.FieldPassingScore)
+	if m.avg_passing_score != nil {
+		fields = append(fields, drainedresult.FieldAvgPassingScore)
 	}
-	if m.last_admitted_rating_place != nil {
-		fields = append(fields, drainedresult.FieldLastAdmittedRatingPlace)
+	if m.min_passing_score != nil {
+		fields = append(fields, drainedresult.FieldMinPassingScore)
+	}
+	if m.max_passing_score != nil {
+		fields = append(fields, drainedresult.FieldMaxPassingScore)
+	}
+	if m.med_passing_score != nil {
+		fields = append(fields, drainedresult.FieldMedPassingScore)
+	}
+	if m.avg_last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldAvgLastAdmittedRatingPlace)
+	}
+	if m.min_last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldMinLastAdmittedRatingPlace)
+	}
+	if m.max_last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldMaxLastAdmittedRatingPlace)
+	}
+	if m.med_last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldMedLastAdmittedRatingPlace)
 	}
 	if m.iteration != nil {
 		fields = append(fields, drainedresult.FieldIteration)
@@ -1987,10 +2351,22 @@ func (m *DrainedResultMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case drainedresult.FieldDrainedPercent:
 		return m.DrainedPercent()
-	case drainedresult.FieldPassingScore:
-		return m.PassingScore()
-	case drainedresult.FieldLastAdmittedRatingPlace:
-		return m.LastAdmittedRatingPlace()
+	case drainedresult.FieldAvgPassingScore:
+		return m.AvgPassingScore()
+	case drainedresult.FieldMinPassingScore:
+		return m.MinPassingScore()
+	case drainedresult.FieldMaxPassingScore:
+		return m.MaxPassingScore()
+	case drainedresult.FieldMedPassingScore:
+		return m.MedPassingScore()
+	case drainedresult.FieldAvgLastAdmittedRatingPlace:
+		return m.AvgLastAdmittedRatingPlace()
+	case drainedresult.FieldMinLastAdmittedRatingPlace:
+		return m.MinLastAdmittedRatingPlace()
+	case drainedresult.FieldMaxLastAdmittedRatingPlace:
+		return m.MaxLastAdmittedRatingPlace()
+	case drainedresult.FieldMedLastAdmittedRatingPlace:
+		return m.MedLastAdmittedRatingPlace()
 	case drainedresult.FieldIteration:
 		return m.Iteration()
 	}
@@ -2004,10 +2380,22 @@ func (m *DrainedResultMutation) OldField(ctx context.Context, name string) (ent.
 	switch name {
 	case drainedresult.FieldDrainedPercent:
 		return m.OldDrainedPercent(ctx)
-	case drainedresult.FieldPassingScore:
-		return m.OldPassingScore(ctx)
-	case drainedresult.FieldLastAdmittedRatingPlace:
-		return m.OldLastAdmittedRatingPlace(ctx)
+	case drainedresult.FieldAvgPassingScore:
+		return m.OldAvgPassingScore(ctx)
+	case drainedresult.FieldMinPassingScore:
+		return m.OldMinPassingScore(ctx)
+	case drainedresult.FieldMaxPassingScore:
+		return m.OldMaxPassingScore(ctx)
+	case drainedresult.FieldMedPassingScore:
+		return m.OldMedPassingScore(ctx)
+	case drainedresult.FieldAvgLastAdmittedRatingPlace:
+		return m.OldAvgLastAdmittedRatingPlace(ctx)
+	case drainedresult.FieldMinLastAdmittedRatingPlace:
+		return m.OldMinLastAdmittedRatingPlace(ctx)
+	case drainedresult.FieldMaxLastAdmittedRatingPlace:
+		return m.OldMaxLastAdmittedRatingPlace(ctx)
+	case drainedresult.FieldMedLastAdmittedRatingPlace:
+		return m.OldMedLastAdmittedRatingPlace(ctx)
 	case drainedresult.FieldIteration:
 		return m.OldIteration(ctx)
 	}
@@ -2026,19 +2414,61 @@ func (m *DrainedResultMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDrainedPercent(v)
 		return nil
-	case drainedresult.FieldPassingScore:
+	case drainedresult.FieldAvgPassingScore:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetPassingScore(v)
+		m.SetAvgPassingScore(v)
 		return nil
-	case drainedresult.FieldLastAdmittedRatingPlace:
+	case drainedresult.FieldMinPassingScore:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastAdmittedRatingPlace(v)
+		m.SetMinPassingScore(v)
+		return nil
+	case drainedresult.FieldMaxPassingScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaxPassingScore(v)
+		return nil
+	case drainedresult.FieldMedPassingScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMedPassingScore(v)
+		return nil
+	case drainedresult.FieldAvgLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAvgLastAdmittedRatingPlace(v)
+		return nil
+	case drainedresult.FieldMinLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMinLastAdmittedRatingPlace(v)
+		return nil
+	case drainedresult.FieldMaxLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaxLastAdmittedRatingPlace(v)
+		return nil
+	case drainedresult.FieldMedLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMedLastAdmittedRatingPlace(v)
 		return nil
 	case drainedresult.FieldIteration:
 		v, ok := value.(int)
@@ -2058,11 +2488,29 @@ func (m *DrainedResultMutation) AddedFields() []string {
 	if m.adddrained_percent != nil {
 		fields = append(fields, drainedresult.FieldDrainedPercent)
 	}
-	if m.addpassing_score != nil {
-		fields = append(fields, drainedresult.FieldPassingScore)
+	if m.addavg_passing_score != nil {
+		fields = append(fields, drainedresult.FieldAvgPassingScore)
 	}
-	if m.addlast_admitted_rating_place != nil {
-		fields = append(fields, drainedresult.FieldLastAdmittedRatingPlace)
+	if m.addmin_passing_score != nil {
+		fields = append(fields, drainedresult.FieldMinPassingScore)
+	}
+	if m.addmax_passing_score != nil {
+		fields = append(fields, drainedresult.FieldMaxPassingScore)
+	}
+	if m.addmed_passing_score != nil {
+		fields = append(fields, drainedresult.FieldMedPassingScore)
+	}
+	if m.addavg_last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldAvgLastAdmittedRatingPlace)
+	}
+	if m.addmin_last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldMinLastAdmittedRatingPlace)
+	}
+	if m.addmax_last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldMaxLastAdmittedRatingPlace)
+	}
+	if m.addmed_last_admitted_rating_place != nil {
+		fields = append(fields, drainedresult.FieldMedLastAdmittedRatingPlace)
 	}
 	if m.additeration != nil {
 		fields = append(fields, drainedresult.FieldIteration)
@@ -2077,10 +2525,22 @@ func (m *DrainedResultMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case drainedresult.FieldDrainedPercent:
 		return m.AddedDrainedPercent()
-	case drainedresult.FieldPassingScore:
-		return m.AddedPassingScore()
-	case drainedresult.FieldLastAdmittedRatingPlace:
-		return m.AddedLastAdmittedRatingPlace()
+	case drainedresult.FieldAvgPassingScore:
+		return m.AddedAvgPassingScore()
+	case drainedresult.FieldMinPassingScore:
+		return m.AddedMinPassingScore()
+	case drainedresult.FieldMaxPassingScore:
+		return m.AddedMaxPassingScore()
+	case drainedresult.FieldMedPassingScore:
+		return m.AddedMedPassingScore()
+	case drainedresult.FieldAvgLastAdmittedRatingPlace:
+		return m.AddedAvgLastAdmittedRatingPlace()
+	case drainedresult.FieldMinLastAdmittedRatingPlace:
+		return m.AddedMinLastAdmittedRatingPlace()
+	case drainedresult.FieldMaxLastAdmittedRatingPlace:
+		return m.AddedMaxLastAdmittedRatingPlace()
+	case drainedresult.FieldMedLastAdmittedRatingPlace:
+		return m.AddedMedLastAdmittedRatingPlace()
 	case drainedresult.FieldIteration:
 		return m.AddedIteration()
 	}
@@ -2099,19 +2559,61 @@ func (m *DrainedResultMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddDrainedPercent(v)
 		return nil
-	case drainedresult.FieldPassingScore:
+	case drainedresult.FieldAvgPassingScore:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddPassingScore(v)
+		m.AddAvgPassingScore(v)
 		return nil
-	case drainedresult.FieldLastAdmittedRatingPlace:
+	case drainedresult.FieldMinPassingScore:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddLastAdmittedRatingPlace(v)
+		m.AddMinPassingScore(v)
+		return nil
+	case drainedresult.FieldMaxPassingScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMaxPassingScore(v)
+		return nil
+	case drainedresult.FieldMedPassingScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMedPassingScore(v)
+		return nil
+	case drainedresult.FieldAvgLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAvgLastAdmittedRatingPlace(v)
+		return nil
+	case drainedresult.FieldMinLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMinLastAdmittedRatingPlace(v)
+		return nil
+	case drainedresult.FieldMaxLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMaxLastAdmittedRatingPlace(v)
+		return nil
+	case drainedresult.FieldMedLastAdmittedRatingPlace:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMedLastAdmittedRatingPlace(v)
 		return nil
 	case drainedresult.FieldIteration:
 		v, ok := value.(int)
@@ -2150,11 +2652,29 @@ func (m *DrainedResultMutation) ResetField(name string) error {
 	case drainedresult.FieldDrainedPercent:
 		m.ResetDrainedPercent()
 		return nil
-	case drainedresult.FieldPassingScore:
-		m.ResetPassingScore()
+	case drainedresult.FieldAvgPassingScore:
+		m.ResetAvgPassingScore()
 		return nil
-	case drainedresult.FieldLastAdmittedRatingPlace:
-		m.ResetLastAdmittedRatingPlace()
+	case drainedresult.FieldMinPassingScore:
+		m.ResetMinPassingScore()
+		return nil
+	case drainedresult.FieldMaxPassingScore:
+		m.ResetMaxPassingScore()
+		return nil
+	case drainedresult.FieldMedPassingScore:
+		m.ResetMedPassingScore()
+		return nil
+	case drainedresult.FieldAvgLastAdmittedRatingPlace:
+		m.ResetAvgLastAdmittedRatingPlace()
+		return nil
+	case drainedresult.FieldMinLastAdmittedRatingPlace:
+		m.ResetMinLastAdmittedRatingPlace()
+		return nil
+	case drainedresult.FieldMaxLastAdmittedRatingPlace:
+		m.ResetMaxLastAdmittedRatingPlace()
+		return nil
+	case drainedresult.FieldMedLastAdmittedRatingPlace:
+		m.ResetMedLastAdmittedRatingPlace()
 		return nil
 	case drainedresult.FieldIteration:
 		m.ResetIteration()
@@ -3284,596 +3804,6 @@ func (m *HeadingMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Heading edge %s", name)
-}
-
-// MetadataMutation represents an operation that mutates the Metadata nodes in the graph.
-type MetadataMutation struct {
-	config
-	op                                Op
-	typ                               string
-	id                                *int
-	last_applications_iteration       *int
-	addlast_applications_iteration    *int
-	last_calculations_iteration       *int
-	addlast_calculations_iteration    *int
-	last_drained_results_iteration    *int
-	addlast_drained_results_iteration *int
-	uploading_lock                    *bool
-	clearedFields                     map[string]struct{}
-	done                              bool
-	oldValue                          func(context.Context) (*Metadata, error)
-	predicates                        []predicate.Metadata
-}
-
-var _ ent.Mutation = (*MetadataMutation)(nil)
-
-// metadataOption allows management of the mutation configuration using functional options.
-type metadataOption func(*MetadataMutation)
-
-// newMetadataMutation creates new mutation for the Metadata entity.
-func newMetadataMutation(c config, op Op, opts ...metadataOption) *MetadataMutation {
-	m := &MetadataMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeMetadata,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withMetadataID sets the ID field of the mutation.
-func withMetadataID(id int) metadataOption {
-	return func(m *MetadataMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Metadata
-		)
-		m.oldValue = func(ctx context.Context) (*Metadata, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Metadata.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withMetadata sets the old Metadata of the mutation.
-func withMetadata(node *Metadata) metadataOption {
-	return func(m *MetadataMutation) {
-		m.oldValue = func(context.Context) (*Metadata, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m MetadataMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m MetadataMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *MetadataMutation) ID() (id int, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *MetadataMutation) IDs(ctx context.Context) ([]int, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []int{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Metadata.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetLastApplicationsIteration sets the "last_applications_iteration" field.
-func (m *MetadataMutation) SetLastApplicationsIteration(i int) {
-	m.last_applications_iteration = &i
-	m.addlast_applications_iteration = nil
-}
-
-// LastApplicationsIteration returns the value of the "last_applications_iteration" field in the mutation.
-func (m *MetadataMutation) LastApplicationsIteration() (r int, exists bool) {
-	v := m.last_applications_iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastApplicationsIteration returns the old "last_applications_iteration" field's value of the Metadata entity.
-// If the Metadata object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MetadataMutation) OldLastApplicationsIteration(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastApplicationsIteration is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastApplicationsIteration requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastApplicationsIteration: %w", err)
-	}
-	return oldValue.LastApplicationsIteration, nil
-}
-
-// AddLastApplicationsIteration adds i to the "last_applications_iteration" field.
-func (m *MetadataMutation) AddLastApplicationsIteration(i int) {
-	if m.addlast_applications_iteration != nil {
-		*m.addlast_applications_iteration += i
-	} else {
-		m.addlast_applications_iteration = &i
-	}
-}
-
-// AddedLastApplicationsIteration returns the value that was added to the "last_applications_iteration" field in this mutation.
-func (m *MetadataMutation) AddedLastApplicationsIteration() (r int, exists bool) {
-	v := m.addlast_applications_iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetLastApplicationsIteration resets all changes to the "last_applications_iteration" field.
-func (m *MetadataMutation) ResetLastApplicationsIteration() {
-	m.last_applications_iteration = nil
-	m.addlast_applications_iteration = nil
-}
-
-// SetLastCalculationsIteration sets the "last_calculations_iteration" field.
-func (m *MetadataMutation) SetLastCalculationsIteration(i int) {
-	m.last_calculations_iteration = &i
-	m.addlast_calculations_iteration = nil
-}
-
-// LastCalculationsIteration returns the value of the "last_calculations_iteration" field in the mutation.
-func (m *MetadataMutation) LastCalculationsIteration() (r int, exists bool) {
-	v := m.last_calculations_iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastCalculationsIteration returns the old "last_calculations_iteration" field's value of the Metadata entity.
-// If the Metadata object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MetadataMutation) OldLastCalculationsIteration(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastCalculationsIteration is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastCalculationsIteration requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastCalculationsIteration: %w", err)
-	}
-	return oldValue.LastCalculationsIteration, nil
-}
-
-// AddLastCalculationsIteration adds i to the "last_calculations_iteration" field.
-func (m *MetadataMutation) AddLastCalculationsIteration(i int) {
-	if m.addlast_calculations_iteration != nil {
-		*m.addlast_calculations_iteration += i
-	} else {
-		m.addlast_calculations_iteration = &i
-	}
-}
-
-// AddedLastCalculationsIteration returns the value that was added to the "last_calculations_iteration" field in this mutation.
-func (m *MetadataMutation) AddedLastCalculationsIteration() (r int, exists bool) {
-	v := m.addlast_calculations_iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetLastCalculationsIteration resets all changes to the "last_calculations_iteration" field.
-func (m *MetadataMutation) ResetLastCalculationsIteration() {
-	m.last_calculations_iteration = nil
-	m.addlast_calculations_iteration = nil
-}
-
-// SetLastDrainedResultsIteration sets the "last_drained_results_iteration" field.
-func (m *MetadataMutation) SetLastDrainedResultsIteration(i int) {
-	m.last_drained_results_iteration = &i
-	m.addlast_drained_results_iteration = nil
-}
-
-// LastDrainedResultsIteration returns the value of the "last_drained_results_iteration" field in the mutation.
-func (m *MetadataMutation) LastDrainedResultsIteration() (r int, exists bool) {
-	v := m.last_drained_results_iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastDrainedResultsIteration returns the old "last_drained_results_iteration" field's value of the Metadata entity.
-// If the Metadata object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MetadataMutation) OldLastDrainedResultsIteration(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastDrainedResultsIteration is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastDrainedResultsIteration requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastDrainedResultsIteration: %w", err)
-	}
-	return oldValue.LastDrainedResultsIteration, nil
-}
-
-// AddLastDrainedResultsIteration adds i to the "last_drained_results_iteration" field.
-func (m *MetadataMutation) AddLastDrainedResultsIteration(i int) {
-	if m.addlast_drained_results_iteration != nil {
-		*m.addlast_drained_results_iteration += i
-	} else {
-		m.addlast_drained_results_iteration = &i
-	}
-}
-
-// AddedLastDrainedResultsIteration returns the value that was added to the "last_drained_results_iteration" field in this mutation.
-func (m *MetadataMutation) AddedLastDrainedResultsIteration() (r int, exists bool) {
-	v := m.addlast_drained_results_iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetLastDrainedResultsIteration resets all changes to the "last_drained_results_iteration" field.
-func (m *MetadataMutation) ResetLastDrainedResultsIteration() {
-	m.last_drained_results_iteration = nil
-	m.addlast_drained_results_iteration = nil
-}
-
-// SetUploadingLock sets the "uploading_lock" field.
-func (m *MetadataMutation) SetUploadingLock(b bool) {
-	m.uploading_lock = &b
-}
-
-// UploadingLock returns the value of the "uploading_lock" field in the mutation.
-func (m *MetadataMutation) UploadingLock() (r bool, exists bool) {
-	v := m.uploading_lock
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUploadingLock returns the old "uploading_lock" field's value of the Metadata entity.
-// If the Metadata object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MetadataMutation) OldUploadingLock(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUploadingLock is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUploadingLock requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUploadingLock: %w", err)
-	}
-	return oldValue.UploadingLock, nil
-}
-
-// ResetUploadingLock resets all changes to the "uploading_lock" field.
-func (m *MetadataMutation) ResetUploadingLock() {
-	m.uploading_lock = nil
-}
-
-// Where appends a list predicates to the MetadataMutation builder.
-func (m *MetadataMutation) Where(ps ...predicate.Metadata) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the MetadataMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *MetadataMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Metadata, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *MetadataMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *MetadataMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (Metadata).
-func (m *MetadataMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *MetadataMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.last_applications_iteration != nil {
-		fields = append(fields, metadata.FieldLastApplicationsIteration)
-	}
-	if m.last_calculations_iteration != nil {
-		fields = append(fields, metadata.FieldLastCalculationsIteration)
-	}
-	if m.last_drained_results_iteration != nil {
-		fields = append(fields, metadata.FieldLastDrainedResultsIteration)
-	}
-	if m.uploading_lock != nil {
-		fields = append(fields, metadata.FieldUploadingLock)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *MetadataMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case metadata.FieldLastApplicationsIteration:
-		return m.LastApplicationsIteration()
-	case metadata.FieldLastCalculationsIteration:
-		return m.LastCalculationsIteration()
-	case metadata.FieldLastDrainedResultsIteration:
-		return m.LastDrainedResultsIteration()
-	case metadata.FieldUploadingLock:
-		return m.UploadingLock()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *MetadataMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case metadata.FieldLastApplicationsIteration:
-		return m.OldLastApplicationsIteration(ctx)
-	case metadata.FieldLastCalculationsIteration:
-		return m.OldLastCalculationsIteration(ctx)
-	case metadata.FieldLastDrainedResultsIteration:
-		return m.OldLastDrainedResultsIteration(ctx)
-	case metadata.FieldUploadingLock:
-		return m.OldUploadingLock(ctx)
-	}
-	return nil, fmt.Errorf("unknown Metadata field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *MetadataMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case metadata.FieldLastApplicationsIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastApplicationsIteration(v)
-		return nil
-	case metadata.FieldLastCalculationsIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastCalculationsIteration(v)
-		return nil
-	case metadata.FieldLastDrainedResultsIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastDrainedResultsIteration(v)
-		return nil
-	case metadata.FieldUploadingLock:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUploadingLock(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Metadata field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *MetadataMutation) AddedFields() []string {
-	var fields []string
-	if m.addlast_applications_iteration != nil {
-		fields = append(fields, metadata.FieldLastApplicationsIteration)
-	}
-	if m.addlast_calculations_iteration != nil {
-		fields = append(fields, metadata.FieldLastCalculationsIteration)
-	}
-	if m.addlast_drained_results_iteration != nil {
-		fields = append(fields, metadata.FieldLastDrainedResultsIteration)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *MetadataMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case metadata.FieldLastApplicationsIteration:
-		return m.AddedLastApplicationsIteration()
-	case metadata.FieldLastCalculationsIteration:
-		return m.AddedLastCalculationsIteration()
-	case metadata.FieldLastDrainedResultsIteration:
-		return m.AddedLastDrainedResultsIteration()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *MetadataMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case metadata.FieldLastApplicationsIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddLastApplicationsIteration(v)
-		return nil
-	case metadata.FieldLastCalculationsIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddLastCalculationsIteration(v)
-		return nil
-	case metadata.FieldLastDrainedResultsIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddLastDrainedResultsIteration(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Metadata numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *MetadataMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *MetadataMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *MetadataMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Metadata nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *MetadataMutation) ResetField(name string) error {
-	switch name {
-	case metadata.FieldLastApplicationsIteration:
-		m.ResetLastApplicationsIteration()
-		return nil
-	case metadata.FieldLastCalculationsIteration:
-		m.ResetLastCalculationsIteration()
-		return nil
-	case metadata.FieldLastDrainedResultsIteration:
-		m.ResetLastDrainedResultsIteration()
-		return nil
-	case metadata.FieldUploadingLock:
-		m.ResetUploadingLock()
-		return nil
-	}
-	return fmt.Errorf("unknown Metadata field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *MetadataMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *MetadataMutation) AddedIDs(name string) []ent.Value {
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *MetadataMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *MetadataMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *MetadataMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *MetadataMutation) EdgeCleared(name string) bool {
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *MetadataMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Metadata unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *MetadataMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Metadata edge %s", name)
 }
 
 // VarsityMutation represents an operation that mutates the Varsity nodes in the graph.

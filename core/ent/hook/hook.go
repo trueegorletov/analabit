@@ -56,18 +56,6 @@ func (f HeadingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HeadingMutation", m)
 }
 
-// The MetadataFunc type is an adapter to allow the use of ordinary
-// function as Metadata mutator.
-type MetadataFunc func(context.Context, *ent.MetadataMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f MetadataFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.MetadataMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MetadataMutation", m)
-}
-
 // The VarsityFunc type is an adapter to allow the use of ordinary
 // function as Varsity mutator.
 type VarsityFunc func(context.Context, *ent.VarsityMutation) (ent.Value, error)
