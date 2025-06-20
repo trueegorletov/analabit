@@ -305,7 +305,7 @@ func startDrainSimulations() {
 	}
 	corestate.SimulationsDone = true
 	elapsedTime := time.Since(startTime)                                        // Calculate elapsed time
-	fmt.Printf("All drain simulations finished in %s.\\\\n", elapsedTime)       // Print to stdout
+	fmt.Printf("All drain simulations finished in %s.\n", elapsedTime)          // Print to stdout
 	log.Printf("All drain simulations finished. Elapsed time: %s", elapsedTime) // Log with elapsed time
 }
 

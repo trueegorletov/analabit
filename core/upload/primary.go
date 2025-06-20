@@ -42,7 +42,7 @@ type helper struct {
 
 func (u *helper) initMetadata(ctx context.Context) error {
 	if u.metadata != nil {
-		return fmt.Errorf("metadata is already initialized")
+		return nil
 	}
 
 	metadata, err := u.client.Metadata.Query().First(ctx)
@@ -196,14 +196,15 @@ func (u *helper) uploadCalculations(ctx context.Context, client *ent.Client, cal
 		for j, student := range result.Admitted {
 			admittedPlace := j + 1 // Places are 1-based
 
-			err := client.Calculation.Create().
+			err = client.Calculation.Create().
 				SetStudentID(student.ID()).
 				SetAdmittedPlace(admittedPlace).
 				SetIteration(nextIteration).
-				SetHeading(h)
+				SetHeading(h).
+				Exec(ctx)
 
 			if err != nil {
-				return fmt.Errorf("failed to create calculation for student %s in heading %s: %w",
+				return fmt.Errorf("failed to create calculation for student %s in heading %s: %v",
 					student.ID(), h.Code, err)
 			}
 		}
@@ -268,6 +269,7 @@ func (u *helper) createHeading(ctx context.Context, client *ent.Client, h *core.
 		SetTargetQuotaCapacity(c.TargetQuota).
 		SetDedicatedQuotaCapacity(c.DedicatedQuota).
 		SetSpecialQuotaCapacity(c.SpecialQuota).
+		SetVarsity(v).
 		Save(ctx)
 
 	if err != nil {
