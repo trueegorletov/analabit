@@ -2,3 +2,9 @@
 /cache/
 /analabit
 cli.log
+
+service/aggregator/proto/*.pb.go
+service/aggregator/proto/*.pb.micro.go
+
+service/producer/proto/*.pb.go
+service/producer/proto/*.pb.micro.go

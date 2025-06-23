@@ -1,0 +1,70 @@
+services:
+  producer:
+    build:
+      context: .
+      dockerfile: service/producer/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - MICRO_REGISTRY=mdns
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY_ID=minioadmin
+      - MINIO_SECRET_ACCESS_KEY=minioadmin
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - minio
+      - rabbitmq
+
+  aggregator:
+    build:
+      context: .
+      dockerfile: service/aggregator/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - MICRO_REGISTRY=mdns
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY_ID=minioadmin
+      - MINIO_SECRET_ACCESS_KEY=minioadmin
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - POSTGRES_CONN_STRINGS=host=postgres user=postgres password=postgres dbname=postgres sslmode=disable
+    depends_on:
+      - minio
+      - rabbitmq
+      - postgres
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+
+  postgres:
+    image: postgres:13-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  minio_data:
+  rabbitmq_data:
+  postgres_data:

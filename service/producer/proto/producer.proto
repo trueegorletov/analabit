@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package producer;
+
+option go_package = "service/producer/proto";
+
+service Producer {
+	rpc Produce(ProduceRequest) returns (ProduceResponse) {}
+}
+
+message ProduceRequest {
+}
+
+message ProduceResponse {
+	string message = 1;
+}

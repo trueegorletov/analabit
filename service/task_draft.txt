@@ -1,0 +1,84 @@
+### Technical Specification for Producer and Aggregator Microservices
+
+This document outlines the requirements for two new microservices: **Producer** and **Aggregator**.
+
+---
+
+### 1. Producer Service
+
+**Purpose:** Data collection, processing, and publication.
+
+**Key Tasks:**
+
+1.  **Data Collection:**
+    *   The service must initiate data collection from sources defined in `VarsityDefinition` and `HeadingSource`.
+    *   The collection logic must be identical to the one currently used by the CLI.
+
+2.  **Data Processing:**
+    *   Utilize the existing business logic from the `core/` package to perform calculations.
+    *   Specifically, use `core/calculate.go` to run the `VarsityCalculator`.
+    *   The result of the calculations will be a `[]CalculationResult` slice.
+    *   Use `core/drainer/` to process the calculator's results.
+    *   The result of the `Drainer`'s work will be a `[]DrainedResult` slice.
+
+3.  **Serialization:**
+    *   The `[]CalculationResult` and `[]DrainedResult` slices must be serialized using the GOB (Go binary) encoder.
+    *   Each slice (calculator and drainer results) should be serialized into a separate binary file.
+
+4.  **Publication to MinIO:**
+    *   Implement a client to interact with MinIO (recommended library: `github.com/minio/minio-go`).
+    *   Create a new bucket for each processing session. The bucket name must be unique (e.g., based on a timestamp or UUID).
+    *   Upload the two GOB files (`CalculationResult` and `DrainedResult`) to the created bucket.
+
+5.  **Notification via RabbitMQ:**
+    *   Implement a RabbitMQ producer.
+    *   After successfully uploading the files to MinIO, the service must send a message to a RabbitMQ queue.
+    *   The message must contain the information necessary to access the data, at a minimum, the bucket name.
+    *   Message format: JSON, e.g., `{"bucket_name": "bucket-name"}`.
+
+**Technology Stack and Dependencies:**
+*   Go
+*   MinIO Go SDK (`github.com/minio/minio-go`)
+*   RabbitMQ Go client (e.g., `github.com/streadway/amqp`)
+*   Modules from `core/` for business logic.
+
+---
+
+### 2. Aggregator Service
+
+**Purpose:** Receiving, deserializing, and saving data to a database.
+
+**Key Tasks:**
+
+1.  **Listen to RabbitMQ:**
+    *   Implement a RabbitMQ consumer to listen for messages from the queue the Producer writes to.
+    *   Upon receiving a message, extract the bucket name from it.
+
+2.  **Fetch Data from MinIO:**
+    *   Using the bucket name, connect to MinIO and download the GOB files (`CalculationResult` and `DrainedResult`).
+
+3.  **Deserialization:**
+    *   Deserialize the GOB files back into `[]CalculationResult` and `[]DrainedResult` slices.
+
+4.  **Upload to PostgreSQL:**
+    *   The service must be able to connect to one or more PostgreSQL databases. The connection configuration should be flexible.
+    *   Use the existing logic from `core/upload` to load data into the database.
+    *   The upload process must be identical to how the current CLI does it.
+
+**Technology Stack and Dependencies:**
+*   Go
+*   MinIO Go SDK (`github.com/minio/minio-go`)
+*   RabbitMQ Go client (e.g., `github.com/streadway/amqp`)
+*   PostgreSQL driver (e.g., `github.com/lib/pq` or `github.com/jackc/pgx`)
+*   Modules from `core/` for data loading.
+
+---
+
+### General Requirements and Recommendations
+
+*   **Configuration:** Both services must support configuration via files or environment variables (addresses for MinIO, RabbitMQ, PostgreSQL, credentials, etc.).
+*   **Logging:** Implement structured logging to monitor the services' operation.
+*   **Error Handling:** Ensure robust error handling at all stages (network issues, serialization/deserialization errors, database write errors, etc.).
+*   **Dockerfile:** For each service, a `Dockerfile` must be prepared for building and running in a container.
+*   **Graceful Shutdown:** Implement a graceful shutdown mechanism for the proper termination of services (closing connections, completing current tasks).
+
