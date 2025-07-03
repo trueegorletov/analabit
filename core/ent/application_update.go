@@ -149,6 +149,20 @@ func (au *ApplicationUpdate) AddIteration(i int) *ApplicationUpdate {
 	return au
 }
 
+// SetOriginalSubmitted sets the "original_submitted" field.
+func (au *ApplicationUpdate) SetOriginalSubmitted(b bool) *ApplicationUpdate {
+	au.mutation.SetOriginalSubmitted(b)
+	return au
+}
+
+// SetNillableOriginalSubmitted sets the "original_submitted" field if the given value is not nil.
+func (au *ApplicationUpdate) SetNillableOriginalSubmitted(b *bool) *ApplicationUpdate {
+	if b != nil {
+		au.SetOriginalSubmitted(*b)
+	}
+	return au
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (au *ApplicationUpdate) SetUpdatedAt(t time.Time) *ApplicationUpdate {
 	au.mutation.SetUpdatedAt(t)
@@ -265,6 +279,9 @@ func (au *ApplicationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.AddedIteration(); ok {
 		_spec.AddField(application.FieldIteration, field.TypeInt, value)
+	}
+	if value, ok := au.mutation.OriginalSubmitted(); ok {
+		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)
@@ -437,6 +454,20 @@ func (auo *ApplicationUpdateOne) AddIteration(i int) *ApplicationUpdateOne {
 	return auo
 }
 
+// SetOriginalSubmitted sets the "original_submitted" field.
+func (auo *ApplicationUpdateOne) SetOriginalSubmitted(b bool) *ApplicationUpdateOne {
+	auo.mutation.SetOriginalSubmitted(b)
+	return auo
+}
+
+// SetNillableOriginalSubmitted sets the "original_submitted" field if the given value is not nil.
+func (auo *ApplicationUpdateOne) SetNillableOriginalSubmitted(b *bool) *ApplicationUpdateOne {
+	if b != nil {
+		auo.SetOriginalSubmitted(*b)
+	}
+	return auo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (auo *ApplicationUpdateOne) SetUpdatedAt(t time.Time) *ApplicationUpdateOne {
 	auo.mutation.SetUpdatedAt(t)
@@ -583,6 +614,9 @@ func (auo *ApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Applicatio
 	}
 	if value, ok := auo.mutation.AddedIteration(); ok {
 		_spec.AddField(application.FieldIteration, field.TypeInt, value)
+	}
+	if value, ok := auo.mutation.OriginalSubmitted(); ok {
+		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)

@@ -7,10 +7,17 @@ services:
       - "8080:8080"
     environment:
       - MICRO_REGISTRY=mdns
-      - MINIO_ENDPOINT=minio:9000
-      - MINIO_ACCESS_KEY_ID=minioadmin
-      - MINIO_SECRET_ACCESS_KEY=minioadmin
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - ANALABIT_CACHE_DIR=./cache
+      - ANALABIT_CACHE_TTL_MINUTES=10
+      - ANALABIT_DRAIN_SIM_STAGES=33,50,66,100
+      - ANALABIT_DRAIN_SIM_ITERATIONS=10
+      - ANALABIT_MINIO_ENDPOINT=minio:9000
+      - ANALABIT_MINIO_ACCESS_KEY=minioadmin
+      - ANALABIT_MINIO_SECRET_KEY=minioadmin
+      - ANALABIT_MINIO_USE_SSL=false
+      - ANALABIT_RABBIT_URL=amqp://guest:guest@rabbitmq:5672/
+      - ANALABIT_MINIO_BUCKET_NAME=analabit-results
+      - ANALABIT_SELF_QUERY_PERIOD_MINUTES=20
     depends_on:
       - minio
       - rabbitmq
@@ -23,15 +30,26 @@ services:
       - "8081:8081"
     environment:
       - MICRO_REGISTRY=mdns
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY_ID=minioadmin
       - MINIO_SECRET_ACCESS_KEY=minioadmin
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - MINIO_USE_SSL=false
+      - MINIO_BUCKET_NAME=analabit-results
       - POSTGRES_CONN_STRINGS=host=postgres user=postgres password=postgres dbname=postgres sslmode=disable
     depends_on:
       - minio
       - rabbitmq
       - postgres
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
 
   minio:
     image: minio/minio
@@ -48,23 +66,29 @@ services:
   postgres:
     image: postgres:13-alpine
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
-      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
+  # --- API HTTP gateway ---
+  api:
+    build:
+      context: .
+      dockerfile: service/api/Dockerfile
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - "3080:3000"
+    environment:
+      - SERVER_PORT=3000
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_DBNAME=postgres
+      - DATABASE_SSLMODE=disable
+    depends_on:
+      - postgres
 
 volumes:
   minio_data:
-  rabbitmq_data:
-  postgres_data:

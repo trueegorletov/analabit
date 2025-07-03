@@ -8,13 +8,8 @@ import (
 	"analabit/core/registry"
 	"analabit/core/source"
 	"fmt"
-	"io/fs"
 	"log"
 	"os"
-	"path/filepath"
-	"sort"
-	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -100,132 +95,19 @@ func init() {
 }
 
 func performCrawling() error {
-	allDefs := registry.AllDefinitions
-	var filteredDefs []source.VarsityDefinition
-
-	log.Println("performCrawling: Starting...") // New log
-
-	varsitiesToUse := make(map[string]bool)
-	if len(config.AppConfig.Varsities.List) == 1 && config.AppConfig.Varsities.List[0] == "all" {
-		for _, def := range allDefs {
-			varsitiesToUse[def.Code] = true
-		}
-	} else {
-		for _, code := range config.AppConfig.Varsities.List {
-			varsitiesToUse[code] = true
-		}
+	params := registry.CrawlOptions{
+		VarsitiesList:    config.AppConfig.Varsities.List,
+		VarsitiesExclude: config.AppConfig.Varsities.Excluded,
+		CacheDir:         config.AppConfig.Cache.Directory,
+		CacheTTLMinutes:  config.AppConfig.Cache.TTLMinutes,
+		DrainStages:      config.AppConfig.DrainSim.Stages,
+		DrainIterations:  config.AppConfig.DrainSim.Iterations,
 	}
-	for _, code := range config.AppConfig.Varsities.Excluded {
-		delete(varsitiesToUse, code)
+	result, err := registry.CrawlWithOptions(registry.AllDefinitions, params)
+	if err != nil {
+		return err
 	}
-
-	for _, def := range allDefs {
-		if varsitiesToUse[def.Code] {
-			filteredDefs = append(filteredDefs, def)
-		}
-	}
-
-	if len(filteredDefs) == 0 {
-		log.Println("No varsities selected after filtering. Skipping crawling.")
-		corestate.LoadedVarsities = []*source.Varsity{}
-		log.Println("performCrawling: Finished (no varsities selected).") // New log
-		return nil
-	}
-
-	cacheDir := config.AppConfig.Cache.Directory
-	ttlSeconds := int64(config.AppConfig.Cache.TTLMinutes * 60)
-	var validCacheFile string
-	var latestTimestamp int64 = -1
-
-	log.Printf("performCrawling: Checking cache directory '%s' with TTL %d minutes.", cacheDir, config.AppConfig.Cache.TTLMinutes) // New log
-	if _, err := os.Stat(cacheDir); !os.IsNotExist(err) {
-		log.Println("performCrawling: Walking cache directory...") // New log
-		err := filepath.WalkDir(cacheDir, func(path string, d fs.DirEntry, err error) error {
-			if err != nil {
-				log.Printf("Error walking cache directory at %s: %v", path, err)
-				return err // Stop walking this path if error occurs
-			}
-			if !d.IsDir() && strings.HasSuffix(d.Name(), ".gob") { // Ensure it's .gob, not .dob
-				nameWithoutExt := strings.TrimSuffix(d.Name(), ".gob")
-				ts, err := strconv.ParseInt(nameWithoutExt, 10, 64)
-				if err == nil {
-					if time.Now().Unix()-ts < ttlSeconds && ts > latestTimestamp {
-						latestTimestamp = ts
-						validCacheFile = path
-					}
-				}
-			}
-			return nil
-		})
-		if err != nil {
-			log.Printf("performCrawling: Error during cache directory walk: %v", err) // Log error from WalkDir itself
-		}
-		log.Println("performCrawling: Finished walking cache directory.") // New log
-	}
-
-	var loadedVarsities []*source.Varsity
-	log.Println("performCrawling: About to load varsity data...") // New log
-
-	if validCacheFile != "" {
-		log.Printf("Attempting to use cache file: %s\n", validCacheFile)
-		file, err := os.Open(validCacheFile)
-		if err != nil {
-			log.Printf("Failed to open cache file %s: %v. Falling back to full crawl.\n", validCacheFile, err)
-			log.Println("performCrawling: Attempting to load from definitions (cache open failed)...") // New log
-			loadedVarsities = source.LoadFromDefinitions(filteredDefs)
-			log.Println("performCrawling: Finished loading from definitions (cache open failed).") // New log
-		} else {
-			defer file.Close()
-			caches, err := source.DeserializeList(file)
-			if err != nil {
-				log.Printf("Failed to deserialize cache file %s: %v. Falling back to full crawl.\n", validCacheFile, err)
-				log.Println("performCrawling: Attempting to load from definitions (cache deserialize failed)...") // New log
-				loadedVarsities = source.LoadFromDefinitions(filteredDefs)
-				log.Println("performCrawling: Finished loading from definitions (cache deserialize failed).") // New log
-			} else {
-				log.Println("Successfully deserialized cache. Loading with caches.")
-				log.Println("performCrawling: Attempting to load with caches...") // New log
-				loadedVarsities = source.LoadWithCaches(filteredDefs, caches)
-				log.Println("performCrawling: Finished loading with caches.") // New log
-			}
-		}
-	} else {
-		log.Println("No valid cache file found or cache is disabled/empty. Performing full crawl.")
-		log.Println("performCrawling: Attempting to load from definitions (no cache)...") // New log
-		loadedVarsities = source.LoadFromDefinitions(filteredDefs)
-		log.Println("performCrawling: Finished loading from definitions (no cache).") // New log
-	}
-
-	log.Printf("performCrawling: Data loaded. Number of varsities: %d. About to save cache...", len(loadedVarsities)) // New log
-	if len(loadedVarsities) > 0 {
-		if err := os.MkdirAll(cacheDir, 0755); err != nil {
-			return fmt.Errorf("failed to create cache directory %s: %w", cacheDir, err)
-		}
-		newCacheFilename := filepath.Join(cacheDir, fmt.Sprintf("%d.gob", time.Now().Unix()))
-		file, err := os.Create(newCacheFilename)
-		if err != nil {
-			log.Printf("Failed to create new cache file %s: %v. Proceeding without saving cache this time.\n", newCacheFilename, err)
-		} else {
-			defer file.Close()
-			var cachesToSave []*source.VarsityDataCache
-			for _, v := range loadedVarsities {
-				if v.VarsityDataCache != nil {
-					cachesToSave = append(cachesToSave, v.VarsityDataCache)
-				}
-			}
-			if err := source.SerializeList(cachesToSave, file); err != nil {
-				log.Printf("Failed to serialize data to cache file %s: %v. Proceeding without saving cache this time.\n", newCacheFilename, err)
-			} else {
-				log.Printf("Saved new cache to %s\n", newCacheFilename)
-			}
-		}
-	}
-
-	sort.Slice(loadedVarsities, func(i, j int) bool {
-		return loadedVarsities[i].Name < loadedVarsities[j].Name
-	})
-	corestate.LoadedVarsities = loadedVarsities
-	log.Println("performCrawling: Finished successfully.") // New log
+	corestate.LoadedVarsities = result.LoadedVarsities
 	return nil
 }
 

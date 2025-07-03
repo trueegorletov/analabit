@@ -6,6 +6,7 @@ toolchain go1.24.4
 
 require (
 	analabit v0.0.0
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/lib/pq v1.10.9
 	github.com/minio/minio-go/v7 v7.0.55
 	github.com/streadway/amqp v1.1.0

@@ -6,4 +6,5 @@ use (
 	.
 	service/aggregator
 	service/producer
+	service/api
 )

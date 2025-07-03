@@ -26,6 +26,8 @@ const (
 	FieldScore = "score"
 	// FieldIteration holds the string denoting the iteration field in the database.
 	FieldIteration = "iteration"
+	// FieldOriginalSubmitted holds the string denoting the original_submitted field in the database.
+	FieldOriginalSubmitted = "original_submitted"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
 	// EdgeHeading holds the string denoting the heading edge name in mutations.
@@ -50,6 +52,7 @@ var Columns = []string{
 	FieldRatingPlace,
 	FieldScore,
 	FieldIteration,
+	FieldOriginalSubmitted,
 	FieldUpdatedAt,
 }
 
@@ -75,6 +78,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultOriginalSubmitted holds the default value on creation for the "original_submitted" field.
+	DefaultOriginalSubmitted bool
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
@@ -117,6 +122,11 @@ func ByScore(opts ...sql.OrderTermOption) OrderOption {
 // ByIteration orders the results by the iteration field.
 func ByIteration(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIteration, opts...).ToFunc()
+}
+
+// ByOriginalSubmitted orders the results by the original_submitted field.
+func ByOriginalSubmitted(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOriginalSubmitted, opts...).ToFunc()
 }
 
 // ByUpdatedAt orders the results by the updated_at field.

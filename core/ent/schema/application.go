@@ -2,10 +2,11 @@ package schema
 
 import (
 	"analabit/core"
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"time"
 )
 
 // Application holds the schema definition for the Application entity.
@@ -22,6 +23,7 @@ func (Application) Fields() []ent.Field {
 		field.Int("rating_place"),
 		field.Int("score"),
 		field.Int("iteration"),
+		field.Bool("original_submitted").Default(false),
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),

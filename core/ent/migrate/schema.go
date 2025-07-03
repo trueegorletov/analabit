@@ -17,6 +17,7 @@ var (
 		{Name: "rating_place", Type: field.TypeInt},
 		{Name: "score", Type: field.TypeInt},
 		{Name: "iteration", Type: field.TypeInt},
+		{Name: "original_submitted", Type: field.TypeBool, Default: false},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "heading_applications", Type: field.TypeInt},
 	}
@@ -28,7 +29,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "applications_headings_applications",
-				Columns:    []*schema.Column{ApplicationsColumns[8]},
+				Columns:    []*schema.Column{ApplicationsColumns[9]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

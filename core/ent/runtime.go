@@ -15,8 +15,12 @@ import (
 func init() {
 	applicationFields := schema.Application{}.Fields()
 	_ = applicationFields
+	// applicationDescOriginalSubmitted is the schema descriptor for original_submitted field.
+	applicationDescOriginalSubmitted := applicationFields[6].Descriptor()
+	// application.DefaultOriginalSubmitted holds the default value on creation for the original_submitted field.
+	application.DefaultOriginalSubmitted = applicationDescOriginalSubmitted.Default.(bool)
 	// applicationDescUpdatedAt is the schema descriptor for updated_at field.
-	applicationDescUpdatedAt := applicationFields[6].Descriptor()
+	applicationDescUpdatedAt := applicationFields[7].Descriptor()
 	// application.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	application.DefaultUpdatedAt = applicationDescUpdatedAt.Default.(func() time.Time)
 	// application.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

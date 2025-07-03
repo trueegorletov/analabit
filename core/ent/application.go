@@ -31,6 +31,8 @@ type Application struct {
 	Score int `json:"score,omitempty"`
 	// Iteration holds the value of the "iteration" field.
 	Iteration int `json:"iteration,omitempty"`
+	// OriginalSubmitted holds the value of the "original_submitted" field.
+	OriginalSubmitted bool `json:"original_submitted,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -65,6 +67,8 @@ func (*Application) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case application.FieldOriginalSubmitted:
+			values[i] = new(sql.NullBool)
 		case application.FieldID, application.FieldPriority, application.FieldCompetitionType, application.FieldRatingPlace, application.FieldScore, application.FieldIteration:
 			values[i] = new(sql.NullInt64)
 		case application.FieldStudentID:
@@ -129,6 +133,12 @@ func (a *Application) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field iteration", values[i])
 			} else if value.Valid {
 				a.Iteration = int(value.Int64)
+			}
+		case application.FieldOriginalSubmitted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field original_submitted", values[i])
+			} else if value.Valid {
+				a.OriginalSubmitted = value.Bool
 			}
 		case application.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -201,6 +211,9 @@ func (a *Application) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("iteration=")
 	builder.WriteString(fmt.Sprintf("%v", a.Iteration))
+	builder.WriteString(", ")
+	builder.WriteString("original_submitted=")
+	builder.WriteString(fmt.Sprintf("%v", a.OriginalSubmitted))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))

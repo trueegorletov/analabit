@@ -4,7 +4,6 @@ import (
 	"container/heap"
 	"container/list" // Added for O(1) queue operations
 	"fmt"
-	"log"
 	"log/slog"
 	"math/rand"
 	"sort"
@@ -646,12 +645,12 @@ func (v *VarsityCalculator) Headings() []*Heading {
 
 // CalculateAdmissions performs the main admission calculation logic for the varsity.
 func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
-	log.Println("CalculateAdmissions (Gale-Shapley): Starting...")
+	slog.Debug("CalculateAdmissions: starting")
 	v.mu.Lock()
-	log.Println("CalculateAdmissions (Gale-Shapley): VarsityCalculator mutex locked.")
+	slog.Debug("CalculateAdmissions: mutex locked")
 	defer func() {
 		v.mu.Unlock()
-		log.Println("CalculateAdmissions (Gale-Shapley): VarsityCalculator mutex unlocked.")
+		slog.Debug("CalculateAdmissions: mutex unlocked")
 	}()
 
 	if v.wasted {
@@ -681,7 +680,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 		}
 	}
 
-	log.Printf("CalculateAdmissions (Gale-Shapley): Initialized. %d free students.", freeStudentsQueue.Len()) // Changed to Len()
+	slog.Debug("CalculateAdmissions: initialized", "freeStudents", freeStudentsQueue.Len())
 
 	// 2. Iteration (Gale-Shapley main loop)
 	for freeStudentsQueue.Len() > 0 { // Changed to Len()
@@ -691,8 +690,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 
 		studentID := student.ID()
 
-		log.Printf("Processing proposals for student %s. Current proposal index: %d. Apps: %d",
-			studentID, studentNextProposalIndex[studentID], len(student.Applications()))
+		slog.Debug("Processing proposals for student", "studentID", studentID, "currentProposalIndex", studentNextProposalIndex[studentID], "apps", len(student.Applications()))
 
 		// Student makes proposals in order of their preference list
 		for proposalIdx := studentNextProposalIndex[studentID]; proposalIdx < len(student.Applications()); proposalIdx++ {
@@ -700,8 +698,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 			heading := app.Heading()
 			headingState := admissionStates[heading]
 
-			log.Printf("Student %s (App #%d, Prio: %d) proposing to Heading %s (Type: %s, Rating: %d)",
-				studentID, proposalIdx+1, app.Priority(), heading.Code(), app.CompetitionType(), app.RatingPlace())
+			slog.Debug("Student", "studentID", studentID, "appIndex", proposalIdx+1, "priority", app.Priority(), "headingCode", heading.Code(), "competitionType", app.CompetitionType(), "ratingPlace", app.RatingPlace())
 
 			var targetHeap heap.Interface
 			var capacity int
@@ -738,15 +735,13 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 				}
 
 			default:
-				log.Printf("Student %s: Unknown competition type %s for app to %s. Skipping this app.",
-					studentID, app.CompetitionType(), heading.Code())
+				slog.Debug("Student", "studentID", studentID, "unknownCompetitionType", app.CompetitionType(), "headingCode", heading.Code(), "skippingThisApp")
 				studentNextProposalIndex[studentID] = proposalIdx + 1 // Mark this proposal as considered
 				continue                                              // Try next application
 			}
 
 			if capacity == 0 {
-				log.Printf("Student %s: Heading %s has 0 capacity for competition type %s. Rejected.",
-					studentID, heading.Code(), app.CompetitionType())
+				slog.Debug("Student", "studentID", studentID, "headingCode", heading.Code(), "competitionType", app.CompetitionType(), "has0CapacityRejected")
 				studentNextProposalIndex[studentID] = proposalIdx + 1 // Mark this proposal as considered
 				continue                                              // Try next application
 			}
@@ -759,8 +754,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 			if targetHeap.Len() < capacity {
 				heap.Push(targetHeap, app)
 				acceptedThisProposal = true
-				log.Printf("Student %s accepted to Heading %s (Type: %s) - capacity available.",
-					studentID, heading.Code(), app.CompetitionType())
+				slog.Debug("Student", "studentID", studentID, "acceptedToHeading", heading.Code(), "competitionType", app.CompetitionType(), "capacityAvailable")
 			} else {
 				// Heap is full, compare with the worst student currently in the heap (root)
 				worstAppInHeap := targetHeap.(interface{ Peek() Application }).Peek()
@@ -777,11 +771,9 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 					wasDisplaced = true
 					heap.Push(targetHeap, app)
 					acceptedThisProposal = true
-					log.Printf("Student %s accepted to Heading %s (Type: %s) - outscores worst (%s). Displacing student %s.",
-						studentID, heading.Code(), app.CompetitionType(), worstAppInHeap.StudentID(), displacedApplication.StudentID())
+					slog.Debug("Student", "studentID", studentID, "acceptedToHeading", heading.Code(), "competitionType", app.CompetitionType(), "outscoresWorst", worstAppInHeap.StudentID())
 				} else {
-					log.Printf("Student %s rejected by Heading %s (Type: %s) - does not outscore worst (%s).",
-						studentID, heading.Code(), app.CompetitionType(), worstAppInHeap.StudentID())
+					slog.Debug("Student", "studentID", studentID, "rejectedByHeading", heading.Code(), "competitionType", app.CompetitionType(), "doesNotOutscoreWorst", worstAppInHeap.StudentID())
 					// Student is rejected for this specific proposal, will try their next one.
 				}
 			}
@@ -791,8 +783,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 			if acceptedThisProposal {
 				// If student was previously matched, that old match is now broken.
 				if oldMatch, ok := provisionalMatches[studentID]; ok {
-					log.Printf("Student %s is now matched to %s, breaking old match with %s.",
-						studentID, heading.Code(), oldMatch.Heading().Code())
+					slog.Debug("Student", "studentID", studentID, "isNowMatchedTo", heading.Code(), "breakingOldMatchWith", oldMatch.Heading().Code())
 					// The spot at oldMatch.Heading() effectively becomes more available.
 					// No explicit removal from old heading's heap needed here for the student *being moved*.
 				}
@@ -800,8 +791,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 
 				if wasDisplaced {
 					displacedStudentID := displacedApplication.StudentID()
-					log.Printf("Student %s was displaced from Heading %s by %s.",
-						displacedStudentID, displacedApplication.Heading().Code(), studentID)
+					slog.Debug("Student", "displacedStudentID", displacedStudentID, "displacedFromHeading", displacedApplication.Heading().Code(), "by", studentID)
 
 					delete(provisionalMatches, displacedStudentID) // Displaced student loses their provisional match
 
@@ -812,9 +802,9 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 						// For simplicity here, we add. If a student is processed multiple times due to re-queuing,
 						// their studentNextProposalIndex ensures they don't re-propose to same.
 						freeStudentsQueue.PushBack(displacedStudentObj) // Changed to PushBack
-						log.Printf("Displaced student %s added back to free queue.", displacedStudentID)
+						slog.Debug("DisplacedStudent", "displacedStudentID", displacedStudentID, "addedBackToFreeQueue")
 					} else {
-						log.Printf("ERROR: Could not find student object for displaced ID %s", displacedStudentID)
+						slog.Debug("ERROR", "couldNotFindStudentObjectForDisplacedID", displacedStudentID)
 					}
 				}
 				// Student is now provisionally matched, so they stop proposing in this turn.
@@ -826,12 +816,12 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 		// If loop finishes, student has exhausted all their preferences or found a match.
 		// If they found a match, `goto nextStudentInQueue` was hit.
 		// If they exhausted preferences without a match, they remain unmatched.
-		log.Printf("Student %s finished proposing for this turn. Matched: %v", studentID, provisionalMatches[studentID].student != nil)
+		slog.Debug("Student", "studentID", studentID, "finishedProposingForThisTurn", provisionalMatches[studentID].student != nil)
 
 	nextStudentInQueue: // Label for goto
 	} // End while freeStudentsQueue is not empty
 
-	log.Println("CalculateAdmissions (Gale-Shapley): All proposals processed.")
+	slog.Debug("CalculateAdmissions: all proposals processed")
 
 	// 3. Collect Results
 	finalAdmissionsByHeading := make(map[*Heading][]*Student)
@@ -877,7 +867,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 		return results[i].Heading.Code() < results[j].Heading.Code()
 	})
 
-	log.Println("CalculateAdmissions (Gale-Shapley): Finished.")
+	slog.Debug("CalculateAdmissions: finished")
 	return results
 }
 
@@ -979,4 +969,10 @@ func (v *VarsityCalculator) SimulateOriginalsDrain(drainPercent int) {
 	}
 
 	v.drainedPercent = drainPercent
+}
+
+func (s *Student) OriginalSubmitted() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.originalSubmitted
 }

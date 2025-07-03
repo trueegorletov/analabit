@@ -53,6 +53,7 @@ type ApplicationMutation struct {
 	addscore            *int
 	iteration           *int
 	additeration        *int
+	original_submitted  *bool
 	updated_at          *time.Time
 	clearedFields       map[string]struct{}
 	heading             *int
@@ -476,6 +477,42 @@ func (m *ApplicationMutation) ResetIteration() {
 	m.additeration = nil
 }
 
+// SetOriginalSubmitted sets the "original_submitted" field.
+func (m *ApplicationMutation) SetOriginalSubmitted(b bool) {
+	m.original_submitted = &b
+}
+
+// OriginalSubmitted returns the value of the "original_submitted" field in the mutation.
+func (m *ApplicationMutation) OriginalSubmitted() (r bool, exists bool) {
+	v := m.original_submitted
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginalSubmitted returns the old "original_submitted" field's value of the Application entity.
+// If the Application object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApplicationMutation) OldOriginalSubmitted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginalSubmitted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginalSubmitted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginalSubmitted: %w", err)
+	}
+	return oldValue.OriginalSubmitted, nil
+}
+
+// ResetOriginalSubmitted resets all changes to the "original_submitted" field.
+func (m *ApplicationMutation) ResetOriginalSubmitted() {
+	m.original_submitted = nil
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (m *ApplicationMutation) SetUpdatedAt(t time.Time) {
 	m.updated_at = &t
@@ -585,7 +622,7 @@ func (m *ApplicationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ApplicationMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.student_id != nil {
 		fields = append(fields, application.FieldStudentID)
 	}
@@ -603,6 +640,9 @@ func (m *ApplicationMutation) Fields() []string {
 	}
 	if m.iteration != nil {
 		fields = append(fields, application.FieldIteration)
+	}
+	if m.original_submitted != nil {
+		fields = append(fields, application.FieldOriginalSubmitted)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, application.FieldUpdatedAt)
@@ -627,6 +667,8 @@ func (m *ApplicationMutation) Field(name string) (ent.Value, bool) {
 		return m.Score()
 	case application.FieldIteration:
 		return m.Iteration()
+	case application.FieldOriginalSubmitted:
+		return m.OriginalSubmitted()
 	case application.FieldUpdatedAt:
 		return m.UpdatedAt()
 	}
@@ -650,6 +692,8 @@ func (m *ApplicationMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldScore(ctx)
 	case application.FieldIteration:
 		return m.OldIteration(ctx)
+	case application.FieldOriginalSubmitted:
+		return m.OldOriginalSubmitted(ctx)
 	case application.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
 	}
@@ -702,6 +746,13 @@ func (m *ApplicationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIteration(v)
+		return nil
+	case application.FieldOriginalSubmitted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginalSubmitted(v)
 		return nil
 	case application.FieldUpdatedAt:
 		v, ok := value.(time.Time)
@@ -839,6 +890,9 @@ func (m *ApplicationMutation) ResetField(name string) error {
 		return nil
 	case application.FieldIteration:
 		m.ResetIteration()
+		return nil
+	case application.FieldOriginalSubmitted:
+		m.ResetOriginalSubmitted()
 		return nil
 	case application.FieldUpdatedAt:
 		m.ResetUpdatedAt()

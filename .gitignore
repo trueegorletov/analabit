@@ -8,3 +8,6 @@ service/aggregator/proto/*.pb.micro.go
 
 service/producer/proto/*.pb.go
 service/producer/proto/*.pb.micro.go
+
+# cursor
+.cursor/*

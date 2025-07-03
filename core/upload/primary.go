@@ -86,6 +86,13 @@ func (u *helper) uploadApplications(ctx context.Context) error {
 				SetCompetitionType(a.CompetitionType()).
 				SetRatingPlace(a.RatingPlace()).
 				SetScore(a.Score()).
+				SetOriginalSubmitted(func() bool {
+					st := u.origin.GetStudent(a.StudentID())
+					if st != nil {
+						return st.OriginalSubmitted()
+					}
+					return false
+				}()).
 				SetIteration(nextIteration).
 				SetHeading(h).
 				Exec(ctx)

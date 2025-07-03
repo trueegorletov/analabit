@@ -1,9 +1,24 @@
 package handler
 
 import (
+	"analabit/core/source"
+	"bytes"
 	"context"
+	"encoding/gob"
+	"encoding/json"
 	"log"
+	"log/slog"
+	"sync"
 
+	"github.com/google/uuid"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/streadway/amqp"
+	"go-micro.dev/v5/errors"
+
+	"analabit/core"
+	"analabit/core/drainer"
+	"analabit/core/registry"
 	"analabit/service/producer/proto"
 )
 
@@ -12,30 +27,78 @@ type Producer struct{}
 func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *proto.ProduceResponse) error {
 	log.Println("Received Produce request")
 
-	// 1. Data Collection & Processing
-	/** //TODO: implement it properly, like in root.go of cli/cmd
-	sources := registry.AllDefinitions
-	varsities := source.LoadFromDefinitions(sources)
+	varsitiesList := req.GetVarsitiesList()
+	if len(varsitiesList) == 0 {
+		varsitiesList = []string{"all"}
+	}
+	varsitiesExcluded := req.GetVarsitiesExcluded()
 
-	// 2. Calculates results.
-	// We pass nil for ent.Client and cache, as the producer service does not interact with a database
-	// and does not require caching for this operation.
-	calcResults, err := core.Calculate(context.Background(), nil, nil, allSources, nil)
-	if err != nil {
-		log.Printf("failed to calculate results: %v", err)
-		return errors.InternalServerError("producer.produce.calculate", "failed to calculate results: %v", err)
+	cacheTTL := req.GetCacheTtlMinutes()
+	if cacheTTL == 0 {
+		cacheTTL = int32(Cfg.CacheTTLMinutes)
+	}
+	drainStages := req.GetDrainStages()
+	if len(drainStages) == 0 {
+		drainStages = make([]int32, len(Cfg.DrainStages))
+		for i, v := range Cfg.DrainStages {
+			drainStages[i] = int32(v)
+		}
+	}
+	drainIterations := req.GetDrainIterations()
+	if drainIterations == 0 {
+		drainIterations = int32(Cfg.DrainIterations)
 	}
 
-	// 3. Drains the results.
-	drainedResults, err := drainer.Drain(calcResults)
-	if err != nil {
-		log.Printf("failed to drain results: %v", err)
-		return errors.InternalServerError("producer.produce.drain", "failed to drain results: %v", err)
+	params := registry.CrawlOptions{
+		VarsitiesList:    varsitiesList,
+		VarsitiesExclude: varsitiesExcluded,
+		CacheDir:         Cfg.CacheDir,
+		CacheTTLMinutes:  int(cacheTTL),
+		DrainStages:      toIntSlice(drainStages),
+		DrainIterations:  int(drainIterations),
 	}
 
-	// 4. Serializes both calculation and drained results into GOBs.
+	slog.Info("Starting crawl and cache phase")
+	result, err := registry.CrawlWithOptions(registry.AllDefinitions, params)
+	if err != nil {
+		log.Printf("failed to crawl or cache: %v", err)
+		return err
+	}
+	varsities := result.LoadedVarsities
+	slog.Info("Crawl completed", "varsitiesLoaded", len(varsities))
+
+	slog.Info("Starting primary calculations")
+	primaryResults := make(map[string][]core.CalculationResult)
+	for _, v := range varsities {
+		clonedVarsity := v.Clone()
+		results := clonedVarsity.VarsityCalculator.CalculateAdmissions()
+		primaryResults[v.Code] = results
+	}
+	slog.Info("Calculations completed – starting drain simulations")
+	drainedResults := make(map[string]map[int][]drainer.DrainedResult)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	for _, v := range varsities {
+		drainedResults[v.Code] = make(map[int][]drainer.DrainedResult)
+	}
+	for _, v := range varsities {
+		for _, stage := range params.DrainStages {
+			wg.Add(1)
+			go func(v *source.Varsity, stage int) {
+				defer wg.Done()
+				drainerInstance := drainer.New(v, stage)
+				drainedResultSlice := drainerInstance.Run(params.DrainIterations)
+				mu.Lock()
+				drainedResults[v.Code][stage] = drainedResultSlice
+				mu.Unlock()
+			}(v, stage)
+		}
+	}
+	wg.Wait()
+	slog.Info("Drain simulations completed")
+
 	var calcResultsBuf bytes.Buffer
-	if err := gob.NewEncoder(&calcResultsBuf).Encode(calcResults); err != nil {
+	if err := gob.NewEncoder(&calcResultsBuf).Encode(primaryResults); err != nil {
 		log.Printf("failed to encode calculation results: %v", err)
 		return errors.InternalServerError("producer.produce.gob", "failed to encode calculation results: %v", err)
 	}
@@ -46,56 +109,58 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 		return errors.InternalServerError("producer.produce.gob", "failed to encode drained results: %v", err)
 	}
 
-	// 5. Creates a unique bucket in MinIO.
-	// TODO: Get from config/env
-	endpoint := "minio:9000"
-	accessKeyID := "minioadmin"
-	secretAccessKey := "minioadmin"
-	useSSL := false
-
-	minioClient, err := minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
+	slog.Info("Encoding results and uploading to object storage")
+	minioClient, err := minio.New(Cfg.MinioEndpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(Cfg.MinioAccessKey, Cfg.MinioSecretKey, ""),
+		Secure: Cfg.MinioUseSSL,
 	})
 	if err != nil {
 		log.Printf("failed to initialize minio client: %v", err)
 		return errors.InternalServerError("producer.produce.minio", "failed to initialize minio client: %v", err)
 	}
 
-	bucketName := uuid.New().String()
-	err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
-	if err != nil {
-		// Check if bucket already exists
-		exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
-		if errBucketExists == nil && exists {
-			log.Printf("bucket %s already exists", bucketName)
-		} else {
+	// Use bucket name from Cfg
+	bucketName := Cfg.MinioBucketName
+	if bucketName == "" {
+		return errors.InternalServerError("producer.produce.minio", "Minio bucket name is not set in Cfg")
+	}
+
+	// Generate unique object names for this calculation
+	objectUUID := uuid.New().String()
+	calcResultsObjectName := "calculation_results_" + objectUUID + ".gob"
+	drainedResultsObjectName := "drained_results_" + objectUUID + ".gob"
+
+	// Ensure bucket exists (create if not exists)
+	exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
+	if errBucketExists != nil {
+		log.Printf("failed to check bucket existence: %v", errBucketExists)
+		return errors.InternalServerError("producer.produce.minio", "failed to check bucket existence: %v", errBucketExists)
+	}
+	if !exists {
+		err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+		if err != nil {
 			log.Printf("failed to create bucket: %v", err)
 			return errors.InternalServerError("producer.produce.minio", "failed to create bucket: %v", err)
 		}
-	} else {
 		log.Printf("Successfully created bucket %s", bucketName)
 	}
 
-	// 6. Uploads the GOB files to the bucket.
-	calcResultsObjectName := "calculation_results.gob"
+	// Upload the GOB files to the bucket with unique object names
 	_, err = minioClient.PutObject(ctx, bucketName, calcResultsObjectName, &calcResultsBuf, int64(calcResultsBuf.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
 	if err != nil {
 		log.Printf("failed to upload calculation results: %v", err)
 		return errors.InternalServerError("producer.produce.minio", "failed to upload calculation results: %v", err)
 	}
 
-	drainedResultsObjectName := "drained_results.gob"
 	_, err = minioClient.PutObject(ctx, bucketName, drainedResultsObjectName, &drainedResultsBuf, int64(drainedResultsBuf.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
 	if err != nil {
 		log.Printf("failed to upload drained results: %v", err)
 		return errors.InternalServerError("producer.produce.minio", "failed to upload drained results: %v", err)
 	}
+	slog.Info("Uploads finished – sending notification via RabbitMQ")
 
-	// 7. Sends a notification to RabbitMQ with the bucket name.
-	// TODO: Get from config/env
-	rabbitURL := "amqp://guest:guest@rabbitmq:5672/"
-	conn, err := amqp.Dial(rabbitURL)
+	// Send a notification to RabbitMQ with the bucket and object names
+	conn, err := amqp.Dial(Cfg.RabbitURL)
 	if err != nil {
 		log.Printf("failed to connect to rabbitmq: %v", err)
 		return errors.InternalServerError("producer.produce.rabbitmq", "failed to connect to rabbitmq: %v", err)
@@ -122,7 +187,11 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 		return errors.InternalServerError("producer.produce.rabbitmq", "failed to declare a queue: %v", err)
 	}
 
-	notification := map[string]string{"bucket_name": bucketName}
+	notification := map[string]string{
+		"bucket_name":            bucketName,
+		"calc_results_object":    calcResultsObjectName,
+		"drained_results_object": drainedResultsObjectName,
+	}
 	body, err := json.Marshal(notification)
 	if err != nil {
 		log.Printf("failed to marshal notification: %v", err)
@@ -144,8 +213,18 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 	}
 
 	rsp.BucketName = bucketName
-	log.Printf("Successfully produced data and stored in bucket %s", bucketName)
-	*/
+	rsp.CalcResultsObject = calcResultsObjectName
+	rsp.DrainedResultsObject = drainedResultsObjectName
+	log.Printf("Successfully produced data and stored in bucket %s as %s and %s", bucketName, calcResultsObjectName, drainedResultsObjectName)
+	slog.Info("Produce request processing completed successfully")
 
 	return nil
+}
+
+func toIntSlice(in []int32) []int {
+	out := make([]int, len(in))
+	for i, v := range in {
+		out[i] = int(v)
+	}
+	return out
 }

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	"analabit/core"
@@ -19,6 +18,7 @@ import (
 	"github.com/streadway/amqp"
 	"go.uber.org/multierr"
 
+	"github.com/caarlos0/env/v11"
 	_ "github.com/lib/pq" // for postgres driver
 )
 
@@ -26,12 +26,12 @@ type Aggregator struct{}
 
 // StartSubscriber starts a long-running goroutine to listen for RabbitMQ messages.
 func (a *Aggregator) StartSubscriber() {
-	rabbitURL := os.Getenv("RABBITMQ_URL")
-	if rabbitURL == "" {
-		rabbitURL = "amqp://guest:guest@rabbitmq:5672/"
-		log.Printf("RABBITMQ_URL not set, using default: %s", rabbitURL)
+	var cfg config
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("Failed to parse env config: %v", err)
 	}
 
+	rabbitURL := cfg.RabbitURL
 	conn, err := amqp.Dial(rabbitURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
@@ -93,20 +93,16 @@ func (a *Aggregator) StartSubscriber() {
 }
 
 func (a *Aggregator) processBucket(ctx context.Context, bucketName string) error {
-	// 1. Connect to MinIO
-	endpoint := os.Getenv("MINIO_ENDPOINT")
-	if endpoint == "" {
-		endpoint = "minio:9000"
+	var cfg config
+
+	if err := env.Parse(&cfg); err != nil {
+		return fmt.Errorf("failed to parse env config: %w", err)
 	}
-	accessKeyID := os.Getenv("MINIO_ACCESS_KEY_ID")
-	if accessKeyID == "" {
-		accessKeyID = "minioadmin"
-	}
-	secretAccessKey := os.Getenv("MINIO_SECRET_ACCESS_KEY")
-	if secretAccessKey == "" {
-		secretAccessKey = "minioadmin"
-	}
-	useSSL := false
+
+	endpoint := cfg.MinioEndpoint
+	accessKeyID := cfg.MinioAccessKey
+	secretAccessKey := cfg.MinioSecretKey
+	useSSL := cfg.MinioUseSSL
 
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
@@ -141,7 +137,7 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string) error
 	}
 
 	// 4. Connect to PostgreSQL and upload
-	pgConnStrings := os.Getenv("POSTGRES_CONN_STRINGS")
+	pgConnStrings := cfg.PostgresConnStrings
 	if pgConnStrings == "" {
 		log.Println("POSTGRES_CONN_STRINGS is not set. Skipping database upload.")
 		return nil

@@ -87,6 +87,11 @@ func Iteration(v int) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldIteration, v))
 }
 
+// OriginalSubmitted applies equality check predicate on the "original_submitted" field. It's identical to OriginalSubmittedEQ.
+func OriginalSubmitted(v bool) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldOriginalSubmitted, v))
+}
+
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldUpdatedAt, v))
@@ -369,6 +374,16 @@ func IterationLT(v int) predicate.Application {
 // IterationLTE applies the LTE predicate on the "iteration" field.
 func IterationLTE(v int) predicate.Application {
 	return predicate.Application(sql.FieldLTE(FieldIteration, v))
+}
+
+// OriginalSubmittedEQ applies the EQ predicate on the "original_submitted" field.
+func OriginalSubmittedEQ(v bool) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldOriginalSubmitted, v))
+}
+
+// OriginalSubmittedNEQ applies the NEQ predicate on the "original_submitted" field.
+func OriginalSubmittedNEQ(v bool) predicate.Application {
+	return predicate.Application(sql.FieldNEQ(FieldOriginalSubmitted, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.

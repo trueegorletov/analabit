@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"analabit/service/aggregator/handler"
-	"analabit/service/aggregator/proto"
-	"go-micro.dev/v5"
+
+	micro "go-micro.dev/v5"
 )
 
 func main() {
@@ -19,9 +19,7 @@ func main() {
 
 	aggregatorHandler.StartSubscriber()
 
-	if err := proto.RegisterAggregatorHandler(service.Server(), aggregatorHandler); err != nil {
-		log.Fatal(err)
-	}
+	// No RPC endpoints defined in proto; skip registering handler to avoid reflection error.
 
 	if err := service.Run(); err != nil {
 		log.Fatal(err)

@@ -58,6 +58,20 @@ func (ac *ApplicationCreate) SetIteration(i int) *ApplicationCreate {
 	return ac
 }
 
+// SetOriginalSubmitted sets the "original_submitted" field.
+func (ac *ApplicationCreate) SetOriginalSubmitted(b bool) *ApplicationCreate {
+	ac.mutation.SetOriginalSubmitted(b)
+	return ac
+}
+
+// SetNillableOriginalSubmitted sets the "original_submitted" field if the given value is not nil.
+func (ac *ApplicationCreate) SetNillableOriginalSubmitted(b *bool) *ApplicationCreate {
+	if b != nil {
+		ac.SetOriginalSubmitted(*b)
+	}
+	return ac
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (ac *ApplicationCreate) SetUpdatedAt(t time.Time) *ApplicationCreate {
 	ac.mutation.SetUpdatedAt(t)
@@ -118,6 +132,10 @@ func (ac *ApplicationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ac *ApplicationCreate) defaults() {
+	if _, ok := ac.mutation.OriginalSubmitted(); !ok {
+		v := application.DefaultOriginalSubmitted
+		ac.mutation.SetOriginalSubmitted(v)
+	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		v := application.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
@@ -143,6 +161,9 @@ func (ac *ApplicationCreate) check() error {
 	}
 	if _, ok := ac.mutation.Iteration(); !ok {
 		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "Application.iteration"`)}
+	}
+	if _, ok := ac.mutation.OriginalSubmitted(); !ok {
+		return &ValidationError{Name: "original_submitted", err: errors.New(`ent: missing required field "Application.original_submitted"`)}
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Application.updated_at"`)}
@@ -199,6 +220,10 @@ func (ac *ApplicationCreate) createSpec() (*Application, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Iteration(); ok {
 		_spec.SetField(application.FieldIteration, field.TypeInt, value)
 		_node.Iteration = value
+	}
+	if value, ok := ac.mutation.OriginalSubmitted(); ok {
+		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)
+		_node.OriginalSubmitted = value
 	}
 	if value, ok := ac.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)

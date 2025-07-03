@@ -11,13 +11,13 @@ func ConvResults(results []core.CalculationResult) []DrainedResult {
 	for _, result := range results {
 		passingScore, err := result.PassingScore()
 		if err != nil {
-			slog.Error("Failed to get passing score", "error", err, "heading", result.Heading.Code())
+			slog.Debug("Passing score unavailable", "error", err, "heading", result.Heading.Code())
 			continue
 		}
 
 		lastAdmittedRatingPlace, err := result.LastAdmittedRatingPlace()
 		if err != nil {
-			slog.Error("Failed to get last admitted rating place", "error", err, "heading", result.Heading.Code())
+			slog.Debug("Last admitted rating place unavailable", "error", err, "heading", result.Heading.Code())
 			continue
 		}
 
