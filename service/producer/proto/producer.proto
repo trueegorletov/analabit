@@ -18,6 +18,5 @@ message ProduceRequest {
 
 message ProduceResponse {
 	string bucket_name = 1;
-	string calc_results_object = 2;
-	string drained_results_object = 3;
+	repeated string payload_objects = 4;
 }

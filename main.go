@@ -24,7 +24,7 @@ func Ser() {
 					DQListPath:        "./sample_data/hse/dq.xlsx",
 					SQListPath:        "./sample_data/hse/sq.xlsx",
 					BListPath:         "./sample_data/hse/bvi.xlsx",
-					HeadingCapacities: core.Capacities{25, 2, 2, 2}, // Arbitrary capacity, as it's part of the struct
+					HeadingCapacities: core.Capacities{Regular: 25, TargetQuota: 2, DedicatedQuota: 2, SpecialQuota: 2}, // Arbitrary capacity, as it's part of the struct
 				},
 			},
 		},

@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/gob"
 	"encoding/json"
+	"fmt"
 	"log"
 	"log/slog"
 	"sync"
@@ -137,27 +138,13 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 	wg.Wait()
 	slog.Info("Drain simulations completed")
 
-	for varsityCode, stages := range drainedResults {
-		stageSummary := make(map[int]int)
-		for stage, results := range stages {
-			stageSummary[stage] = len(results)
-		}
-		slog.Info("Drained results summary for varsity", "varsityCode", varsityCode, "stages", stageSummary)
-	}
+	// --- Per-Varsity Payload Creation and Upload ---
+	var allObjectNames []string
+	var wgUpload sync.WaitGroup
+	var muUpload sync.Mutex
+	uploadErrors := make(chan error, len(varsities))
 
-	var calcResultsBuf bytes.Buffer
-	if err := gob.NewEncoder(&calcResultsBuf).Encode(primaryResults); err != nil {
-		log.Printf("failed to encode calculation results: %v", err)
-		return errors.InternalServerError("producer.produce.gob", "failed to encode calculation results: %v", err)
-	}
-
-	var drainedResultsBuf bytes.Buffer
-	if err := gob.NewEncoder(&drainedResultsBuf).Encode(drainedResults); err != nil {
-		log.Printf("failed to encode drained results: %v", err)
-		return errors.InternalServerError("producer.produce.gob", "failed to encode drained results: %v", err)
-	}
-
-	slog.Info("Encoding results and uploading to object storage")
+	slog.Info("Encoding results and uploading to object storage for each varsity")
 	minioClient, err := minio.New(Cfg.MinioEndpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(Cfg.MinioAccessKey, Cfg.MinioSecretKey, ""),
 		Secure: Cfg.MinioUseSSL,
@@ -167,86 +154,73 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 		return errors.InternalServerError("producer.produce.minio", "failed to initialize minio client: %v", err)
 	}
 
-	// Use bucket name from Cfg
 	bucketName := Cfg.MinioBucketName
 	if bucketName == "" {
 		return errors.InternalServerError("producer.produce.minio", "Minio bucket name is not set in Cfg")
 	}
 
-	// Generate unique object names for this calculation
-	objectUUID := uuid.New().String()
-	calcResultsObjectName := "calculation_results_" + objectUUID + ".gob"
-	drainedResultsObjectName := "drained_results_" + objectUUID + ".gob"
+	// Ensure bucket exists once before starting parallel uploads
+	err = ensureBucketExists(minioClient, bucketName)
+	if err != nil {
+		return err // The error is already logged and formatted
+	}
 
-	// --- Retry logic for MinIO operations ---
-	timeouts := []time.Duration{3 * time.Minute, 5 * time.Minute, 8 * time.Minute}
-	var lastErr error
+	for _, v := range varsities {
+		wgUpload.Add(1)
+		go func(v *source.Varsity) {
+			defer wgUpload.Done()
 
-	// 1. Ensure bucket exists
-	var bucketOpSuccess bool
-	for i, timeout := range timeouts {
-		log.Printf("Attempt %d/%d: Checking/creating MinIO bucket '%s' (timeout: %v)", i+1, len(timeouts), bucketName, timeout)
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-
-		exists, bucketErr := minioClient.BucketExists(ctx, bucketName)
-		if bucketErr != nil {
-			lastErr = bucketErr
-			cancel()
-			continue
-		}
-		if !exists {
-			bucketErr = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
-			if bucketErr != nil {
-				lastErr = bucketErr
-				cancel()
-				continue
+			// 1. Prepare DTOs
+			drainedDTOs := make(map[int][]core.DrainedResultDTO)
+			if drainedStages, ok := drainedResults[v.Code]; ok {
+				for stage, results := range drainedStages {
+					drainedDTOs[stage] = drainer.NewDrainedResultDTOs(results)
+				}
 			}
-			log.Printf("Successfully created bucket %s", bucketName)
-		}
 
-		bucketOpSuccess = true
-		cancel()
-		break
+			// 2. Create Payload
+			payload := core.NewUploadPayloadFromCalculator(v.VarsityCalculator, primaryResults[v.Code], drainedDTOs)
+
+			// 3. Encode Payload
+			var payloadBuf bytes.Buffer
+			if err := gob.NewEncoder(&payloadBuf).Encode(payload); err != nil {
+				log.Printf("failed to encode payload for varsity %s: %v", v.Code, err)
+				uploadErrors <- fmt.Errorf("failed to encode payload for varsity %s: %w", v.Code, err)
+				return
+			}
+
+			// 4. Upload to MinIO
+			objectUUID := uuid.New().String()
+			objectName := fmt.Sprintf("payload_%s_%s.gob", v.Code, objectUUID)
+
+			err := uploadObjectWithRetry(minioClient, bucketName, objectName, &payloadBuf)
+			if err != nil {
+				log.Printf("failed to upload payload for varsity %s: %v", v.Code, err)
+				uploadErrors <- fmt.Errorf("failed to upload payload for varsity %s: %w", v.Code, err)
+				return
+			}
+
+			// 5. Collect object name
+			muUpload.Lock()
+			allObjectNames = append(allObjectNames, objectName)
+			muUpload.Unlock()
+			slog.Info("Successfully uploaded payload", "varsity", v.Code, "object", objectName)
+		}(v)
 	}
 
-	if !bucketOpSuccess {
-		log.Printf("failed to ensure bucket exists after %d attempts: %v", len(timeouts), lastErr)
-		return errors.InternalServerError("producer.produce.minio", "failed to ensure bucket exists after multiple retries: %v", lastErr)
+	wgUpload.Wait()
+	close(uploadErrors)
+
+	// Check for any errors during upload
+	var allUploadErrs error
+	for err := range uploadErrors {
+		allUploadErrs = multierr.Append(allUploadErrs, err)
+	}
+	if allUploadErrs != nil {
+		return errors.InternalServerError("producer.produce.upload", "one or more uploads failed: %v", allUploadErrs)
 	}
 
-	// 2. Upload objects
-	var uploadSuccess bool
-	for i, timeout := range timeouts {
-		log.Printf("Attempt %d/%d: Uploading results to MinIO (timeout: %v)", i+1, len(timeouts), timeout)
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-
-		var currentAttemptErr error
-		var putErr error
-		_, putErr = minioClient.PutObject(ctx, bucketName, calcResultsObjectName, &calcResultsBuf, int64(calcResultsBuf.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
-		if putErr != nil {
-			currentAttemptErr = multierr.Append(currentAttemptErr, putErr)
-		}
-
-		_, putErr = minioClient.PutObject(ctx, bucketName, drainedResultsObjectName, &drainedResultsBuf, int64(drainedResultsBuf.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
-		if putErr != nil {
-			currentAttemptErr = multierr.Append(currentAttemptErr, putErr)
-		}
-
-		if currentAttemptErr == nil {
-			uploadSuccess = true
-			cancel()
-			break
-		}
-		lastErr = currentAttemptErr
-		cancel()
-	}
-
-	if !uploadSuccess {
-		log.Printf("failed to upload objects after %d attempts: %v", len(timeouts), lastErr)
-		return errors.InternalServerError("producer.produce.minio", "failed to upload objects after multiple retries: %v", lastErr)
-	}
-
-	slog.Info("Uploads finished – sending notification via RabbitMQ")
+	slog.Info("All uploads finished – sending notification via RabbitMQ")
 
 	// --- Resilient RabbitMQ Connection with Retries ---
 	var conn *amqp.Connection
@@ -310,10 +284,9 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 		return errors.InternalServerError("producer.produce.rabbitmq", "failed to declare a queue: %v", err)
 	}
 
-	notification := map[string]string{
-		"bucket_name":            bucketName,
-		"calc_results_object":    calcResultsObjectName,
-		"drained_results_object": drainedResultsObjectName,
+	notification := map[string]interface{}{
+		"bucket_name":     bucketName,
+		"payload_objects": allObjectNames,
 	}
 	body, err := json.Marshal(notification)
 	if err != nil {
@@ -336,12 +309,65 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 	}
 
 	rsp.BucketName = bucketName
-	rsp.CalcResultsObject = calcResultsObjectName
-	rsp.DrainedResultsObject = drainedResultsObjectName
-	log.Printf("Successfully produced data and stored in bucket %s as %s and %s", bucketName, calcResultsObjectName, drainedResultsObjectName)
+	rsp.PayloadObjects = allObjectNames
+	log.Printf("Successfully produced data and stored in bucket %s", bucketName)
 	slog.Info("Produce request processing completed successfully")
 
 	return nil
+}
+
+// ensureBucketExists checks if a bucket exists and creates it if not, with retry logic.
+func ensureBucketExists(minioClient *minio.Client, bucketName string) error {
+	timeouts := []time.Duration{1 * time.Minute, 2 * time.Minute, 3 * time.Minute}
+	var lastErr error
+
+	for i, timeout := range timeouts {
+		log.Printf("Attempt %d/%d: Checking/creating MinIO bucket '%s' (timeout: %v)", i+1, len(timeouts), bucketName, timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		exists, err := minioClient.BucketExists(ctx, bucketName)
+		if err != nil {
+			lastErr = err
+			continue
+		}
+		if !exists {
+			err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+			if err != nil {
+				lastErr = err
+				continue
+			}
+			log.Printf("Successfully created bucket %s", bucketName)
+		}
+		return nil // Success
+	}
+
+	log.Printf("failed to ensure bucket exists after %d attempts: %v", len(timeouts), lastErr)
+	return errors.InternalServerError("producer.produce.minio", "failed to ensure bucket exists after multiple retries: %v", lastErr)
+}
+
+// uploadObjectWithRetry uploads an object to MinIO with retry logic.
+func uploadObjectWithRetry(minioClient *minio.Client, bucket, objectName string, data *bytes.Buffer) error {
+	timeouts := []time.Duration{3 * time.Minute, 5 * time.Minute, 8 * time.Minute}
+	var lastErr error
+
+	for i, timeout := range timeouts {
+		log.Printf("Attempt %d/%d: Uploading %s to MinIO (timeout: %v)", i+1, len(timeouts), objectName, timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		// We need to create a new reader for each attempt as the reader is consumed.
+		reader := bytes.NewReader(data.Bytes())
+
+		_, err := minioClient.PutObject(ctx, bucket, objectName, reader, int64(reader.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
+		if err == nil {
+			return nil // Success
+		}
+		lastErr = err
+	}
+
+	log.Printf("failed to upload object %s after %d attempts: %v", objectName, len(timeouts), lastErr)
+	return fmt.Errorf("failed to upload object after multiple retries: %w", lastErr)
 }
 
 func toIntSlice(in []int32) []int {

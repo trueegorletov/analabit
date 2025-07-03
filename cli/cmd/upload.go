@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"log"
 
+	"analabit/core/drainer"
+
 	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/spf13/cobra"
 )
@@ -78,29 +80,16 @@ var uploadCmd = &cobra.Command{
 		fmt.Println("Uploading drained simulation results...")
 		corestate.ResultsMutex.RLock()
 		for varsityCode, stageMap := range corestate.DrainedResults {
-			var targetVarsityCalculator *core.VarsityCalculator
-			// Find the original VarsityCalculator instance for this varsity code
-			// This is needed because upload.DrainedResults takes *core.VarsityCalculator as `origin`
-			// to create headings if they don't exist. The VarsityCalculator from the initial loading phase
-			// (corestate.LoadedVarsities[i].VarsityCalculator) is the correct one to use as it has all headings defined.
-			for _, v := range corestate.LoadedVarsities {
-				if v.Code == varsityCode {
-					targetVarsityCalculator = v.VarsityCalculator
-					break
-				}
-			}
-			if targetVarsityCalculator == nil {
-				log.Printf("Warning: VarsityCalculator not found for code %s when preparing to upload drained results. Skipping.", varsityCode)
-				continue
-			}
-
 			for stage, results := range stageMap {
 				if len(results) == 0 {
 					continue // Skip if no results for this stage
 				}
-				// The `origin` parameter for DrainedResults is the VarsityCalculator from which headings can be derived.
-				// The `results` are the []drainer.DrainedResult for this specific stage.
-				if err := upload.DrainedResults(ctx, client, targetVarsityCalculator, results); err != nil {
+
+				// Convert drainer.DrainedResult to core.DrainedResultDTO
+				drainedDTOs := drainer.NewDrainedResultDTOs(results)
+
+				// Call the refactored upload.DrainedResults function with DTOs
+				if err := upload.DrainedResults(ctx, client, drainedDTOs); err != nil {
 					log.Printf("Error uploading drained results for varsity %s, stage %d%%: %v", varsityCode, stage, err)
 				} else {
 					fmt.Printf("Successfully uploaded drained results for %s, stage %d%%.\n", varsityCode, stage)

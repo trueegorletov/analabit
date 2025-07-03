@@ -759,13 +759,13 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 				}
 
 			default:
-				slog.Debug("Student", "studentID", studentID, "unknownCompetitionType", app.CompetitionType(), "headingCode", heading.Code(), "skippingThisApp")
+				slog.Debug("Student", "studentID", studentID, "unknownCompetitionType", app.CompetitionType(), "headingCode", heading.Code(), "action", "skippingThisApp")
 				studentNextProposalIndex[studentID] = proposalIdx + 1 // Mark this proposal as considered
 				continue                                              // Try next application
 			}
 
 			if capacity == 0 {
-				slog.Debug("Student", "studentID", studentID, "headingCode", heading.Code(), "competitionType", app.CompetitionType(), "has0CapacityRejected")
+				slog.Debug("Student", "studentID", studentID, "headingCode", heading.Code(), "competitionType", app.CompetitionType(), "reason", "has0CapacityRejected")
 				studentNextProposalIndex[studentID] = proposalIdx + 1 // Mark this proposal as considered
 				continue                                              // Try next application
 			}
@@ -778,7 +778,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 			if targetHeap.Len() < capacity {
 				heap.Push(targetHeap, app)
 				acceptedThisProposal = true
-				slog.Debug("Student", "studentID", studentID, "acceptedToHeading", heading.Code(), "competitionType", app.CompetitionType(), "capacityAvailable")
+				slog.Debug("Student", "studentID", studentID, "acceptedToHeading", heading.Code(), "competitionType", app.CompetitionType(), "reason", "capacityAvailable")
 			} else {
 				// Heap is full, compare with the worst student currently in the heap (root)
 				worstAppInHeap := targetHeap.(interface{ Peek() Application }).Peek()
@@ -826,7 +826,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 						// For simplicity here, we add. If a student is processed multiple times due to re-queuing,
 						// their studentNextProposalIndex ensures they don't re-propose to same.
 						freeStudentsQueue.PushBack(displacedStudentObj) // Changed to PushBack
-						slog.Debug("DisplacedStudent", "displacedStudentID", displacedStudentID, "addedBackToFreeQueue")
+						slog.Debug("DisplacedStudent", "displacedStudentID", displacedStudentID, "action", "addedBackToFreeQueue")
 					} else {
 						slog.Debug("ERROR", "couldNotFindStudentObjectForDisplacedID", displacedStudentID)
 					}
@@ -840,7 +840,14 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 		// If loop finishes, student has exhausted all their preferences or found a match.
 		// If they found a match, `goto nextStudentInQueue` was hit.
 		// If they exhausted preferences without a match, they remain unmatched.
-		slog.Debug("Student", "studentID", studentID, "finishedProposingForThisTurn", provisionalMatches[studentID].student != nil)
+		// Check if student has a match for logging
+		{
+			hasMatch := false
+			if match, ok := provisionalMatches[studentID]; ok && match.student != nil {
+				hasMatch = true
+			}
+			slog.Debug("Student", "studentID", studentID, "finishedProposingForThisTurn", hasMatch)
+		}
 
 	nextStudentInQueue: // Label for goto
 	} // End while freeStudentsQueue is not empty
