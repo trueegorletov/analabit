@@ -47,8 +47,10 @@ func (u *helper) doUploadPrimary(ctx context.Context, calculations []core.Calcul
 			client: tx.Client(),
 		}
 
-		if err := txu.uploadApplications(ctx); err != nil {
-			return fmt.Errorf("failed to uploadPrimary applications: %w", err)
+		if txu.origin != nil {
+			if err := txu.uploadApplications(ctx); err != nil {
+				return fmt.Errorf("failed to uploadPrimary applications: %w", err)
+			}
 		}
 
 		if err := txu.uploadCalculations(ctx, calculations); err != nil {

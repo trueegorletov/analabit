@@ -119,7 +119,7 @@ func (a *Application) Heading() *Heading {
 }
 
 func (a *Application) StudentID() string {
-	return a.student.id
+	return a.student.IDValue
 }
 
 func (a *Application) Score() int {
@@ -129,8 +129,8 @@ func (a *Application) Score() int {
 // Student represents a student in the system.
 type Student struct {
 	mu sync.Mutex
-	// Unique identifier of the student.
-	id string // Exported field
+	// Unique identifier of the student. Exported to allow gob encoding.
+	IDValue string
 	// List of applications made by the student, sorted by priority (ascending, e.g., priority 1 first).
 	applications []Application
 	// If true, the student has withdrawn their application from this varsity and is ignored in calculations.
@@ -153,7 +153,7 @@ func (s *Student) Applications() []Application {
 func (s *Student) ID() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return s.id // Exported field
+	return s.IDValue
 }
 
 // application retrieves the student's highest priority application details for a specific heading.
@@ -194,48 +194,58 @@ func (s *Student) addApplication(heading *Heading, ratingPlace int, priority int
 
 // Heading represents a program or specialization within a varsity.
 type Heading struct {
-	// Unique identifier for the heading.
-	code string
-	// The varsity associated with this heading.
+	// Unique identifier for the heading. Exported so that encoding/gob can access it.
+	CodeValue string
+	// The varsity associated with this heading (kept unexported to avoid deep gob encoding).
 	varsity *VarsityCalculator
 	// Maximum number of students that can be admitted to this heading using various quotas and general competition.
-	capacities Capacities
+	CapacitiesValue Capacities
 	// A human-readable code or identifier for the heading.
-	prettyName string
+	PrettyNameValue string
 }
 
 // Capacities returns the capacities of the heading, including quotas of different types.
 func (h *Heading) Capacities() Capacities {
-	return h.capacities
+	return h.CapacitiesValue
 }
 
 func (h *Heading) TotalCapacity() int {
 	// Total capacity is the sum of all quotas and the Regular capacity.
-	return h.capacities.Regular +
-		h.capacities.TargetQuota +
-		h.capacities.DedicatedQuota +
-		h.capacities.SpecialQuota
+	return h.CapacitiesValue.Regular +
+		h.CapacitiesValue.TargetQuota +
+		h.CapacitiesValue.DedicatedQuota +
+		h.CapacitiesValue.SpecialQuota
 }
 
-// PrettyName returns the human-readable code of the heading.
+// PrettyName returns the human-readable name of the heading.
 func (h *Heading) PrettyName() string {
-	return h.prettyName
+	return h.PrettyNameValue
 }
 
 // Code returns the unique identifier of the heading.
 func (h *Heading) Code() string {
-	return h.code
+	return h.CodeValue
 }
 
 func (h *Heading) FullCode() string {
-	return fmt.Sprintf("%s:%s", h.varsity.code, h.code)
+	// Provide safe fallback if varsity pointer is nil (e.g., after gob decoding).
+	if h.varsity == nil {
+		return h.CodeValue // fall back to heading code only
+	}
+	return fmt.Sprintf("%s:%s", h.varsity.code, h.CodeValue)
 }
 
 func (h *Heading) VarsityCode() string {
+	if h.varsity == nil {
+		return "unknown"
+	}
 	return h.varsity.code
 }
 
 func (h *Heading) VarsityPrettyName() string {
+	if h.varsity == nil {
+		return "unknown"
+	}
 	return h.varsity.prettyName
 }
 
@@ -446,23 +456,23 @@ func NewHeadingAdmissionStateGS(h *Heading) *HeadingAdmissionStateGS {
 	state := &HeadingAdmissionStateGS{
 		heading: h,
 		quotaAdmitted: map[Competition]heap.Interface{
-			CompetitionTargetQuota:    &QuotaApplicationHeap{applications: make([]Application, 0, h.capacities.TargetQuota)},
-			CompetitionDedicatedQuota: &QuotaApplicationHeap{applications: make([]Application, 0, h.capacities.DedicatedQuota)},
-			CompetitionSpecialQuota:   &QuotaApplicationHeap{applications: make([]Application, 0, h.capacities.SpecialQuota)},
+			CompetitionTargetQuota:    &QuotaApplicationHeap{applications: make([]Application, 0, h.CapacitiesValue.TargetQuota)},
+			CompetitionDedicatedQuota: &QuotaApplicationHeap{applications: make([]Application, 0, h.CapacitiesValue.DedicatedQuota)},
+			CompetitionSpecialQuota:   &QuotaApplicationHeap{applications: make([]Application, 0, h.CapacitiesValue.SpecialQuota)},
 		},
-		generalAdmitted: &GeneralApplicationHeap{applications: make([]Application, 0, h.capacities.Regular), heading: h},
+		generalAdmitted: &GeneralApplicationHeap{applications: make([]Application, 0, h.CapacitiesValue.Regular), heading: h},
 	}
 	// Initialize the heaps
-	if h.capacities.TargetQuota > 0 {
+	if h.CapacitiesValue.TargetQuota > 0 {
 		heap.Init(state.quotaAdmitted[CompetitionTargetQuota])
 	}
-	if h.capacities.DedicatedQuota > 0 {
+	if h.CapacitiesValue.DedicatedQuota > 0 {
 		heap.Init(state.quotaAdmitted[CompetitionDedicatedQuota])
 	}
-	if h.capacities.SpecialQuota > 0 {
+	if h.CapacitiesValue.SpecialQuota > 0 {
 		heap.Init(state.quotaAdmitted[CompetitionSpecialQuota])
 	}
-	if h.capacities.Regular > 0 {
+	if h.CapacitiesValue.Regular > 0 {
 		heap.Init(state.generalAdmitted)
 	}
 	return state
@@ -507,7 +517,7 @@ func (v *VarsityCalculator) checkNotWasted() {
 func (v *VarsityCalculator) student(id string) *Student {
 	s, ok := v.students.Load(id)
 	if !ok {
-		newStudent := &Student{id: id, applications: make([]Application, 0)} // Use exported ID
+		newStudent := &Student{IDValue: id, applications: make([]Application, 0)} // Use exported ID
 		s, _ = v.students.LoadOrStore(id, newStudent)
 	}
 	return s.(*Student)
@@ -528,10 +538,10 @@ func (v *VarsityCalculator) AddHeading(code string, capacities Capacities, prett
 	prettyName = strings.TrimSpace(prettyName)
 
 	heading := &Heading{
-		code:       code,
-		varsity:    v, // Link back to varsity
-		capacities: capacities,
-		prettyName: prettyName,
+		CodeValue:       code,
+		varsity:         v, // Link back to varsity
+		CapacitiesValue: capacities,
+		PrettyNameValue: prettyName,
 	}
 	v.headings.Store(code, heading)
 }
@@ -582,7 +592,7 @@ func (v *VarsityCalculator) Students() []*Student {
 	})
 	// Sort students by ID for deterministic behavior, although not strictly required by all logic
 	sort.Slice(students, func(i, j int) bool {
-		return students[i].id < students[j].id // Use exported ID
+		return students[i].IDValue < students[j].IDValue // Use exported ID
 	})
 	return students
 }
@@ -638,7 +648,7 @@ func (v *VarsityCalculator) Headings() []*Heading {
 	})
 	// Sort headings by code for deterministic behavior
 	sort.Slice(headings, func(i, j int) bool {
-		return headings[i].prettyName < headings[j].prettyName
+		return headings[i].PrettyNameValue < headings[j].PrettyNameValue
 	})
 	return headings
 }
@@ -707,7 +717,7 @@ func (v *VarsityCalculator) CalculateAdmissions() []CalculationResult {
 			switch app.CompetitionType() {
 			case CompetitionTargetQuota, CompetitionDedicatedQuota, CompetitionSpecialQuota:
 				targetHeap = headingState.quotaAdmitted[app.CompetitionType()]
-				capacity = heading.capacities.quotaCapacity(app.CompetitionType())
+				capacity = heading.CapacitiesValue.quotaCapacity(app.CompetitionType())
 				isQuotaHeap = true
 			case CompetitionRegular, CompetitionBVI:
 				targetHeap = headingState.generalAdmitted

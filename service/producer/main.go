@@ -13,12 +13,12 @@ import (
 )
 
 func main() {
-	// Parse config
-	cfg := handler.Cfg
-
-	if err := env.Parse(&cfg); err != nil {
+	// Parse config once (the handler package's init already did this, but we parse again to allow overrides for tests)
+	if err := env.Parse(&handler.Cfg); err != nil {
 		log.Fatalf("failed to parse env config: %v", err)
 	}
+
+	cfg := handler.Cfg
 
 	// Create a new service
 	service := micro.NewService(
@@ -38,33 +38,38 @@ func main() {
 		go func() {
 			client := proto.NewProducerService("go.micro.service.producer", service.Client())
 
-			// --- Readiness phase ---
-			readyCheckTicker := time.NewTicker(1 * time.Second)
-			logProgressTicker := time.NewTicker(10 * time.Second)
-			defer readyCheckTicker.Stop()
-			defer logProgressTicker.Stop()
+			period := time.Duration(cfg.SelfQueryPeriodMinutes) * time.Minute
 
-			waitingStart := time.Now()
+			// Adaptive backoff parameters for the bootstrap phase.
+			backoff := 10 * time.Second        // start with 10 s
+			const maxBackoff = 1 * time.Minute // cap at 1 min while bootstrapping
+
 			for {
-				select {
-				case <-readyCheckTicker.C:
-					ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-					_, err := client.Produce(ctx, &proto.ProduceRequest{})
-					cancel()
-					if err == nil {
-						log.Printf("Self-query readiness check succeeded after %s", time.Since(waitingStart).Round(time.Second))
-						goto READY
-					}
-				case <-logProgressTicker.C:
-					log.Printf("Waiting for dependencies to be ready before starting self-query (%s elapsed)…", time.Since(waitingStart).Round(time.Second))
+				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+				_, err := client.Produce(ctx, &proto.ProduceRequest{})
+				cancel()
+
+				if err == nil {
+					log.Println("Self-query initial Produce succeeded – entering periodic schedule")
+					break
+				}
+
+				log.Printf("Self-query waiting for dependencies (next attempt in %s): %v", backoff, err)
+				time.Sleep(backoff)
+
+				// Exponentially increase backoff until maxBackoff or desired period, whichever is smaller.
+				backoff *= 2
+				if backoff > maxBackoff {
+					backoff = maxBackoff
+				}
+				if backoff > period {
+					backoff = period
 				}
 			}
 
-		READY:
-			// --- Periodic execution phase ---
-			period := time.Duration(cfg.SelfQueryPeriodMinutes) * time.Minute
-			for {
-				time.Sleep(period)
+			ticker := time.NewTicker(period)
+			defer ticker.Stop()
+			for range ticker.C {
 				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 				_, err := client.Produce(ctx, &proto.ProduceRequest{})
 				if err != nil {

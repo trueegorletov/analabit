@@ -9,6 +9,7 @@ import (
 	"log"
 	"log/slog"
 	"sync"
+	"sync/atomic"
 
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
@@ -24,8 +25,21 @@ import (
 
 type Producer struct{}
 
+// concurrency guard to ensure only one Produce execution at a time per service instance
+var (
+	produceRunning int32 // 0 = not running, 1 = running (atomic flag)
+)
+
 func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *proto.ProduceResponse) error {
 	log.Println("Received Produce request")
+
+	// Ensure single-flight execution
+	if !atomic.CompareAndSwapInt32(&produceRunning, 0, 1) {
+		slog.Warn("Produce request ignored – another Produce is already running")
+		return errors.InternalServerError("producer.produce.busy", "another Produce request is already being processed")
+	}
+	// Reset flag when function returns
+	defer atomic.StoreInt32(&produceRunning, 0)
 
 	varsitiesList := req.GetVarsitiesList()
 	if len(varsitiesList) == 0 {

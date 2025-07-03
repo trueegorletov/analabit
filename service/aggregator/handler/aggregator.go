@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"analabit/core"
 	"analabit/core/drainer"
@@ -32,9 +33,19 @@ func (a *Aggregator) StartSubscriber() {
 	}
 
 	rabbitURL := cfg.RabbitURL
-	conn, err := amqp.Dial(rabbitURL)
+	var conn *amqp.Connection
+	var err error
+	const maxRetries = 10
+	for i := 1; i <= maxRetries; i++ {
+		conn, err = amqp.Dial(rabbitURL)
+		if err == nil {
+			break
+		}
+		log.Printf("RabbitMQ connection attempt %d/%d failed: %v", i, maxRetries, err)
+		time.Sleep(time.Duration(i) * time.Second) // simple linear backoff
+	}
 	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+		log.Fatalf("Failed to connect to RabbitMQ after %d attempts: %v", maxRetries, err)
 	}
 
 	ch, err := conn.Channel()
@@ -81,8 +92,16 @@ func (a *Aggregator) StartSubscriber() {
 				log.Println("Invalid notification: missing bucket_name")
 				continue
 			}
+
+			calcObj, ok1 := notification["calc_results_object"]
+			drainedObj, ok2 := notification["drained_results_object"]
+			if !ok1 || !ok2 {
+				log.Println("Invalid notification: missing object names")
+				continue
+			}
+
 			log.Printf("Processing bucket: %s", bucketName)
-			if err := a.processBucket(context.Background(), bucketName); err != nil {
+			if err := a.processBucket(context.Background(), bucketName, calcObj, drainedObj); err != nil {
 				log.Printf("Failed to process bucket %s: %v", bucketName, err)
 			}
 		}
@@ -92,7 +111,7 @@ func (a *Aggregator) StartSubscriber() {
 	}()
 }
 
-func (a *Aggregator) processBucket(ctx context.Context, bucketName string) error {
+func (a *Aggregator) processBucket(ctx context.Context, bucketName, calcResultsObject, drainedResultsObject string) error {
 	var cfg config
 
 	if err := env.Parse(&cfg); err != nil {
@@ -113,25 +132,25 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string) error
 	}
 
 	// 2. Download GOB files
-	calcResultsObj, err := minioClient.GetObject(ctx, bucketName, "calculation_results.gob", minio.GetObjectOptions{})
+	calcResultsObj, err := minioClient.GetObject(ctx, bucketName, calcResultsObject, minio.GetObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to get calculation_results.gob: %w", err)
 	}
 	defer calcResultsObj.Close()
 
-	drainedResultsObj, err := minioClient.GetObject(ctx, bucketName, "drained_results.gob", minio.GetObjectOptions{})
+	drainedResultsObj, err := minioClient.GetObject(ctx, bucketName, drainedResultsObject, minio.GetObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to get drained_results.gob: %w", err)
 	}
 	defer drainedResultsObj.Close()
 
-	// 3. Deserialize data
-	var calcResults []core.CalculationResult
+	// 3. Deserialize data (new schema: maps keyed by varsity code)
+	var calcResults map[string][]core.CalculationResult
 	if err := gob.NewDecoder(calcResultsObj).Decode(&calcResults); err != nil {
 		return fmt.Errorf("failed to decode calculation results: %w", err)
 	}
 
-	var drainedResults [][]drainer.DrainedResult
+	var drainedResults map[string]map[int][]drainer.DrainedResult
 	if err := gob.NewDecoder(drainedResultsObj).Decode(&drainedResults); err != nil {
 		return fmt.Errorf("failed to decode drained results: %w", err)
 	}
@@ -156,21 +175,38 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string) error
 			continue
 		}
 
+		// Ensure database schema is up-to-date before uploading data.
+		if err := client.Schema.Create(ctx); err != nil {
+			err = fmt.Errorf("failed to run schema migrations for conn string %q: %w", connStr, err)
+			multierr.AppendInto(&allErrors, err)
+			client.Close()
+			continue
+		}
+
 		log.Printf("Uploading data to database...")
 
-		if err := upload.Primary(ctx, client, nil, calcResults); err != nil {
-			err = fmt.Errorf("failed to upload primary results with conn string %q: %w", connStr, err)
-			multierr.AppendInto(&allErrors, err)
-		}
-
-		for _, resultsPart := range drainedResults {
-			if err := upload.DrainedResults(ctx, client, nil, resultsPart); err != nil {
-				err = fmt.Errorf("failed to upload drained results with conn string %q: %w", connStr, err)
+		// Upload per-varsity calculation results
+		for _, resultsSlice := range calcResults {
+			if err := upload.Primary(ctx, client, nil, resultsSlice); err != nil {
+				err = fmt.Errorf("failed to upload primary results with conn string %q: %w", connStr, err)
 				multierr.AppendInto(&allErrors, err)
-			} else {
-				log.Printf("Successfully uploaded data for bucket %s to database", bucketName)
 			}
 		}
+
+		// Upload drained results
+		for _, stageMap := range drainedResults {
+			for _, resultsSlice := range stageMap {
+				if err := upload.DrainedResults(ctx, client, nil, resultsSlice); err != nil {
+					err = fmt.Errorf("failed to upload drained results with conn string %q: %w", connStr, err)
+					multierr.AppendInto(&allErrors, err)
+				}
+			}
+		}
+
+		if allErrors == nil {
+			log.Printf("Successfully uploaded data for bucket %s to database", bucketName)
+		}
+
 		client.Close()
 	}
 

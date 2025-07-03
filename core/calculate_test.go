@@ -2,9 +2,10 @@ package core
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"sort"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // Helper to get admitted student IDs for a specific heading code from results.
@@ -13,7 +14,7 @@ func getAdmittedStudentIDs(results []CalculationResult, headingCode string) []st
 		if res.Heading.Code() == headingCode { // Use exported field Heading
 			ids := make([]string, len(res.Admitted))
 			for i, s := range res.Admitted { // Use exported field Admitted
-				ids[i] = s.id // Use exported field ID
+				ids[i] = s.ID() // Use accessor method
 			}
 			return ids
 		}
