@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"analabit/core/ent"
+	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
@@ -17,14 +18,16 @@ import (
 
 // CalculationResultDTO represents one admitted student record.
 type CalculationResultDTO struct {
-	HeadingCode   string `json:"heading_code"`
-	StudentID     string `json:"student_id"`
-	AdmittedPlace int    `json:"admitted_place"`
-	Iteration     int    `json:"iteration"`
+	HeadingID               int    `json:"heading_id"`
+	HeadingCode             string `json:"heading_code"`
+	PassingScore            int    `json:"passing_score"`
+	LastAdmittedRatingPlace int    `json:"last_admitted_rating_place"`
+	Iteration               int    `json:"iteration"`
 }
 
 // DrainedResultDTO represents aggregated drained statistics per heading.
 type DrainedResultDTO struct {
+	HeadingID                  int    `json:"heading_id"`
 	HeadingCode                string `json:"heading_code"`
 	DrainedPercent             int    `json:"drained_percent"`
 	AvgPassingScore            int    `json:"avg_passing_score"`
@@ -40,9 +43,9 @@ type DrainedResultDTO struct {
 
 // ResultsResponse aggregates requested result kinds.
 type ResultsResponse struct {
-	Steps   map[int][]int          `json:"steps"`
-	Primary []CalculationResultDTO `json:"primary,omitempty"`
-	Drained []DrainedResultDTO     `json:"drained,omitempty"`
+	Steps   map[int][]int                `json:"steps"`
+	Primary map[int]CalculationResultDTO `json:"primary,omitempty"`
+	Drained map[int][]DrainedResultDTO   `json:"drained,omitempty"`
 }
 
 // GetResults returns calculation and/or drained results with optional batching.
@@ -86,11 +89,13 @@ func GetResults(client *ent.Client) fiber.Handler {
 					if part == "" {
 						continue
 					}
-					step, err := strconv.Atoi(part)
+					requestStepInt, err := strconv.Atoi(part)
 					if err != nil {
 						return fiber.NewError(fiber.StatusBadRequest, "invalid drained step value")
 					}
-					requestedSteps = append(requestedSteps, step)
+					if requestStepInt > 0 { // ignore non-positive
+						requestedSteps = append(requestedSteps, requestStepInt)
+					}
 				}
 			}
 		}
@@ -180,7 +185,9 @@ func GetResults(client *ent.Client) fiber.Handler {
 			if _, ok := tempSet[hid]; !ok {
 				tempSet[hid] = make(map[int]struct{})
 			}
-			tempSet[hid][r.DrainedPercent] = struct{}{}
+			if r.DrainedPercent > 0 { // exclude illegal non-positive
+				tempSet[hid][r.DrainedPercent] = struct{}{}
+			}
 		}
 		for hid, set := range tempSet {
 			arr := make([]int, 0, len(set))
@@ -195,42 +202,118 @@ func GetResults(client *ent.Client) fiber.Handler {
 
 		// PRIMARY RESULTS -------------------------------------------
 		if includePrimary {
-			iter, err := resolveIteration(iterationParam == "latest", getLatestCalculationIteration)
+			// First attempt: get from DrainedResult table with drained_percent == 0
+			iter, err := resolveIteration(iterationParam == "latest", getLatestDrainedIteration)
 			if err != nil {
-				log.Printf("error resolving calculation iteration: %v", err)
+				log.Printf("error resolving drained iteration for primary: %v", err)
 				return fiber.ErrInternalServerError
 			}
 
-			calQuery := client.Calculation.Query().Where(calculation.IterationEQ(iter)).WithHeading(func(hq *ent.HeadingQuery) {
-				hq.WithVarsity()
-			})
+			drQuery := client.DrainedResult.Query().Where(
+				drainedresult.IterationEQ(iter),
+				drainedresult.DrainedPercentEQ(0),
+			).WithHeading()
 
 			if len(headingIDs) > 0 {
-				calQuery = calQuery.Where(calculation.HasHeadingWith(heading.IDIn(headingIDs...)))
+				drQuery = drQuery.Where(drainedresult.HasHeadingWith(heading.IDIn(headingIDs...)))
 			} else if varsityCode != "" {
-				calQuery = calQuery.Where(calculation.HasHeadingWith(heading.HasVarsityWith(varsity.CodeEQ(varsityCode))))
+				drQuery = drQuery.Where(drainedresult.HasHeadingWith(heading.HasVarsityWith(varsity.CodeEQ(varsityCode))))
 			}
 
-			calculations, err := calQuery.All(ctx)
+			zeroDrained, err := drQuery.All(ctx)
 			if err != nil {
-				log.Printf("error fetching calculations: %v", err)
+				log.Printf("error fetching 0%% drained results: %v", err)
 				return fiber.ErrInternalServerError
 			}
 
-			primaryResp := make([]CalculationResultDTO, len(calculations))
-			for i, calc := range calculations {
-				var headingCode string
-				if calc.Edges.Heading != nil {
-					headingCode = calc.Edges.Heading.Code
+			primaryMap := make(map[int]CalculationResultDTO)
+			coveredHeading := make(map[int]struct{})
+			for _, dr := range zeroDrained {
+				if dr.Edges.Heading == nil {
+					continue
 				}
-				primaryResp[i] = CalculationResultDTO{
-					HeadingCode:   headingCode,
-					StudentID:     calc.StudentID,
-					AdmittedPlace: calc.AdmittedPlace,
-					Iteration:     calc.Iteration,
+				hid := dr.Edges.Heading.ID
+				dto := CalculationResultDTO{
+					HeadingID:               hid,
+					HeadingCode:             dr.Edges.Heading.Code,
+					PassingScore:            dr.AvgPassingScore,
+					LastAdmittedRatingPlace: dr.AvgLastAdmittedRatingPlace,
+					Iteration:               dr.Iteration,
+				}
+				primaryMap[hid] = dto
+				coveredHeading[hid] = struct{}{}
+			}
+
+			// Fallback for headings missing (unlikely) – compute from Calculation + Application
+			if len(headingIDs) == 0 && varsityCode == "" {
+				// gather all headings in calculations fallback if requested none; else use requested set
+			}
+
+			// Find headings that need fallback (requested but not covered)
+			var fallbackHeadings []int
+			if len(headingIDs) > 0 {
+				for _, hid := range headingIDs {
+					if _, ok := coveredHeading[hid]; !ok {
+						fallbackHeadings = append(fallbackHeadings, hid)
+					}
+				}
+			} else {
+				// need fallback for none because we won't know; we'll skip
+			}
+
+			if len(fallbackHeadings) > 0 {
+				iterCalc, err := resolveIteration(iterationParam == "latest", getLatestCalculationIteration)
+				if err != nil {
+					log.Printf("error resolving calculation iteration for fallback: %v", err)
+					return fiber.ErrInternalServerError
+				}
+
+				calFallbackQuery := client.Calculation.Query().Where(calculation.IterationEQ(iterCalc))
+				calFallbackQuery = calFallbackQuery.Where(calculation.HasHeadingWith(heading.IDIn(fallbackHeadings...))).WithHeading()
+
+				calRows, err := calFallbackQuery.All(ctx)
+				if err != nil {
+					log.Printf("error fetching fallback calculations: %v", err)
+					return fiber.ErrInternalServerError
+				}
+
+				// group by heading -> max admitted place row
+				calcMax := make(map[int]*ent.Calculation)
+				for _, calc := range calRows {
+					if calc.Edges.Heading == nil {
+						continue
+					}
+					hid := calc.Edges.Heading.ID
+					if prev, ok := calcMax[hid]; !ok || calc.AdmittedPlace > prev.AdmittedPlace {
+						calcMax[hid] = calc
+					}
+				}
+
+				for hid, calc := range calcMax {
+					// query application to get score (maybe diff iterations)
+					appRow, err := client.Application.Query().Where(
+						application.StudentIDEQ(calc.StudentID),
+						application.HasHeadingWith(heading.IDEQ(hid)),
+					).Order(ent.Desc(application.FieldIteration)).First(ctx)
+					passingScore := 0
+					if err == nil {
+						passingScore = appRow.Score
+					} else {
+						log.Printf("warning: application row not found for fallback StudentID %s heading %d: %v", calc.StudentID, hid, err)
+					}
+
+					dto := CalculationResultDTO{
+						HeadingID:               hid,
+						HeadingCode:             calc.Edges.Heading.Code,
+						PassingScore:            passingScore,
+						LastAdmittedRatingPlace: calc.AdmittedPlace,
+						Iteration:               calc.Iteration,
+					}
+					primaryMap[hid] = dto
 				}
 			}
-			resp.Primary = primaryResp
+
+			resp.Primary = primaryMap
 		}
 
 		// DRAINED RESULTS -------------------------------------------
@@ -261,14 +344,18 @@ func GetResults(client *ent.Client) fiber.Handler {
 				return fiber.ErrInternalServerError
 			}
 
-			drainedResp := make([]DrainedResultDTO, len(drained))
-			for i, dr := range drained {
-				var headingCode string
-				if dr.Edges.Heading != nil {
-					headingCode = dr.Edges.Heading.Code
+			drainedMap := make(map[int][]DrainedResultDTO)
+			for _, dr := range drained {
+				if dr.Edges.Heading == nil {
+					continue
 				}
-				drainedResp[i] = DrainedResultDTO{
-					HeadingCode:                headingCode,
+				if dr.DrainedPercent <= 0 { // skip non-positive percent in drained response
+					continue
+				}
+				hid := dr.Edges.Heading.ID
+				dto := DrainedResultDTO{
+					HeadingID:                  hid,
+					HeadingCode:                dr.Edges.Heading.Code,
 					DrainedPercent:             dr.DrainedPercent,
 					AvgPassingScore:            dr.AvgPassingScore,
 					MinPassingScore:            dr.MinPassingScore,
@@ -280,8 +367,9 @@ func GetResults(client *ent.Client) fiber.Handler {
 					MedLastAdmittedRatingPlace: dr.MedLastAdmittedRatingPlace,
 					Iteration:                  dr.Iteration,
 				}
+				drainedMap[hid] = append(drainedMap[hid], dto)
 			}
-			resp.Drained = drainedResp
+			resp.Drained = drainedMap
 		}
 
 		return c.JSON(resp)

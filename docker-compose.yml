@@ -3,14 +3,18 @@ services:
     build:
       context: .
       dockerfile: service/producer/Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     ports:
       - "8080:8080"
     environment:
+      - COMPOSE_DOCKER_CLI_BUILD=1
+      - DOCKER_BUILDKIT=1
       - MICRO_REGISTRY=mdns
       - ANALABIT_CACHE_DIR=./cache
       - ANALABIT_CACHE_TTL_MINUTES=10
       - ANALABIT_DRAIN_SIM_STAGES=33,50,66,100
-      - ANALABIT_DRAIN_SIM_ITERATIONS=10
+      - ANALABIT_DRAIN_SIM_ITERATIONS=100
       - ANALABIT_MINIO_ENDPOINT=minio:9000
       - ANALABIT_MINIO_ACCESS_KEY=minioadmin
       - ANALABIT_MINIO_SECRET_KEY=minioadmin
@@ -26,9 +30,13 @@ services:
     build:
       context: .
       dockerfile: service/aggregator/Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     ports:
       - "8081:8081"
     environment:
+      - COMPOSE_DOCKER_CLI_BUILD=1
+      - DOCKER_BUILDKIT=1
       - MICRO_REGISTRY=mdns
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
       - MINIO_ENDPOINT=minio:9000
@@ -77,6 +85,8 @@ services:
     build:
       context: .
       dockerfile: service/api/Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     ports:
       - "3080:3000"
     environment:

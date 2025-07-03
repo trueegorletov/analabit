@@ -1,8 +1,10 @@
 package core
 
 import (
+	"bytes"
 	"container/heap"
 	"container/list" // Added for O(1) queue operations
+	"encoding/gob"
 	"fmt"
 	"log/slog"
 	"math/rand"
@@ -197,11 +199,15 @@ type Heading struct {
 	// Unique identifier for the heading. Exported so that encoding/gob can access it.
 	CodeValue string
 	// The varsity associated with this heading (kept unexported to avoid deep gob encoding).
-	varsity *VarsityCalculator
+	varsity *VarsityCalculator `json:"-" gob:"-"`
 	// Maximum number of students that can be admitted to this heading using various quotas and general competition.
 	CapacitiesValue Capacities
 	// A human-readable code or identifier for the heading.
 	PrettyNameValue string
+
+	// Cached vars for serialization. They are skipped by gob as we implement custom encoding but kept for runtime access.
+	varsityCodeCached       string `json:"-" gob:"-"`
+	varsityPrettyNameCached string `json:"-" gob:"-"`
 }
 
 // Capacities returns the capacities of the heading, including quotas of different types.
@@ -236,17 +242,23 @@ func (h *Heading) FullCode() string {
 }
 
 func (h *Heading) VarsityCode() string {
-	if h.varsity == nil {
-		return "unknown"
+	if h.varsity != nil {
+		return h.varsity.code
 	}
-	return h.varsity.code
+	if h.varsityCodeCached != "" {
+		return h.varsityCodeCached
+	}
+	return "unknown"
 }
 
 func (h *Heading) VarsityPrettyName() string {
-	if h.varsity == nil {
-		return "unknown"
+	if h.varsity != nil {
+		return h.varsity.prettyName
 	}
-	return h.varsity.prettyName
+	if h.varsityPrettyNameCached != "" {
+		return h.varsityPrettyNameCached
+	}
+	return "unknown"
 }
 
 // outscores determines if application app1 is better than application app2 for this heading.
@@ -538,10 +550,12 @@ func (v *VarsityCalculator) AddHeading(code string, capacities Capacities, prett
 	prettyName = strings.TrimSpace(prettyName)
 
 	heading := &Heading{
-		CodeValue:       code,
-		varsity:         v, // Link back to varsity
-		CapacitiesValue: capacities,
-		PrettyNameValue: prettyName,
+		CodeValue:               code,
+		varsity:                 v, // Link back to varsity
+		CapacitiesValue:         capacities,
+		PrettyNameValue:         prettyName,
+		varsityCodeCached:       v.code,
+		varsityPrettyNameCached: v.prettyName,
 	}
 	v.headings.Store(code, heading)
 }
@@ -985,4 +999,53 @@ func (s *Student) OriginalSubmitted() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.originalSubmitted
+}
+
+// --- Custom gob encoding/decoding to preserve varsity metadata ---
+
+func (h *Heading) GobEncode() ([]byte, error) {
+	type alias struct {
+		CodeValue         string
+		CapacitiesValue   Capacities
+		PrettyNameValue   string
+		VarsityCode       string
+		VarsityPrettyName string
+	}
+
+	buf := bytes.Buffer{}
+	enc := gob.NewEncoder(&buf)
+	if err := enc.Encode(alias{
+		CodeValue:         h.CodeValue,
+		CapacitiesValue:   h.CapacitiesValue,
+		PrettyNameValue:   h.PrettyNameValue,
+		VarsityCode:       h.VarsityCode(),
+		VarsityPrettyName: h.VarsityPrettyName(),
+	}); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func (h *Heading) GobDecode(data []byte) error {
+	type alias struct {
+		CodeValue         string
+		CapacitiesValue   Capacities
+		PrettyNameValue   string
+		VarsityCode       string
+		VarsityPrettyName string
+	}
+
+	var aux alias
+	if err := gob.NewDecoder(bytes.NewReader(data)).Decode(&aux); err != nil {
+		return err
+	}
+
+	h.CodeValue = aux.CodeValue
+	h.CapacitiesValue = aux.CapacitiesValue
+	h.PrettyNameValue = aux.PrettyNameValue
+	// varsity pointer is nil after decoding; store cached data for getters.
+	h.varsity = nil
+	h.varsityCodeCached = aux.VarsityCode
+	h.varsityPrettyNameCached = aux.VarsityPrettyName
+	return nil
 }

@@ -9,7 +9,7 @@ import (
 	"log"
 	"log/slog"
 	"sync"
-	"sync/atomic"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
@@ -21,6 +21,8 @@ import (
 	"analabit/core/drainer"
 	"analabit/core/registry"
 	"analabit/service/producer/proto"
+
+	"go.uber.org/multierr"
 )
 
 type Producer struct{}
@@ -30,17 +32,33 @@ var (
 	produceRunning int32 // 0 = not running, 1 = running (atomic flag)
 )
 
+// produceLock is a channel-based semaphore to ensure only one produce workflow runs at a time.
+var produceLock = make(chan struct{}, 1)
+
+// Produce is the public RPC endpoint. It's a thin wrapper that acquires a lock
+// and calls the main production workflow.
 func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *proto.ProduceResponse) error {
 	log.Println("Received Produce request")
 
-	// Ensure single-flight execution
-	if !atomic.CompareAndSwapInt32(&produceRunning, 0, 1) {
-		slog.Warn("Produce request ignored – another Produce is already running")
+	select {
+	case produceLock <- struct{}{}:
+		log.Println("Acquired produce lock, starting workflow.")
+		defer func() {
+			<-produceLock
+			log.Println("Released produce lock.")
+		}()
+	default:
+		slog.Warn("Produce request ignored – another workflow is already in progress.")
 		return errors.InternalServerError("producer.produce.busy", "another Produce request is already being processed")
 	}
-	// Reset flag when function returns
-	defer atomic.StoreInt32(&produceRunning, 0)
 
+	// Run the actual workflow
+	return p.runProduceWorkflow(ctx, req, rsp)
+}
+
+// runProduceWorkflow contains the core logic for crawling, calculating, and uploading results.
+// This can be called either by the public RPC endpoint or an internal ticker.
+func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceRequest, rsp *proto.ProduceResponse) error {
 	varsitiesList := req.GetVarsitiesList()
 	if len(varsitiesList) == 0 {
 		varsitiesList = []string{"all"}
@@ -72,6 +90,8 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 		DrainIterations:  int(drainIterations),
 	}
 
+	slog.Info("Producer configured", "varsitiesList", params.VarsitiesList, "varsitiesExclude", params.VarsitiesExclude, "cacheTTL", params.CacheTTLMinutes, "drainStages", params.DrainStages, "drainIterations", params.DrainIterations)
+
 	slog.Info("Starting crawl and cache phase")
 	result, err := registry.CrawlWithOptions(registry.AllDefinitions, params)
 	if err != nil {
@@ -80,6 +100,12 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 	}
 	varsities := result.LoadedVarsities
 	slog.Info("Crawl completed", "varsitiesLoaded", len(varsities))
+
+	loadedVarsityCodes := make([]string, len(varsities))
+	for i, v := range varsities {
+		loadedVarsityCodes[i] = v.Code
+	}
+	slog.Info("Loaded varsity codes", "codes", loadedVarsityCodes)
 
 	slog.Info("Starting primary calculations")
 	primaryResults := make(map[string][]core.CalculationResult)
@@ -110,6 +136,14 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 	}
 	wg.Wait()
 	slog.Info("Drain simulations completed")
+
+	for varsityCode, stages := range drainedResults {
+		stageSummary := make(map[int]int)
+		for stage, results := range stages {
+			stageSummary[stage] = len(results)
+		}
+		slog.Info("Drained results summary for varsity", "varsityCode", varsityCode, "stages", stageSummary)
+	}
 
 	var calcResultsBuf bytes.Buffer
 	if err := gob.NewEncoder(&calcResultsBuf).Encode(primaryResults); err != nil {
@@ -144,40 +178,115 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 	calcResultsObjectName := "calculation_results_" + objectUUID + ".gob"
 	drainedResultsObjectName := "drained_results_" + objectUUID + ".gob"
 
-	// Ensure bucket exists (create if not exists)
-	exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
-	if errBucketExists != nil {
-		log.Printf("failed to check bucket existence: %v", errBucketExists)
-		return errors.InternalServerError("producer.produce.minio", "failed to check bucket existence: %v", errBucketExists)
-	}
-	if !exists {
-		err = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
-		if err != nil {
-			log.Printf("failed to create bucket: %v", err)
-			return errors.InternalServerError("producer.produce.minio", "failed to create bucket: %v", err)
+	// --- Retry logic for MinIO operations ---
+	timeouts := []time.Duration{3 * time.Minute, 5 * time.Minute, 8 * time.Minute}
+	var lastErr error
+
+	// 1. Ensure bucket exists
+	var bucketOpSuccess bool
+	for i, timeout := range timeouts {
+		log.Printf("Attempt %d/%d: Checking/creating MinIO bucket '%s' (timeout: %v)", i+1, len(timeouts), bucketName, timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+
+		exists, bucketErr := minioClient.BucketExists(ctx, bucketName)
+		if bucketErr != nil {
+			lastErr = bucketErr
+			cancel()
+			continue
 		}
-		log.Printf("Successfully created bucket %s", bucketName)
+		if !exists {
+			bucketErr = minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+			if bucketErr != nil {
+				lastErr = bucketErr
+				cancel()
+				continue
+			}
+			log.Printf("Successfully created bucket %s", bucketName)
+		}
+
+		bucketOpSuccess = true
+		cancel()
+		break
 	}
 
-	// Upload the GOB files to the bucket with unique object names
-	_, err = minioClient.PutObject(ctx, bucketName, calcResultsObjectName, &calcResultsBuf, int64(calcResultsBuf.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
-	if err != nil {
-		log.Printf("failed to upload calculation results: %v", err)
-		return errors.InternalServerError("producer.produce.minio", "failed to upload calculation results: %v", err)
+	if !bucketOpSuccess {
+		log.Printf("failed to ensure bucket exists after %d attempts: %v", len(timeouts), lastErr)
+		return errors.InternalServerError("producer.produce.minio", "failed to ensure bucket exists after multiple retries: %v", lastErr)
 	}
 
-	_, err = minioClient.PutObject(ctx, bucketName, drainedResultsObjectName, &drainedResultsBuf, int64(drainedResultsBuf.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
-	if err != nil {
-		log.Printf("failed to upload drained results: %v", err)
-		return errors.InternalServerError("producer.produce.minio", "failed to upload drained results: %v", err)
+	// 2. Upload objects
+	var uploadSuccess bool
+	for i, timeout := range timeouts {
+		log.Printf("Attempt %d/%d: Uploading results to MinIO (timeout: %v)", i+1, len(timeouts), timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+
+		var currentAttemptErr error
+		var putErr error
+		_, putErr = minioClient.PutObject(ctx, bucketName, calcResultsObjectName, &calcResultsBuf, int64(calcResultsBuf.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
+		if putErr != nil {
+			currentAttemptErr = multierr.Append(currentAttemptErr, putErr)
+		}
+
+		_, putErr = minioClient.PutObject(ctx, bucketName, drainedResultsObjectName, &drainedResultsBuf, int64(drainedResultsBuf.Len()), minio.PutObjectOptions{ContentType: "application/octet-stream"})
+		if putErr != nil {
+			currentAttemptErr = multierr.Append(currentAttemptErr, putErr)
+		}
+
+		if currentAttemptErr == nil {
+			uploadSuccess = true
+			cancel()
+			break
+		}
+		lastErr = currentAttemptErr
+		cancel()
 	}
+
+	if !uploadSuccess {
+		log.Printf("failed to upload objects after %d attempts: %v", len(timeouts), lastErr)
+		return errors.InternalServerError("producer.produce.minio", "failed to upload objects after multiple retries: %v", lastErr)
+	}
+
 	slog.Info("Uploads finished – sending notification via RabbitMQ")
 
-	// Send a notification to RabbitMQ with the bucket and object names
-	conn, err := amqp.Dial(Cfg.RabbitURL)
-	if err != nil {
-		log.Printf("failed to connect to rabbitmq: %v", err)
-		return errors.InternalServerError("producer.produce.rabbitmq", "failed to connect to rabbitmq: %v", err)
+	// --- Resilient RabbitMQ Connection with Retries ---
+	var conn *amqp.Connection
+	var dialErr error
+
+	// Retry strategy: 1 initial + 3 short (5s) + 7 long (15s) = 11 attempts total
+	// Total wait time before failure: (3 * 5s) + (7 * 15s) = 15s + 105s = 2 minutes.
+	for i := 0; i < 11; i++ {
+		var attemptTimeout time.Duration
+		if i < 4 { // First 4 attempts (1 initial + 3 retries)
+			attemptTimeout = 10 * time.Second
+		} else { // Next 7 attempts
+			attemptTimeout = 20 * time.Second
+		}
+
+		log.Printf("Attempt %d/11: Connecting to RabbitMQ...", i+1)
+		conn, dialErr = amqp.DialConfig(Cfg.RabbitURL, amqp.Config{
+			Dial: amqp.DefaultDial(attemptTimeout),
+		})
+		if dialErr == nil {
+			log.Println("Successfully connected to RabbitMQ.")
+			break // Success
+		}
+		log.Printf("RabbitMQ connection attempt %d failed: %v", i+1, dialErr)
+
+		if i < 10 { // Don't sleep after the last attempt
+			var sleepDuration time.Duration
+			if i < 3 { // For the first 3 retries
+				sleepDuration = 5 * time.Second
+			} else { // For the next 7 retries
+				sleepDuration = 15 * time.Second
+			}
+			log.Printf("Retrying in %v...", sleepDuration)
+			time.Sleep(sleepDuration)
+		}
+	}
+
+	if dialErr != nil { // If connection is still nil after all retries
+		log.Printf("failed to connect to rabbitmq after multiple retries: %v", dialErr)
+		return errors.InternalServerError("producer.produce.rabbitmq", "failed to connect to rabbitmq: %v", dialErr)
 	}
 	defer conn.Close()
 

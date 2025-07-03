@@ -6,7 +6,7 @@ This document describes the current set of REST endpoints exposed by the `servic
 
 ---
 
-## Conventions
+## Conventionst
 
 * All endpoints use **HTTPS** (recommended) and the **JSON** media type.
 * Successful responses return HTTP status **200 OK** unless specified otherwise.
@@ -83,7 +83,11 @@ Retrieve programme headings (study programmes). Pagination and varsity filtering
     "target_quota_capacity": 10,
     "dedicated_quota_capacity": 5,
     "special_quota_capacity": 3,
-    "varsity_code": "hse"
+    "varsity": {
+      "id": 1,
+      "code": "hse",
+      "name": "Higher School of Economics"
+    }
   }
 ]
 ```
@@ -202,39 +206,46 @@ Aggregated endpoint that retrieves primary calculation results (admitted student
 | `headingIds` | string (csv) | — | Comma‐separated list of heading IDs to filter by. |
 | `varsityCode` | string | — | Filter by all headings of the given varsity code (ignored if `headingIds` supplied). |
 | `primary` | string/int | (absent) | If present, include primary results. Accepts `latest` (default when empty) or a specific iteration number. |
-| `drained` | string | (absent) | `all` to include every drained-percent result, or a comma‐separated list of drained-percent steps (e.g. `drained=0,25,50`).  When missing, no drained results are returned. |
+| `drained` | string | (absent) | `all` to include every drained-percent result, or a comma‐separated list of drained-percent steps (e.g. `drained=25,50,100`).  When missing, no drained results are returned. |
 | `iteration` | string/int | `latest` | Upload iteration to use for both steps discovery and result retrieval. |
 
 #### Response `200 OK`
 
+Note: each list inside of the `steps` object is a list of drained-percent steps for the given heading,
+and it always contains the value `100`.
+
 ```jsonc
 {
   "steps": {
-    "42": [0, 25, 50]
+    "42": [25, 50, 33, 100]
   },
-  "primary": [
-    {
+  "primary": {
+    "42": {
+      "heading_id": 42,
       "heading_code": "09.03.03",
-      "student_id": "ABC-123456",
-      "admitted_place": 1,
+      "passing_score": 295,
+      "last_admitted_rating_place": 50,
       "iteration": 7
     }
-  ],
-  "drained": [
-    {
-      "heading_code": "09.03.03",
-      "drained_percent": 42,
-      "avg_passing_score": 295,
-      "min_passing_score": 260,
-      "max_passing_score": 310,
-      "med_passing_score": 297,
-      "avg_last_admitted_rating_place": 50,
-      "min_last_admitted_rating_place": 30,
-      "max_last_admitted_rating_place": 70,
-      "med_last_admitted_rating_place": 48,
-      "iteration": 7
-    }
-  ]
+  },
+  "drained": {
+    "42": [
+      {
+        "heading_id": 42,
+        "heading_code": "09.03.03",
+        "drained_percent": 42,
+        "avg_passing_score": 295,
+        "min_passing_score": 260,
+        "max_passing_score": 310,
+        "med_passing_score": 297,
+        "avg_last_admitted_rating_place": 50,
+        "min_last_admitted_rating_place": 30,
+        "max_last_admitted_rating_place": 70,
+        "med_last_admitted_rating_place": 48,
+        "iteration": 7
+      }
+    ]
+  }
 }
 ```
 
@@ -268,7 +279,7 @@ Aggregated endpoint that retrieves primary calculation results (admitted student
 | `target_quota_capacity` | integer |
 | `dedicated_quota_capacity` | integer |
 | `special_quota_capacity` | integer |
-| `varsity_code` | string (FK → Varsity) |
+| `varsity` | object | Embedded varsity reference (`id`, `code`, `name`). |
 
 ### Application
 

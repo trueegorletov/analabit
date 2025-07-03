@@ -9,6 +9,7 @@ import (
 	"analabit/core/ent"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
 	_ "github.com/lib/pq"
 )
 
@@ -31,6 +32,9 @@ func main() {
 
 	// Initialize a new Fiber app
 	app := fiber.New()
+
+	// Enable CORS (allow all origins by default; adjust via env if needed)
+	app.Use(cors.New())
 
 	// API v1 Group
 	api := app.Group("/api")

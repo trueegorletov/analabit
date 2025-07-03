@@ -12,72 +12,71 @@ import (
 	micro "go-micro.dev/v5"
 )
 
+// startSelfQuery contains the logic for the self-triggering mechanism.
+// It will be executed as a go-micro AfterStart hook.
+func startSelfQuery(p *handler.Producer) func() error {
+	return func() error {
+		// Only start the goroutine if a period is configured.
+		if handler.Cfg.SelfQueryPeriodMinutes == -1 {
+			log.Println("Self-query disabled: period is -1.")
+			return nil
+		}
+
+		go func() {
+			period := time.Duration(handler.Cfg.SelfQueryPeriodMinutes) * time.Minute
+
+			// The initial call no longer uses an RPC client. It calls the workflow directly.
+			// This runs after the service is already registered, avoiding the old race condition.
+			log.Println("Self-query hook started. Making initial Produce call directly.")
+			err := p.Produce(context.Background(), &proto.ProduceRequest{}, &proto.ProduceResponse{})
+
+			if err != nil {
+				// If the first call fails, it's a significant issue.
+				log.Printf("FATAL: Self-query initial Produce call failed, automatic runs will not start: %v", err)
+				return // Do not start the ticker if the first run fails.
+			}
+			log.Println("Self-query initial Produce call succeeded. Entering periodic schedule.")
+
+			// Start the ticker for subsequent periodic runs.
+			ticker := time.NewTicker(period)
+			defer ticker.Stop()
+
+			for range ticker.C {
+				log.Printf("Self-query ticker triggered. Making periodic Produce call directly.")
+				err := p.Produce(context.Background(), &proto.ProduceRequest{}, &proto.ProduceResponse{})
+				if err != nil {
+					log.Printf("ERROR: Self-query periodic Produce call failed: %v", err)
+				}
+			}
+		}()
+
+		return nil
+	}
+}
+
 func main() {
-	// Parse config once (the handler package's init already did this, but we parse again to allow overrides for tests)
+	// Parse config once
 	if err := env.Parse(&handler.Cfg); err != nil {
 		log.Fatalf("failed to parse env config: %v", err)
 	}
 
-	cfg := handler.Cfg
+	// Create handler instance to be shared
+	producerHandler := new(handler.Producer)
 
 	// Create a new service
 	service := micro.NewService(
 		micro.Name("go.micro.service.producer"),
 	)
 
-	// Initialise the service
-	service.Init()
+	// Initialise the service, which includes AfterStart hooks
+	service.Init(
+		// The self-query mechanism is now a lifecycle hook that calls the handler's method directly.
+		micro.AfterStart(startSelfQuery(producerHandler)),
+	)
 
 	// Register handler
-	if err := proto.RegisterProducerHandler(service.Server(), new(handler.Producer)); err != nil {
+	if err := proto.RegisterProducerHandler(service.Server(), producerHandler); err != nil {
 		log.Fatal(err)
-	}
-
-	// Start self-query goroutine if enabled
-	if cfg.SelfQueryPeriodMinutes != -1 {
-		go func() {
-			client := proto.NewProducerService("go.micro.service.producer", service.Client())
-
-			period := time.Duration(cfg.SelfQueryPeriodMinutes) * time.Minute
-
-			// Adaptive backoff parameters for the bootstrap phase.
-			backoff := 10 * time.Second        // start with 10 s
-			const maxBackoff = 1 * time.Minute // cap at 1 min while bootstrapping
-
-			for {
-				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-				_, err := client.Produce(ctx, &proto.ProduceRequest{})
-				cancel()
-
-				if err == nil {
-					log.Println("Self-query initial Produce succeeded – entering periodic schedule")
-					break
-				}
-
-				log.Printf("Self-query waiting for dependencies (next attempt in %s): %v", backoff, err)
-				time.Sleep(backoff)
-
-				// Exponentially increase backoff until maxBackoff or desired period, whichever is smaller.
-				backoff *= 2
-				if backoff > maxBackoff {
-					backoff = maxBackoff
-				}
-				if backoff > period {
-					backoff = period
-				}
-			}
-
-			ticker := time.NewTicker(period)
-			defer ticker.Stop()
-			for range ticker.C {
-				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-				_, err := client.Produce(ctx, &proto.ProduceRequest{})
-				if err != nil {
-					log.Printf("Self-query Produce failed: %v", err)
-				}
-				cancel()
-			}
-		}()
 	}
 
 	// Run the service

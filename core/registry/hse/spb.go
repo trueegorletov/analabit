@@ -8,7 +8,7 @@ import (
 
 const (
 	spbCode = "hse_spb"
-	spbName = "Высшая школа экономики (СПб)"
+	spbName = "ВШЭ (СПб)"
 )
 
 func spbSourcesList() []source.HeadingSource {

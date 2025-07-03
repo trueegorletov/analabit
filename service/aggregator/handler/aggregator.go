@@ -145,9 +145,12 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName, calcResultsO
 	defer drainedResultsObj.Close()
 
 	// 3. Deserialize data (new schema: maps keyed by varsity code)
-	var calcResults map[string][]core.CalculationResult
-	if err := gob.NewDecoder(calcResultsObj).Decode(&calcResults); err != nil {
-		return fmt.Errorf("failed to decode calculation results: %w", err)
+	var calcPayloads map[string]struct {
+		Calculator *core.VarsityCalculator
+		Results    []core.CalculationResult
+	}
+	if err := gob.NewDecoder(calcResultsObj).Decode(&calcPayloads); err != nil {
+		return fmt.Errorf("failed to decode calculation payloads: %w", err)
 	}
 
 	var drainedResults map[string]map[int][]drainer.DrainedResult
@@ -185,19 +188,41 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName, calcResultsO
 
 		log.Printf("Uploading data to database...")
 
-		// Upload per-varsity calculation results
-		for _, resultsSlice := range calcResults {
-			if err := upload.Primary(ctx, client, nil, resultsSlice); err != nil {
-				err = fmt.Errorf("failed to upload primary results with conn string %q: %w", connStr, err)
+		// Upload per-varsity calculation results; also prepare 0% drained conv results
+		for varsityCode, payload := range calcPayloads {
+			calculator := payload.Calculator
+			resultsSlice := payload.Results
+
+			if calculator == nil {
+				log.Printf("Skipping nil calculator for varsity code %s", varsityCode)
+				continue
+			}
+
+			// Primary upload (with full context)
+			if err := upload.Primary(ctx, client, calculator, resultsSlice); err != nil {
+				err = fmt.Errorf("failed to upload primary results for varsity %s with conn string %q: %w", varsityCode, connStr, err)
 				multierr.AppendInto(&allErrors, err)
+			}
+
+			// Convert to drained-style 0%% records and upload
+			zeroStage := drainer.ConvResults(resultsSlice) // DrainedPercent will be 0
+			if len(zeroStage) > 0 {
+				if err := upload.DrainedResults(ctx, client, nil, zeroStage); err != nil {
+					err = fmt.Errorf("failed to upload 0%% drained (primary) results for varsity %s with conn string %q: %w", varsityCode, connStr, err)
+					multierr.AppendInto(&allErrors, err)
+				}
 			}
 		}
 
-		// Upload drained results
-		for _, stageMap := range drainedResults {
-			for _, resultsSlice := range stageMap {
+		// Upload drained results (positive drainedPercent only)
+		for varsityCode, stageMap := range drainedResults {
+			for percent, resultsSlice := range stageMap {
+				if percent <= 0 {
+					// Skip zero or negative stages to avoid duplication (already handled) or invalid data
+					continue
+				}
 				if err := upload.DrainedResults(ctx, client, nil, resultsSlice); err != nil {
-					err = fmt.Errorf("failed to upload drained results with conn string %q: %w", connStr, err)
+					err = fmt.Errorf("failed to upload drained results for varsity %s with conn string %q: %w", varsityCode, connStr, err)
 					multierr.AppendInto(&allErrors, err)
 				}
 			}

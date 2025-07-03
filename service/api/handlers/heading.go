@@ -34,9 +34,9 @@ func GetHeadings(client *ent.Client) fiber.Handler {
 		// map to DTOs
 		resp := make([]HeadingResponse, len(headings))
 		for i, h := range headings {
-			var code string
+			var vDTO VarsityDTO
 			if v := h.Edges.Varsity; v != nil {
-				code = v.Code
+				vDTO = VarsityDTO{ID: v.ID, Code: v.Code, Name: v.Name}
 			}
 			resp[i] = HeadingResponse{
 				ID:                     h.ID,
@@ -46,7 +46,7 @@ func GetHeadings(client *ent.Client) fiber.Handler {
 				TargetQuotaCapacity:    h.TargetQuotaCapacity,
 				DedicatedQuotaCapacity: h.DedicatedQuotaCapacity,
 				SpecialQuotaCapacity:   h.SpecialQuotaCapacity,
-				VarsityCode:            code,
+				Varsity:                vDTO,
 			}
 		}
 
@@ -68,9 +68,9 @@ func GetHeadingByID(client *ent.Client) fiber.Handler {
 			return fiber.ErrNotFound
 		}
 
-		var code string
+		var vDTO VarsityDTO
 		if v := h.Edges.Varsity; v != nil {
-			code = v.Code
+			vDTO = VarsityDTO{ID: v.ID, Code: v.Code, Name: v.Name}
 		}
 
 		resp := HeadingResponse{
@@ -81,7 +81,7 @@ func GetHeadingByID(client *ent.Client) fiber.Handler {
 			TargetQuotaCapacity:    h.TargetQuotaCapacity,
 			DedicatedQuotaCapacity: h.DedicatedQuotaCapacity,
 			SpecialQuotaCapacity:   h.SpecialQuotaCapacity,
-			VarsityCode:            code,
+			Varsity:                vDTO,
 		}
 
 		return c.JSON(resp)
@@ -90,13 +90,19 @@ func GetHeadingByID(client *ent.Client) fiber.Handler {
 
 // ADD: heading response DTO
 
+type VarsityDTO struct {
+	ID   int    `json:"id"`
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
 type HeadingResponse struct {
-	ID                     int    `json:"id"`
-	Code                   string `json:"code"`
-	Name                   string `json:"name"`
-	RegularCapacity        int    `json:"regular_capacity"`
-	TargetQuotaCapacity    int    `json:"target_quota_capacity"`
-	DedicatedQuotaCapacity int    `json:"dedicated_quota_capacity"`
-	SpecialQuotaCapacity   int    `json:"special_quota_capacity"`
-	VarsityCode            string `json:"varsity_code"`
+	ID                     int        `json:"id"`
+	Code                   string     `json:"code"`
+	Name                   string     `json:"name"`
+	RegularCapacity        int        `json:"regular_capacity"`
+	TargetQuotaCapacity    int        `json:"target_quota_capacity"`
+	DedicatedQuotaCapacity int        `json:"dedicated_quota_capacity"`
+	SpecialQuotaCapacity   int        `json:"special_quota_capacity"`
+	Varsity                VarsityDTO `json:"varsity"`
 }
