@@ -23,8 +23,6 @@ type Calculation struct {
 	StudentID string `json:"student_id,omitempty"`
 	// AdmittedPlace holds the value of the "admitted_place" field.
 	AdmittedPlace int `json:"admitted_place,omitempty"`
-	// Iteration holds the value of the "iteration" field.
-	Iteration int `json:"iteration,omitempty"`
 	// RunID holds the value of the "run_id" field.
 	RunID int `json:"run_id,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -74,7 +72,7 @@ func (*Calculation) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case calculation.FieldID, calculation.FieldAdmittedPlace, calculation.FieldIteration, calculation.FieldRunID:
+		case calculation.FieldID, calculation.FieldAdmittedPlace, calculation.FieldRunID:
 			values[i] = new(sql.NullInt64)
 		case calculation.FieldStudentID:
 			values[i] = new(sql.NullString)
@@ -114,12 +112,6 @@ func (c *Calculation) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field admitted_place", values[i])
 			} else if value.Valid {
 				c.AdmittedPlace = int(value.Int64)
-			}
-		case calculation.FieldIteration:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field iteration", values[i])
-			} else if value.Valid {
-				c.Iteration = int(value.Int64)
 			}
 		case calculation.FieldRunID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -191,9 +183,6 @@ func (c *Calculation) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("admitted_place=")
 	builder.WriteString(fmt.Sprintf("%v", c.AdmittedPlace))
-	builder.WriteString(", ")
-	builder.WriteString("iteration=")
-	builder.WriteString(fmt.Sprintf("%v", c.Iteration))
 	builder.WriteString(", ")
 	builder.WriteString("run_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.RunID))

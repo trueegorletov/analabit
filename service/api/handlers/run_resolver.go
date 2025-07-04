@@ -2,9 +2,6 @@ package handlers
 
 import (
 	"analabit/core/ent"
-	"analabit/core/ent/application"
-	"analabit/core/ent/calculation"
-	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/run"
 	"context"
 	"fmt"
@@ -24,7 +21,7 @@ type RunResolution struct {
 // Supports:
 // - "latest" or "0" or empty → latest run (offset 0)
 // - negative "-n" → nth previous run (offset -n)
-// - positive "n>0" → backward compatibility: find run with iteration=n
+// Positive iteration values are no longer supported.
 func ResolveRunFromIteration(ctx context.Context, client *ent.Client, iterationParam string) (*RunResolution, error) {
 	iterationParam = strings.TrimSpace(strings.ToLower(iterationParam))
 
@@ -60,31 +57,9 @@ func ResolveRunFromIteration(ctx context.Context, client *ent.Client, iterationP
 			IsRelative: true,
 			Offset:     offset,
 		}, nil
-	} else if offset > 0 {
-		// Backward compatibility: treat as old iteration value
-		runID, err := getRunByIteration(ctx, client, offset)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get run for iteration %d: %w", offset, err)
-		}
-		return &RunResolution{
-			RunID:      runID,
-			IsLatest:   false,
-			IsRelative: false,
-			Offset:     0,
-		}, nil
 	}
 
-	// offset == 0 case (already handled above, but just in case)
-	runID, err := getLatestRunID(ctx, client)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get latest run ID: %w", err)
-	}
-	return &RunResolution{
-		RunID:      runID,
-		IsLatest:   true,
-		IsRelative: true,
-		Offset:     0,
-	}, nil
+	return nil, fmt.Errorf("positive iteration values are no longer supported")
 }
 
 // getLatestRunID returns the ID of the most recent run
@@ -125,37 +100,4 @@ func getRunAtOffset(ctx context.Context, client *ent.Client, offset int) (int, e
 	}
 
 	return runs[0].ID, nil
-}
-
-// getRunByIteration finds a run that contains records with the specified iteration value
-// This is for backward compatibility with old iteration-based queries
-func getRunByIteration(ctx context.Context, client *ent.Client, iteration int) (int, error) {
-	// First try to find from application table
-	app, err := client.Application.Query().
-		Where(application.IterationEQ(iteration)).
-		WithRun().
-		First(ctx)
-	if err == nil && app.Edges.Run != nil {
-		return app.Edges.Run.ID, nil
-	}
-
-	// Try calculation table
-	calc, err := client.Calculation.Query().
-		Where(calculation.IterationEQ(iteration)).
-		WithRun().
-		First(ctx)
-	if err == nil && calc.Edges.Run != nil {
-		return calc.Edges.Run.ID, nil
-	}
-
-	// Try drained result table
-	dr, err := client.DrainedResult.Query().
-		Where(drainedresult.IterationEQ(iteration)).
-		WithRun().
-		First(ctx)
-	if err == nil && dr.Edges.Run != nil {
-		return dr.Edges.Run.ID, nil
-	}
-
-	return 0, fmt.Errorf("no run found with iteration %d", iteration)
 }

@@ -129,27 +129,6 @@ func (au *ApplicationUpdate) AddScore(i int) *ApplicationUpdate {
 	return au
 }
 
-// SetIteration sets the "iteration" field.
-func (au *ApplicationUpdate) SetIteration(i int) *ApplicationUpdate {
-	au.mutation.ResetIteration()
-	au.mutation.SetIteration(i)
-	return au
-}
-
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (au *ApplicationUpdate) SetNillableIteration(i *int) *ApplicationUpdate {
-	if i != nil {
-		au.SetIteration(*i)
-	}
-	return au
-}
-
-// AddIteration adds i to the "iteration" field.
-func (au *ApplicationUpdate) AddIteration(i int) *ApplicationUpdate {
-	au.mutation.AddIteration(i)
-	return au
-}
-
 // SetRunID sets the "run_id" field.
 func (au *ApplicationUpdate) SetRunID(i int) *ApplicationUpdate {
 	au.mutation.SetRunID(i)
@@ -302,12 +281,6 @@ func (au *ApplicationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.AddedScore(); ok {
 		_spec.AddField(application.FieldScore, field.TypeInt, value)
-	}
-	if value, ok := au.mutation.Iteration(); ok {
-		_spec.SetField(application.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := au.mutation.AddedIteration(); ok {
-		_spec.AddField(application.FieldIteration, field.TypeInt, value)
 	}
 	if value, ok := au.mutation.OriginalSubmitted(); ok {
 		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)
@@ -488,27 +461,6 @@ func (auo *ApplicationUpdateOne) SetNillableScore(i *int) *ApplicationUpdateOne 
 // AddScore adds i to the "score" field.
 func (auo *ApplicationUpdateOne) AddScore(i int) *ApplicationUpdateOne {
 	auo.mutation.AddScore(i)
-	return auo
-}
-
-// SetIteration sets the "iteration" field.
-func (auo *ApplicationUpdateOne) SetIteration(i int) *ApplicationUpdateOne {
-	auo.mutation.ResetIteration()
-	auo.mutation.SetIteration(i)
-	return auo
-}
-
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (auo *ApplicationUpdateOne) SetNillableIteration(i *int) *ApplicationUpdateOne {
-	if i != nil {
-		auo.SetIteration(*i)
-	}
-	return auo
-}
-
-// AddIteration adds i to the "iteration" field.
-func (auo *ApplicationUpdateOne) AddIteration(i int) *ApplicationUpdateOne {
-	auo.mutation.AddIteration(i)
 	return auo
 }
 
@@ -694,12 +646,6 @@ func (auo *ApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Applicatio
 	}
 	if value, ok := auo.mutation.AddedScore(); ok {
 		_spec.AddField(application.FieldScore, field.TypeInt, value)
-	}
-	if value, ok := auo.mutation.Iteration(); ok {
-		_spec.SetField(application.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := auo.mutation.AddedIteration(); ok {
-		_spec.AddField(application.FieldIteration, field.TypeInt, value)
 	}
 	if value, ok := auo.mutation.OriginalSubmitted(); ok {
 		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)

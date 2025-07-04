@@ -24,7 +24,6 @@ func (DrainedResult) Fields() []ent.Field {
 		field.Int("min_last_admitted_rating_place"),
 		field.Int("max_last_admitted_rating_place"),
 		field.Int("med_last_admitted_rating_place"),
-		field.Int("iteration"),
 		field.Int("run_id"),
 	}
 }
@@ -50,11 +49,7 @@ func (DrainedResult) Indexes() []ent.Index {
 		index.Fields("run_id"),
 		// Composite index for run + drained_percent queries (used heavily in results API)
 		index.Fields("run_id", "drained_percent"),
-		// Index for iteration-based queries (backward compatibility)
-		index.Fields("iteration"),
 		// Index for drained_percent queries (used in steps calculation)
 		index.Fields("drained_percent"),
-		// Composite index for iteration + drained_percent (legacy queries)
-		index.Fields("iteration", "drained_percent"),
 	}
 }

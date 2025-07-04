@@ -18,8 +18,6 @@ const (
 	FieldStudentID = "student_id"
 	// FieldAdmittedPlace holds the string denoting the admitted_place field in the database.
 	FieldAdmittedPlace = "admitted_place"
-	// FieldIteration holds the string denoting the iteration field in the database.
-	FieldIteration = "iteration"
 	// FieldRunID holds the string denoting the run_id field in the database.
 	FieldRunID = "run_id"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -51,7 +49,6 @@ var Columns = []string{
 	FieldID,
 	FieldStudentID,
 	FieldAdmittedPlace,
-	FieldIteration,
 	FieldRunID,
 	FieldUpdatedAt,
 }
@@ -100,11 +97,6 @@ func ByStudentID(opts ...sql.OrderTermOption) OrderOption {
 // ByAdmittedPlace orders the results by the admitted_place field.
 func ByAdmittedPlace(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAdmittedPlace, opts...).ToFunc()
-}
-
-// ByIteration orders the results by the iteration field.
-func ByIteration(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIteration, opts...).ToFunc()
 }
 
 // ByRunID orders the results by the run_id field.

@@ -99,7 +99,6 @@ func (u *helper) uploadApplications(ctx context.Context, applications []core.App
 			SetRatingPlace(app.RatingPlace).
 			SetScore(app.Score).
 			SetOriginalSubmitted(originalSubmitted).
-			SetIteration(u.runID). // Keep iteration as surrogate, set to runID for backward compatibility
 			SetRunID(u.runID).
 			SetHeading(h).
 			Exec(ctx)
@@ -126,7 +125,6 @@ func (u *helper) uploadCalculations(ctx context.Context, calculations []core.Cal
 			err = u.client.Calculation.Create().
 				SetStudentID(student.ID).
 				SetAdmittedPlace(admittedPlace).
-				SetIteration(u.runID). // Keep iteration as surrogate, set to runID for backward compatibility
 				SetRunID(u.runID).
 				SetHeading(h).
 				Exec(ctx)

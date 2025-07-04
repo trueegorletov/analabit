@@ -30,8 +30,6 @@ const (
 	FieldMaxLastAdmittedRatingPlace = "max_last_admitted_rating_place"
 	// FieldMedLastAdmittedRatingPlace holds the string denoting the med_last_admitted_rating_place field in the database.
 	FieldMedLastAdmittedRatingPlace = "med_last_admitted_rating_place"
-	// FieldIteration holds the string denoting the iteration field in the database.
-	FieldIteration = "iteration"
 	// FieldRunID holds the string denoting the run_id field in the database.
 	FieldRunID = "run_id"
 	// EdgeHeading holds the string denoting the heading edge name in mutations.
@@ -68,7 +66,6 @@ var Columns = []string{
 	FieldMinLastAdmittedRatingPlace,
 	FieldMaxLastAdmittedRatingPlace,
 	FieldMedLastAdmittedRatingPlace,
-	FieldIteration,
 	FieldRunID,
 }
 
@@ -144,11 +141,6 @@ func ByMaxLastAdmittedRatingPlace(opts ...sql.OrderTermOption) OrderOption {
 // ByMedLastAdmittedRatingPlace orders the results by the med_last_admitted_rating_place field.
 func ByMedLastAdmittedRatingPlace(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMedLastAdmittedRatingPlace, opts...).ToFunc()
-}
-
-// ByIteration orders the results by the iteration field.
-func ByIteration(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIteration, opts...).ToFunc()
 }
 
 // ByRunID orders the results by the run_id field.

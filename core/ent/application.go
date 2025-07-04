@@ -30,8 +30,6 @@ type Application struct {
 	RatingPlace int `json:"rating_place,omitempty"`
 	// Score holds the value of the "score" field.
 	Score int `json:"score,omitempty"`
-	// Iteration holds the value of the "iteration" field.
-	Iteration int `json:"iteration,omitempty"`
 	// RunID holds the value of the "run_id" field.
 	RunID int `json:"run_id,omitempty"`
 	// OriginalSubmitted holds the value of the "original_submitted" field.
@@ -85,7 +83,7 @@ func (*Application) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case application.FieldOriginalSubmitted:
 			values[i] = new(sql.NullBool)
-		case application.FieldID, application.FieldPriority, application.FieldCompetitionType, application.FieldRatingPlace, application.FieldScore, application.FieldIteration, application.FieldRunID:
+		case application.FieldID, application.FieldPriority, application.FieldCompetitionType, application.FieldRatingPlace, application.FieldScore, application.FieldRunID:
 			values[i] = new(sql.NullInt64)
 		case application.FieldStudentID:
 			values[i] = new(sql.NullString)
@@ -143,12 +141,6 @@ func (a *Application) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field score", values[i])
 			} else if value.Valid {
 				a.Score = int(value.Int64)
-			}
-		case application.FieldIteration:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field iteration", values[i])
-			} else if value.Valid {
-				a.Iteration = int(value.Int64)
 			}
 		case application.FieldRunID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -235,9 +227,6 @@ func (a *Application) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("score=")
 	builder.WriteString(fmt.Sprintf("%v", a.Score))
-	builder.WriteString(", ")
-	builder.WriteString("iteration=")
-	builder.WriteString(fmt.Sprintf("%v", a.Iteration))
 	builder.WriteString(", ")
 	builder.WriteString("run_id=")
 	builder.WriteString(fmt.Sprintf("%v", a.RunID))

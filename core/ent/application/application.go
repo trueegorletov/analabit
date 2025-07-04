@@ -24,8 +24,6 @@ const (
 	FieldRatingPlace = "rating_place"
 	// FieldScore holds the string denoting the score field in the database.
 	FieldScore = "score"
-	// FieldIteration holds the string denoting the iteration field in the database.
-	FieldIteration = "iteration"
 	// FieldRunID holds the string denoting the run_id field in the database.
 	FieldRunID = "run_id"
 	// FieldOriginalSubmitted holds the string denoting the original_submitted field in the database.
@@ -62,7 +60,6 @@ var Columns = []string{
 	FieldCompetitionType,
 	FieldRatingPlace,
 	FieldScore,
-	FieldIteration,
 	FieldRunID,
 	FieldOriginalSubmitted,
 	FieldUpdatedAt,
@@ -129,11 +126,6 @@ func ByRatingPlace(opts ...sql.OrderTermOption) OrderOption {
 // ByScore orders the results by the score field.
 func ByScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldScore, opts...).ToFunc()
-}
-
-// ByIteration orders the results by the iteration field.
-func ByIteration(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIteration, opts...).ToFunc()
 }
 
 // ByRunID orders the results by the run_id field.

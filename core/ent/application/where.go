@@ -82,11 +82,6 @@ func Score(v int) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldScore, v))
 }
 
-// Iteration applies equality check predicate on the "iteration" field. It's identical to IterationEQ.
-func Iteration(v int) predicate.Application {
-	return predicate.Application(sql.FieldEQ(FieldIteration, v))
-}
-
 // RunID applies equality check predicate on the "run_id" field. It's identical to RunIDEQ.
 func RunID(v int) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldRunID, v))
@@ -339,46 +334,6 @@ func ScoreLT(v int) predicate.Application {
 // ScoreLTE applies the LTE predicate on the "score" field.
 func ScoreLTE(v int) predicate.Application {
 	return predicate.Application(sql.FieldLTE(FieldScore, v))
-}
-
-// IterationEQ applies the EQ predicate on the "iteration" field.
-func IterationEQ(v int) predicate.Application {
-	return predicate.Application(sql.FieldEQ(FieldIteration, v))
-}
-
-// IterationNEQ applies the NEQ predicate on the "iteration" field.
-func IterationNEQ(v int) predicate.Application {
-	return predicate.Application(sql.FieldNEQ(FieldIteration, v))
-}
-
-// IterationIn applies the In predicate on the "iteration" field.
-func IterationIn(vs ...int) predicate.Application {
-	return predicate.Application(sql.FieldIn(FieldIteration, vs...))
-}
-
-// IterationNotIn applies the NotIn predicate on the "iteration" field.
-func IterationNotIn(vs ...int) predicate.Application {
-	return predicate.Application(sql.FieldNotIn(FieldIteration, vs...))
-}
-
-// IterationGT applies the GT predicate on the "iteration" field.
-func IterationGT(v int) predicate.Application {
-	return predicate.Application(sql.FieldGT(FieldIteration, v))
-}
-
-// IterationGTE applies the GTE predicate on the "iteration" field.
-func IterationGTE(v int) predicate.Application {
-	return predicate.Application(sql.FieldGTE(FieldIteration, v))
-}
-
-// IterationLT applies the LT predicate on the "iteration" field.
-func IterationLT(v int) predicate.Application {
-	return predicate.Application(sql.FieldLT(FieldIteration, v))
-}
-
-// IterationLTE applies the LTE predicate on the "iteration" field.
-func IterationLTE(v int) predicate.Application {
-	return predicate.Application(sql.FieldLTE(FieldIteration, v))
 }
 
 // RunIDEQ applies the EQ predicate on the "run_id" field.

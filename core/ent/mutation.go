@@ -53,8 +53,6 @@ type ApplicationMutation struct {
 	addrating_place     *int
 	score               *int
 	addscore            *int
-	iteration           *int
-	additeration        *int
 	original_submitted  *bool
 	updated_at          *time.Time
 	clearedFields       map[string]struct{}
@@ -425,62 +423,6 @@ func (m *ApplicationMutation) ResetScore() {
 	m.addscore = nil
 }
 
-// SetIteration sets the "iteration" field.
-func (m *ApplicationMutation) SetIteration(i int) {
-	m.iteration = &i
-	m.additeration = nil
-}
-
-// Iteration returns the value of the "iteration" field in the mutation.
-func (m *ApplicationMutation) Iteration() (r int, exists bool) {
-	v := m.iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIteration returns the old "iteration" field's value of the Application entity.
-// If the Application object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApplicationMutation) OldIteration(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIteration is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIteration requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIteration: %w", err)
-	}
-	return oldValue.Iteration, nil
-}
-
-// AddIteration adds i to the "iteration" field.
-func (m *ApplicationMutation) AddIteration(i int) {
-	if m.additeration != nil {
-		*m.additeration += i
-	} else {
-		m.additeration = &i
-	}
-}
-
-// AddedIteration returns the value that was added to the "iteration" field in this mutation.
-func (m *ApplicationMutation) AddedIteration() (r int, exists bool) {
-	v := m.additeration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetIteration resets all changes to the "iteration" field.
-func (m *ApplicationMutation) ResetIteration() {
-	m.iteration = nil
-	m.additeration = nil
-}
-
 // SetRunID sets the "run_id" field.
 func (m *ApplicationMutation) SetRunID(i int) {
 	m.run = &i
@@ -689,7 +631,7 @@ func (m *ApplicationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ApplicationMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 8)
 	if m.student_id != nil {
 		fields = append(fields, application.FieldStudentID)
 	}
@@ -704,9 +646,6 @@ func (m *ApplicationMutation) Fields() []string {
 	}
 	if m.score != nil {
 		fields = append(fields, application.FieldScore)
-	}
-	if m.iteration != nil {
-		fields = append(fields, application.FieldIteration)
 	}
 	if m.run != nil {
 		fields = append(fields, application.FieldRunID)
@@ -735,8 +674,6 @@ func (m *ApplicationMutation) Field(name string) (ent.Value, bool) {
 		return m.RatingPlace()
 	case application.FieldScore:
 		return m.Score()
-	case application.FieldIteration:
-		return m.Iteration()
 	case application.FieldRunID:
 		return m.RunID()
 	case application.FieldOriginalSubmitted:
@@ -762,8 +699,6 @@ func (m *ApplicationMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldRatingPlace(ctx)
 	case application.FieldScore:
 		return m.OldScore(ctx)
-	case application.FieldIteration:
-		return m.OldIteration(ctx)
 	case application.FieldRunID:
 		return m.OldRunID(ctx)
 	case application.FieldOriginalSubmitted:
@@ -814,13 +749,6 @@ func (m *ApplicationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetScore(v)
 		return nil
-	case application.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIteration(v)
-		return nil
 	case application.FieldRunID:
 		v, ok := value.(int)
 		if !ok {
@@ -862,9 +790,6 @@ func (m *ApplicationMutation) AddedFields() []string {
 	if m.addscore != nil {
 		fields = append(fields, application.FieldScore)
 	}
-	if m.additeration != nil {
-		fields = append(fields, application.FieldIteration)
-	}
 	return fields
 }
 
@@ -881,8 +806,6 @@ func (m *ApplicationMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedRatingPlace()
 	case application.FieldScore:
 		return m.AddedScore()
-	case application.FieldIteration:
-		return m.AddedIteration()
 	}
 	return nil, false
 }
@@ -919,13 +842,6 @@ func (m *ApplicationMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddScore(v)
-		return nil
-	case application.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIteration(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Application numeric field %s", name)
@@ -968,9 +884,6 @@ func (m *ApplicationMutation) ResetField(name string) error {
 		return nil
 	case application.FieldScore:
 		m.ResetScore()
-		return nil
-	case application.FieldIteration:
-		m.ResetIteration()
 		return nil
 	case application.FieldRunID:
 		m.ResetRunID()
@@ -1086,8 +999,6 @@ type CalculationMutation struct {
 	student_id        *string
 	admitted_place    *int
 	addadmitted_place *int
-	iteration         *int
-	additeration      *int
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
 	heading           *int
@@ -1289,62 +1200,6 @@ func (m *CalculationMutation) ResetAdmittedPlace() {
 	m.addadmitted_place = nil
 }
 
-// SetIteration sets the "iteration" field.
-func (m *CalculationMutation) SetIteration(i int) {
-	m.iteration = &i
-	m.additeration = nil
-}
-
-// Iteration returns the value of the "iteration" field in the mutation.
-func (m *CalculationMutation) Iteration() (r int, exists bool) {
-	v := m.iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIteration returns the old "iteration" field's value of the Calculation entity.
-// If the Calculation object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CalculationMutation) OldIteration(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIteration is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIteration requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIteration: %w", err)
-	}
-	return oldValue.Iteration, nil
-}
-
-// AddIteration adds i to the "iteration" field.
-func (m *CalculationMutation) AddIteration(i int) {
-	if m.additeration != nil {
-		*m.additeration += i
-	} else {
-		m.additeration = &i
-	}
-}
-
-// AddedIteration returns the value that was added to the "iteration" field in this mutation.
-func (m *CalculationMutation) AddedIteration() (r int, exists bool) {
-	v := m.additeration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetIteration resets all changes to the "iteration" field.
-func (m *CalculationMutation) ResetIteration() {
-	m.iteration = nil
-	m.additeration = nil
-}
-
 // SetRunID sets the "run_id" field.
 func (m *CalculationMutation) SetRunID(i int) {
 	m.run = &i
@@ -1517,15 +1372,12 @@ func (m *CalculationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CalculationMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 4)
 	if m.student_id != nil {
 		fields = append(fields, calculation.FieldStudentID)
 	}
 	if m.admitted_place != nil {
 		fields = append(fields, calculation.FieldAdmittedPlace)
-	}
-	if m.iteration != nil {
-		fields = append(fields, calculation.FieldIteration)
 	}
 	if m.run != nil {
 		fields = append(fields, calculation.FieldRunID)
@@ -1545,8 +1397,6 @@ func (m *CalculationMutation) Field(name string) (ent.Value, bool) {
 		return m.StudentID()
 	case calculation.FieldAdmittedPlace:
 		return m.AdmittedPlace()
-	case calculation.FieldIteration:
-		return m.Iteration()
 	case calculation.FieldRunID:
 		return m.RunID()
 	case calculation.FieldUpdatedAt:
@@ -1564,8 +1414,6 @@ func (m *CalculationMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldStudentID(ctx)
 	case calculation.FieldAdmittedPlace:
 		return m.OldAdmittedPlace(ctx)
-	case calculation.FieldIteration:
-		return m.OldIteration(ctx)
 	case calculation.FieldRunID:
 		return m.OldRunID(ctx)
 	case calculation.FieldUpdatedAt:
@@ -1593,13 +1441,6 @@ func (m *CalculationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAdmittedPlace(v)
 		return nil
-	case calculation.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIteration(v)
-		return nil
 	case calculation.FieldRunID:
 		v, ok := value.(int)
 		if !ok {
@@ -1625,9 +1466,6 @@ func (m *CalculationMutation) AddedFields() []string {
 	if m.addadmitted_place != nil {
 		fields = append(fields, calculation.FieldAdmittedPlace)
 	}
-	if m.additeration != nil {
-		fields = append(fields, calculation.FieldIteration)
-	}
 	return fields
 }
 
@@ -1638,8 +1476,6 @@ func (m *CalculationMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case calculation.FieldAdmittedPlace:
 		return m.AddedAdmittedPlace()
-	case calculation.FieldIteration:
-		return m.AddedIteration()
 	}
 	return nil, false
 }
@@ -1655,13 +1491,6 @@ func (m *CalculationMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddAdmittedPlace(v)
-		return nil
-	case calculation.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIteration(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Calculation numeric field %s", name)
@@ -1695,9 +1524,6 @@ func (m *CalculationMutation) ResetField(name string) error {
 		return nil
 	case calculation.FieldAdmittedPlace:
 		m.ResetAdmittedPlace()
-		return nil
-	case calculation.FieldIteration:
-		m.ResetIteration()
 		return nil
 	case calculation.FieldRunID:
 		m.ResetRunID()
@@ -1825,8 +1651,6 @@ type DrainedResultMutation struct {
 	addmax_last_admitted_rating_place *int
 	med_last_admitted_rating_place    *int
 	addmed_last_admitted_rating_place *int
-	iteration                         *int
-	additeration                      *int
 	clearedFields                     map[string]struct{}
 	heading                           *int
 	clearedheading                    bool
@@ -2439,62 +2263,6 @@ func (m *DrainedResultMutation) ResetMedLastAdmittedRatingPlace() {
 	m.addmed_last_admitted_rating_place = nil
 }
 
-// SetIteration sets the "iteration" field.
-func (m *DrainedResultMutation) SetIteration(i int) {
-	m.iteration = &i
-	m.additeration = nil
-}
-
-// Iteration returns the value of the "iteration" field in the mutation.
-func (m *DrainedResultMutation) Iteration() (r int, exists bool) {
-	v := m.iteration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIteration returns the old "iteration" field's value of the DrainedResult entity.
-// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DrainedResultMutation) OldIteration(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIteration is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIteration requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIteration: %w", err)
-	}
-	return oldValue.Iteration, nil
-}
-
-// AddIteration adds i to the "iteration" field.
-func (m *DrainedResultMutation) AddIteration(i int) {
-	if m.additeration != nil {
-		*m.additeration += i
-	} else {
-		m.additeration = &i
-	}
-}
-
-// AddedIteration returns the value that was added to the "iteration" field in this mutation.
-func (m *DrainedResultMutation) AddedIteration() (r int, exists bool) {
-	v := m.additeration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetIteration resets all changes to the "iteration" field.
-func (m *DrainedResultMutation) ResetIteration() {
-	m.iteration = nil
-	m.additeration = nil
-}
-
 // SetRunID sets the "run_id" field.
 func (m *DrainedResultMutation) SetRunID(i int) {
 	m.run = &i
@@ -2631,7 +2399,7 @@ func (m *DrainedResultMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DrainedResultMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 10)
 	if m.drained_percent != nil {
 		fields = append(fields, drainedresult.FieldDrainedPercent)
 	}
@@ -2658,9 +2426,6 @@ func (m *DrainedResultMutation) Fields() []string {
 	}
 	if m.med_last_admitted_rating_place != nil {
 		fields = append(fields, drainedresult.FieldMedLastAdmittedRatingPlace)
-	}
-	if m.iteration != nil {
-		fields = append(fields, drainedresult.FieldIteration)
 	}
 	if m.run != nil {
 		fields = append(fields, drainedresult.FieldRunID)
@@ -2691,8 +2456,6 @@ func (m *DrainedResultMutation) Field(name string) (ent.Value, bool) {
 		return m.MaxLastAdmittedRatingPlace()
 	case drainedresult.FieldMedLastAdmittedRatingPlace:
 		return m.MedLastAdmittedRatingPlace()
-	case drainedresult.FieldIteration:
-		return m.Iteration()
 	case drainedresult.FieldRunID:
 		return m.RunID()
 	}
@@ -2722,8 +2485,6 @@ func (m *DrainedResultMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldMaxLastAdmittedRatingPlace(ctx)
 	case drainedresult.FieldMedLastAdmittedRatingPlace:
 		return m.OldMedLastAdmittedRatingPlace(ctx)
-	case drainedresult.FieldIteration:
-		return m.OldIteration(ctx)
 	case drainedresult.FieldRunID:
 		return m.OldRunID(ctx)
 	}
@@ -2798,13 +2559,6 @@ func (m *DrainedResultMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetMedLastAdmittedRatingPlace(v)
 		return nil
-	case drainedresult.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIteration(v)
-		return nil
 	case drainedresult.FieldRunID:
 		v, ok := value.(int)
 		if !ok {
@@ -2847,9 +2601,6 @@ func (m *DrainedResultMutation) AddedFields() []string {
 	if m.addmed_last_admitted_rating_place != nil {
 		fields = append(fields, drainedresult.FieldMedLastAdmittedRatingPlace)
 	}
-	if m.additeration != nil {
-		fields = append(fields, drainedresult.FieldIteration)
-	}
 	return fields
 }
 
@@ -2876,8 +2627,6 @@ func (m *DrainedResultMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedMaxLastAdmittedRatingPlace()
 	case drainedresult.FieldMedLastAdmittedRatingPlace:
 		return m.AddedMedLastAdmittedRatingPlace()
-	case drainedresult.FieldIteration:
-		return m.AddedIteration()
 	}
 	return nil, false
 }
@@ -2950,13 +2699,6 @@ func (m *DrainedResultMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddMedLastAdmittedRatingPlace(v)
 		return nil
-	case drainedresult.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIteration(v)
-		return nil
 	}
 	return fmt.Errorf("unknown DrainedResult numeric field %s", name)
 }
@@ -3010,9 +2752,6 @@ func (m *DrainedResultMutation) ResetField(name string) error {
 		return nil
 	case drainedresult.FieldMedLastAdmittedRatingPlace:
 		m.ResetMedLastAdmittedRatingPlace()
-		return nil
-	case drainedresult.FieldIteration:
-		m.ResetIteration()
 		return nil
 	case drainedresult.FieldRunID:
 		m.ResetRunID()

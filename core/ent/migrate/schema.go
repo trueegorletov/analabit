@@ -16,7 +16,6 @@ var (
 		{Name: "competition_type", Type: field.TypeInt},
 		{Name: "rating_place", Type: field.TypeInt},
 		{Name: "score", Type: field.TypeInt},
-		{Name: "iteration", Type: field.TypeInt},
 		{Name: "original_submitted", Type: field.TypeBool, Default: false},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "run_id", Type: field.TypeInt},
@@ -30,13 +29,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "applications_runs_run",
-				Columns:    []*schema.Column{ApplicationsColumns[9]},
+				Columns:    []*schema.Column{ApplicationsColumns[8]},
 				RefColumns: []*schema.Column{RunsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "applications_headings_applications",
-				Columns:    []*schema.Column{ApplicationsColumns[10]},
+				Columns:    []*schema.Column{ApplicationsColumns[9]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -45,27 +44,17 @@ var (
 			{
 				Name:    "application_run_id",
 				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[9]},
+				Columns: []*schema.Column{ApplicationsColumns[8]},
 			},
 			{
 				Name:    "application_run_id_student_id",
 				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[9], ApplicationsColumns[1]},
-			},
-			{
-				Name:    "application_iteration",
-				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[6]},
+				Columns: []*schema.Column{ApplicationsColumns[8], ApplicationsColumns[1]},
 			},
 			{
 				Name:    "application_original_submitted",
 				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[7]},
-			},
-			{
-				Name:    "application_student_id_iteration",
-				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[1], ApplicationsColumns[6]},
+				Columns: []*schema.Column{ApplicationsColumns[6]},
 			},
 		},
 	}
@@ -74,7 +63,6 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "student_id", Type: field.TypeString},
 		{Name: "admitted_place", Type: field.TypeInt},
-		{Name: "iteration", Type: field.TypeInt},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "run_id", Type: field.TypeInt},
 		{Name: "heading_calculations", Type: field.TypeInt},
@@ -87,13 +75,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "calculations_runs_run",
-				Columns:    []*schema.Column{CalculationsColumns[5]},
+				Columns:    []*schema.Column{CalculationsColumns[4]},
 				RefColumns: []*schema.Column{RunsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "calculations_headings_calculations",
-				Columns:    []*schema.Column{CalculationsColumns[6]},
+				Columns:    []*schema.Column{CalculationsColumns[5]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -102,22 +90,12 @@ var (
 			{
 				Name:    "calculation_run_id",
 				Unique:  false,
-				Columns: []*schema.Column{CalculationsColumns[5]},
+				Columns: []*schema.Column{CalculationsColumns[4]},
 			},
 			{
 				Name:    "calculation_run_id_student_id",
 				Unique:  false,
-				Columns: []*schema.Column{CalculationsColumns[5], CalculationsColumns[1]},
-			},
-			{
-				Name:    "calculation_iteration",
-				Unique:  false,
-				Columns: []*schema.Column{CalculationsColumns[3]},
-			},
-			{
-				Name:    "calculation_student_id_iteration",
-				Unique:  false,
-				Columns: []*schema.Column{CalculationsColumns[1], CalculationsColumns[3]},
+				Columns: []*schema.Column{CalculationsColumns[4], CalculationsColumns[1]},
 			},
 			{
 				Name:    "calculation_admitted_place",
@@ -138,7 +116,6 @@ var (
 		{Name: "min_last_admitted_rating_place", Type: field.TypeInt},
 		{Name: "max_last_admitted_rating_place", Type: field.TypeInt},
 		{Name: "med_last_admitted_rating_place", Type: field.TypeInt},
-		{Name: "iteration", Type: field.TypeInt},
 		{Name: "run_id", Type: field.TypeInt},
 		{Name: "heading_drained_results", Type: field.TypeInt},
 	}
@@ -150,13 +127,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "drained_results_runs_run",
-				Columns:    []*schema.Column{DrainedResultsColumns[11]},
+				Columns:    []*schema.Column{DrainedResultsColumns[10]},
 				RefColumns: []*schema.Column{RunsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "drained_results_headings_drained_results",
-				Columns:    []*schema.Column{DrainedResultsColumns[12]},
+				Columns:    []*schema.Column{DrainedResultsColumns[11]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -165,27 +142,17 @@ var (
 			{
 				Name:    "drainedresult_run_id",
 				Unique:  false,
-				Columns: []*schema.Column{DrainedResultsColumns[11]},
+				Columns: []*schema.Column{DrainedResultsColumns[10]},
 			},
 			{
 				Name:    "drainedresult_run_id_drained_percent",
 				Unique:  false,
-				Columns: []*schema.Column{DrainedResultsColumns[11], DrainedResultsColumns[1]},
-			},
-			{
-				Name:    "drainedresult_iteration",
-				Unique:  false,
-				Columns: []*schema.Column{DrainedResultsColumns[10]},
+				Columns: []*schema.Column{DrainedResultsColumns[10], DrainedResultsColumns[1]},
 			},
 			{
 				Name:    "drainedresult_drained_percent",
 				Unique:  false,
 				Columns: []*schema.Column{DrainedResultsColumns[1]},
-			},
-			{
-				Name:    "drainedresult_iteration_drained_percent",
-				Unique:  false,
-				Columns: []*schema.Column{DrainedResultsColumns[10], DrainedResultsColumns[1]},
 			},
 		},
 	}

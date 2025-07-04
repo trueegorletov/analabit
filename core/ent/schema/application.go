@@ -23,7 +23,6 @@ func (Application) Fields() []ent.Field {
 		field.Int("competition_type").GoType(core.Competition(0)),
 		field.Int("rating_place"),
 		field.Int("score"),
-		field.Int("iteration"),
 		field.Int("run_id"),
 		field.Bool("original_submitted").Default(false),
 		field.Time("updated_at").
@@ -53,11 +52,7 @@ func (Application) Indexes() []ent.Index {
 		index.Fields("run_id"),
 		// Composite index for run + student queries (used in API handlers)
 		index.Fields("run_id", "student_id"),
-		// Index for iteration-based queries (backward compatibility)
-		index.Fields("iteration"),
 		// Index for original_submitted queries
 		index.Fields("original_submitted"),
-		// Composite index for student + iteration (legacy queries)
-		index.Fields("student_id", "iteration"),
 	}
 }

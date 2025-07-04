@@ -56,7 +56,6 @@ func (u *helper) uploadDrained(ctx context.Context, results []core.DrainedResult
 			SetMinLastAdmittedRatingPlace(result.MinLastAdmittedRatingPlace).
 			SetMaxLastAdmittedRatingPlace(result.MaxLastAdmittedRatingPlace).
 			SetMedLastAdmittedRatingPlace(result.MedLastAdmittedRatingPlace).
-			SetIteration(u.runID). // Keep iteration as surrogate, set to runID for backward compatibility
 			SetRunID(u.runID).
 			SetHeading(h).
 			Exec(ctx)

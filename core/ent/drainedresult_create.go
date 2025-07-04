@@ -75,12 +75,6 @@ func (drc *DrainedResultCreate) SetMedLastAdmittedRatingPlace(i int) *DrainedRes
 	return drc
 }
 
-// SetIteration sets the "iteration" field.
-func (drc *DrainedResultCreate) SetIteration(i int) *DrainedResultCreate {
-	drc.mutation.SetIteration(i)
-	return drc
-}
-
 // SetRunID sets the "run_id" field.
 func (drc *DrainedResultCreate) SetRunID(i int) *DrainedResultCreate {
 	drc.mutation.SetRunID(i)
@@ -164,9 +158,6 @@ func (drc *DrainedResultCreate) check() error {
 	if _, ok := drc.mutation.MedLastAdmittedRatingPlace(); !ok {
 		return &ValidationError{Name: "med_last_admitted_rating_place", err: errors.New(`ent: missing required field "DrainedResult.med_last_admitted_rating_place"`)}
 	}
-	if _, ok := drc.mutation.Iteration(); !ok {
-		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "DrainedResult.iteration"`)}
-	}
 	if _, ok := drc.mutation.RunID(); !ok {
 		return &ValidationError{Name: "run_id", err: errors.New(`ent: missing required field "DrainedResult.run_id"`)}
 	}
@@ -237,10 +228,6 @@ func (drc *DrainedResultCreate) createSpec() (*DrainedResult, *sqlgraph.CreateSp
 	if value, ok := drc.mutation.MedLastAdmittedRatingPlace(); ok {
 		_spec.SetField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
 		_node.MedLastAdmittedRatingPlace = value
-	}
-	if value, ok := drc.mutation.Iteration(); ok {
-		_spec.SetField(drainedresult.FieldIteration, field.TypeInt, value)
-		_node.Iteration = value
 	}
 	if nodes := drc.mutation.HeadingIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

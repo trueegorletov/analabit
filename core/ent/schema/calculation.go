@@ -19,7 +19,6 @@ func (Calculation) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("student_id"),
 		field.Int("admitted_place"),
-		field.Int("iteration"),
 		field.Int("run_id"),
 		field.Time("updated_at").
 			Default(time.Now).
@@ -48,10 +47,6 @@ func (Calculation) Indexes() []ent.Index {
 		index.Fields("run_id"),
 		// Composite index for run + student queries (used in API handlers)
 		index.Fields("run_id", "student_id"),
-		// Index for iteration-based queries (backward compatibility)
-		index.Fields("iteration"),
-		// Composite index for student + iteration (legacy queries)
-		index.Fields("student_id", "iteration"),
 		// Index for admitted_place queries (used in results calculation)
 		index.Fields("admitted_place"),
 	}

@@ -99,11 +99,6 @@ func MedLastAdmittedRatingPlace(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldEQ(FieldMedLastAdmittedRatingPlace, v))
 }
 
-// Iteration applies equality check predicate on the "iteration" field. It's identical to IterationEQ.
-func Iteration(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldEQ(FieldIteration, v))
-}
-
 // RunID applies equality check predicate on the "run_id" field. It's identical to RunIDEQ.
 func RunID(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldEQ(FieldRunID, v))
@@ -467,46 +462,6 @@ func MedLastAdmittedRatingPlaceLT(v int) predicate.DrainedResult {
 // MedLastAdmittedRatingPlaceLTE applies the LTE predicate on the "med_last_admitted_rating_place" field.
 func MedLastAdmittedRatingPlaceLTE(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldLTE(FieldMedLastAdmittedRatingPlace, v))
-}
-
-// IterationEQ applies the EQ predicate on the "iteration" field.
-func IterationEQ(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldEQ(FieldIteration, v))
-}
-
-// IterationNEQ applies the NEQ predicate on the "iteration" field.
-func IterationNEQ(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldNEQ(FieldIteration, v))
-}
-
-// IterationIn applies the In predicate on the "iteration" field.
-func IterationIn(vs ...int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldIn(FieldIteration, vs...))
-}
-
-// IterationNotIn applies the NotIn predicate on the "iteration" field.
-func IterationNotIn(vs ...int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldNotIn(FieldIteration, vs...))
-}
-
-// IterationGT applies the GT predicate on the "iteration" field.
-func IterationGT(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldGT(FieldIteration, v))
-}
-
-// IterationGTE applies the GTE predicate on the "iteration" field.
-func IterationGTE(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldGTE(FieldIteration, v))
-}
-
-// IterationLT applies the LT predicate on the "iteration" field.
-func IterationLT(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldLT(FieldIteration, v))
-}
-
-// IterationLTE applies the LTE predicate on the "iteration" field.
-func IterationLTE(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldLTE(FieldIteration, v))
 }
 
 // RunIDEQ applies the EQ predicate on the "run_id" field.

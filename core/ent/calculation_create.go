@@ -34,12 +34,6 @@ func (cc *CalculationCreate) SetAdmittedPlace(i int) *CalculationCreate {
 	return cc
 }
 
-// SetIteration sets the "iteration" field.
-func (cc *CalculationCreate) SetIteration(i int) *CalculationCreate {
-	cc.mutation.SetIteration(i)
-	return cc
-}
-
 // SetRunID sets the "run_id" field.
 func (cc *CalculationCreate) SetRunID(i int) *CalculationCreate {
 	cc.mutation.SetRunID(i)
@@ -125,9 +119,6 @@ func (cc *CalculationCreate) check() error {
 	if _, ok := cc.mutation.AdmittedPlace(); !ok {
 		return &ValidationError{Name: "admitted_place", err: errors.New(`ent: missing required field "Calculation.admitted_place"`)}
 	}
-	if _, ok := cc.mutation.Iteration(); !ok {
-		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "Calculation.iteration"`)}
-	}
 	if _, ok := cc.mutation.RunID(); !ok {
 		return &ValidationError{Name: "run_id", err: errors.New(`ent: missing required field "Calculation.run_id"`)}
 	}
@@ -173,10 +164,6 @@ func (cc *CalculationCreate) createSpec() (*Calculation, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.AdmittedPlace(); ok {
 		_spec.SetField(calculation.FieldAdmittedPlace, field.TypeInt, value)
 		_node.AdmittedPlace = value
-	}
-	if value, ok := cc.mutation.Iteration(); ok {
-		_spec.SetField(calculation.FieldIteration, field.TypeInt, value)
-		_node.Iteration = value
 	}
 	if value, ok := cc.mutation.UpdatedAt(); ok {
 		_spec.SetField(calculation.FieldUpdatedAt, field.TypeTime, value)

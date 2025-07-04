@@ -65,27 +65,6 @@ func (cu *CalculationUpdate) AddAdmittedPlace(i int) *CalculationUpdate {
 	return cu
 }
 
-// SetIteration sets the "iteration" field.
-func (cu *CalculationUpdate) SetIteration(i int) *CalculationUpdate {
-	cu.mutation.ResetIteration()
-	cu.mutation.SetIteration(i)
-	return cu
-}
-
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (cu *CalculationUpdate) SetNillableIteration(i *int) *CalculationUpdate {
-	if i != nil {
-		cu.SetIteration(*i)
-	}
-	return cu
-}
-
-// AddIteration adds i to the "iteration" field.
-func (cu *CalculationUpdate) AddIteration(i int) *CalculationUpdate {
-	cu.mutation.AddIteration(i)
-	return cu
-}
-
 // SetRunID sets the "run_id" field.
 func (cu *CalculationUpdate) SetRunID(i int) *CalculationUpdate {
 	cu.mutation.SetRunID(i)
@@ -207,12 +186,6 @@ func (cu *CalculationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.AddedAdmittedPlace(); ok {
 		_spec.AddField(calculation.FieldAdmittedPlace, field.TypeInt, value)
 	}
-	if value, ok := cu.mutation.Iteration(); ok {
-		_spec.SetField(calculation.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := cu.mutation.AddedIteration(); ok {
-		_spec.AddField(calculation.FieldIteration, field.TypeInt, value)
-	}
 	if value, ok := cu.mutation.UpdatedAt(); ok {
 		_spec.SetField(calculation.FieldUpdatedAt, field.TypeTime, value)
 	}
@@ -326,27 +299,6 @@ func (cuo *CalculationUpdateOne) SetNillableAdmittedPlace(i *int) *CalculationUp
 // AddAdmittedPlace adds i to the "admitted_place" field.
 func (cuo *CalculationUpdateOne) AddAdmittedPlace(i int) *CalculationUpdateOne {
 	cuo.mutation.AddAdmittedPlace(i)
-	return cuo
-}
-
-// SetIteration sets the "iteration" field.
-func (cuo *CalculationUpdateOne) SetIteration(i int) *CalculationUpdateOne {
-	cuo.mutation.ResetIteration()
-	cuo.mutation.SetIteration(i)
-	return cuo
-}
-
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (cuo *CalculationUpdateOne) SetNillableIteration(i *int) *CalculationUpdateOne {
-	if i != nil {
-		cuo.SetIteration(*i)
-	}
-	return cuo
-}
-
-// AddIteration adds i to the "iteration" field.
-func (cuo *CalculationUpdateOne) AddIteration(i int) *CalculationUpdateOne {
-	cuo.mutation.AddIteration(i)
 	return cuo
 }
 
@@ -500,12 +452,6 @@ func (cuo *CalculationUpdateOne) sqlSave(ctx context.Context) (_node *Calculatio
 	}
 	if value, ok := cuo.mutation.AddedAdmittedPlace(); ok {
 		_spec.AddField(calculation.FieldAdmittedPlace, field.TypeInt, value)
-	}
-	if value, ok := cuo.mutation.Iteration(); ok {
-		_spec.SetField(calculation.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := cuo.mutation.AddedIteration(); ok {
-		_spec.AddField(calculation.FieldIteration, field.TypeInt, value)
 	}
 	if value, ok := cuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(calculation.FieldUpdatedAt, field.TypeTime, value)

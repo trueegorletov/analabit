@@ -36,8 +36,6 @@ type DrainedResult struct {
 	MaxLastAdmittedRatingPlace int `json:"max_last_admitted_rating_place,omitempty"`
 	// MedLastAdmittedRatingPlace holds the value of the "med_last_admitted_rating_place" field.
 	MedLastAdmittedRatingPlace int `json:"med_last_admitted_rating_place,omitempty"`
-	// Iteration holds the value of the "iteration" field.
-	Iteration int `json:"iteration,omitempty"`
 	// RunID holds the value of the "run_id" field.
 	RunID int `json:"run_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -85,7 +83,7 @@ func (*DrainedResult) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case drainedresult.FieldID, drainedresult.FieldDrainedPercent, drainedresult.FieldAvgPassingScore, drainedresult.FieldMinPassingScore, drainedresult.FieldMaxPassingScore, drainedresult.FieldMedPassingScore, drainedresult.FieldAvgLastAdmittedRatingPlace, drainedresult.FieldMinLastAdmittedRatingPlace, drainedresult.FieldMaxLastAdmittedRatingPlace, drainedresult.FieldMedLastAdmittedRatingPlace, drainedresult.FieldIteration, drainedresult.FieldRunID:
+		case drainedresult.FieldID, drainedresult.FieldDrainedPercent, drainedresult.FieldAvgPassingScore, drainedresult.FieldMinPassingScore, drainedresult.FieldMaxPassingScore, drainedresult.FieldMedPassingScore, drainedresult.FieldAvgLastAdmittedRatingPlace, drainedresult.FieldMinLastAdmittedRatingPlace, drainedresult.FieldMaxLastAdmittedRatingPlace, drainedresult.FieldMedLastAdmittedRatingPlace, drainedresult.FieldRunID:
 			values[i] = new(sql.NullInt64)
 		case drainedresult.ForeignKeys[0]: // heading_drained_results
 			values[i] = new(sql.NullInt64)
@@ -163,12 +161,6 @@ func (dr *DrainedResult) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field med_last_admitted_rating_place", values[i])
 			} else if value.Valid {
 				dr.MedLastAdmittedRatingPlace = int(value.Int64)
-			}
-		case drainedresult.FieldIteration:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field iteration", values[i])
-			} else if value.Valid {
-				dr.Iteration = int(value.Int64)
 			}
 		case drainedresult.FieldRunID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -255,9 +247,6 @@ func (dr *DrainedResult) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("med_last_admitted_rating_place=")
 	builder.WriteString(fmt.Sprintf("%v", dr.MedLastAdmittedRatingPlace))
-	builder.WriteString(", ")
-	builder.WriteString("iteration=")
-	builder.WriteString(fmt.Sprintf("%v", dr.Iteration))
 	builder.WriteString(", ")
 	builder.WriteString("run_id=")
 	builder.WriteString(fmt.Sprintf("%v", dr.RunID))

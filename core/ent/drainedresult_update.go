@@ -218,27 +218,6 @@ func (dru *DrainedResultUpdate) AddMedLastAdmittedRatingPlace(i int) *DrainedRes
 	return dru
 }
 
-// SetIteration sets the "iteration" field.
-func (dru *DrainedResultUpdate) SetIteration(i int) *DrainedResultUpdate {
-	dru.mutation.ResetIteration()
-	dru.mutation.SetIteration(i)
-	return dru
-}
-
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (dru *DrainedResultUpdate) SetNillableIteration(i *int) *DrainedResultUpdate {
-	if i != nil {
-		dru.SetIteration(*i)
-	}
-	return dru
-}
-
-// AddIteration adds i to the "iteration" field.
-func (dru *DrainedResultUpdate) AddIteration(i int) *DrainedResultUpdate {
-	dru.mutation.AddIteration(i)
-	return dru
-}
-
 // SetRunID sets the "run_id" field.
 func (dru *DrainedResultUpdate) SetRunID(i int) *DrainedResultUpdate {
 	dru.mutation.SetRunID(i)
@@ -389,12 +368,6 @@ func (dru *DrainedResultUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if value, ok := dru.mutation.AddedMedLastAdmittedRatingPlace(); ok {
 		_spec.AddField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
-	}
-	if value, ok := dru.mutation.Iteration(); ok {
-		_spec.SetField(drainedresult.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := dru.mutation.AddedIteration(); ok {
-		_spec.AddField(drainedresult.FieldIteration, field.TypeInt, value)
 	}
 	if dru.mutation.HeadingCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -663,27 +636,6 @@ func (druo *DrainedResultUpdateOne) AddMedLastAdmittedRatingPlace(i int) *Draine
 	return druo
 }
 
-// SetIteration sets the "iteration" field.
-func (druo *DrainedResultUpdateOne) SetIteration(i int) *DrainedResultUpdateOne {
-	druo.mutation.ResetIteration()
-	druo.mutation.SetIteration(i)
-	return druo
-}
-
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (druo *DrainedResultUpdateOne) SetNillableIteration(i *int) *DrainedResultUpdateOne {
-	if i != nil {
-		druo.SetIteration(*i)
-	}
-	return druo
-}
-
-// AddIteration adds i to the "iteration" field.
-func (druo *DrainedResultUpdateOne) AddIteration(i int) *DrainedResultUpdateOne {
-	druo.mutation.AddIteration(i)
-	return druo
-}
-
 // SetRunID sets the "run_id" field.
 func (druo *DrainedResultUpdateOne) SetRunID(i int) *DrainedResultUpdateOne {
 	druo.mutation.SetRunID(i)
@@ -864,12 +816,6 @@ func (druo *DrainedResultUpdateOne) sqlSave(ctx context.Context) (_node *Drained
 	}
 	if value, ok := druo.mutation.AddedMedLastAdmittedRatingPlace(); ok {
 		_spec.AddField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
-	}
-	if value, ok := druo.mutation.Iteration(); ok {
-		_spec.SetField(drainedresult.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := druo.mutation.AddedIteration(); ok {
-		_spec.AddField(drainedresult.FieldIteration, field.TypeInt, value)
 	}
 	if druo.mutation.HeadingCleared() {
 		edge := &sqlgraph.EdgeSpec{

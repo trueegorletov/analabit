@@ -111,53 +111,6 @@ func TestResolveRunFromIteration_RelativeOffset(t *testing.T) {
 	}
 }
 
-func TestResolveRunFromIteration_BackwardCompatibility(t *testing.T) {
-	client := setupTestClient(t)
-	defer client.Close()
-
-	ctx := context.Background()
-
-	// Create a test varsity and heading
-	varsity, err := client.Varsity.Create().
-		SetCode("TEST").
-		SetName("Test University").
-		Save(ctx)
-	require.NoError(t, err)
-
-	heading, err := client.Heading.Create().
-		SetCode("TEST-H1").
-		SetName("Test Heading").
-		SetRegularCapacity(100).
-		SetTargetQuotaCapacity(10).
-		SetDedicatedQuotaCapacity(10).
-		SetSpecialQuotaCapacity(5).
-		SetVarsity(varsity).
-		Save(ctx)
-	require.NoError(t, err)
-
-	runs := createTestRuns(t, client, 3)
-
-	// Create test applications with different iteration values
-	_, err = client.Application.Create().
-		SetStudentID("student1").
-		SetPriority(1).
-		SetCompetitionType(1).
-		SetRatingPlace(10).
-		SetScore(100).
-		SetIteration(100).
-		SetRunID(runs[0].ID).
-		SetHeading(heading).
-		Save(ctx)
-	require.NoError(t, err)
-
-	// Test finding run by iteration
-	resolution, err := ResolveRunFromIteration(ctx, client, "100")
-	require.NoError(t, err)
-	assert.Equal(t, runs[0].ID, resolution.RunID)
-	assert.False(t, resolution.IsLatest)
-	assert.False(t, resolution.IsRelative)
-}
-
 func TestResolveRunFromIteration_ErrorCases(t *testing.T) {
 	client := setupTestClient(t)
 	defer client.Close()
@@ -169,7 +122,7 @@ func TestResolveRunFromIteration_ErrorCases(t *testing.T) {
 		param string
 	}{
 		{"invalid string", "invalid"},
-		{"nonexistent iteration", "999"},
+		{"positive iteration not supported", "999"},
 	}
 
 	for _, tt := range tests {

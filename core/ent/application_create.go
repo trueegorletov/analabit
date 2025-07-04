@@ -53,12 +53,6 @@ func (ac *ApplicationCreate) SetScore(i int) *ApplicationCreate {
 	return ac
 }
 
-// SetIteration sets the "iteration" field.
-func (ac *ApplicationCreate) SetIteration(i int) *ApplicationCreate {
-	ac.mutation.SetIteration(i)
-	return ac
-}
-
 // SetRunID sets the "run_id" field.
 func (ac *ApplicationCreate) SetRunID(i int) *ApplicationCreate {
 	ac.mutation.SetRunID(i)
@@ -171,9 +165,6 @@ func (ac *ApplicationCreate) check() error {
 	if _, ok := ac.mutation.Score(); !ok {
 		return &ValidationError{Name: "score", err: errors.New(`ent: missing required field "Application.score"`)}
 	}
-	if _, ok := ac.mutation.Iteration(); !ok {
-		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "Application.iteration"`)}
-	}
 	if _, ok := ac.mutation.RunID(); !ok {
 		return &ValidationError{Name: "run_id", err: errors.New(`ent: missing required field "Application.run_id"`)}
 	}
@@ -234,10 +225,6 @@ func (ac *ApplicationCreate) createSpec() (*Application, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Score(); ok {
 		_spec.SetField(application.FieldScore, field.TypeInt, value)
 		_node.Score = value
-	}
-	if value, ok := ac.mutation.Iteration(); ok {
-		_spec.SetField(application.FieldIteration, field.TypeInt, value)
-		_node.Iteration = value
 	}
 	if value, ok := ac.mutation.OriginalSubmitted(); ok {
 		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)

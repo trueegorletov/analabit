@@ -7,6 +7,7 @@ toolchain go1.24.4
 require (
 	entgo.io/ent v0.14.4
 	github.com/lib/pq v1.10.9
+	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.20.1
