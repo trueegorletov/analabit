@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -80,6 +81,12 @@ func (drc *DrainedResultCreate) SetIteration(i int) *DrainedResultCreate {
 	return drc
 }
 
+// SetRunID sets the "run_id" field.
+func (drc *DrainedResultCreate) SetRunID(i int) *DrainedResultCreate {
+	drc.mutation.SetRunID(i)
+	return drc
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by ID.
 func (drc *DrainedResultCreate) SetHeadingID(id int) *DrainedResultCreate {
 	drc.mutation.SetHeadingID(id)
@@ -89,6 +96,11 @@ func (drc *DrainedResultCreate) SetHeadingID(id int) *DrainedResultCreate {
 // SetHeading sets the "heading" edge to the Heading entity.
 func (drc *DrainedResultCreate) SetHeading(h *Heading) *DrainedResultCreate {
 	return drc.SetHeadingID(h.ID)
+}
+
+// SetRun sets the "run" edge to the Run entity.
+func (drc *DrainedResultCreate) SetRun(r *Run) *DrainedResultCreate {
+	return drc.SetRunID(r.ID)
 }
 
 // Mutation returns the DrainedResultMutation object of the builder.
@@ -155,8 +167,14 @@ func (drc *DrainedResultCreate) check() error {
 	if _, ok := drc.mutation.Iteration(); !ok {
 		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "DrainedResult.iteration"`)}
 	}
+	if _, ok := drc.mutation.RunID(); !ok {
+		return &ValidationError{Name: "run_id", err: errors.New(`ent: missing required field "DrainedResult.run_id"`)}
+	}
 	if len(drc.mutation.HeadingIDs()) == 0 {
 		return &ValidationError{Name: "heading", err: errors.New(`ent: missing required edge "DrainedResult.heading"`)}
+	}
+	if len(drc.mutation.RunIDs()) == 0 {
+		return &ValidationError{Name: "run", err: errors.New(`ent: missing required edge "DrainedResult.run"`)}
 	}
 	return nil
 }
@@ -239,6 +257,23 @@ func (drc *DrainedResultCreate) createSpec() (*DrainedResult, *sqlgraph.CreateSp
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.heading_drained_results = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := drc.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   drainedresult.RunTable,
+			Columns: []string{drainedresult.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RunID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

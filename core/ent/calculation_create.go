@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -39,6 +40,12 @@ func (cc *CalculationCreate) SetIteration(i int) *CalculationCreate {
 	return cc
 }
 
+// SetRunID sets the "run_id" field.
+func (cc *CalculationCreate) SetRunID(i int) *CalculationCreate {
+	cc.mutation.SetRunID(i)
+	return cc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (cc *CalculationCreate) SetUpdatedAt(t time.Time) *CalculationCreate {
 	cc.mutation.SetUpdatedAt(t)
@@ -62,6 +69,11 @@ func (cc *CalculationCreate) SetHeadingID(id int) *CalculationCreate {
 // SetHeading sets the "heading" edge to the Heading entity.
 func (cc *CalculationCreate) SetHeading(h *Heading) *CalculationCreate {
 	return cc.SetHeadingID(h.ID)
+}
+
+// SetRun sets the "run" edge to the Run entity.
+func (cc *CalculationCreate) SetRun(r *Run) *CalculationCreate {
+	return cc.SetRunID(r.ID)
 }
 
 // Mutation returns the CalculationMutation object of the builder.
@@ -116,11 +128,17 @@ func (cc *CalculationCreate) check() error {
 	if _, ok := cc.mutation.Iteration(); !ok {
 		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "Calculation.iteration"`)}
 	}
+	if _, ok := cc.mutation.RunID(); !ok {
+		return &ValidationError{Name: "run_id", err: errors.New(`ent: missing required field "Calculation.run_id"`)}
+	}
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Calculation.updated_at"`)}
 	}
 	if len(cc.mutation.HeadingIDs()) == 0 {
 		return &ValidationError{Name: "heading", err: errors.New(`ent: missing required edge "Calculation.heading"`)}
+	}
+	if len(cc.mutation.RunIDs()) == 0 {
+		return &ValidationError{Name: "run", err: errors.New(`ent: missing required edge "Calculation.run"`)}
 	}
 	return nil
 }
@@ -179,6 +197,23 @@ func (cc *CalculationCreate) createSpec() (*Calculation, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.heading_calculations = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   calculation.RunTable,
+			Columns: []string{calculation.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RunID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -11,3 +11,15 @@ service/producer/proto/*.pb.micro.go
 
 # cursor
 .cursor/*
+
+# Binaries
+/aggregator
+/api
+/producer
+/main
+
+# Service temp files
+service/*/tmp/
+
+# Producer cache
+service/producer/cache/

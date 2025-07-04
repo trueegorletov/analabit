@@ -7,6 +7,7 @@ import (
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"analabit/core/ent/varsity"
 	"context"
 	"errors"
@@ -81,6 +82,7 @@ func checkColumn(table, column string) error {
 			calculation.Table:   calculation.ValidColumn,
 			drainedresult.Table: drainedresult.ValidColumn,
 			heading.Table:       heading.ValidColumn,
+			run.Table:           run.ValidColumn,
 			varsity.Table:       varsity.ValidColumn,
 		})
 	})

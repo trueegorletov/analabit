@@ -9,28 +9,47 @@ import (
 	"context"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 // ApplicationResponse enriches Application with additional flags.
 type ApplicationResponse struct {
-	*ent.Application  `json:"-"`
-	OriginalSubmitted bool `json:"original_submitted"`
-	OriginalQuit      bool `json:"original_quit"`
-	PassingNow        bool `json:"passing_now"`
+	ID                int       `json:"id"`
+	StudentID         string    `json:"student_id"`
+	Priority          int       `json:"priority"`
+	CompetitionType   int       `json:"competition_type"`
+	RatingPlace       int       `json:"rating_place"`
+	Score             int       `json:"score"`
+	RunID             int       `json:"run_id"`
+	UpdatedAt         time.Time `json:"updated_at"`
+	HeadingID         int       `json:"heading_id"`
+	OriginalSubmitted bool      `json:"original_submitted"`
+	OriginalQuit      bool      `json:"original_quit"`
+	PassingNow        bool      `json:"passing_now"`
 }
 
 // GetApplications retrieves a list of applications, with optional filtering.
 func GetApplications(client *ent.Client) fiber.Handler {
 	return func(c fiber.Ctx) error {
-		limit, _ := strconv.Atoi(c.Query("limit", "100"))
+		limit, _ := strconv.Atoi(c.Query("limit", "1000"))
 		offset, _ := strconv.Atoi(c.Query("offset", "0"))
 		studentID := c.Query("studentID")
 		varsityCode := c.Query("varsityCode")
 		headingID, _ := strconv.Atoi(c.Query("headingId", "0"))
+		runParam := c.Query("run", "latest")
 
-		q := client.Application.Query()
+		ctx := context.Background()
+
+		// Resolve the run ID from the parameter
+		runResolution, err := ResolveRunFromIteration(ctx, client, runParam)
+		if err != nil {
+			log.Printf("error resolving run from parameter '%s': %v", runParam, err)
+			return fiber.NewError(fiber.StatusBadRequest, "invalid run parameter")
+		}
+
+		q := client.Application.Query().Where(application.RunIDEQ(runResolution.RunID))
 
 		if studentID != "" {
 			q = q.Where(application.StudentID(studentID))
@@ -44,9 +63,7 @@ func GetApplications(client *ent.Client) fiber.Handler {
 			q = q.Where(application.HasHeadingWith(heading.ID(headingID)))
 		}
 
-		ctx := context.Background()
-
-		applications, err := q.WithHeading(func(hq *ent.HeadingQuery) { hq.WithVarsity() }).Limit(limit).Offset(offset).All(ctx)
+		applications, err := q.WithHeading(func(hq *ent.HeadingQuery) { hq.WithVarsity() }).WithRun().Order(application.ByRatingPlace()).Limit(limit).Offset(offset).All(ctx)
 		if err != nil {
 			log.Printf("error getting applications: %v", err)
 			return fiber.ErrInternalServerError
@@ -56,28 +73,20 @@ func GetApplications(client *ent.Client) fiber.Handler {
 
 		studentSet := make(map[string]struct{})
 		headingSet := make(map[int]struct{})
-		iterationsSet := make(map[int]struct{})
 
 		for _, app := range applications {
 			studentSet[app.StudentID] = struct{}{}
 			headingSet[app.Edges.Heading.ID] = struct{}{}
-			iterationsSet[app.Iteration] = struct{}{}
 		}
 
-		// Get last calc iteration
-		var v []struct {
-			Max int `json:"max"`
-		}
-		if err := client.Calculation.Query().Aggregate(ent.Max(calculation.FieldIteration)).Scan(ctx, &v); err != nil {
-			log.Printf("error getting calc iter: %v", err)
+		// Get latest run's calculations for comparison (to determine passingNow)
+		latestRunID, err := getLatestRunID(ctx, client)
+		if err != nil {
+			log.Printf("error getting latest run ID: %v", err)
 			return fiber.ErrInternalServerError
 		}
-		lastCalcIter := 0
-		if len(v) > 0 {
-			lastCalcIter = v[0].Max
-		}
 
-		// Fetch calculations at last iteration for involved students & headings
+		// Fetch calculations at latest run for involved students & headings
 		var studentIDs []string
 		for id := range studentSet {
 			studentIDs = append(studentIDs, id)
@@ -88,9 +97,9 @@ func GetApplications(client *ent.Client) fiber.Handler {
 		}
 
 		calcMap := make(map[string]struct{}) // key studentID|headingID
-		if lastCalcIter > 0 {
+		if latestRunID > 0 && len(studentIDs) > 0 && len(headingIDs) > 0 {
 			calcs, _ := client.Calculation.Query().Where(
-				calculation.IterationEQ(lastCalcIter),
+				calculation.RunIDEQ(latestRunID),
 				calculation.StudentIDIn(studentIDs...),
 				calculation.HasHeadingWith(heading.IDIn(headingIDs...)),
 			).WithHeading().All(ctx)
@@ -101,20 +110,17 @@ func GetApplications(client *ent.Client) fiber.Handler {
 		}
 
 		// Fetch originalSubmitted-true apps to help compute originalQuit
-		var iterations []int
-		for it := range iterationsSet {
-			iterations = append(iterations, it)
-		}
+		// We need to check applications from the same run for originalQuit logic
 		origApps, _ := client.Application.Query().Where(
 			application.OriginalSubmitted(true),
+			application.RunIDEQ(runResolution.RunID),
 			application.StudentIDIn(studentIDs...),
-			application.IterationIn(iterations...),
 		).WithHeading(func(hq *ent.HeadingQuery) { hq.WithVarsity() }).All(ctx)
 
-		// Build map studentID|iteration -> set of varsity IDs where originalSubmitted true
+		// Build map studentID -> set of varsity IDs where originalSubmitted true (for same run)
 		origMap := make(map[string]map[int]struct{})
 		for _, oa := range origApps {
-			key := oa.StudentID + "|" + strconv.Itoa(oa.Iteration)
+			key := oa.StudentID
 			if _, ok := origMap[key]; !ok {
 				origMap[key] = make(map[int]struct{})
 			}
@@ -130,14 +136,14 @@ func GetApplications(client *ent.Client) fiber.Handler {
 			var passingNow bool
 			var originalQuit bool
 
-			// passingNow
+			// passingNow - check if student is in calculations for latest run
 			if _, ok := calcMap[app.StudentID+"|"+strconv.Itoa(app.Edges.Heading.ID)]; ok {
 				passingNow = true
 			}
 
 			// originalQuit (only if originalSubmitted false)
 			if !app.OriginalSubmitted {
-				key := app.StudentID + "|" + strconv.Itoa(app.Iteration)
+				key := app.StudentID
 				if vars, ok := origMap[key]; ok {
 					if _, inSameVarsity := vars[app.Edges.Heading.Edges.Varsity.ID]; !inSameVarsity && len(vars) > 0 {
 						originalQuit = true
@@ -145,8 +151,21 @@ func GetApplications(client *ent.Client) fiber.Handler {
 				}
 			}
 
+			runID := 0
+			if app.Edges.Run != nil {
+				runID = app.Edges.Run.ID
+			}
+
 			resp[i] = ApplicationResponse{
-				Application:       app,
+				ID:                app.ID,
+				StudentID:         app.StudentID,
+				Priority:          app.Priority,
+				CompetitionType:   int(app.CompetitionType),
+				RatingPlace:       app.RatingPlace,
+				Score:             app.Score,
+				RunID:             runID,
+				UpdatedAt:         app.UpdatedAt,
+				HeadingID:         app.Edges.Heading.ID,
 				OriginalSubmitted: app.OriginalSubmitted,
 				OriginalQuit:      originalQuit,
 				PassingNow:        passingNow,

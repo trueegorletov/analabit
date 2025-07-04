@@ -6,6 +6,7 @@ import (
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/predicate"
+	"analabit/core/ent/run"
 	"context"
 	"fmt"
 	"math"
@@ -24,6 +25,7 @@ type CalculationQuery struct {
 	inters      []Interceptor
 	predicates  []predicate.Calculation
 	withHeading *HeadingQuery
+	withRun     *RunQuery
 	withFKs     bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -76,6 +78,28 @@ func (cq *CalculationQuery) QueryHeading() *HeadingQuery {
 			sqlgraph.From(calculation.Table, calculation.FieldID, selector),
 			sqlgraph.To(heading.Table, heading.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, calculation.HeadingTable, calculation.HeadingColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRun chains the current query on the "run" edge.
+func (cq *CalculationQuery) QueryRun() *RunQuery {
+	query := (&RunClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(calculation.Table, calculation.FieldID, selector),
+			sqlgraph.To(run.Table, run.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, calculation.RunTable, calculation.RunColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -276,6 +300,7 @@ func (cq *CalculationQuery) Clone() *CalculationQuery {
 		inters:      append([]Interceptor{}, cq.inters...),
 		predicates:  append([]predicate.Calculation{}, cq.predicates...),
 		withHeading: cq.withHeading.Clone(),
+		withRun:     cq.withRun.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -290,6 +315,17 @@ func (cq *CalculationQuery) WithHeading(opts ...func(*HeadingQuery)) *Calculatio
 		opt(query)
 	}
 	cq.withHeading = query
+	return cq
+}
+
+// WithRun tells the query-builder to eager-load the nodes that are connected to
+// the "run" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CalculationQuery) WithRun(opts ...func(*RunQuery)) *CalculationQuery {
+	query := (&RunClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withRun = query
 	return cq
 }
 
@@ -372,8 +408,9 @@ func (cq *CalculationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		nodes       = []*Calculation{}
 		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			cq.withHeading != nil,
+			cq.withRun != nil,
 		}
 	)
 	if cq.withHeading != nil {
@@ -403,6 +440,12 @@ func (cq *CalculationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if query := cq.withHeading; query != nil {
 		if err := cq.loadHeading(ctx, query, nodes, nil,
 			func(n *Calculation, e *Heading) { n.Edges.Heading = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withRun; query != nil {
+		if err := cq.loadRun(ctx, query, nodes, nil,
+			func(n *Calculation, e *Run) { n.Edges.Run = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -441,6 +484,35 @@ func (cq *CalculationQuery) loadHeading(ctx context.Context, query *HeadingQuery
 	}
 	return nil
 }
+func (cq *CalculationQuery) loadRun(ctx context.Context, query *RunQuery, nodes []*Calculation, init func(*Calculation), assign func(*Calculation, *Run)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Calculation)
+	for i := range nodes {
+		fk := nodes[i].RunID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(run.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "run_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (cq *CalculationQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
@@ -466,6 +538,9 @@ func (cq *CalculationQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != calculation.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withRun != nil {
+			_spec.Node.AddColumnOnce(calculation.FieldRunID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

@@ -13,9 +13,10 @@ const (
 	drainedResultsLockID = 3
 )
 
-func DrainedResults(ctx context.Context, client *ent.Client, results []core.DrainedResultDTO) error {
+func DrainedResults(ctx context.Context, client *ent.Client, runID int, results []core.DrainedResultDTO) error {
 	h := &helper{
 		client: client,
+		runID:  runID,
 	}
 
 	return h.doUploadDrained(ctx, results)
@@ -30,6 +31,7 @@ func (u *helper) doUploadDrained(ctx context.Context, results []core.DrainedResu
 
 		txu := &helper{
 			client: tx.Client(),
+			runID:  u.runID,
 		}
 
 		return txu.uploadDrained(ctx, results)
@@ -37,14 +39,6 @@ func (u *helper) doUploadDrained(ctx context.Context, results []core.DrainedResu
 }
 
 func (u *helper) uploadDrained(ctx context.Context, results []core.DrainedResultDTO) error {
-	var v []struct {
-		Max int `json:"max"`
-	}
-	if err := u.client.DrainedResult.Query().Aggregate(ent.Max("iteration")).Scan(ctx, &v); err != nil {
-		return fmt.Errorf("failed to get max drained result iteration: %w", err)
-	}
-	nextIteration := v[0].Max + 1
-
 	for _, result := range results {
 		h, err := u.headingByCodeSimple(ctx, result.HeadingCode)
 
@@ -62,7 +56,8 @@ func (u *helper) uploadDrained(ctx context.Context, results []core.DrainedResult
 			SetMinLastAdmittedRatingPlace(result.MinLastAdmittedRatingPlace).
 			SetMaxLastAdmittedRatingPlace(result.MaxLastAdmittedRatingPlace).
 			SetMedLastAdmittedRatingPlace(result.MedLastAdmittedRatingPlace).
-			SetIteration(nextIteration).
+			SetIteration(u.runID). // Keep iteration as surrogate, set to runID for backward compatibility
+			SetRunID(u.runID).
 			SetHeading(h).
 			Exec(ctx)
 

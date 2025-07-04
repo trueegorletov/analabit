@@ -10,7 +10,7 @@ type Config struct {
 	CacheDir               string `env:"ANALABIT_CACHE_DIR" envDefault:"./cache"`
 	CacheTTLMinutes        int    `env:"ANALABIT_CACHE_TTL_MINUTES" envDefault:"10"`
 	DrainStages            []int  `env:"ANALABIT_DRAIN_SIM_STAGES" envSeparator:"," envDefault:"33,50,66,100"`
-	DrainIterations        int    `env:"ANALABIT_DRAIN_SIM_ITERATIONS" envDefault:"10"`
+	DrainIterations        int    `env:"ANALABIT_DRAIN_SIM_ITERATIONS" envDefault:"100"`
 	MinioEndpoint          string `env:"ANALABIT_MINIO_ENDPOINT" envDefault:"minio:9000"`
 	MinioAccessKey         string `env:"ANALABIT_MINIO_ACCESS_KEY" envDefault:"minioadmin"`
 	MinioSecretKey         string `env:"ANALABIT_MINIO_SECRET_KEY" envDefault:"minioadmin"`

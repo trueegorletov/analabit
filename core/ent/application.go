@@ -6,6 +6,7 @@ import (
 	"analabit/core"
 	"analabit/core/ent/application"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"fmt"
 	"strings"
 	"time"
@@ -31,6 +32,8 @@ type Application struct {
 	Score int `json:"score,omitempty"`
 	// Iteration holds the value of the "iteration" field.
 	Iteration int `json:"iteration,omitempty"`
+	// RunID holds the value of the "run_id" field.
+	RunID int `json:"run_id,omitempty"`
 	// OriginalSubmitted holds the value of the "original_submitted" field.
 	OriginalSubmitted bool `json:"original_submitted,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -46,9 +49,11 @@ type Application struct {
 type ApplicationEdges struct {
 	// Heading holds the value of the heading edge.
 	Heading *Heading `json:"heading,omitempty"`
+	// Run holds the value of the run edge.
+	Run *Run `json:"run,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // HeadingOrErr returns the Heading value or an error if the edge
@@ -62,6 +67,17 @@ func (e ApplicationEdges) HeadingOrErr() (*Heading, error) {
 	return nil, &NotLoadedError{edge: "heading"}
 }
 
+// RunOrErr returns the Run value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ApplicationEdges) RunOrErr() (*Run, error) {
+	if e.Run != nil {
+		return e.Run, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: run.Label}
+	}
+	return nil, &NotLoadedError{edge: "run"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Application) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -69,7 +85,7 @@ func (*Application) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case application.FieldOriginalSubmitted:
 			values[i] = new(sql.NullBool)
-		case application.FieldID, application.FieldPriority, application.FieldCompetitionType, application.FieldRatingPlace, application.FieldScore, application.FieldIteration:
+		case application.FieldID, application.FieldPriority, application.FieldCompetitionType, application.FieldRatingPlace, application.FieldScore, application.FieldIteration, application.FieldRunID:
 			values[i] = new(sql.NullInt64)
 		case application.FieldStudentID:
 			values[i] = new(sql.NullString)
@@ -134,6 +150,12 @@ func (a *Application) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Iteration = int(value.Int64)
 			}
+		case application.FieldRunID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field run_id", values[i])
+			} else if value.Valid {
+				a.RunID = int(value.Int64)
+			}
 		case application.FieldOriginalSubmitted:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field original_submitted", values[i])
@@ -169,6 +191,11 @@ func (a *Application) Value(name string) (ent.Value, error) {
 // QueryHeading queries the "heading" edge of the Application entity.
 func (a *Application) QueryHeading() *HeadingQuery {
 	return NewApplicationClient(a.config).QueryHeading(a)
+}
+
+// QueryRun queries the "run" edge of the Application entity.
+func (a *Application) QueryRun() *RunQuery {
+	return NewApplicationClient(a.config).QueryRun(a)
 }
 
 // Update returns a builder for updating this Application.
@@ -211,6 +238,9 @@ func (a *Application) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("iteration=")
 	builder.WriteString(fmt.Sprintf("%v", a.Iteration))
+	builder.WriteString(", ")
+	builder.WriteString("run_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.RunID))
 	builder.WriteString(", ")
 	builder.WriteString("original_submitted=")
 	builder.WriteString(fmt.Sprintf("%v", a.OriginalSubmitted))

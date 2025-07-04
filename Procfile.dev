@@ -1,0 +1,3 @@
+api: cd service/api && air
+aggregator: cd service/aggregator && air
+producer: cd service/producer && air 

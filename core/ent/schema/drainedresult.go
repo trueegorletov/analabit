@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // DrainedResult holds the schema definition for the DrainedResult entity.
@@ -24,6 +25,7 @@ func (DrainedResult) Fields() []ent.Field {
 		field.Int("max_last_admitted_rating_place"),
 		field.Int("med_last_admitted_rating_place"),
 		field.Int("iteration"),
+		field.Int("run_id"),
 	}
 }
 
@@ -34,5 +36,25 @@ func (DrainedResult) Edges() []ent.Edge {
 			Ref("drained_results").
 			Unique().
 			Required(),
+		edge.To("run", Run.Type).
+			Unique().
+			Required().
+			Field("run_id"),
+	}
+}
+
+// Indexes of the DrainedResult.
+func (DrainedResult) Indexes() []ent.Index {
+	return []ent.Index{
+		// Index for run-based queries
+		index.Fields("run_id"),
+		// Composite index for run + drained_percent queries (used heavily in results API)
+		index.Fields("run_id", "drained_percent"),
+		// Index for iteration-based queries (backward compatibility)
+		index.Fields("iteration"),
+		// Index for drained_percent queries (used in steps calculation)
+		index.Fields("drained_percent"),
+		// Composite index for iteration + drained_percent (legacy queries)
+		index.Fields("iteration", "drained_percent"),
 	}
 }

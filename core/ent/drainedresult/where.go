@@ -104,6 +104,11 @@ func Iteration(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldEQ(FieldIteration, v))
 }
 
+// RunID applies equality check predicate on the "run_id" field. It's identical to RunIDEQ.
+func RunID(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldRunID, v))
+}
+
 // DrainedPercentEQ applies the EQ predicate on the "drained_percent" field.
 func DrainedPercentEQ(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldEQ(FieldDrainedPercent, v))
@@ -504,6 +509,26 @@ func IterationLTE(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldLTE(FieldIteration, v))
 }
 
+// RunIDEQ applies the EQ predicate on the "run_id" field.
+func RunIDEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldRunID, v))
+}
+
+// RunIDNEQ applies the NEQ predicate on the "run_id" field.
+func RunIDNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldRunID, v))
+}
+
+// RunIDIn applies the In predicate on the "run_id" field.
+func RunIDIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldRunID, vs...))
+}
+
+// RunIDNotIn applies the NotIn predicate on the "run_id" field.
+func RunIDNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldRunID, vs...))
+}
+
 // HasHeading applies the HasEdge predicate on the "heading" edge.
 func HasHeading() predicate.DrainedResult {
 	return predicate.DrainedResult(func(s *sql.Selector) {
@@ -519,6 +544,29 @@ func HasHeading() predicate.DrainedResult {
 func HasHeadingWith(preds ...predicate.Heading) predicate.DrainedResult {
 	return predicate.DrainedResult(func(s *sql.Selector) {
 		step := newHeadingStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRun applies the HasEdge predicate on the "run" edge.
+func HasRun() predicate.DrainedResult {
+	return predicate.DrainedResult(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RunTable, RunColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRunWith applies the HasEdge predicate on the "run" edge with a given conditions (other predicates).
+func HasRunWith(preds ...predicate.Run) predicate.DrainedResult {
+	return predicate.DrainedResult(func(s *sql.Selector) {
+		step := newRunStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

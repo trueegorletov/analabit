@@ -1,7 +1,7 @@
 # Configuration file for the API service
 
 [server]
-port = "3000"
+port = "3080"
 
 [database]
 host = "localhost"

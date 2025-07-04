@@ -20,10 +20,14 @@ const (
 	FieldAdmittedPlace = "admitted_place"
 	// FieldIteration holds the string denoting the iteration field in the database.
 	FieldIteration = "iteration"
+	// FieldRunID holds the string denoting the run_id field in the database.
+	FieldRunID = "run_id"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
 	// EdgeHeading holds the string denoting the heading edge name in mutations.
 	EdgeHeading = "heading"
+	// EdgeRun holds the string denoting the run edge name in mutations.
+	EdgeRun = "run"
 	// Table holds the table name of the calculation in the database.
 	Table = "calculations"
 	// HeadingTable is the table that holds the heading relation/edge.
@@ -33,6 +37,13 @@ const (
 	HeadingInverseTable = "headings"
 	// HeadingColumn is the table column denoting the heading relation/edge.
 	HeadingColumn = "heading_calculations"
+	// RunTable is the table that holds the run relation/edge.
+	RunTable = "calculations"
+	// RunInverseTable is the table name for the Run entity.
+	// It exists in this package in order to avoid circular dependency with the "run" package.
+	RunInverseTable = "runs"
+	// RunColumn is the table column denoting the run relation/edge.
+	RunColumn = "run_id"
 )
 
 // Columns holds all SQL columns for calculation fields.
@@ -41,6 +52,7 @@ var Columns = []string{
 	FieldStudentID,
 	FieldAdmittedPlace,
 	FieldIteration,
+	FieldRunID,
 	FieldUpdatedAt,
 }
 
@@ -95,6 +107,11 @@ func ByIteration(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIteration, opts...).ToFunc()
 }
 
+// ByRunID orders the results by the run_id field.
+func ByRunID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRunID, opts...).ToFunc()
+}
+
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
@@ -106,10 +123,24 @@ func ByHeadingField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newHeadingStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByRunField orders the results by run field.
+func ByRunField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRunStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newHeadingStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(HeadingInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, HeadingTable, HeadingColumn),
+	)
+}
+func newRunStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RunInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RunTable, RunColumn),
 	)
 }

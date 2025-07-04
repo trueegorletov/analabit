@@ -163,10 +163,28 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 		}
 		log.Printf("Schema check complete for %q.", connStr)
 
+		// Create one Run per RabbitMQ notification before processing objects
+		run, err := client.Run.Create().
+			SetPayloadMeta(map[string]any{
+				"bucket_name":    bucketName,
+				"object_count":   len(objectNames),
+				"object_names":   objectNames,
+				"conn_string_id": connStr, // Consider hashing this for security
+			}).
+			Save(ctx)
+		if err != nil {
+			err = fmt.Errorf("failed to create run for bucket %s with conn string %q: %w", bucketName, connStr, err)
+			multierr.AppendInto(&allErrors, err)
+			client.Close()
+			continue
+		}
+
+		log.Printf("Created run %d for bucket %s with %d objects", run.ID, bucketName, len(objectNames))
+
 		// Process each object for the current database connection
 		var payload core.UploadPayload // Reuse this variable
 		for _, objectName := range objectNames {
-			log.Printf("Processing object %s...", objectName)
+			log.Printf("Processing object %s for run %d...", objectName, run.ID)
 
 			// 1. Download GOB file
 			obj, err := minioClient.GetObject(ctx, bucketName, objectName, minio.GetObjectOptions{})
@@ -185,12 +203,47 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 			}
 			obj.Close()
 
-			// 3. Perform the unified upload
-			if err := upload.Primary(ctx, client, &payload); err != nil {
+			// 3. Perform the unified upload with runID
+			if err := upload.Primary(ctx, client, run.ID, &payload); err != nil {
 				err = fmt.Errorf("failed to upload payload from object %s with conn string %q: %w", objectName, connStr, err)
 				multierr.AppendInto(&allErrors, err)
 			} else {
-				log.Printf("Successfully uploaded payload for object %s", objectName)
+				log.Printf("Successfully uploaded payload for object %s in run %d", objectName, run.ID)
+				// Build synthetic drained results for stage=0 TODO: move to producer service
+				synthetic := make([]core.DrainedResultDTO, 0, len(payload.Calculations))
+				for _, calc := range payload.Calculations {
+					if len(calc.Admitted) == 0 {
+						continue
+					}
+					last := calc.Admitted[len(calc.Admitted)-1]
+					var passingScore, larp int
+					for _, app := range payload.Applications {
+						if app.HeadingCode == calc.HeadingCode && app.StudentID == last.ID {
+							passingScore = app.Score
+							larp = app.RatingPlace
+							break
+						}
+					}
+					synthetic = append(synthetic, core.DrainedResultDTO{
+						HeadingCode:                calc.HeadingCode,
+						DrainedPercent:             0,
+						AvgPassingScore:            passingScore,
+						AvgLastAdmittedRatingPlace: larp,
+					})
+				}
+				// Combine synthetic and simulated drained results
+				var drainedDTOs []core.DrainedResultDTO
+				drainedDTOs = append(drainedDTOs, synthetic...)
+				for _, dtos := range payload.Drained {
+					drainedDTOs = append(drainedDTOs, dtos...)
+				}
+				// Upload drained results with runID
+				if err := upload.DrainedResults(ctx, client, run.ID, drainedDTOs); err != nil {
+					err = fmt.Errorf("failed to upload drained results from object %s with conn string %q: %w", objectName, connStr, err)
+					multierr.AppendInto(&allErrors, err)
+				} else {
+					log.Printf("Successfully uploaded drained results for object %s in run %d", objectName, run.ID)
+				}
 			}
 		}
 

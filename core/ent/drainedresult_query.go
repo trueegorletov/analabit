@@ -6,6 +6,7 @@ import (
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/predicate"
+	"analabit/core/ent/run"
 	"context"
 	"fmt"
 	"math"
@@ -24,6 +25,7 @@ type DrainedResultQuery struct {
 	inters      []Interceptor
 	predicates  []predicate.DrainedResult
 	withHeading *HeadingQuery
+	withRun     *RunQuery
 	withFKs     bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -76,6 +78,28 @@ func (drq *DrainedResultQuery) QueryHeading() *HeadingQuery {
 			sqlgraph.From(drainedresult.Table, drainedresult.FieldID, selector),
 			sqlgraph.To(heading.Table, heading.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, drainedresult.HeadingTable, drainedresult.HeadingColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(drq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRun chains the current query on the "run" edge.
+func (drq *DrainedResultQuery) QueryRun() *RunQuery {
+	query := (&RunClient{config: drq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := drq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := drq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(drainedresult.Table, drainedresult.FieldID, selector),
+			sqlgraph.To(run.Table, run.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, drainedresult.RunTable, drainedresult.RunColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(drq.driver.Dialect(), step)
 		return fromU, nil
@@ -276,6 +300,7 @@ func (drq *DrainedResultQuery) Clone() *DrainedResultQuery {
 		inters:      append([]Interceptor{}, drq.inters...),
 		predicates:  append([]predicate.DrainedResult{}, drq.predicates...),
 		withHeading: drq.withHeading.Clone(),
+		withRun:     drq.withRun.Clone(),
 		// clone intermediate query.
 		sql:  drq.sql.Clone(),
 		path: drq.path,
@@ -290,6 +315,17 @@ func (drq *DrainedResultQuery) WithHeading(opts ...func(*HeadingQuery)) *Drained
 		opt(query)
 	}
 	drq.withHeading = query
+	return drq
+}
+
+// WithRun tells the query-builder to eager-load the nodes that are connected to
+// the "run" edge. The optional arguments are used to configure the query builder of the edge.
+func (drq *DrainedResultQuery) WithRun(opts ...func(*RunQuery)) *DrainedResultQuery {
+	query := (&RunClient{config: drq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	drq.withRun = query
 	return drq
 }
 
@@ -372,8 +408,9 @@ func (drq *DrainedResultQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 		nodes       = []*DrainedResult{}
 		withFKs     = drq.withFKs
 		_spec       = drq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			drq.withHeading != nil,
+			drq.withRun != nil,
 		}
 	)
 	if drq.withHeading != nil {
@@ -403,6 +440,12 @@ func (drq *DrainedResultQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if query := drq.withHeading; query != nil {
 		if err := drq.loadHeading(ctx, query, nodes, nil,
 			func(n *DrainedResult, e *Heading) { n.Edges.Heading = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := drq.withRun; query != nil {
+		if err := drq.loadRun(ctx, query, nodes, nil,
+			func(n *DrainedResult, e *Run) { n.Edges.Run = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -441,6 +484,35 @@ func (drq *DrainedResultQuery) loadHeading(ctx context.Context, query *HeadingQu
 	}
 	return nil
 }
+func (drq *DrainedResultQuery) loadRun(ctx context.Context, query *RunQuery, nodes []*DrainedResult, init func(*DrainedResult), assign func(*DrainedResult, *Run)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*DrainedResult)
+	for i := range nodes {
+		fk := nodes[i].RunID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(run.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "run_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (drq *DrainedResultQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := drq.querySpec()
@@ -466,6 +538,9 @@ func (drq *DrainedResultQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != drainedresult.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if drq.withRun != nil {
+			_spec.Node.AddColumnOnce(drainedresult.FieldRunID)
 		}
 	}
 	if ps := drq.predicates; len(ps) > 0 {

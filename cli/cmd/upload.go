@@ -50,6 +50,13 @@ var uploadCmd = &cobra.Command{
 		}
 		fmt.Println("Database schema migration/check complete.")
 
+		// Create a new run record for this upload session
+		run, err := client.Run.Create().Save(ctx)
+		if err != nil {
+			log.Fatalf("Failed to create run record: %v", err)
+		}
+		fmt.Printf("Created new run with ID: %d\n", run.ID)
+
 		// Upload Primary Results
 		fmt.Println("Uploading primary results...")
 		corestate.ResultsMutex.RLock() // Ensure read lock while accessing results
@@ -65,9 +72,25 @@ var uploadCmd = &cobra.Command{
 				log.Printf("Warning: VarsityCalculator not found for code %s when uploading primary results. Skipping.", varsityCode)
 				continue
 			}
-			// The upload.Primary function expects the *core.VarsityCalculator that contains the student applications.
-			// The `results` are the CalculationResult from this calculator.
-			if err := upload.Primary(ctx, client, targetVarsityCalculator, results); err != nil {
+
+			// Convert VarsityCalculator and results to UploadPayload
+			// We need to convert drained results to the right format for this varsity
+			var drainedDTOs map[int][]core.DrainedResultDTO
+			corestate.ResultsMutex.RLock()
+			if stageMap, exists := corestate.DrainedResults[varsityCode]; exists {
+				drainedDTOs = make(map[int][]core.DrainedResultDTO)
+				for stage, drainedResults := range stageMap {
+					if len(drainedResults) > 0 {
+						drainedDTOs[stage] = drainer.NewDrainedResultDTOs(drainedResults)
+					}
+				}
+			}
+			corestate.ResultsMutex.RUnlock()
+
+			payload := core.NewUploadPayloadFromCalculator(targetVarsityCalculator, results, drainedDTOs)
+
+			// Call the updated upload.Primary function with runID and payload
+			if err := upload.Primary(ctx, client, run.ID, payload); err != nil {
 				log.Printf("Error uploading primary results for varsity %s: %v", varsityCode, err)
 			} else {
 				fmt.Printf("Successfully uploaded primary results for %s.\n", varsityCode)
@@ -76,10 +99,15 @@ var uploadCmd = &cobra.Command{
 		corestate.ResultsMutex.RUnlock()
 		fmt.Println("Primary results upload finished.")
 
-		// Upload Drained Results
-		fmt.Println("Uploading drained simulation results...")
+		// Upload Drained Results (if not already uploaded via Primary)
+		fmt.Println("Uploading remaining drained simulation results...")
 		corestate.ResultsMutex.RLock()
 		for varsityCode, stageMap := range corestate.DrainedResults {
+			// Skip if we already uploaded drained results for this varsity via Primary
+			if _, primaryExists := corestate.PrimaryResults[varsityCode]; primaryExists {
+				continue
+			}
+
 			for stage, results := range stageMap {
 				if len(results) == 0 {
 					continue // Skip if no results for this stage
@@ -88,8 +116,8 @@ var uploadCmd = &cobra.Command{
 				// Convert drainer.DrainedResult to core.DrainedResultDTO
 				drainedDTOs := drainer.NewDrainedResultDTOs(results)
 
-				// Call the refactored upload.DrainedResults function with DTOs
-				if err := upload.DrainedResults(ctx, client, drainedDTOs); err != nil {
+				// Call the refactored upload.DrainedResults function with runID and DTOs
+				if err := upload.DrainedResults(ctx, client, run.ID, drainedDTOs); err != nil {
 					log.Printf("Error uploading drained results for varsity %s, stage %d%%: %v", varsityCode, stage, err)
 				} else {
 					fmt.Printf("Successfully uploaded drained results for %s, stage %d%%.\n", varsityCode, stage)
@@ -99,6 +127,10 @@ var uploadCmd = &cobra.Command{
 		corestate.ResultsMutex.RUnlock()
 		fmt.Println("Drained simulation results upload finished.")
 
-		fmt.Println("Upload process complete.")
+		fmt.Printf("Upload process complete. All data uploaded under run ID: %d\n", run.ID)
 	},
+}
+
+func init() {
+	rootCmd.AddCommand(uploadCmd)
 }

@@ -87,6 +87,11 @@ func Iteration(v int) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldIteration, v))
 }
 
+// RunID applies equality check predicate on the "run_id" field. It's identical to RunIDEQ.
+func RunID(v int) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldRunID, v))
+}
+
 // OriginalSubmitted applies equality check predicate on the "original_submitted" field. It's identical to OriginalSubmittedEQ.
 func OriginalSubmitted(v bool) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldOriginalSubmitted, v))
@@ -376,6 +381,26 @@ func IterationLTE(v int) predicate.Application {
 	return predicate.Application(sql.FieldLTE(FieldIteration, v))
 }
 
+// RunIDEQ applies the EQ predicate on the "run_id" field.
+func RunIDEQ(v int) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldRunID, v))
+}
+
+// RunIDNEQ applies the NEQ predicate on the "run_id" field.
+func RunIDNEQ(v int) predicate.Application {
+	return predicate.Application(sql.FieldNEQ(FieldRunID, v))
+}
+
+// RunIDIn applies the In predicate on the "run_id" field.
+func RunIDIn(vs ...int) predicate.Application {
+	return predicate.Application(sql.FieldIn(FieldRunID, vs...))
+}
+
+// RunIDNotIn applies the NotIn predicate on the "run_id" field.
+func RunIDNotIn(vs ...int) predicate.Application {
+	return predicate.Application(sql.FieldNotIn(FieldRunID, vs...))
+}
+
 // OriginalSubmittedEQ applies the EQ predicate on the "original_submitted" field.
 func OriginalSubmittedEQ(v bool) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldOriginalSubmitted, v))
@@ -441,6 +466,29 @@ func HasHeading() predicate.Application {
 func HasHeadingWith(preds ...predicate.Heading) predicate.Application {
 	return predicate.Application(func(s *sql.Selector) {
 		step := newHeadingStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRun applies the HasEdge predicate on the "run" edge.
+func HasRun() predicate.Application {
+	return predicate.Application(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RunTable, RunColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRunWith applies the HasEdge predicate on the "run" edge with a given conditions (other predicates).
+func HasRunWith(preds ...predicate.Run) predicate.Application {
+	return predicate.Application(func(s *sql.Selector) {
+		step := newRunStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

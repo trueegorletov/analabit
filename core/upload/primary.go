@@ -17,7 +17,7 @@ const (
 	calculationsLockID = 2
 )
 
-func Primary(ctx context.Context, client *ent.Client, payload *core.UploadPayload) error {
+func Primary(ctx context.Context, client *ent.Client, runID int, payload *core.UploadPayload) error {
 	// Create a map for quick heading DTO lookups
 	headingsMap := make(map[string]core.HeadingDTO, len(payload.Headings))
 	for _, h := range payload.Headings {
@@ -28,6 +28,7 @@ func Primary(ctx context.Context, client *ent.Client, payload *core.UploadPayloa
 		client:      client,
 		payload:     payload,
 		headingsMap: headingsMap,
+		runID:       runID,
 	}
 
 	return h.doUploadPrimary(ctx)
@@ -37,6 +38,7 @@ type helper struct {
 	client      *ent.Client
 	payload     *core.UploadPayload
 	headingsMap map[string]core.HeadingDTO // Map for efficient heading DTO lookup
+	runID       int
 }
 
 func (u *helper) doUploadPrimary(ctx context.Context) (err error) {
@@ -55,6 +57,7 @@ func (u *helper) doUploadPrimary(ctx context.Context) (err error) {
 			client:      tx.Client(),
 			payload:     u.payload,
 			headingsMap: u.headingsMap, // Pass map to transaction helper
+			runID:       u.runID,
 		}
 
 		if len(u.payload.Applications) > 0 {
@@ -74,14 +77,6 @@ func (u *helper) doUploadPrimary(ctx context.Context) (err error) {
 }
 
 func (u *helper) uploadApplications(ctx context.Context, applications []core.ApplicationDTO, students []core.StudentDTO) error {
-	var v []struct {
-		Max int `json:"max"`
-	}
-	if err := u.client.Application.Query().Aggregate(ent.Max("iteration")).Scan(ctx, &v); err != nil {
-		return fmt.Errorf("failed to get max application iteration: %w", err)
-	}
-	nextIteration := v[0].Max + 1
-
 	// Create a map of student ID to OriginalSubmitted for fast lookup
 	studentOriginalMap := make(map[string]bool)
 	for _, student := range students {
@@ -104,7 +99,8 @@ func (u *helper) uploadApplications(ctx context.Context, applications []core.App
 			SetRatingPlace(app.RatingPlace).
 			SetScore(app.Score).
 			SetOriginalSubmitted(originalSubmitted).
-			SetIteration(nextIteration).
+			SetIteration(u.runID). // Keep iteration as surrogate, set to runID for backward compatibility
+			SetRunID(u.runID).
 			SetHeading(h).
 			Exec(ctx)
 
@@ -117,14 +113,6 @@ func (u *helper) uploadApplications(ctx context.Context, applications []core.App
 }
 
 func (u *helper) uploadCalculations(ctx context.Context, calculations []core.CalculationResultDTO) error {
-	var v []struct {
-		Max int `json:"max"`
-	}
-	if err := u.client.Calculation.Query().Aggregate(ent.Max("iteration")).Scan(ctx, &v); err != nil {
-		return fmt.Errorf("failed to get max calculation iteration: %w", err)
-	}
-	nextIteration := v[0].Max + 1
-
 	for _, result := range calculations {
 		h, err := u.headingByCode(ctx, result.HeadingCode)
 
@@ -138,7 +126,8 @@ func (u *helper) uploadCalculations(ctx context.Context, calculations []core.Cal
 			err = u.client.Calculation.Create().
 				SetStudentID(student.ID).
 				SetAdmittedPlace(admittedPlace).
-				SetIteration(nextIteration).
+				SetIteration(u.runID). // Keep iteration as surrogate, set to runID for backward compatibility
+				SetRunID(u.runID).
 				SetHeading(h).
 				Exec(ctx)
 

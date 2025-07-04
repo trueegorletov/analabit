@@ -6,6 +6,7 @@ import (
 	"analabit/core"
 	"analabit/core/ent/application"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -58,6 +59,12 @@ func (ac *ApplicationCreate) SetIteration(i int) *ApplicationCreate {
 	return ac
 }
 
+// SetRunID sets the "run_id" field.
+func (ac *ApplicationCreate) SetRunID(i int) *ApplicationCreate {
+	ac.mutation.SetRunID(i)
+	return ac
+}
+
 // SetOriginalSubmitted sets the "original_submitted" field.
 func (ac *ApplicationCreate) SetOriginalSubmitted(b bool) *ApplicationCreate {
 	ac.mutation.SetOriginalSubmitted(b)
@@ -95,6 +102,11 @@ func (ac *ApplicationCreate) SetHeadingID(id int) *ApplicationCreate {
 // SetHeading sets the "heading" edge to the Heading entity.
 func (ac *ApplicationCreate) SetHeading(h *Heading) *ApplicationCreate {
 	return ac.SetHeadingID(h.ID)
+}
+
+// SetRun sets the "run" edge to the Run entity.
+func (ac *ApplicationCreate) SetRun(r *Run) *ApplicationCreate {
+	return ac.SetRunID(r.ID)
 }
 
 // Mutation returns the ApplicationMutation object of the builder.
@@ -162,6 +174,9 @@ func (ac *ApplicationCreate) check() error {
 	if _, ok := ac.mutation.Iteration(); !ok {
 		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "Application.iteration"`)}
 	}
+	if _, ok := ac.mutation.RunID(); !ok {
+		return &ValidationError{Name: "run_id", err: errors.New(`ent: missing required field "Application.run_id"`)}
+	}
 	if _, ok := ac.mutation.OriginalSubmitted(); !ok {
 		return &ValidationError{Name: "original_submitted", err: errors.New(`ent: missing required field "Application.original_submitted"`)}
 	}
@@ -170,6 +185,9 @@ func (ac *ApplicationCreate) check() error {
 	}
 	if len(ac.mutation.HeadingIDs()) == 0 {
 		return &ValidationError{Name: "heading", err: errors.New(`ent: missing required edge "Application.heading"`)}
+	}
+	if len(ac.mutation.RunIDs()) == 0 {
+		return &ValidationError{Name: "run", err: errors.New(`ent: missing required edge "Application.run"`)}
 	}
 	return nil
 }
@@ -244,6 +262,23 @@ func (ac *ApplicationCreate) createSpec() (*Application, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.heading_applications = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   application.RunTable,
+			Columns: []string{application.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RunID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

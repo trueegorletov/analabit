@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"fmt"
 	"strings"
 	"time"
@@ -24,6 +25,8 @@ type Calculation struct {
 	AdmittedPlace int `json:"admitted_place,omitempty"`
 	// Iteration holds the value of the "iteration" field.
 	Iteration int `json:"iteration,omitempty"`
+	// RunID holds the value of the "run_id" field.
+	RunID int `json:"run_id,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -37,9 +40,11 @@ type Calculation struct {
 type CalculationEdges struct {
 	// Heading holds the value of the heading edge.
 	Heading *Heading `json:"heading,omitempty"`
+	// Run holds the value of the run edge.
+	Run *Run `json:"run,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // HeadingOrErr returns the Heading value or an error if the edge
@@ -53,12 +58,23 @@ func (e CalculationEdges) HeadingOrErr() (*Heading, error) {
 	return nil, &NotLoadedError{edge: "heading"}
 }
 
+// RunOrErr returns the Run value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CalculationEdges) RunOrErr() (*Run, error) {
+	if e.Run != nil {
+		return e.Run, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: run.Label}
+	}
+	return nil, &NotLoadedError{edge: "run"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Calculation) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case calculation.FieldID, calculation.FieldAdmittedPlace, calculation.FieldIteration:
+		case calculation.FieldID, calculation.FieldAdmittedPlace, calculation.FieldIteration, calculation.FieldRunID:
 			values[i] = new(sql.NullInt64)
 		case calculation.FieldStudentID:
 			values[i] = new(sql.NullString)
@@ -105,6 +121,12 @@ func (c *Calculation) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Iteration = int(value.Int64)
 			}
+		case calculation.FieldRunID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field run_id", values[i])
+			} else if value.Valid {
+				c.RunID = int(value.Int64)
+			}
 		case calculation.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
@@ -134,6 +156,11 @@ func (c *Calculation) Value(name string) (ent.Value, error) {
 // QueryHeading queries the "heading" edge of the Calculation entity.
 func (c *Calculation) QueryHeading() *HeadingQuery {
 	return NewCalculationClient(c.config).QueryHeading(c)
+}
+
+// QueryRun queries the "run" edge of the Calculation entity.
+func (c *Calculation) QueryRun() *RunQuery {
+	return NewCalculationClient(c.config).QueryRun(c)
 }
 
 // Update returns a builder for updating this Calculation.
@@ -167,6 +194,9 @@ func (c *Calculation) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("iteration=")
 	builder.WriteString(fmt.Sprintf("%v", c.Iteration))
+	builder.WriteString(", ")
+	builder.WriteString("run_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.RunID))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(c.UpdatedAt.Format(time.ANSIC))

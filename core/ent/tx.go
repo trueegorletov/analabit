@@ -22,6 +22,8 @@ type Tx struct {
 	DrainedResult *DrainedResultClient
 	// Heading is the client for interacting with the Heading builders.
 	Heading *HeadingClient
+	// Run is the client for interacting with the Run builders.
+	Run *RunClient
 	// Varsity is the client for interacting with the Varsity builders.
 	Varsity *VarsityClient
 
@@ -159,6 +161,7 @@ func (tx *Tx) init() {
 	tx.Calculation = NewCalculationClient(tx.config)
 	tx.DrainedResult = NewDrainedResultClient(tx.config)
 	tx.Heading = NewHeadingClient(tx.config)
+	tx.Run = NewRunClient(tx.config)
 	tx.Varsity = NewVarsityClient(tx.config)
 }
 

@@ -19,6 +19,7 @@ var (
 		{Name: "iteration", Type: field.TypeInt},
 		{Name: "original_submitted", Type: field.TypeBool, Default: false},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "run_id", Type: field.TypeInt},
 		{Name: "heading_applications", Type: field.TypeInt},
 	}
 	// ApplicationsTable holds the schema information for the "applications" table.
@@ -28,10 +29,43 @@ var (
 		PrimaryKey: []*schema.Column{ApplicationsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "applications_headings_applications",
+				Symbol:     "applications_runs_run",
 				Columns:    []*schema.Column{ApplicationsColumns[9]},
+				RefColumns: []*schema.Column{RunsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "applications_headings_applications",
+				Columns:    []*schema.Column{ApplicationsColumns[10]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "application_run_id",
+				Unique:  false,
+				Columns: []*schema.Column{ApplicationsColumns[9]},
+			},
+			{
+				Name:    "application_run_id_student_id",
+				Unique:  false,
+				Columns: []*schema.Column{ApplicationsColumns[9], ApplicationsColumns[1]},
+			},
+			{
+				Name:    "application_iteration",
+				Unique:  false,
+				Columns: []*schema.Column{ApplicationsColumns[6]},
+			},
+			{
+				Name:    "application_original_submitted",
+				Unique:  false,
+				Columns: []*schema.Column{ApplicationsColumns[7]},
+			},
+			{
+				Name:    "application_student_id_iteration",
+				Unique:  false,
+				Columns: []*schema.Column{ApplicationsColumns[1], ApplicationsColumns[6]},
 			},
 		},
 	}
@@ -42,6 +76,7 @@ var (
 		{Name: "admitted_place", Type: field.TypeInt},
 		{Name: "iteration", Type: field.TypeInt},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "run_id", Type: field.TypeInt},
 		{Name: "heading_calculations", Type: field.TypeInt},
 	}
 	// CalculationsTable holds the schema information for the "calculations" table.
@@ -51,10 +86,43 @@ var (
 		PrimaryKey: []*schema.Column{CalculationsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "calculations_headings_calculations",
+				Symbol:     "calculations_runs_run",
 				Columns:    []*schema.Column{CalculationsColumns[5]},
+				RefColumns: []*schema.Column{RunsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "calculations_headings_calculations",
+				Columns:    []*schema.Column{CalculationsColumns[6]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "calculation_run_id",
+				Unique:  false,
+				Columns: []*schema.Column{CalculationsColumns[5]},
+			},
+			{
+				Name:    "calculation_run_id_student_id",
+				Unique:  false,
+				Columns: []*schema.Column{CalculationsColumns[5], CalculationsColumns[1]},
+			},
+			{
+				Name:    "calculation_iteration",
+				Unique:  false,
+				Columns: []*schema.Column{CalculationsColumns[3]},
+			},
+			{
+				Name:    "calculation_student_id_iteration",
+				Unique:  false,
+				Columns: []*schema.Column{CalculationsColumns[1], CalculationsColumns[3]},
+			},
+			{
+				Name:    "calculation_admitted_place",
+				Unique:  false,
+				Columns: []*schema.Column{CalculationsColumns[2]},
 			},
 		},
 	}
@@ -71,6 +139,7 @@ var (
 		{Name: "max_last_admitted_rating_place", Type: field.TypeInt},
 		{Name: "med_last_admitted_rating_place", Type: field.TypeInt},
 		{Name: "iteration", Type: field.TypeInt},
+		{Name: "run_id", Type: field.TypeInt},
 		{Name: "heading_drained_results", Type: field.TypeInt},
 	}
 	// DrainedResultsTable holds the schema information for the "drained_results" table.
@@ -80,10 +149,43 @@ var (
 		PrimaryKey: []*schema.Column{DrainedResultsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "drained_results_headings_drained_results",
+				Symbol:     "drained_results_runs_run",
 				Columns:    []*schema.Column{DrainedResultsColumns[11]},
+				RefColumns: []*schema.Column{RunsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "drained_results_headings_drained_results",
+				Columns:    []*schema.Column{DrainedResultsColumns[12]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "drainedresult_run_id",
+				Unique:  false,
+				Columns: []*schema.Column{DrainedResultsColumns[11]},
+			},
+			{
+				Name:    "drainedresult_run_id_drained_percent",
+				Unique:  false,
+				Columns: []*schema.Column{DrainedResultsColumns[11], DrainedResultsColumns[1]},
+			},
+			{
+				Name:    "drainedresult_iteration",
+				Unique:  false,
+				Columns: []*schema.Column{DrainedResultsColumns[10]},
+			},
+			{
+				Name:    "drainedresult_drained_percent",
+				Unique:  false,
+				Columns: []*schema.Column{DrainedResultsColumns[1]},
+			},
+			{
+				Name:    "drainedresult_iteration_drained_percent",
+				Unique:  false,
+				Columns: []*schema.Column{DrainedResultsColumns[10], DrainedResultsColumns[1]},
 			},
 		},
 	}
@@ -112,6 +214,18 @@ var (
 			},
 		},
 	}
+	// RunsColumns holds the columns for the "runs" table.
+	RunsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "triggered_at", Type: field.TypeTime},
+		{Name: "payload_meta", Type: field.TypeJSON, Nullable: true},
+	}
+	// RunsTable holds the schema information for the "runs" table.
+	RunsTable = &schema.Table{
+		Name:       "runs",
+		Columns:    RunsColumns,
+		PrimaryKey: []*schema.Column{RunsColumns[0]},
+	}
 	// VarsitiesColumns holds the columns for the "varsities" table.
 	VarsitiesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -130,13 +244,17 @@ var (
 		CalculationsTable,
 		DrainedResultsTable,
 		HeadingsTable,
+		RunsTable,
 		VarsitiesTable,
 	}
 )
 
 func init() {
-	ApplicationsTable.ForeignKeys[0].RefTable = HeadingsTable
-	CalculationsTable.ForeignKeys[0].RefTable = HeadingsTable
-	DrainedResultsTable.ForeignKeys[0].RefTable = HeadingsTable
+	ApplicationsTable.ForeignKeys[0].RefTable = RunsTable
+	ApplicationsTable.ForeignKeys[1].RefTable = HeadingsTable
+	CalculationsTable.ForeignKeys[0].RefTable = RunsTable
+	CalculationsTable.ForeignKeys[1].RefTable = HeadingsTable
+	DrainedResultsTable.ForeignKeys[0].RefTable = RunsTable
+	DrainedResultsTable.ForeignKeys[1].RefTable = HeadingsTable
 	HeadingsTable.ForeignKeys[0].RefTable = VarsitiesTable
 }

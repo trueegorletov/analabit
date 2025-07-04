@@ -142,6 +142,7 @@ Each application object now includes three helper flags:
 | `studentID` | string | — | Return only applications belonging to the student with this identifier. |
 | `varsityCode` | string | — | Return only applications whose heading's varsity has this `code`. |
 | `headingId` | integer | — | Return only applications for the specified heading. |
+| `run` | string / integer | `latest` | Specify the run to retrieve applications from. Can be a numeric run ID or a string like "latest" or "latest-1". |
 
 #### Response `200 OK`
 
@@ -154,7 +155,7 @@ Each application object now includes three helper flags:
     "competition_type": 0,
     "rating_place": 47,
     "score": 286,
-    "iteration": 1,
+    "run_id": 1,
     "updated_at": "2024-06-04T08:12:34Z",
     "heading_id": 42,
     "original_submitted": true,
@@ -207,7 +208,7 @@ Aggregated endpoint that retrieves primary calculation results (admitted student
 | `varsityCode` | string | — | Filter by all headings of the given varsity code (ignored if `headingIds` supplied). |
 | `primary` | string/int | (absent) | If present, include primary results. Accepts `latest` (default when empty) or a specific iteration number. |
 | `drained` | string | (absent) | `all` to include every drained-percent result, or a comma‐separated list of drained-percent steps (e.g. `drained=25,50,100`).  When missing, no drained results are returned. |
-| `iteration` | string/int | `latest` | Upload iteration to use for both steps discovery and result retrieval. |
+| `run` | string/int | `latest` | The run to use for both steps discovery and result retrieval. Can be a numeric run ID or a string like "latest" or "latest-1". |
 
 #### Response `200 OK`
 
@@ -225,7 +226,7 @@ and it always contains the value `100`.
       "heading_code": "09.03.03",
       "passing_score": 295,
       "last_admitted_rating_place": 50,
-      "iteration": 7
+      "run_id": 7
     }
   },
   "drained": {
@@ -242,7 +243,7 @@ and it always contains the value `100`.
         "min_last_admitted_rating_place": 30,
         "max_last_admitted_rating_place": 70,
         "med_last_admitted_rating_place": 48,
-        "iteration": 7
+        "run_id": 7
       }
     ]
   }
