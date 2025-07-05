@@ -19,6 +19,14 @@ jobs:
         key: ${{ secrets.VM_SSH_KEY }}
         script: |
           set -e
+          
+          # if /opt/analabit isn't a git repo, clone it
+          if [ ! -d /opt/analabit/.git ]; then
+            echo "→ Cloning repository for the first time"
+            git clone --branch services https://github.com/trueegorletov/analabit.git /opt/analabit
+            sudo chown -R $USER:$USER /opt/analabit
+          fi
+          
           cd /opt/analabit
           git fetch origin services
           git reset --hard origin/services
