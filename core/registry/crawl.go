@@ -4,6 +4,7 @@ import (
 	"analabit/core/source"
 	"fmt"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -30,8 +31,8 @@ type CrawlResult struct {
 // CrawlWithOptions performs crawling and cache lookup, given a set of definitions.
 // If cacheTTLMinutes == -1, disables cache lookup and always crawls.
 func CrawlWithOptions(defs []source.VarsityDefinition, params CrawlOptions) (*CrawlResult, error) {
-	var filteredDefs []source.VarsityDefinition
 
+	var filteredDefs []source.VarsityDefinition
 	varsitiesToUse := make(map[string]bool)
 	if len(params.VarsitiesList) == 1 && params.VarsitiesList[0] == "all" {
 		for _, def := range defs {
@@ -68,13 +69,11 @@ func CrawlWithOptions(defs []source.VarsityDefinition, params CrawlOptions) (*Cr
 					return err
 				}
 				if !d.IsDir() && strings.HasSuffix(d.Name(), ".gob") {
-					nameWithoutExt := strings.TrimSuffix(d.Name(), ".gob")
-					ts, err := strconv.ParseInt(nameWithoutExt, 10, 64)
-					if err == nil {
-						if time.Now().Unix()-ts < ttlSeconds && ts > latestTimestamp {
-							latestTimestamp = ts
-							validCacheFile = path
-						}
+					name := strings.TrimSuffix(d.Name(), ".gob")
+					ts, err := strconv.ParseInt(name, 10, 64)
+					if err == nil && time.Now().Unix()-ts < ttlSeconds && ts > latestTimestamp {
+						latestTimestamp = ts
+						validCacheFile = path
 					}
 				}
 				return nil
@@ -88,10 +87,14 @@ func CrawlWithOptions(defs []source.VarsityDefinition, params CrawlOptions) (*Cr
 	var loadedVarsities []*source.Varsity
 	if validCacheFile != "" {
 		file, err := os.Open(validCacheFile)
-		if err == nil {
+		if err != nil {
+			log.Printf("Failed to open cache file: %v", err)
+		} else {
 			defer file.Close()
 			caches, err := source.DeserializeList(file)
-			if err == nil {
+			if err != nil {
+				log.Printf("Failed to deserialize cache file: %v", err)
+			} else {
 				loadedVarsities = source.LoadWithCaches(filteredDefs, caches)
 				cacheUsed = true
 			}
@@ -101,9 +104,10 @@ func CrawlWithOptions(defs []source.VarsityDefinition, params CrawlOptions) (*Cr
 		loadedVarsities = source.LoadFromDefinitions(filteredDefs)
 		if len(loadedVarsities) > 0 && cacheTTL != -1 {
 			_ = os.MkdirAll(cacheDir, 0755)
-			newCacheFilename := filepath.Join(cacheDir, fmt.Sprintf("%d.gob", time.Now().Unix()))
-			file, err := os.Create(newCacheFilename)
-			if err == nil {
+			newFile := filepath.Join(cacheDir, fmt.Sprintf("%d.gob", time.Now().Unix()))
+			if file, err := os.Create(newFile); err != nil {
+				log.Printf("Failed to create cache file: %v", err)
+			} else {
 				defer file.Close()
 				var cachesToSave []*source.VarsityDataCache
 				for _, v := range loadedVarsities {
@@ -111,7 +115,9 @@ func CrawlWithOptions(defs []source.VarsityDefinition, params CrawlOptions) (*Cr
 						cachesToSave = append(cachesToSave, v.VarsityDataCache)
 					}
 				}
-				_ = source.SerializeList(cachesToSave, file)
+				if err := source.SerializeList(cachesToSave, file); err != nil {
+					log.Printf("Failed to serialize cache list: %v", err)
+				}
 			}
 		}
 	}
@@ -124,4 +130,5 @@ func CrawlWithOptions(defs []source.VarsityDefinition, params CrawlOptions) (*Cr
 		CacheUsed:       cacheUsed,
 		CacheFile:       validCacheFile,
 	}, nil
+
 }

@@ -161,13 +161,11 @@ func (v *Varsity) loadFromCache() map[string]bool {
 
 	for _, ad := range v.ApplicationsCache {
 		v.AddApplication(ad)
-
 		if ad.OriginalSubmitted {
 			submittedOriginals[ad.StudentID] = true
 		}
 	}
 
-	// After all applications are loaded from cache, normalize them.
 	v.VarsityCalculator.NormalizeApplications()
 
 	return submittedOriginals

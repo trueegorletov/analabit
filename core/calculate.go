@@ -147,14 +147,10 @@ func (s *Student) Quit() bool {
 }
 
 func (s *Student) Applications() []*Application {
-	s.mu.Lock()
-	defer s.mu.Unlock()
 	return s.applications
 }
 
 func (s *Student) ID() string {
-	s.mu.Lock()
-	defer s.mu.Unlock()
 	return s.IDValue
 }
 
@@ -163,9 +159,6 @@ func (s *Student) ID() string {
 // WARNING: This might not be suitable for all contexts if a student has multiple applications
 // to the same heading with different competition types/priorities and the specific one is needed.
 func (s *Student) application(heading *Heading) *Application {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	for _, app := range s.applications {
 		if app.heading == heading {
 			return app
@@ -177,7 +170,6 @@ func (s *Student) application(heading *Heading) *Application {
 // addApplication adds a new application for the student and keeps the applications list sorted by priority.
 func (s *Student) addApplication(heading *Heading, ratingPlace int, priority int, competitionType Competition, score int) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 
 	app := Application{
 		student:         s, // Link student to application
@@ -187,13 +179,39 @@ func (s *Student) addApplication(heading *Heading, ratingPlace int, priority int
 		competitionType: competitionType,
 		score:           score,
 	}
-	s.applications = append(s.applications, &app)
-	// Ensure applications are sorted by priority (ascending).
-	sort.Slice(s.applications, func(i, j int) bool {
-		return s.applications[i].priority < s.applications[j].priority
-	})
 
-	heading.applications = append(heading.applications, &app)
+	defer func() {
+		// Ensure applications are sorted by priority (ascending).
+		sort.Slice(s.applications, func(i, j int) bool {
+			return s.applications[i].priority < s.applications[j].priority
+		})
+
+		s.mu.Unlock()
+	}()
+
+	// Ensure we always have only one application per heading for each student with best competition type.
+
+	for i, existingApp := range s.applications {
+		if existingApp.heading.Code() == heading.Code() {
+			// If we already have an application for this heading, check if the new one is better.
+			if competitionPrecedence(competitionType) > competitionPrecedence(existingApp.competitionType) {
+				// Replace the existing application with the new one.
+				s.applications[i] = &app
+
+				return
+			} else if competitionPrecedence(competitionType) == competitionPrecedence(existingApp.competitionType) &&
+				ratingPlace < existingApp.ratingPlace {
+				// If competition types are equal, keep the one with lower ratingPlace.
+				s.applications[i] = &app
+
+				return
+			}
+			// Otherwise, do not add this application as it is worse than the existing one.
+			return
+		}
+	}
+
+	s.applications = append(s.applications, &app)
 }
 
 // Heading represents a program or specialization within a varsity.
@@ -206,8 +224,6 @@ type Heading struct {
 	CapacitiesValue Capacities
 	// A human-readable code or identifier for the heading.
 	PrettyNameValue string
-
-	applications []*Application
 
 	// Cached vars for serialization. They are skipped by gob as we implement custom encoding but kept for runtime access.
 	varsityCodeCached       string
@@ -579,10 +595,26 @@ func (v *VarsityCalculator) AddApplication(headingCode, studentID string, rating
 // NormalizeApplications iterates through all headings and normalizes the applications for each one.
 // This should be called after all applications have been loaded and before any calculation is performed.
 func (v *VarsityCalculator) NormalizeApplications() {
+	headingToApplications := make(map[string][]*Application)
+
+	v.students.Range(func(key, value interface{}) bool {
+		student := value.(*Student)
+
+		for _, app := range student.Applications() {
+			if _, exists := headingToApplications[app.Heading().Code()]; !exists {
+				headingToApplications[app.Heading().Code()] = make([]*Application, 0)
+			}
+
+			headingToApplications[app.Heading().Code()] = append(headingToApplications[app.Heading().Code()], app)
+		}
+
+		return true
+	})
+
 	v.headings.Range(func(key, value interface{}) bool {
 		heading := value.(*Heading)
 
-		normalizer := newApplicationsNormalizer(heading.applications)
+		normalizer := newApplicationsNormalizer(headingToApplications[heading.Code()])
 		normalizer.normalize()
 
 		return true // continue iteration

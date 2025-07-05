@@ -33,7 +33,7 @@ func (n *applicationsNormalizer) normalize() []*Application {
 	var uniqueApps []*Application
 	for studentID, studentApps := range groupedApps {
 		if len(studentApps) > 1 {
-			slog.Warn("Multiple applications for same student and heading, retaining best", "studentID", studentID)
+			slog.Warn("JOPA", "studentID", studentID)
 		}
 
 		bestApp := studentApps[0]

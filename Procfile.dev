@@ -1,3 +1,4 @@
-api: cd service/api && air
-aggregator: cd service/aggregator && air
-producer: cd service/producer && air 
+api: cd service/api && air -c ../../.air.toml
+aggregator: cd service/aggregator && air -c ../../.air.toml
+producer: cd service/producer && air -c ../../.air.toml
+
