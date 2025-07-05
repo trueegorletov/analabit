@@ -30,6 +30,7 @@ jobs:
           cd /opt/analabit
           git fetch origin services
           git reset --hard origin/services
+          export PATH=$PATH:$(go env GOPATH)/bin
           make
           # kill any existing dev.sh
           pkill -f './scripts/dev.sh' || true
