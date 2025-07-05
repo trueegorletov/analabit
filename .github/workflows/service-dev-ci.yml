@@ -1,0 +1,26 @@
+name: Deploy to Dev VM
+
+on:
+  push:
+    branches:
+      - services
+
+jobs:
+  deploy:
+    name: Pull & Restart on VM
+    runs-on: ubuntu-latest
+    steps:
+    - name: SSH & pull
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          set -e
+          cd /opt/analabit
+          git fetch origin services
+          git reset --hard origin/services
+          # kill any existing dev.sh
+          pkill -f './scripts/dev.sh' || true
+          nohup ./scripts/dev.sh > /var/log/analabit-dev.log 2>&1 &
