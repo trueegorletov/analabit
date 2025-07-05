@@ -1,0 +1,3770 @@
+[
+  {
+    "id": 923,
+    "competitive_name": "01.03.01 Математика; Очная; Бюджетная основа; Математика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b640-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 37,
+    "new_name": null
+  },
+  {
+    "id": 520,
+    "competitive_name": "01.03.01 Математика; Очная; Бюджетная основа; Математика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b666-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": {
+      "id": 28,
+      "competitive_group_id": 520,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:06:33.000000Z",
+      "updated_at": "2025-06-25T09:06:33.000000Z"
+    }
+  },
+  {
+    "id": 1395,
+    "competitive_name": "01.03.01 Математика; Очная; Бюджетная основа; Отдельная квота; Математика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b653-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 942,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Очная; Бюджетная основа; Современное программирование (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b783-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 44,
+      "competitive_group_id": 942,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:14:15.000000Z",
+      "updated_at": "2025-06-25T09:14:15.000000Z"
+    }
+  },
+  {
+    "id": 2051,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Очная; Бюджетная основа; Прикладная математика, программирование и искусственный интеллект (с дополнительной квалификацией «Системный аналитик»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b69f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 51,
+    "new_name": null
+  },
+  {
+    "id": 290,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Очная; Бюджетная основа; Современное программирование (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b75d-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 34,
+    "new_name": null
+  },
+  {
+    "id": 1505,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Отдельная квота; Прикладная математика, процессы управления и искусственный интеллект (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b711-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 19,
+    "new_name": null
+  },
+  {
+    "id": 1910,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Прикладная математика, процессы управления и искусственный интеллект (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b6fe-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 106,
+    "new_name": null
+  },
+  {
+    "id": 2225,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Очная; Бюджетная основа; Отдельная квота; Современное программирование (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b770-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 2237,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Очная; Бюджетная основа; Прикладная математика, программирование и искусственный интеллект (с дополнительной квалификацией «Системный аналитик»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b6c5-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": {
+      "id": 113,
+      "competitive_group_id": 2237,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:54:40.000000Z",
+      "updated_at": "2025-06-25T09:54:40.000000Z"
+    }
+  },
+  {
+    "id": 1291,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Очная; Бюджетная основа; Отдельная квота; Прикладная математика, программирование и искусственный интеллект (с дополнительной квалификацией «Системный аналитик»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b6b2-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": null
+  },
+  {
+    "id": 670,
+    "competitive_name": "01.03.02 Прикладная математика и информатика; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Прикладная математика, процессы управления и искусственный интеллект (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b724-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 19,
+    "new_name": {
+      "id": 36,
+      "competitive_group_id": 670,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:11:09.000000Z",
+      "updated_at": "2025-06-25T09:11:09.000000Z"
+    }
+  },
+  {
+    "id": 317,
+    "competitive_name": "01.05.01 Фундаментальные математика и механика; Очная; Бюджетная основа; Фундаментальная математика (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b7e2-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 19,
+      "competitive_group_id": 317,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:04:15.000000Z",
+      "updated_at": "2025-06-25T09:04:15.000000Z"
+    }
+  },
+  {
+    "id": 789,
+    "competitive_name": "01.05.01 Фундаментальные математика и механика; Очная; Бюджетная основа; Фундаментальная математика (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b7bc-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 15,
+    "new_name": null
+  },
+  {
+    "id": 813,
+    "competitive_name": "01.05.01 Фундаментальные математика и механика; Очная; Бюджетная основа; Фундаментальная механика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ec3c-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 30,
+    "new_name": null
+  },
+  {
+    "id": 182,
+    "competitive_name": "01.05.01 Фундаментальные математика и механика; Очная; Бюджетная основа; Фундаментальная механика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ec62-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 10,
+      "competitive_group_id": 182,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T08:59:19.000000Z",
+      "updated_at": "2025-06-25T08:59:19.000000Z"
+    }
+  },
+  {
+    "id": 1121,
+    "competitive_name": "01.05.01 Фундаментальные математика и механика; Очная; Бюджетная основа; Отдельная квота; Фундаментальная математика (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bf22b7cf-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1872,
+    "competitive_name": "01.05.01 Фундаментальные математика и механика; Очная; Бюджетная основа; Отдельная квота; Фундаментальная механика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ec4f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 2083,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; Науки о данных (с дополнительной квалификацией «Специалист по большим данным»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ed7f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 104,
+      "competitive_group_id": 2083,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:50:01.000000Z",
+      "updated_at": "2025-06-25T09:50:01.000000Z"
+    }
+  },
+  {
+    "id": 2179,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; Математика и компьютерные науки",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ed20-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 109,
+      "competitive_group_id": 2179,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:52:04.000000Z",
+      "updated_at": "2025-06-25T09:52:04.000000Z"
+    }
+  },
+  {
+    "id": 217,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; Отдельная квота; AI360: Математика машинного обучения",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ecae-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 2231,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; Математика и компьютерные науки",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ecfa-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1535,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; Отдельная квота; Науки о данных (с дополнительной квалификацией «Специалист по большим данным»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ed6c-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1792,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; Отдельная квота; Математика и компьютерные науки",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ed0d-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 1419,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; AI360: Математика машинного обучения",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ecc1-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 73,
+      "competitive_group_id": 1419,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:26:16.000000Z",
+      "updated_at": "2025-06-25T09:26:16.000000Z"
+    }
+  },
+  {
+    "id": 37,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; Науки о данных (с дополнительной квалификацией «Специалист по большим данным»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ed59-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 20,
+    "new_name": null
+  },
+  {
+    "id": 1127,
+    "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Бюджетная основа; AI360: Математика машинного обучения",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531ec9b-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 26,
+    "new_name": null
+  },
+  {
+    "id": 1928,
+    "competitive_name": "02.03.02 Фундаментальная информатика и информационные технологии; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Отдельная квота; Большие данные и распределенная цифровая платформа",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531edcb-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 123,
+    "competitive_name": "02.03.02 Фундаментальная информатика и информационные технологии; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Большие данные и распределенная цифровая платформа",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531edb8-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 33,
+    "new_name": null
+  },
+  {
+    "id": 573,
+    "competitive_name": "02.03.02 Фундаментальная информатика и информационные технологии; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Отдельная квота; Программирование и информационные технологии",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cbb66d4e-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 2049,
+    "competitive_name": "02.03.02 Фундаментальная информатика и информационные технологии; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Программирование и информационные технологии",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cb99436a-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 21,
+    "new_name": null
+  },
+  {
+    "id": 585,
+    "competitive_name": "02.03.02 Фундаментальная информатика и информационные технологии; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Большие данные и распределенная цифровая платформа",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c531edde-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 31,
+      "competitive_group_id": 585,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:08:57.000000Z",
+      "updated_at": "2025-06-25T09:08:57.000000Z"
+    }
+  },
+  {
+    "id": 617,
+    "competitive_name": "02.03.02 Фундаментальная информатика и информационные технологии; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Программирование и информационные технологии",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc072c00-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 33,
+      "competitive_group_id": 617,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:09:28.000000Z",
+      "updated_at": "2025-06-25T09:09:28.000000Z"
+    }
+  },
+  {
+    "id": 386,
+    "competitive_name": "02.03.03 Математическое обеспечение и администрирование информационных систем; Очная; Бюджетная основа; Отдельная квота; Технологии программирования",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c2552-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 1637,
+    "competitive_name": "02.03.03 Математическое обеспечение и администрирование информационных систем; Очная; Бюджетная основа; Технологии программирования",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c2565-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": {
+      "id": 89,
+      "competitive_group_id": 1637,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:30:53.000000Z",
+      "updated_at": "2025-06-25T09:30:53.000000Z"
+    }
+  },
+  {
+    "id": 1407,
+    "competitive_name": "02.03.03 Математическое обеспечение и администрирование информационных систем; Очная; Бюджетная основа; Технологии программирования",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c2407-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 35,
+    "new_name": null
+  },
+  {
+    "id": 1474,
+    "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Бюджетная основа; Отдельная квота; Инженерно-ориентированная физика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c25b1-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1028,
+    "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Бюджетная основа; Отдельная квота; Прикладные физика и математика (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c2610-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 319,
+    "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Бюджетная основа; Инженерно-ориентированная физика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c259e-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 9,
+    "new_name": null
+  },
+  {
+    "id": 1086,
+    "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Бюджетная основа; Прикладные физика и математика (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c25fd-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 21,
+    "new_name": null
+  },
+  {
+    "id": 1389,
+    "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Бюджетная основа; Прикладные физика и математика (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c2623-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": {
+      "id": 72,
+      "competitive_group_id": 1389,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:26:03.000000Z",
+      "updated_at": "2025-06-25T09:26:03.000000Z"
+    }
+  },
+  {
+    "id": 992,
+    "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Бюджетная основа; Инженерно-ориентированная физика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c25c4-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 47,
+      "competitive_group_id": 992,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:15:19.000000Z",
+      "updated_at": "2025-06-25T09:15:19.000000Z"
+    }
+  },
+  {
+    "id": 951,
+    "competitive_name": "03.03.02 Физика; Очная; Бюджетная основа; Физика (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c2682-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 9,
+    "new_name": {
+      "id": 45,
+      "competitive_group_id": 951,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:14:51.000000Z",
+      "updated_at": "2025-06-25T09:14:51.000000Z"
+    }
+  },
+  {
+    "id": 170,
+    "competitive_name": "03.03.02 Физика; Очная; Бюджетная основа; Отдельная квота; Физика (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c266f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 9,
+    "new_name": null
+  },
+  {
+    "id": 799,
+    "competitive_name": "03.03.02 Физика; Очная; Бюджетная основа; Физика (с дополнительной квалификацией «Программист»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cc6c265c-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 67,
+    "new_name": null
+  },
+  {
+    "id": 721,
+    "competitive_name": "03.05.01 Астрономия; Очная; Бюджетная основа; Астрономия",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d15985a5-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 16,
+    "new_name": null
+  },
+  {
+    "id": 1774,
+    "competitive_name": "03.05.01 Астрономия; Очная; Бюджетная основа; Отдельная квота; Астрономия",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d15985b8-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1622,
+    "competitive_name": "03.05.01 Астрономия; Очная; Бюджетная основа; Астрономия",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d15985cb-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 86,
+      "competitive_group_id": 1622,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:30:09.000000Z",
+      "updated_at": "2025-06-25T09:30:09.000000Z"
+    }
+  },
+  {
+    "id": 1572,
+    "competitive_name": "04.03.01 Химия; Очная; Бюджетная основа; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d15985f1-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 48,
+    "new_name": null
+  },
+  {
+    "id": 1045,
+    "competitive_name": "04.03.01 Химия; Очная; Бюджетная основа; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d1598617-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": {
+      "id": 52,
+      "competitive_group_id": 1045,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:16:38.000000Z",
+      "updated_at": "2025-06-25T09:16:38.000000Z"
+    }
+  },
+  {
+    "id": 58,
+    "competitive_name": "04.03.01 Химия; Очная; Бюджетная основа; Отдельная квота; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d1598604-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": null
+  },
+  {
+    "id": 1267,
+    "competitive_name": "04.03.02 Химия, физика и механика материалов; Очная; Бюджетная основа; Отдельная квота; Химическое материаловедение (с дополнительной квалификацией «Специалист в области перевода научно-технической литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d1598663-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 550,
+    "competitive_name": "04.03.02 Химия, физика и механика материалов; Очная; Бюджетная основа; Химическое материаловедение (с дополнительной квалификацией «Специалист в области перевода научно-технической литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d1598650-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 13,
+    "new_name": null
+  },
+  {
+    "id": 1166,
+    "competitive_name": "04.03.02 Химия, физика и механика материалов; Очная; Бюджетная основа; Химическое материаловедение (с дополнительной квалификацией «Специалист в области перевода научно-технической литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d1598676-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 58,
+      "competitive_group_id": 1166,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:18:23.000000Z",
+      "updated_at": "2025-06-25T09:18:23.000000Z"
+    }
+  },
+  {
+    "id": 886,
+    "competitive_name": "05.03.01 Геология; Очная; Бюджетная основа; Геология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d15986af-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 33,
+    "new_name": null
+  },
+  {
+    "id": 1302,
+    "competitive_name": "05.03.01 Геология; Очная; Бюджетная основа; Геология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d15986d5-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": {
+      "id": 64,
+      "competitive_group_id": 1302,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:23:27.000000Z",
+      "updated_at": "2025-06-25T09:23:27.000000Z"
+    }
+  },
+  {
+    "id": 1422,
+    "competitive_name": "05.03.01 Геология; Очная; Бюджетная основа; Отдельная квота; Геология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d15986c2-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 1124,
+    "competitive_name": "05.03.02 География; Очная; Бюджетная основа; География (с дополнительной квалификацией «Учитель географии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d781851c-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 30,
+    "new_name": null
+  },
+  {
+    "id": 1058,
+    "competitive_name": "05.03.02 География; Очная; Бюджетная основа; География (с дополнительной квалификацией «Учитель географии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d7818542-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 53,
+      "competitive_group_id": 1058,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:16:51.000000Z",
+      "updated_at": "2025-06-25T09:16:51.000000Z"
+    }
+  },
+  {
+    "id": 357,
+    "competitive_name": "05.03.02 География; Очная; Бюджетная основа; Отдельная квота; География (с дополнительной квалификацией «Учитель географии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d781852f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 1673,
+    "competitive_name": "05.03.03 Картография и геоинформатика; Очная; Бюджетная основа; Картография и геоинформатика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d781857b-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 9,
+    "new_name": null
+  },
+  {
+    "id": 196,
+    "competitive_name": "05.03.03 Картография и геоинформатика; Очная; Бюджетная основа; Отдельная квота; Картография и геоинформатика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d781858e-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 337,
+    "competitive_name": "05.03.03 Картография и геоинформатика; Очная; Бюджетная основа; Картография и геоинформатика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d78185a1-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 21,
+      "competitive_group_id": 337,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:04:43.000000Z",
+      "updated_at": "2025-06-25T09:04:43.000000Z"
+    }
+  },
+  {
+    "id": 242,
+    "competitive_name": "05.03.04 Гидрометеорология; Очная; Бюджетная основа; Гидрометеорология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d7819855-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 9,
+    "new_name": null
+  },
+  {
+    "id": 1800,
+    "competitive_name": "05.03.04 Гидрометеорология; Очная; Бюджетная основа; Отдельная квота; Гидрометеорология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "dd78398d-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 271,
+    "competitive_name": "05.03.04 Гидрометеорология; Очная; Бюджетная основа; Гидрометеорология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "ddf1b016-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 17,
+      "competitive_group_id": 271,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:01:51.000000Z",
+      "updated_at": "2025-06-25T09:01:51.000000Z"
+    }
+  },
+  {
+    "id": 33,
+    "competitive_name": "05.03.06 Экология и природопользование; Очная; Бюджетная основа; Отдельная квота; Экология и природопользование",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de2f224c-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 82,
+    "competitive_name": "05.03.06 Экология и природопользование; Очная; Бюджетная основа; Экология и природопользование",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de2f2239-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 14,
+    "new_name": null
+  },
+  {
+    "id": 1378,
+    "competitive_name": "05.03.06 Экология и природопользование; Очная; Бюджетная основа; Экология и природопользование",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de2f225f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 69,
+      "competitive_group_id": 1378,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:25:14.000000Z",
+      "updated_at": "2025-06-25T09:25:14.000000Z"
+    }
+  },
+  {
+    "id": 839,
+    "competitive_name": "06.03.01 Биология; Биологический факультет; Очная; Бюджетная основа; Биология (с дополнительной квалификацией «Учитель биологии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de2f22be-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 10,
+    "new_name": {
+      "id": 42,
+      "competitive_group_id": 839,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:13:51.000000Z",
+      "updated_at": "2025-06-25T09:13:51.000000Z"
+    }
+  },
+  {
+    "id": 850,
+    "competitive_name": "06.03.01 Биология; Биологический факультет; Очная; Бюджетная основа; Отдельная квота; Биология (с дополнительной квалификацией «Учитель биологии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de2f22ab-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 10,
+    "new_name": null
+  },
+  {
+    "id": 1317,
+    "competitive_name": "06.03.01 Биология; Биологический факультет; Очная; Бюджетная основа; Биология (с дополнительной квалификацией «Учитель биологии»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de2f2298-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 75,
+    "new_name": null
+  },
+  {
+    "id": 407,
+    "competitive_name": "06.03.02 Почвоведение; Очная; Бюджетная основа; Почвоведение",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dcd3-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 23,
+      "competitive_group_id": 407,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:05:12.000000Z",
+      "updated_at": "2025-06-25T09:05:12.000000Z"
+    }
+  },
+  {
+    "id": 1771,
+    "competitive_name": "06.03.02 Почвоведение; Очная; Бюджетная основа; Почвоведение",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dcad-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 1986,
+    "competitive_name": "06.03.02 Почвоведение; Очная; Бюджетная основа; Отдельная квота; Почвоведение",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dcc0-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 8,
+    "competitive_name": "09.03.03 Прикладная информатика; Очная; Бюджетная основа; Отдельная квота; Искусственный интеллект и наука о данных",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dd1f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 436,
+    "competitive_name": "09.03.03 Прикладная информатика; Очная; Бюджетная основа; Прикладная информатика в области искусств и гуманитарных наук (с дополнительной квалификацией «Специалист по информационным системам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dd91-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 26,
+      "competitive_group_id": 436,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:06:01.000000Z",
+      "updated_at": "2025-06-25T09:06:01.000000Z"
+    }
+  },
+  {
+    "id": 1575,
+    "competitive_name": "09.03.03 Прикладная информатика; Очная; Бюджетная основа; Искусственный интеллект и наука о данных",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dd32-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": {
+      "id": 83,
+      "competitive_group_id": 1575,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:29:28.000000Z",
+      "updated_at": "2025-06-25T09:29:28.000000Z"
+    }
+  },
+  {
+    "id": 1414,
+    "competitive_name": "09.03.03 Прикладная информатика; Очная; Бюджетная основа; Отдельная квота; Прикладная информатика в области искусств и гуманитарных наук (с дополнительной квалификацией «Специалист по информационным системам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dd7e-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 2126,
+    "competitive_name": "09.03.03 Прикладная информатика; Очная; Бюджетная основа; Искусственный интеллект и наука о данных",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dd0c-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 40,
+    "new_name": null
+  },
+  {
+    "id": 133,
+    "competitive_name": "09.03.03 Прикладная информатика; Очная; Бюджетная основа; Прикладная информатика в области искусств и гуманитарных наук (с дополнительной квалификацией «Специалист по информационным системам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dd6b-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 918,
+    "competitive_name": "09.03.04 Программная инженерия; Очная; Бюджетная основа; Отдельная квота; Программная инженерия",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379dddd-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 1635,
+    "competitive_name": "09.03.04 Программная инженерия; Очная; Бюджетная основа; Программная инженерия",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379ddf0-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": {
+      "id": 88,
+      "competitive_group_id": 1635,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:30:36.000000Z",
+      "updated_at": "2025-06-25T09:30:36.000000Z"
+    }
+  },
+  {
+    "id": 156,
+    "competitive_name": "09.03.04 Программная инженерия; Очная; Бюджетная основа; Программная инженерия",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e379ddca-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 28,
+    "new_name": null
+  },
+  {
+    "id": 999,
+    "competitive_name": "21.03.01 Нефтегазовое дело; Очная; Бюджетная основа; Нефтегазовая геология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e9fb1803-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 48,
+      "competitive_group_id": 999,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:15:35.000000Z",
+      "updated_at": "2025-06-25T09:15:35.000000Z"
+    }
+  },
+  {
+    "id": 495,
+    "competitive_name": "21.03.01 Нефтегазовое дело; Очная; Бюджетная основа; Нефтегазовая геология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e9fb17dd-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": null
+  },
+  {
+    "id": 1882,
+    "competitive_name": "21.03.01 Нефтегазовое дело; Очная; Бюджетная основа; Отдельная квота; Нефтегазовая геология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e9fb17f0-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1259,
+    "competitive_name": "21.03.02 Землеустройство и кадастры; Очная; Бюджетная основа; Кадастр недвижимости: оценка и информационное обеспечение (с дополнительной квалификацией «Специалист в области инженерно-геодезических изысканий для градостроительной деятельности»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e9fb183c-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 1141,
+    "competitive_name": "21.03.02 Землеустройство и кадастры; Очная; Бюджетная основа; Отдельная квота; Кадастр недвижимости: оценка и информационное обеспечение (с дополнительной квалификацией «Специалист в области инженерно-геодезических изысканий для градостроительной деятельности»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e9fb184f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 258,
+    "competitive_name": "21.03.02 Землеустройство и кадастры; Очная; Бюджетная основа; Кадастр недвижимости: оценка и информационное обеспечение (с дополнительной квалификацией «Специалист в области инженерно-геодезических изысканий для градостроительной деятельности»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e9fb1862-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 16,
+      "competitive_group_id": 258,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:01:38.000000Z",
+      "updated_at": "2025-06-25T09:01:38.000000Z"
+    }
+  },
+  {
+    "id": 1206,
+    "competitive_name": "27.03.03 Системный анализ и управление; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Прикладные компьютерные технологии и искусственный интеллект",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "eeb0d3b2-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 15,
+    "new_name": null
+  },
+  {
+    "id": 2226,
+    "competitive_name": "27.03.03 Системный анализ и управление; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Отдельная квота; Прикладные компьютерные технологии и искусственный интеллект",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "eeb0dfa4-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 547,
+    "competitive_name": "27.03.03 Системный анализ и управление; Факультет прикладной математики-процессов управления; Очная; Бюджетная основа; Прикладные компьютерные технологии и искусственный интеллект",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "eeb0f289-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 29,
+      "competitive_group_id": 547,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:06:53.000000Z",
+      "updated_at": "2025-06-25T09:06:53.000000Z"
+    }
+  },
+  {
+    "id": 1181,
+    "competitive_name": "31.05.01 Лечебное дело; Очная; Бюджетная основа; Лечебное дело",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce910-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 1672,
+    "competitive_name": "31.05.01 Лечебное дело; Очная; Бюджетная основа; Отдельная квота; Лечебное дело",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce923-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 619,
+    "competitive_name": "31.05.01 Лечебное дело; Очная; Бюджетная основа; Лечебное дело",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce936-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": {
+      "id": 34,
+      "competitive_group_id": 619,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:09:45.000000Z",
+      "updated_at": "2025-06-25T09:09:45.000000Z"
+    }
+  },
+  {
+    "id": 1937,
+    "competitive_name": "31.05.03 Стоматология; Очная; Бюджетная основа; Стоматология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce995-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 99,
+      "competitive_group_id": 1937,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:48:53.000000Z",
+      "updated_at": "2025-06-25T09:48:53.000000Z"
+    }
+  },
+  {
+    "id": 99,
+    "competitive_name": "31.05.03 Стоматология; Очная; Бюджетная основа; Отдельная квота; Стоматология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce982-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1210,
+    "competitive_name": "31.05.03 Стоматология; Очная; Бюджетная основа; Стоматология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce96f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 602,
+    "competitive_name": "33.05.01 Фармация; Очная; Бюджетная основа; Фармация",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce9ce-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 203,
+    "competitive_name": "33.05.01 Фармация; Очная; Бюджетная основа; Фармация",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce9f4-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 11,
+      "competitive_group_id": 203,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:00:11.000000Z",
+      "updated_at": "2025-06-25T09:00:11.000000Z"
+    }
+  },
+  {
+    "id": 1782,
+    "competitive_name": "33.05.01 Фармация; Очная; Бюджетная основа; Отдельная квота; Фармация",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ce9e1-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 2238,
+    "competitive_name": "37.03.01 Психология; Очная; Бюджетная основа; Психология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02cea79-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": {
+      "id": 114,
+      "competitive_group_id": 2238,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:54:55.000000Z",
+      "updated_at": "2025-06-25T09:54:55.000000Z"
+    }
+  },
+  {
+    "id": 1693,
+    "competitive_name": "37.03.01 Психология; Очная; Бюджетная основа; Отдельная квота; Психология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02cea66-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 2044,
+    "competitive_name": "37.03.01 Психология; Очная; Бюджетная основа; Психология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02cea53-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 35,
+    "new_name": null
+  },
+  {
+    "id": 2123,
+    "competitive_name": "37.05.01 Клиническая психология; Очная; Бюджетная основа; Отдельная квота; Клиническая психология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ceac5-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 1529,
+    "competitive_name": "37.05.01 Клиническая психология; Очная; Бюджетная основа; Клиническая психология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02ceab2-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 28,
+    "new_name": null
+  },
+  {
+    "id": 1999,
+    "competitive_name": "37.05.01 Клиническая психология; Очная; Бюджетная основа; Клиническая психология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f02cead8-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 101,
+      "competitive_group_id": 1999,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:49:17.000000Z",
+      "updated_at": "2025-06-25T09:49:17.000000Z"
+    }
+  },
+  {
+    "id": 1117,
+    "competitive_name": "37.05.02 Психология служебной деятельности; Очная; Бюджетная основа; Психология служебной деятельности",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528c9e-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 1942,
+    "competitive_name": "37.05.02 Психология служебной деятельности; Очная; Бюджетная основа; Отдельная квота; Психология служебной деятельности",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528cb1-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1847,
+    "competitive_name": "37.05.02 Психология служебной деятельности; Очная; Бюджетная основа; Психология служебной деятельности",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528cc4-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 96,
+      "competitive_group_id": 1847,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:48:16.000000Z",
+      "updated_at": "2025-06-25T09:48:16.000000Z"
+    }
+  },
+  {
+    "id": 1428,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Экономико-математические методы",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "fcc5f1ef-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 75,
+      "competitive_group_id": 1428,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:26:42.000000Z",
+      "updated_at": "2025-06-25T09:26:42.000000Z"
+    }
+  },
+  {
+    "id": 1153,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Экономика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528d23-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": {
+      "id": 57,
+      "competitive_group_id": 1153,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:18:10.000000Z",
+      "updated_at": "2025-06-25T09:18:10.000000Z"
+    }
+  },
+  {
+    "id": 152,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Экономика (с углубленным изучением экономики Китая и китайского языка)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528d82-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 9,
+      "competitive_group_id": 152,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T08:58:56.000000Z",
+      "updated_at": "2025-06-25T08:58:56.000000Z"
+    }
+  },
+  {
+    "id": 782,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Экономика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528cfd-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 44,
+    "new_name": null
+  },
+  {
+    "id": 1610,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Экономика (с углубленным изучением экономики Китая и китайского языка)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528d5c-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 11,
+    "new_name": null
+  },
+  {
+    "id": 6,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Отдельная квота; Экономика (с углубленным изучением экономики Китая и китайского языка)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528d6f-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 2151,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Экономико-математические методы",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "fcc5f1c9-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 685,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Отдельная квота; Экономико-математические методы",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "fcc5f1dc-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1090,
+    "competitive_name": "38.03.01 Экономика; Очная; Бюджетная основа; Отдельная квота; Экономика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "f6528d10-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 1209,
+    "competitive_name": "38.03.02 Менеджмент; Очная; Бюджетная основа; Менеджмент (с дополнительной квалификацией «Бизнес-аналитик»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "fcc5f23b-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 51,
+    "new_name": null
+  },
+  {
+    "id": 729,
+    "competitive_name": "38.03.02 Менеджмент; Очная; Бюджетная основа; Отдельная квота; Менеджмент (с дополнительной квалификацией «Бизнес-аналитик»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "fcc609df-10a9-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": null
+  },
+  {
+    "id": 1386,
+    "competitive_name": "38.03.02 Менеджмент; Очная; Бюджетная основа; Менеджмент (с дополнительной квалификацией «Бизнес-аналитик»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "01a063b8-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": {
+      "id": 71,
+      "competitive_group_id": 1386,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:25:50.000000Z",
+      "updated_at": "2025-06-25T09:25:50.000000Z"
+    }
+  },
+  {
+    "id": 1508,
+    "competitive_name": "38.03.03 Управление персоналом; Очная; Бюджетная основа; Отдельная квота; Управление персоналом (с дополнительной квалификацией «Консультант в области управления персоналом»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "02c2b0cd-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1890,
+    "competitive_name": "38.03.03 Управление персоналом; Очная; Бюджетная основа; Управление персоналом (с дополнительной квалификацией «Консультант в области управления персоналом»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "02c2b0e0-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 97,
+      "competitive_group_id": 1890,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:48:27.000000Z",
+      "updated_at": "2025-06-25T09:48:27.000000Z"
+    }
+  },
+  {
+    "id": 1956,
+    "competitive_name": "38.03.03 Управление персоналом; Очная; Бюджетная основа; Управление персоналом (с дополнительной квалификацией «Консультант в области управления персоналом»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "02c2b0ba-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 1550,
+    "competitive_name": "38.03.04 Государственное и муниципальное управление; Очная; Бюджетная основа; Государственное и муниципальное управление",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "02c2b13f-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 81,
+      "competitive_group_id": 1550,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:28:55.000000Z",
+      "updated_at": "2025-06-25T09:28:55.000000Z"
+    }
+  },
+  {
+    "id": 940,
+    "competitive_name": "38.03.04 Государственное и муниципальное управление; Очная; Бюджетная основа; Отдельная квота; Государственное и муниципальное управление",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "02c2b12c-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1750,
+    "competitive_name": "38.03.04 Государственное и муниципальное управление; Очная; Бюджетная основа; Государственное и муниципальное управление",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "02c2b119-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": null
+  },
+  {
+    "id": 2038,
+    "competitive_name": "38.03.05 Бизнес-информатика; Очная; Бюджетная основа; Отдельная квота; Бизнес-информатика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "02c2b18b-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1694,
+    "competitive_name": "38.03.05 Бизнес-информатика; Очная; Бюджетная основа; Бизнес-информатика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "02c2b178-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 9,
+    "new_name": null
+  },
+  {
+    "id": 1463,
+    "competitive_name": "38.03.05 Бизнес-информатика; Очная; Бюджетная основа; Бизнес-информатика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "091d1fae-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 80,
+      "competitive_group_id": 1463,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:28:43.000000Z",
+      "updated_at": "2025-06-25T09:28:43.000000Z"
+    }
+  },
+  {
+    "id": 205,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Прикладная социология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "091d200d-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 12,
+      "competitive_group_id": 205,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:00:28.000000Z",
+      "updated_at": "2025-06-25T09:00:28.000000Z"
+    }
+  },
+  {
+    "id": 155,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Отдельная квота; Социология (с дополнительной квалификацией «Социолог: специалист по фундаментальным и прикладным социологическим исследованиям»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "0f6faca4-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 346,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Социологические исследования в цифровом обществе (с дополнительной квалификацией «Социолог: специалист по фундаментальным и прикладным социологическим исследованиям»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "091d2046-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 10,
+    "new_name": null
+  },
+  {
+    "id": 2054,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Отдельная квота; Прикладная социология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "091d1ffa-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1953,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Прикладная социология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "091d1fe7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 648,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Отдельная квота; Социологические исследования в цифровом обществе (с дополнительной квалификацией «Социолог: специалист по фундаментальным и прикладным социологическим исследованиям»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "091d2059-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 600,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Социология (с дополнительной квалификацией «Социолог: специалист по фундаментальным и прикладным социологическим исследованиям»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "091d20a5-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 23,
+    "new_name": null
+  },
+  {
+    "id": 1182,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Социология (с дополнительной квалификацией «Социолог: специалист по фундаментальным и прикладным социологическим исследованиям»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "0f6facb7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": {
+      "id": 59,
+      "competitive_group_id": 1182,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:19:38.000000Z",
+      "updated_at": "2025-06-25T09:19:38.000000Z"
+    }
+  },
+  {
+    "id": 1195,
+    "competitive_name": "39.03.01 Социология; Очная; Бюджетная основа; Социологические исследования в цифровом обществе (с дополнительной квалификацией «Социолог: специалист по фундаментальным и прикладным социологическим исследованиям»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "091d206c-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 60,
+      "competitive_group_id": 1195,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:20:29.000000Z",
+      "updated_at": "2025-06-25T09:20:29.000000Z"
+    }
+  },
+  {
+    "id": 963,
+    "competitive_name": "39.03.02 Социальная работа; Очная; Бюджетная основа; Социальная работа (с дополнительной квалификацией «Специалист по работе с семьей»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "130bc9fc-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 658,
+    "competitive_name": "39.03.02 Социальная работа; Очная; Бюджетная основа; Отдельная квота; Социальная работа (с дополнительной квалификацией «Специалист по работе с семьей»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "137d7bbf-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 328,
+    "competitive_name": "39.03.02 Социальная работа; Очная; Бюджетная основа; Социальная работа (с дополнительной квалификацией «Специалист по работе с семьей»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "13ac87e6-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 20,
+      "competitive_group_id": 328,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:04:29.000000Z",
+      "updated_at": "2025-06-25T09:04:29.000000Z"
+    }
+  },
+  {
+    "id": 1338,
+    "competitive_name": "40.03.01 Юриспруденция; Очная; Бюджетная основа; Юриспруденция (с углубленным изучением китайского языка и права КНР) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "1bc972b0-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 66,
+      "competitive_group_id": 1338,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:24:28.000000Z",
+      "updated_at": "2025-06-25T09:24:28.000000Z"
+    }
+  },
+  {
+    "id": 1930,
+    "competitive_name": "40.03.01 Юриспруденция; Очная; Бюджетная основа; Юриспруденция (с углубленным изучением китайского языка и права КНР) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "15a1acd3-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 14,
+    "new_name": null
+  },
+  {
+    "id": 1801,
+    "competitive_name": "40.03.01 Юриспруденция; Очная; Бюджетная основа; Отдельная квота; Юриспруденция",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "15a1ac4f-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 11,
+    "new_name": null
+  },
+  {
+    "id": 1798,
+    "competitive_name": "40.03.01 Юриспруденция; Очная; Бюджетная основа; Юриспруденция (с углубленным изучением налогового права)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "1bc9730e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 0,
+    "new_name": null
+  },
+  {
+    "id": 114,
+    "competitive_name": "40.03.01 Юриспруденция; Очная; Бюджетная основа; Юриспруденция",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "15a1ac3c-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 66,
+    "new_name": null
+  },
+  {
+    "id": 2107,
+    "competitive_name": "40.03.01 Юриспруденция; Очная; Бюджетная основа; Отдельная квота; Юриспруденция (с углубленным изучением китайского языка и права КНР) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "15a1ace6-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 744,
+    "competitive_name": "40.03.01 Юриспруденция; Очная; Бюджетная основа; Юриспруденция",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "15a1ac62-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 11,
+    "new_name": {
+      "id": 6,
+      "competitive_group_id": 744,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T08:57:01.000000Z",
+      "updated_at": "2025-06-25T08:57:01.000000Z"
+    }
+  },
+  {
+    "id": 1983,
+    "competitive_name": "41.03.04 Политология; Факультет политологии; Очная; Бюджетная основа; Отдельная квота; Политология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "21c0c98a-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 1794,
+    "competitive_name": "41.03.04 Политология; Факультет политологии; Очная; Бюджетная основа; Политология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "21c0c977-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 28,
+    "new_name": null
+  },
+  {
+    "id": 1071,
+    "competitive_name": "41.03.04 Политология; Факультет политологии; Очная; Бюджетная основа; Политология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "21c0c99d-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 55,
+      "competitive_group_id": 1071,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:17:25.000000Z",
+      "updated_at": "2025-06-25T09:17:25.000000Z"
+    }
+  },
+  {
+    "id": 496,
+    "competitive_name": "41.03.05 Международные отношения; Очная; Бюджетная основа; Отдельная квота; Международные отношения (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "25944bac-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 980,
+    "competitive_name": "41.03.05 Международные отношения; Очная; Бюджетная основа; Международные отношения (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "24e6d500-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 35,
+    "new_name": null
+  },
+  {
+    "id": 1297,
+    "competitive_name": "41.03.05 Международные отношения; Очная; Бюджетная основа; Международные отношения (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2601081a-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": {
+      "id": 63,
+      "competitive_group_id": 1297,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:23:10.000000Z",
+      "updated_at": "2025-06-25T09:23:10.000000Z"
+    }
+  },
+  {
+    "id": 735,
+    "competitive_name": "42.03.01 Реклама и связи с общественностью; Очная; Бюджетная основа; Реклама и связи с общественностью (с дополнительной квалификацией «Специалист по продвижению и распространению продукции средств массовой информации»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "282825fc-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": {
+      "id": 37,
+      "competitive_group_id": 735,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:11:21.000000Z",
+      "updated_at": "2025-06-25T09:11:21.000000Z"
+    }
+  },
+  {
+    "id": 190,
+    "competitive_name": "42.03.01 Реклама и связи с общественностью; Очная; Бюджетная основа; Реклама и связи с общественностью (с дополнительной квалификацией «Специалист по продвижению и распространению продукции средств массовой информации»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "282825d6-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 18,
+    "new_name": null
+  },
+  {
+    "id": 1271,
+    "competitive_name": "42.03.01 Реклама и связи с общественностью; Очная; Бюджетная основа; Отдельная квота; Реклама и связи с общественностью (с дополнительной квалификацией «Специалист по продвижению и распространению продукции средств массовой информации»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "282825e9-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 110,
+    "competitive_name": "42.03.02 Журналистика; Очная; Бюджетная основа; Журналистика (с дополнительной квалификацией «Специалист по информационным ресурсам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e2580d3-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 16,
+    "new_name": null
+  },
+  {
+    "id": 533,
+    "competitive_name": "42.03.02 Журналистика; Очная; Бюджетная основа; Отдельная квота; Международная журналистика (с дополнительной квалификацией «Графический дизайнер»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e258145-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1640,
+    "competitive_name": "42.03.02 Журналистика; Очная; Бюджетная основа; Отдельная квота; Журналистика (с дополнительной квалификацией «Специалист по информационным ресурсам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e2580e6-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 437,
+    "competitive_name": "42.03.02 Журналистика; Очная; Бюджетная основа; Журналистика (с дополнительной квалификацией «Специалист по информационным ресурсам»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e2580f9-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": {
+      "id": 27,
+      "competitive_group_id": 437,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:06:17.000000Z",
+      "updated_at": "2025-06-25T09:06:17.000000Z"
+    }
+  },
+  {
+    "id": 1600,
+    "competitive_name": "42.03.02 Журналистика; Очная; Бюджетная основа; Международная журналистика (с дополнительной квалификацией «Графический дизайнер»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e258158-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": {
+      "id": 85,
+      "competitive_group_id": 1600,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:29:56.000000Z",
+      "updated_at": "2025-06-25T09:29:56.000000Z"
+    }
+  },
+  {
+    "id": 1860,
+    "competitive_name": "42.03.02 Журналистика; Очная; Бюджетная основа; Международная журналистика (с дополнительной квалификацией «Графический дизайнер»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e258132-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 14,
+    "new_name": null
+  },
+  {
+    "id": 893,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Организация туристской деятельности (с изучением тайского языка) (с дополнительной квалификацией «Руководитель гостиничных комплексов и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e2581ca-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 1955,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Организация туристской деятельности (с изучением Индии / Арабских стран) (с дополнительной квалификацией «Руководитель гостиничных комплексов и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e2581a4-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 100,
+      "competitive_group_id": 1955,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:49:04.000000Z",
+      "updated_at": "2025-06-25T09:49:04.000000Z"
+    }
+  },
+  {
+    "id": 1899,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Отдельная квота; Туризм (с дополнительной квалификацией «Руководитель гостиничного комплекса и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3774b0c4-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 355,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Туризм (с дополнительной квалификацией «Руководитель гостиничного комплекса и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3774b0d7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 22,
+      "competitive_group_id": 355,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:04:57.000000Z",
+      "updated_at": "2025-06-25T09:04:57.000000Z"
+    }
+  },
+  {
+    "id": 1246,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Организация туристской деятельности (с изучением тайского языка) (с дополнительной квалификацией «Руководитель гостиничных комплексов и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e2581dd-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 62,
+      "competitive_group_id": 1246,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:21:11.000000Z",
+      "updated_at": "2025-06-25T09:21:11.000000Z"
+    }
+  },
+  {
+    "id": 1605,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Отдельная квота; Организация туристской деятельности (с углубленным изучением китайского языка) (с дополнительной квалификацией «Руководитель гостиничного комплекса и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "34777d35-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 2187,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Организация туристской деятельности (с углубленным изучением китайского языка) (с дополнительной квалификацией «Руководитель гостиничного комплекса и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "34779062-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 110,
+      "competitive_group_id": 2187,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:52:22.000000Z",
+      "updated_at": "2025-06-25T09:52:22.000000Z"
+    }
+  },
+  {
+    "id": 94,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Организация туристской деятельности (с изучением Индии / Арабских стран) (с дополнительной квалификацией «Руководитель гостиничных комплексов и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "2e258191-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 2093,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Туризм (с дополнительной квалификацией «Руководитель гостиничного комплекса и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3774ad69-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 2035,
+    "competitive_name": "43.03.02 Туризм; Очная; Бюджетная основа; Организация туристской деятельности (с углубленным изучением китайского языка) (с дополнительной квалификацией «Руководитель гостиничного комплекса и иных средств размещения»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "34777d22-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1918,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Отдельная квота; Классическая филология (древнегреческий и латинский языки; античная литература) (с дополнительной квалификацией «Учитель древнегреческого и латинского языков»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3aae865b-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 594,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Французский язык, литература и перевод (с дополнительными квалификациями «Учитель французского языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "495f1d65-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": {
+      "id": 32,
+      "competitive_group_id": 594,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:09:15.000000Z",
+      "updated_at": "2025-06-25T09:09:15.000000Z"
+    }
+  },
+  {
+    "id": 1871,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Английский язык и литература (с дополнительными квалификациями «Учитель английского языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3aae85b0-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1102,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Отдельная квота; Отечественная филология (Русский язык и литература) (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "40bd46b4-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 770,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Отдельная квота; Новогреческий язык, византийская и новогреческая филология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "40bd4655-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1418,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Классическая филология (древнегреческий и латинский языки; античная литература) (с дополнительной квалификацией «Учитель древнегреческого и латинского языков»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3aae8648-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 1420,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Испанский язык, литература и перевод (с дополнительными квалификациями «Учитель иностранного языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3aae85fc-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1697,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Отечественная филология (Русский язык и литература) (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "46d25ad5-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": {
+      "id": 92,
+      "competitive_group_id": 1697,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:31:33.000000Z",
+      "updated_at": "2025-06-25T09:31:33.000000Z"
+    }
+  },
+  {
+    "id": 737,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Отдельная квота; Скандинавские языки и литературы (шведский и норвежский языки) (с дополнительными квалификациями «Учитель иностранного языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "495f0380-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1692,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Отдельная квота; Языки балто-славянского культурного пространства (литовский, польский и белорусский языки)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "495f1db1-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": null
+  },
+  {
+    "id": 966,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Новогреческий язык, византийская и новогреческая филология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "40bd4642-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 2018,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Немецкий язык, литература и перевод (с дополнительными квалификациями «Учитель немецкого языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "40bd45f6-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1038,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Классическая филология (древнегреческий и латинский языки; античная литература) (с дополнительной квалификацией «Учитель древнегреческого и латинского языков»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3aae866e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 50,
+      "competitive_group_id": 1038,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:15:58.000000Z",
+      "updated_at": "2025-06-25T09:15:58.000000Z"
+    }
+  },
+  {
+    "id": 1472,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Французский язык, литература и перевод (с дополнительными квалификациями «Учитель французского языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "495f1d52-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1458,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Скандинавские языки и литературы (шведский и норвежский языки) (с дополнительными квалификациями «Учитель иностранного языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "495f1b6f-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 79,
+      "competitive_group_id": 1458,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:28:31.000000Z",
+      "updated_at": "2025-06-25T09:28:31.000000Z"
+    }
+  },
+  {
+    "id": 2088,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Языки балто-славянского культурного пространства (литовский, польский и белорусский языки)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "495f1d9e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 2036,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Испанский язык, литература и перевод (с дополнительными квалификациями «Учитель иностранного языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3aae860f-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 102,
+      "competitive_group_id": 2036,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:49:28.000000Z",
+      "updated_at": "2025-06-25T09:49:28.000000Z"
+    }
+  },
+  {
+    "id": 1644,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Новогреческий язык, византийская и новогреческая филология",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "40bd4668-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": {
+      "id": 90,
+      "competitive_group_id": 1644,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:31:04.000000Z",
+      "updated_at": "2025-06-25T09:31:04.000000Z"
+    }
+  },
+  {
+    "id": 1815,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Языки балто-славянского культурного пространства (литовский, польский и белорусский языки)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd8415b-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": {
+      "id": 95,
+      "competitive_group_id": 1815,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:32:24.000000Z",
+      "updated_at": "2025-06-25T09:32:24.000000Z"
+    }
+  },
+  {
+    "id": 660,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Отечественная филология (Русский язык и литература) (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "40bd46a1-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 47,
+    "new_name": null
+  },
+  {
+    "id": 1854,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Скандинавские языки и литературы (шведский и норвежский языки) (с дополнительными квалификациями «Учитель иностранного языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "48bd7d57-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 2085,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Немецкий язык, литература и перевод (с дополнительными квалификациями «Учитель немецкого языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "40bd4609-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 105,
+      "competitive_group_id": 2085,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:50:13.000000Z",
+      "updated_at": "2025-06-25T09:50:13.000000Z"
+    }
+  },
+  {
+    "id": 1724,
+    "competitive_name": "45.03.01 Филология; Очная; Бюджетная основа; Английский язык и литература (с дополнительными квалификациями «Учитель английского языка и литературы» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "3aae85c3-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 93,
+      "competitive_group_id": 1724,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:31:55.000000Z",
+      "updated_at": "2025-06-25T09:31:55.000000Z"
+    }
+  },
+  {
+    "id": 1369,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Теория и практика межкультурной коммуникации (английский язык) (с дополнительными квалификациями «Учитель английского языка» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "54160604-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1430,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Иностранные языки в глобальных коммуникациях (с дополнительными квалификациями «Учитель иностранного языка» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd841e0-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1440,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Общая и прикладная фонетика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd84252-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 77,
+      "competitive_group_id": 1440,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:28:07.000000Z",
+      "updated_at": "2025-06-25T09:28:07.000000Z"
+    }
+  },
+  {
+    "id": 247,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Русский язык как иностранный (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd842fd-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": {
+      "id": 15,
+      "competitive_group_id": 247,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:01:23.000000Z",
+      "updated_at": "2025-06-25T09:01:23.000000Z"
+    }
+  },
+  {
+    "id": 1636,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Сравнительно-историческое языкознание (английский язык)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5415e9f2-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1629,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Прикладная, компьютерная и математическая лингвистика (английский язык)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd842b1-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 87,
+      "competitive_group_id": 1629,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:30:23.000000Z",
+      "updated_at": "2025-06-25T09:30:23.000000Z"
+    }
+  },
+  {
+    "id": 1633,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Отдельная квота; Сравнительно-историческое языкознание (английский язык)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5415f04d-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1656,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Отдельная квота; Языки славянского мира и русский язык как иностранный (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "569f83b8-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1754,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Сравнительно-историческое языкознание (английский язык)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "54160140-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 94,
+      "competitive_group_id": 1754,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:32:12.000000Z",
+      "updated_at": "2025-06-25T09:32:12.000000Z"
+    }
+  },
+  {
+    "id": 2078,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Прикладная, компьютерная и математическая лингвистика (английский язык)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd8428b-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 820,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Теория и практика межкультурной коммуникации (английский язык) (с дополнительными квалификациями «Учитель английского языка» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "566c0837-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 40,
+      "competitive_group_id": 820,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:13:24.000000Z",
+      "updated_at": "2025-06-25T09:13:24.000000Z"
+    }
+  },
+  {
+    "id": 790,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Отдельная квота; Общая и прикладная фонетика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd8423f-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1232,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Языки славянского мира и русский язык как иностранный (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "569f83a5-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1843,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Английский язык как иностранный в обучении и коммуникации/ English as a Foreign Language in Teaching and Communication (с дополнительными квалификациями «Учитель английского языка» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd84194-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 2169,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Теоретическое и экспериментальное языкознание (английский язык) (с дополнительной квалификацией «Учитель иностранного языка»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "541605cb-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 108,
+      "competitive_group_id": 2169,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:51:51.000000Z",
+      "updated_at": "2025-06-25T09:51:51.000000Z"
+    }
+  },
+  {
+    "id": 2230,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Иностранные языки в глобальных коммуникациях (с дополнительными квалификациями «Учитель иностранного языка» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd841f3-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 112,
+      "competitive_group_id": 2230,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:54:25.000000Z",
+      "updated_at": "2025-06-25T09:54:25.000000Z"
+    }
+  },
+  {
+    "id": 1289,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Отдельная квота; Теоретическое и экспериментальное языкознание (английский язык) (с дополнительной квалификацией «Учитель иностранного языка»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "541605b8-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 565,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Общая и прикладная фонетика",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd8422c-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 309,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Отдельная квота; Прикладная, компьютерная и математическая лингвистика (английский язык)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd8429e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 771,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Английский язык как иностранный в обучении и коммуникации/ English as a Foreign Language in Teaching and Communication (с дополнительными квалификациями «Учитель английского языка» / «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd841a7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 38,
+      "competitive_group_id": 771,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:11:51.000000Z",
+      "updated_at": "2025-06-25T09:11:51.000000Z"
+    }
+  },
+  {
+    "id": 245,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Языки славянского мира и русский язык как иностранный (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "569f83cb-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": null
+  },
+  {
+    "id": 273,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Теоретическое и экспериментальное языкознание (английский язык) (с дополнительной квалификацией «Учитель иностранного языка»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5416043d-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 274,
+    "competitive_name": "45.03.02 Лингвистика; Очная; Бюджетная основа; Русский язык как иностранный (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "4cd842ea-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1066,
+    "competitive_name": "45.05.01 Перевод и переводоведение; Очная; Бюджетная основа; Перевод и переводоведение (английский язык и языки романского культурного ареала)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "593dc6a1-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": {
+      "id": 54,
+      "competitive_group_id": 1066,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:17:06.000000Z",
+      "updated_at": "2025-06-25T09:17:06.000000Z"
+    }
+  },
+  {
+    "id": 1356,
+    "competitive_name": "45.05.01 Перевод и переводоведение; Очная; Бюджетная основа; Перевод и переводоведение (английский язык и языки романского культурного ареала)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "593da96e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 14,
+    "new_name": null
+  },
+  {
+    "id": 870,
+    "competitive_name": "45.05.01 Перевод и переводоведение; Очная; Бюджетная основа; Отдельная квота; Перевод и переводоведение (английский язык и языки романского культурного ареала)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "593db9a7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 2105,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; Всеобщая история (с дополнительными квалификациями «Учитель истории и обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b4029e7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 106,
+      "competitive_group_id": 2105,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:50:28.000000Z",
+      "updated_at": "2025-06-25T09:50:28.000000Z"
+    }
+  },
+  {
+    "id": 1996,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; Отдельная квота; Всеобщая история (с дополнительными квалификациями «Учитель истории и обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b4029d4-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 1846,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; Археология (с дополнительными квалификациями «Учитель истории и обществознания» / «Хранитель музейных ценностей» / «Специалист по учету музейных предметов»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b4010f3-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 2002,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; Всеобщая история (с дополнительными квалификациями «Учитель истории и обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b4029c1-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 21,
+    "new_name": null
+  },
+  {
+    "id": 1248,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; Отдельная квота; Археология (с дополнительными квалификациями «Учитель истории и обществознания» / «Хранитель музейных ценностей» / «Специалист по учету музейных предметов»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b4024fe-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 293,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; Археология (с дополнительными квалификациями «Учитель истории и обществознания» / «Хранитель музейных ценностей» / «Специалист по учету музейных предметов»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b40283e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 18,
+      "competitive_group_id": 293,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:02:25.000000Z",
+      "updated_at": "2025-06-25T09:02:25.000000Z"
+    }
+  },
+  {
+    "id": 224,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; Отдельная квота; История России (с дополнительными квалификациями «Учитель истории и обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b402a33-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 1947,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; История России (с дополнительными квалификациями «Учитель истории и обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b402a20-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 31,
+    "new_name": null
+  },
+  {
+    "id": 1367,
+    "competitive_name": "46.03.01 История; Очная; Бюджетная основа; История России (с дополнительными квалификациями «Учитель истории и обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5b402a46-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 68,
+      "competitive_group_id": 1367,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:24:53.000000Z",
+      "updated_at": "2025-06-25T09:24:53.000000Z"
+    }
+  },
+  {
+    "id": 1012,
+    "competitive_name": "47.03.01 Философия; Очная; Бюджетная основа; Философия (с дополнительными квалификациями «Учитель обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5f4f289d-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": {
+      "id": 49,
+      "competitive_group_id": 1012,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:15:47.000000Z",
+      "updated_at": "2025-06-25T09:15:47.000000Z"
+    }
+  },
+  {
+    "id": 960,
+    "competitive_name": "47.03.01 Философия; Очная; Бюджетная основа; Отдельная квота; Философия (с дополнительными квалификациями «Учитель обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5f4f288a-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 2119,
+    "competitive_name": "47.03.01 Философия; Очная; Бюджетная основа; Философия (с дополнительными квалификациями «Учитель обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "5f4f2877-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 30,
+    "new_name": null
+  },
+  {
+    "id": 779,
+    "competitive_name": "47.03.03 Религиоведение; Очная; Бюджетная основа; Религиоведение (с дополнительными квалификациями «Учитель обществознания» / «Учитель основ религиозных культур и светской этики» / «Педагог дополнительного образования» / «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "663843ab-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 39,
+      "competitive_group_id": 779,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:13:09.000000Z",
+      "updated_at": "2025-06-25T09:13:09.000000Z"
+    }
+  },
+  {
+    "id": 1796,
+    "competitive_name": "47.03.03 Религиоведение; Очная; Бюджетная основа; Религиоведение (с дополнительными квалификациями «Учитель обществознания» / «Учитель основ религиозных культур и светской этики» / «Педагог дополнительного образования» / «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "66384385-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 450,
+    "competitive_name": "47.03.03 Религиоведение; Очная; Бюджетная основа; Отдельная квота; Религиоведение (с дополнительными квалификациями «Учитель обществознания» / «Учитель основ религиозных культур и светской этики» / «Педагог дополнительного образования» / «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "66384398-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1429,
+    "competitive_name": "48.03.01 Теология; Очная; Бюджетная основа; Христианская теология (с дополнительной квалификацией «Учитель основ религиозных культур и светской этики»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6d1971ae-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 76,
+      "competitive_group_id": 1429,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:27:09.000000Z",
+      "updated_at": "2025-06-25T09:27:09.000000Z"
+    }
+  },
+  {
+    "id": 1445,
+    "competitive_name": "48.03.01 Теология; Очная; Бюджетная основа; Иудейская теология (с дополнительными квалификациями «Педагог дополнительного образования» / «Учитель основ религиозных культур и светской этики»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6638440a-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": {
+      "id": 78,
+      "competitive_group_id": 1445,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:28:20.000000Z",
+      "updated_at": "2025-06-25T09:28:20.000000Z"
+    }
+  },
+  {
+    "id": 1300,
+    "competitive_name": "48.03.01 Теология; Очная; Бюджетная основа; Иудейская теология (с дополнительными квалификациями «Педагог дополнительного образования» / «Учитель основ религиозных культур и светской этики»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "663843e4-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 655,
+    "competitive_name": "48.03.01 Теология; Очная; Бюджетная основа; Отдельная квота; Христианская теология (с дополнительной квалификацией «Учитель основ религиозных культур и светской этики»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6cc52a74-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": null
+  },
+  {
+    "id": 895,
+    "competitive_name": "48.03.01 Теология; Очная; Бюджетная основа; Отдельная квота; Иудейская теология (с дополнительными квалификациями «Педагог дополнительного образования» / «Учитель основ религиозных культур и светской этики»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "663843f7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": null
+  },
+  {
+    "id": 796,
+    "competitive_name": "48.03.01 Теология; Очная; Бюджетная основа; Христианская теология (с дополнительной квалификацией «Учитель основ религиозных культур и светской этики»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6c2f5a76-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 431,
+    "competitive_name": "49.03.01 Физическая культура; Очная; Бюджетная основа; Физическая культура и спорт (с дополнительной квалификацией «Специалист по фитнесу (фитнес-тренер)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6d7bd4dc-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 25,
+      "competitive_group_id": 431,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:05:47.000000Z",
+      "updated_at": "2025-06-25T09:05:47.000000Z"
+    }
+  },
+  {
+    "id": 241,
+    "competitive_name": "49.03.01 Физическая культура; Очная; Бюджетная основа; Физическая культура и спорт (с дополнительной квалификацией «Специалист по фитнесу (фитнес-тренер)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6d7bcfe5-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 2190,
+    "competitive_name": "49.03.01 Физическая культура; Очная; Бюджетная основа; Отдельная квота; Физическая культура и спорт (с дополнительной квалификацией «Специалист по фитнесу (фитнес-тренер)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6d7bd352-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 379,
+    "competitive_name": "50.03.01 Искусства и гуманитарные науки; Очная; Бюджетная основа; Отдельная квота; Искусства и гуманитарные науки (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6d7bd58a-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 1704,
+    "competitive_name": "50.03.01 Искусства и гуманитарные науки; Очная; Бюджетная основа; Искусства и гуманитарные науки (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6d7bd577-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 35,
+    "new_name": null
+  },
+  {
+    "id": 1237,
+    "competitive_name": "50.03.01 Искусства и гуманитарные науки; Очная; Бюджетная основа; Искусства и гуманитарные науки (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6d7bd59d-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": {
+      "id": 61,
+      "competitive_group_id": 1237,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:20:49.000000Z",
+      "updated_at": "2025-06-25T09:20:49.000000Z"
+    }
+  },
+  {
+    "id": 1335,
+    "competitive_name": "50.03.03 История искусств; Очная; Бюджетная основа; Теория и история искусств (с дополнительной квалификацией «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "72f56bd8-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 65,
+      "competitive_group_id": 1335,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:24:03.000000Z",
+      "updated_at": "2025-06-25T09:24:03.000000Z"
+    }
+  },
+  {
+    "id": 506,
+    "competitive_name": "50.03.03 История искусств; Очная; Бюджетная основа; Теория и история искусств (с дополнительной квалификацией «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "6d7bd5c3-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 8,
+    "new_name": null
+  },
+  {
+    "id": 734,
+    "competitive_name": "50.03.03 История искусств; Очная; Бюджетная основа; Отдельная квота; Теория и история искусств (с дополнительной квалификацией «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "72f56bc5-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 2242,
+    "competitive_name": "51.03.01 Культурология; Очная; Бюджетная основа; Культурология (с дополнительными квалификациями «Учитель обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "72f56bfe-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 16,
+    "new_name": null
+  },
+  {
+    "id": 1960,
+    "competitive_name": "51.03.01 Культурология; Очная; Бюджетная основа; Отдельная квота; Культурология (с дополнительными квалификациями «Учитель обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "72f56c11-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 1042,
+    "competitive_name": "51.03.01 Культурология; Очная; Бюджетная основа; Культурология (с дополнительными квалификациями «Учитель обществознания» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "72f56c24-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 51,
+      "competitive_group_id": 1042,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:16:25.000000Z",
+      "updated_at": "2025-06-25T09:16:25.000000Z"
+    }
+  },
+  {
+    "id": 1586,
+    "competitive_name": "51.03.04 Музеология и охрана объектов культурного и природного наследия; Очная; Бюджетная основа; Отдельная квота; Музеология и охрана объектов культурного и природного наследия (с дополнительной квалификацией «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "7a1b3e0a-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 2224,
+    "competitive_name": "51.03.04 Музеология и охрана объектов культурного и природного наследия; Очная; Бюджетная основа; Музеология и охрана объектов культурного и природного наследия (с дополнительной квалификацией «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "7a1b3e1d-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": {
+      "id": 111,
+      "competitive_group_id": 2224,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:54:10.000000Z",
+      "updated_at": "2025-06-25T09:54:10.000000Z"
+    }
+  },
+  {
+    "id": 157,
+    "competitive_name": "51.03.04 Музеология и охрана объектов культурного и природного наследия; Очная; Бюджетная основа; Музеология и охрана объектов культурного и природного наследия (с дополнительной квалификацией «Экскурсовод (гид)»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "7a1b3df7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 10,
+    "new_name": null
+  },
+  {
+    "id": 1498,
+    "competitive_name": "54.03.01 Дизайн; Очная; Бюджетная основа; Дизайн среды (с дополнительной квалификацией «Художник-оформитель»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "9a7b596e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 7,
+    "new_name": null
+  },
+  {
+    "id": 827,
+    "competitive_name": "54.03.01 Дизайн; Очная; Бюджетная основа; Дизайн среды (с дополнительной квалификацией «Художник-оформитель»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "a0c8a898-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 41,
+      "competitive_group_id": 827,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:13:37.000000Z",
+      "updated_at": "2025-06-25T09:13:37.000000Z"
+    }
+  },
+  {
+    "id": 65,
+    "competitive_name": "54.03.01 Дизайн; Очная; Бюджетная основа; Отдельная квота; Графический дизайн (с дополнительной квалификацией «Графический дизайнер»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "90ed8a87-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1747,
+    "competitive_name": "54.03.01 Дизайн; Очная; Бюджетная основа; Отдельная квота; Дизайн среды (с дополнительной квалификацией «Художник-оформитель»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "9a7b6563-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1109,
+    "competitive_name": "54.03.01 Дизайн; Очная; Бюджетная основа; Графический дизайн (с дополнительной квалификацией «Графический дизайнер»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "8dd484d9-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 9,
+    "new_name": null
+  },
+  {
+    "id": 1379,
+    "competitive_name": "54.03.01 Дизайн; Очная; Бюджетная основа; Графический дизайн (с дополнительной квалификацией «Графический дизайнер»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "942249cc-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 70,
+      "competitive_group_id": 1379,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:25:35.000000Z",
+      "updated_at": "2025-06-25T09:25:35.000000Z"
+    }
+  },
+  {
+    "id": 2134,
+    "competitive_name": "54.03.02 Декоративно-прикладное искусство и народные промыслы; Очная; Бюджетная основа; Декоративно-прикладное искусство (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "ad74fb5e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": {
+      "id": 107,
+      "competitive_group_id": 2134,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:51:30.000000Z",
+      "updated_at": "2025-06-25T09:51:30.000000Z"
+    }
+  },
+  {
+    "id": 1219,
+    "competitive_name": "54.03.02 Декоративно-прикладное искусство и народные промыслы; Очная; Бюджетная основа; Отдельная квота; Декоративно-прикладное искусство (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "a71b4fad-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": null
+  },
+  {
+    "id": 459,
+    "competitive_name": "54.03.02 Декоративно-прикладное искусство и народные промыслы; Очная; Бюджетная основа; Декоративно-прикладное искусство (с дополнительной квалификацией «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "a71b4f9a-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 6,
+    "new_name": null
+  },
+  {
+    "id": 2061,
+    "competitive_name": "54.03.04 Реставрация; Очная; Бюджетная основа; Реставрация произведений изобразительного и декоративно-прикладного искусства (с дополнительной квалификацией «Специалист по техническим процессам художественной деятельности»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "ad74fbaa-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": {
+      "id": 103,
+      "competitive_group_id": 2061,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:49:45.000000Z",
+      "updated_at": "2025-06-25T09:49:45.000000Z"
+    }
+  },
+  {
+    "id": 1400,
+    "competitive_name": "54.03.04 Реставрация; Очная; Бюджетная основа; Отдельная квота; Реставрация произведений изобразительного и декоративно-прикладного искусства (с дополнительной квалификацией «Специалист по техническим процессам художественной деятельности»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "ad74fb97-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 545,
+    "competitive_name": "54.03.04 Реставрация; Очная; Бюджетная основа; Реставрация произведений изобразительного и декоративно-прикладного искусства (с дополнительной квалификацией «Специалист по техническим процессам художественной деятельности»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "ad74fb84-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 321,
+    "competitive_name": "54.05.02 Живопись; Очная; Бюджетная основа; Художник кино и телевидения по костюму (с дополнительными квалификациями «Учитель рисования» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "b9495815-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 220,
+    "competitive_name": "54.05.02 Живопись; Очная; Бюджетная основа; Художник кино и телевидения по костюму (с дополнительными квалификациями «Учитель рисования» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bfc3afbf-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 13,
+      "competitive_group_id": 220,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:00:52.000000Z",
+      "updated_at": "2025-06-25T09:00:52.000000Z"
+    }
+  },
+  {
+    "id": 2158,
+    "competitive_name": "54.05.02 Живопись; Очная; Бюджетная основа; Отдельная квота; Художник кино и телевидения по костюму (с дополнительными квалификациями «Учитель рисования» / «Педагог дополнительного образования»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "b98593bf-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": null
+  },
+  {
+    "id": 201,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; История Кавказа (Армения) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cbb840b4-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 784,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Отдельная квота; Языки и культура Западной Африки (языки манде) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de7ed233-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1923,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Языки и культура Западной Африки (языки манде) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de7ed246-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 98,
+      "competitive_group_id": 1923,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:48:39.000000Z",
+      "updated_at": "2025-06-25T09:48:39.000000Z"
+    }
+  },
+  {
+    "id": 1717,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Кхмерская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d87b9d9e-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 1714,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Отдельная квота; История Центральной Азии (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d21c3915-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1718,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Отдельная квота; Монгольско-тибетская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d8e26983-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": null
+  },
+  {
+    "id": 1679,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; История Кавказа (Армения) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cbb840da-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 91,
+      "competitive_group_id": 1679,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:31:17.000000Z",
+      "updated_at": "2025-06-25T09:31:17.000000Z"
+    }
+  },
+  {
+    "id": 924,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; История арабских стран (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c6e20e1c-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 43,
+      "competitive_group_id": 924,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:14:04.000000Z",
+      "updated_at": "2025-06-25T09:14:04.000000Z"
+    }
+  },
+  {
+    "id": 1578,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; История Центральной Азии (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d21c3928-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 84,
+      "competitive_group_id": 1578,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:29:41.000000Z",
+      "updated_at": "2025-06-25T09:29:41.000000Z"
+    }
+  },
+  {
+    "id": 1377,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Отдельная квота; Османистика (языки, история и культура османской Турции) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d8e269cf-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1074,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Отдельная квота; Филология телугу (телугу, санскрит, хинди) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de7ed1e7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 1570,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Монгольско-тибетская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d8e26996-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 82,
+      "competitive_group_id": 1570,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:29:13.000000Z",
+      "updated_at": "2025-06-25T09:29:13.000000Z"
+    }
+  },
+  {
+    "id": 1802,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; История Ирана и Афганистана (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c6e20e55-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1120,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Китайская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d21c3974-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 56,
+      "competitive_group_id": 1120,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:17:57.000000Z",
+      "updated_at": "2025-06-25T09:17:57.000000Z"
+    }
+  },
+  {
+    "id": 1424,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Филология телугу (телугу, санскрит, хинди) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de7ed1fa-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 74,
+      "competitive_group_id": 1424,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:26:28.000000Z",
+      "updated_at": "2025-06-25T09:26:28.000000Z"
+    }
+  },
+  {
+    "id": 1279,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Отдельная квота; История Ирана и Афганистана (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cbb84068-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 953,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Корейская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d21c4437-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 46,
+      "competitive_group_id": 953,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:15:03.000000Z",
+      "updated_at": "2025-06-25T09:15:03.000000Z"
+    }
+  },
+  {
+    "id": 1310,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Отдельная квота; Ассириология (языки, история и культура Древнего Ближнего Востока) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bfc3aff8-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": null
+  },
+  {
+    "id": 665,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Японская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e4dc7708-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 35,
+      "competitive_group_id": 665,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:10:30.000000Z",
+      "updated_at": "2025-06-25T09:10:30.000000Z"
+    }
+  },
+  {
+    "id": 1354,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Кхмерская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d8e267a0-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 67,
+      "competitive_group_id": 1354,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:24:40.000000Z",
+      "updated_at": "2025-06-25T09:24:40.000000Z"
+    }
+  },
+  {
+    "id": 179,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Китайская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d21c3961-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 2236,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Филология телугу (телугу, санскрит, хинди) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de7ed1d4-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 384,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Османистика (языки, история и культура османской Турции) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d8e269bc-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 2220,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Языки и культура Западной Африки (языки манде) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de7ed220-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1503,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Корейская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d21c39ad-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 4,
+    "new_name": null
+  },
+  {
+    "id": 1041,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; История арабских стран (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c6e20e09-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1875,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; История Центральной Азии (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cbb84113-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 147,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Отдельная квота; История Кавказа (Армения) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cbb840c7-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": null,
+    "new_name": null
+  },
+  {
+    "id": 409,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; История Ирана и Афганистана (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "cbb8407b-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 24,
+      "competitive_group_id": 409,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:05:29.000000Z",
+      "updated_at": "2025-06-25T09:05:29.000000Z"
+    }
+  },
+  {
+    "id": 787,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Исламоведение (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c6823aa5-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  },
+  {
+    "id": 1375,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Японская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "e4dc76f5-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 5,
+    "new_name": null
+  },
+  {
+    "id": 98,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Ассириология (языки, история и культура Древнего Ближнего Востока) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bfc3b00b-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 8,
+      "competitive_group_id": 98,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T08:58:40.000000Z",
+      "updated_at": "2025-06-25T08:58:40.000000Z"
+    }
+  },
+  {
+    "id": 548,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Османистика (языки, история и культура османской Турции) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "de7ed1ae-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 30,
+      "competitive_group_id": 548,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T09:07:06.000000Z",
+      "updated_at": "2025-06-25T09:07:06.000000Z"
+    }
+  },
+  {
+    "id": 90,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Ассириология (языки, история и культура Древнего Ближнего Востока) (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "bfc3afe5-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 2,
+    "new_name": null
+  },
+  {
+    "id": 22,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Исламоведение (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "c6e20b33-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 1,
+    "new_name": {
+      "id": 7,
+      "competitive_group_id": 22,
+      "competitive_group_name": "Особая квота",
+      "created_at": "2025-06-25T08:58:18.000000Z",
+      "updated_at": "2025-06-25T08:58:18.000000Z"
+    }
+  },
+  {
+    "id": 2175,
+    "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Бюджетная основа; Монгольско-тибетская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+    "form_payments_id": 1,
+    "form_education_id": 1,
+    "scenario_id": 6,
+    "external_id": "d8e26970-10aa-11f0-99b9-a42b5df7d9f5",
+    "competitive_group_places": 3,
+    "new_name": null
+  }
+]
