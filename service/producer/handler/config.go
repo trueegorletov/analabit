@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	CacheDir               string `env:"ANALABIT_CACHE_DIR" envDefault:"./cache"`
-	CacheTTLMinutes        int    `env:"ANALABIT_CACHE_TTL_MINUTES" envDefault:"10"`
+	CacheTTLMinutes        int    `env:"ANALABIT_CACHE_TTL_MINUTES" envDefault:"100"`
 	DrainStages            []int  `env:"ANALABIT_DRAIN_SIM_STAGES" envSeparator:"," envDefault:"33,50,66,100"`
 	DrainIterations        int    `env:"ANALABIT_DRAIN_SIM_ITERATIONS" envDefault:"100"`
 	MinioEndpoint          string `env:"ANALABIT_MINIO_ENDPOINT" envDefault:"minio:9000"`
@@ -17,7 +17,7 @@ type Config struct {
 	MinioUseSSL            bool   `env:"ANALABIT_MINIO_USE_SSL" envDefault:"false"`
 	RabbitURL              string `env:"ANALABIT_RABBIT_URL" envDefault:"amqp://guest:guest@rabbitmq:5672/"`
 	MinioBucketName        string `env:"ANALABIT_MINIO_BUCKET_NAME" envDefault:"analabit-results"`
-	SelfQueryPeriodMinutes int    `env:"ANALABIT_SELF_QUERY_PERIOD_MINUTES" envDefault:"20"`
+	SelfQueryPeriodMinutes int    `env:"ANALABIT_SELF_QUERY_PERIOD_MINUTES" envDefault:"100"`
 }
 
 var Cfg Config

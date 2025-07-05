@@ -7,13 +7,13 @@ toolchain go1.24.4
 require (
 	entgo.io/ent v0.14.4
 	github.com/lib/pq v1.10.9
-	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
 	github.com/xuri/excelize/v2 v2.9.1
 	golang.org/x/net v0.40.0
+	golang.org/x/sync v0.14.0
 )
 
 require (
@@ -30,6 +30,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect

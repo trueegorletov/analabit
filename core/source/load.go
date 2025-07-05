@@ -66,7 +66,6 @@ func (v *Varsity) AddHeading(hd *HeadingData) {
 }
 
 func (v *Varsity) AddApplication(ad *ApplicationData) {
-	// Assuming ad.StudentID is the ORIGINAL student ID
 	if ad.CompetitionType > core.CompetitionBVI && !ad.OriginalSubmitted {
 		return // Most of the quota guys never submit their originals, so consider only those who did
 	}
@@ -145,6 +144,9 @@ func (v *Varsity) loadFromSources() map[string]bool {
 	close(applicationDataChan) //
 	processingWg.Wait()        // Wait for the processor goroutine to finish all writes
 
+	// After all applications are loaded, normalize them.
+	v.VarsityCalculator.NormalizeApplications()
+
 	return submittedOriginals
 }
 
@@ -164,6 +166,9 @@ func (v *Varsity) loadFromCache() map[string]bool {
 			submittedOriginals[ad.StudentID] = true
 		}
 	}
+
+	// After all applications are loaded from cache, normalize them.
+	v.VarsityCalculator.NormalizeApplications()
 
 	return submittedOriginals
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"analabit/core"
 	"analabit/core/ent"
 	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
@@ -16,18 +17,20 @@ import (
 
 // ApplicationResponse enriches Application with additional flags.
 type ApplicationResponse struct {
-	ID                int       `json:"id"`
-	StudentID         string    `json:"student_id"`
-	Priority          int       `json:"priority"`
-	CompetitionType   int       `json:"competition_type"`
-	RatingPlace       int       `json:"rating_place"`
-	Score             int       `json:"score"`
-	RunID             int       `json:"run_id"`
-	UpdatedAt         time.Time `json:"updated_at"`
-	HeadingID         int       `json:"heading_id"`
-	OriginalSubmitted bool      `json:"original_submitted"`
-	OriginalQuit      bool      `json:"original_quit"`
-	PassingNow        bool      `json:"passing_now"`
+	ID                    int       `json:"id"`
+	StudentID             string    `json:"student_id"`
+	Priority              int       `json:"priority"`
+	CompetitionType       string    `json:"competition_type"`
+	RatingPlace           int       `json:"rating_place"`
+	Score                 int       `json:"score"`
+	RunID                 int       `json:"run_id"`
+	UpdatedAt             time.Time `json:"updated_at"`
+	HeadingID             int       `json:"heading_id"`
+	OriginalSubmitted     bool      `json:"original_submitted"`
+	OriginalQuit          bool      `json:"original_quit"`
+	PassingNow            bool      `json:"passing_now"`
+	PassingToMorePriority bool      `json:"passing_to_more_priority"`
+	AnotherVarsitiesCount int       `json:"another_varsities_count"`
 }
 
 // GetApplications retrieves a list of applications, with optional filtering.
@@ -69,109 +72,138 @@ func GetApplications(client *ent.Client) fiber.Handler {
 			return fiber.ErrInternalServerError
 		}
 
-		// Build helper maps ---------------------------------
-
-		studentSet := make(map[string]struct{})
-		headingSet := make(map[int]struct{})
-
+		// Collect student and heading IDs for batch queries
+		studentIDs := make([]string, 0, len(applications))
+		headingIDs := make([]int, 0, len(applications))
 		for _, app := range applications {
-			studentSet[app.StudentID] = struct{}{}
-			headingSet[app.Edges.Heading.ID] = struct{}{}
+			studentIDs = append(studentIDs, app.StudentID)
+			headingIDs = append(headingIDs, app.Edges.Heading.ID)
 		}
 
-		// Get latest run's calculations for comparison (to determine passingNow)
-		latestRunID, err := getLatestRunID(ctx, client)
+		// Fetch all applications for the students in this run to calculate related fields
+		allStudentApplications, err := client.Application.Query().
+			Where(
+				application.RunIDEQ(runResolution.RunID),
+				application.StudentIDIn(studentIDs...),
+			).
+			WithHeading(func(hq *ent.HeadingQuery) {
+				hq.WithVarsity()
+			}).
+			All(ctx)
 		if err != nil {
-			log.Printf("error getting latest run ID: %v", err)
+			log.Printf("error getting all student applications: %v", err)
 			return fiber.ErrInternalServerError
 		}
 
-		// Fetch calculations at latest run for involved students & headings
-		var studentIDs []string
-		for id := range studentSet {
-			studentIDs = append(studentIDs, id)
-		}
-		var headingIDs []int
-		for id := range headingSet {
-			headingIDs = append(headingIDs, id)
+		// Group applications by student ID for quick lookup
+		appsByStudent := make(map[string][]*ent.Application)
+		for _, app := range allStudentApplications {
+			appsByStudent[app.StudentID] = append(appsByStudent[app.StudentID], app)
 		}
 
-		calcMap := make(map[string]struct{}) // key studentID|headingID
-		if latestRunID > 0 && len(studentIDs) > 0 && len(headingIDs) > 0 {
-			calcs, _ := client.Calculation.Query().Where(
-				calculation.RunIDEQ(latestRunID),
-				calculation.StudentIDIn(studentIDs...),
-				calculation.HasHeadingWith(heading.IDIn(headingIDs...)),
-			).WithHeading().All(ctx)
-			for _, ccalc := range calcs {
-				key := ccalc.StudentID + "|" + strconv.Itoa(ccalc.Edges.Heading.ID)
-				calcMap[key] = struct{}{}
+		// Collect all heading IDs from all applications of the students on this page
+		allHeadingIDs := make([]int, 0)
+		for _, studentApps := range appsByStudent {
+			for _, app := range studentApps {
+				allHeadingIDs = append(allHeadingIDs, app.Edges.Heading.ID)
 			}
 		}
 
-		// Fetch originalSubmitted-true apps to help compute originalQuit
-		// We need to check applications from the same run for originalQuit logic
-		origApps, _ := client.Application.Query().Where(
-			application.OriginalSubmitted(true),
-			application.RunIDEQ(runResolution.RunID),
-			application.StudentIDIn(studentIDs...),
-		).WithHeading(func(hq *ent.HeadingQuery) { hq.WithVarsity() }).All(ctx)
-
-		// Build map studentID -> set of varsity IDs where originalSubmitted true (for same run)
-		origMap := make(map[string]map[int]struct{})
-		for _, oa := range origApps {
-			key := oa.StudentID
-			if _, ok := origMap[key]; !ok {
-				origMap[key] = make(map[int]struct{})
-			}
-			if oa.Edges.Heading != nil && oa.Edges.Heading.Edges.Varsity != nil {
-				origMap[key][oa.Edges.Heading.Edges.Varsity.ID] = struct{}{}
-			}
+		// Fetch passing calculation results for all relevant headings
+		passingCalculations, err := client.Calculation.Query().
+			Where(
+				calculation.RunIDEQ(runResolution.RunID),
+				calculation.HasHeadingWith(heading.IDIn(allHeadingIDs...)),
+			).
+			All(ctx)
+		if err != nil {
+			log.Printf("error getting passing calculations: %v", err)
+			return fiber.ErrInternalServerError
 		}
 
-		// Compose response ----------------------------------
-		resp := make([]ApplicationResponse, len(applications))
+		// Create a map for quick lookup of passing students
+		passingStudents := make(map[int]map[string]struct{})
+		for _, calc := range passingCalculations {
+			calcHeading, err := calc.QueryHeading().Only(ctx)
+			if err != nil {
+				log.Printf("error getting heading for calculation: %v", err)
+				return fiber.ErrInternalServerError
+			}
+			if _, ok := passingStudents[calcHeading.ID]; !ok {
+				passingStudents[calcHeading.ID] = make(map[string]struct{})
+			}
+			passingStudents[calcHeading.ID][calc.StudentID] = struct{}{}
+		}
 
+		// Build the response
+		response := make([]ApplicationResponse, len(applications))
 		for i, app := range applications {
-			var passingNow bool
-			var originalQuit bool
+			studentApps := appsByStudent[app.StudentID]
 
-			// passingNow - check if student is in calculations for latest run
-			if _, ok := calcMap[app.StudentID+"|"+strconv.Itoa(app.Edges.Heading.ID)]; ok {
-				passingNow = true
-			}
-
-			// originalQuit (only if originalSubmitted false)
+			// Calculate original_quit
+			originalQuit := false
 			if !app.OriginalSubmitted {
-				key := app.StudentID
-				if vars, ok := origMap[key]; ok {
-					if _, inSameVarsity := vars[app.Edges.Heading.Edges.Varsity.ID]; !inSameVarsity && len(vars) > 0 {
+				for _, otherApp := range studentApps {
+					if otherApp.ID != app.ID && otherApp.OriginalSubmitted {
 						originalQuit = true
+						break
 					}
 				}
 			}
 
-			runID := 0
-			if app.Edges.Run != nil {
-				runID = app.Edges.Run.ID
+			// Calculate passing_now and passing_to_more_priority
+			passingNow := false
+			passingToMorePriority := false
+			if headingPassing, ok := passingStudents[app.Edges.Heading.ID]; ok {
+				if _, ok := headingPassing[app.StudentID]; ok {
+					passingNow = true
+				}
 			}
 
-			resp[i] = ApplicationResponse{
-				ID:                app.ID,
-				StudentID:         app.StudentID,
-				Priority:          app.Priority,
-				CompetitionType:   int(app.CompetitionType),
-				RatingPlace:       app.RatingPlace,
-				Score:             app.Score,
-				RunID:             runID,
-				UpdatedAt:         app.UpdatedAt,
-				HeadingID:         app.Edges.Heading.ID,
-				OriginalSubmitted: app.OriginalSubmitted,
-				OriginalQuit:      originalQuit,
-				PassingNow:        passingNow,
+			if !passingNow {
+				for _, otherApp := range studentApps {
+					if otherApp.Edges.Heading.Edges.Varsity.ID == app.Edges.Heading.Edges.Varsity.ID && otherApp.Priority < app.Priority {
+						otherAppHeading, err := otherApp.QueryHeading().Only(ctx)
+						if err != nil {
+							log.Printf("error getting heading for otherApp: %v", err)
+							return fiber.ErrInternalServerError
+						}
+						if headingPassing, ok := passingStudents[otherAppHeading.ID]; ok {
+							if _, ok := headingPassing[app.StudentID]; ok {
+								passingToMorePriority = true
+								break
+							}
+						}
+					}
+				}
+			}
+
+			// Calculate another_varsities_count
+			varsitySet := make(map[int]struct{})
+			for _, studentApp := range studentApps {
+				varsitySet[studentApp.Edges.Heading.Edges.Varsity.ID] = struct{}{}
+			}
+			delete(varsitySet, app.Edges.Heading.Edges.Varsity.ID)
+			anotherVarsitiesCount := len(varsitySet)
+
+			response[i] = ApplicationResponse{
+				ID:                    app.ID,
+				StudentID:             app.StudentID,
+				Priority:              app.Priority,
+				CompetitionType:       core.Competition(app.CompetitionType).String(),
+				RatingPlace:           app.RatingPlace,
+				Score:                 app.Score,
+				RunID:                 app.RunID,
+				UpdatedAt:             app.UpdatedAt,
+				HeadingID:             app.Edges.Heading.ID,
+				OriginalSubmitted:     app.OriginalSubmitted,
+				OriginalQuit:          originalQuit,
+				PassingNow:            passingNow,
+				PassingToMorePriority: passingToMorePriority,
+				AnotherVarsitiesCount: anotherVarsitiesCount,
 			}
 		}
 
-		return c.JSON(resp)
+		return c.JSON(response)
 	}
 }

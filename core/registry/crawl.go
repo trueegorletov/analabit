@@ -97,7 +97,7 @@ func CrawlWithOptions(defs []source.VarsityDefinition, params CrawlOptions) (*Cr
 			}
 		}
 	}
-	if loadedVarsities == nil || len(loadedVarsities) == 0 {
+	if len(loadedVarsities) == 0 {
 		loadedVarsities = source.LoadFromDefinitions(filteredDefs)
 		if len(loadedVarsities) > 0 && cacheTTL != -1 {
 			_ = os.MkdirAll(cacheDir, 0755)

@@ -116,11 +116,11 @@ Returns the same JSON structure as a single element from **List Headings**.
 
 #### Possible Errors
 
-| Status | When |
-|--------|-------|
-| `400 Bad Request` | `id` is not a valid integer. |
-| `404 Not Found` | A heading with the provided `id` does not exist. |
-| `500 Internal Server Error` | Unexpected server failure. |
+| Status                      | When                                             |
+|-----------------------------|--------------------------------------------------|
+| `400 Bad Request`           | `id` is not a valid integer.                     |
+| `404 Not Found`             | A heading with the provided `id` does not exist. |
+| `500 Internal Server Error` | Unexpected server failure.                       |
 
 ---
 
@@ -129,20 +129,24 @@ Returns the same JSON structure as a single element from **List Headings**.
 `GET /api/applications`
 
 Retrieve student application records. Supports several filters in addition to pagination.  
-Each application object now includes three helper flags:
+Each application object now includes this new set of fields:
 
 * `original_submitted` – `true` if, in the same iteration, the student **submitted original documents** to the varsity this heading belongs to.
-* `original_quit` – `true` if `original_submitted` is *false* **and** the student submitted originals to a *different* varsity during the same iteration.
-* `passing_now` – `true` if the student currently passes for this heading according to the latest primary-calculation iteration.
+* `original_quit` – `true` if `original_submitted` is *false* **and** the student submitted originals to a *different* varsity during the same run.
+* `passing_now` – `true` if the student currently passes for exactly this heading in this run.
+* `passing_to_more_priority` - `true` if the student currently passes for another heading of the same varsity with a higher priority given to it that to this heading.
+* `another_varsities_count` - the number of other varsities where the student has found applications to at the same run.
 
-| Query Parameter | Type | Default | Description |
-|-----------------|------|---------|-------------|
-| `limit` | integer | `100` | Maximum number of results. |
-| `offset` | integer | `0` | Skip the first *n* items. |
-| `studentID` | string | — | Return only applications belonging to the student with this identifier. |
-| `varsityCode` | string | — | Return only applications whose heading's varsity has this `code`. |
-| `headingId` | integer | — | Return only applications for the specified heading. |
-| `run` | string / integer | `latest` | Specify the run to retrieve applications from. Can be a numeric run ID or a string like "latest" or "latest-1". |
+Note: the `passing_now` and `passing_to_more_priority` fields are never `true` at the same time.
+
+| Query Parameter | Type             | Default  | Description                                                                                                |
+|-----------------|------------------|----------|------------------------------------------------------------------------------------------------------------|
+| `limit`         | integer          | `100`    | Maximum number of results.                                                                                 |
+| `offset`        | integer          | `0`      | Skip the first *n* items.                                                                                  |
+| `studentID`     | string           | —        | Return only applications belonging to the student with this identifier.                                    |
+| `varsityCode`   | string           | —        | Return only applications whose heading's varsity has this `code`.                                          |
+| `headingId`     | integer          | —        | Return only applications for the specified heading.                                                        |
+| `run`           | string / integer | `latest` | Specify the run to retrieve applications from. Can be a numeric run ID or a string exactly equal `latest`. |
 
 #### Response `200 OK`
 
@@ -160,7 +164,9 @@ Each application object now includes three helper flags:
     "heading_id": 42,
     "original_submitted": true,
     "original_quit": false,
-    "passing_now": true
+    "passing_now": true,
+    "passing_to_more_priority": false,
+    "another_varsities_count": 0,
   }
 ]
 ```
