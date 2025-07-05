@@ -30,6 +30,7 @@ jobs:
           cd /opt/analabit
           git fetch origin services
           git reset --hard origin/services
+          make
           # kill any existing dev.sh
           pkill -f './scripts/dev.sh' || true
           nohup ./scripts/dev.sh > /var/log/analabit-dev.log 2>&1 &
