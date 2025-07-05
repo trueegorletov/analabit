@@ -23,3 +23,4 @@ service/*/tmp/
 
 # Producer cache
 service/producer/cache/
+test.txt
