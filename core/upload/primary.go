@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 )
 
 const (
@@ -16,21 +17,31 @@ const (
 	calculationsLockID = 2
 )
 
-func Primary(ctx context.Context, client *ent.Client, origin *core.VarsityCalculator, results []core.CalculationResult) error {
-	h := &helper{
-		origin: origin,
-		client: client,
+func Primary(ctx context.Context, client *ent.Client, runID int, payload *core.UploadPayload) error {
+	// Create a map for quick heading DTO lookups
+	headingsMap := make(map[string]core.HeadingDTO, len(payload.Headings))
+	for _, h := range payload.Headings {
+		headingsMap[h.Code] = h
 	}
 
-	return h.doUploadPrimary(ctx, results)
+	h := &helper{
+		client:      client,
+		payload:     payload,
+		headingsMap: headingsMap,
+		runID:       runID,
+	}
+
+	return h.doUploadPrimary(ctx)
 }
 
 type helper struct {
-	origin *core.VarsityCalculator
-	client *ent.Client
+	client      *ent.Client
+	payload     *core.UploadPayload
+	headingsMap map[string]core.HeadingDTO // Map for efficient heading DTO lookup
+	runID       int
 }
 
-func (u *helper) doUploadPrimary(ctx context.Context, calculations []core.CalculationResult) (err error) {
+func (u *helper) doUploadPrimary(ctx context.Context) (err error) {
 	return utils.WithTx(ctx, u.client, func(tx *ent.Tx) error {
 		if err := lock(ctx, tx, applicationsLockID); err != nil {
 			return err
@@ -43,75 +54,66 @@ func (u *helper) doUploadPrimary(ctx context.Context, calculations []core.Calcul
 		defer unlock(ctx, tx, calculationsLockID)
 
 		txu := &helper{
-			origin: u.origin,
-			client: tx.Client(),
+			client:      tx.Client(),
+			payload:     u.payload,
+			headingsMap: u.headingsMap, // Pass map to transaction helper
+			runID:       u.runID,
 		}
 
-		if err := txu.uploadApplications(ctx); err != nil {
-			return fmt.Errorf("failed to uploadPrimary applications: %w", err)
+		if len(u.payload.Applications) > 0 {
+			if err := txu.uploadApplications(ctx, u.payload.Applications, u.payload.Students); err != nil {
+				return fmt.Errorf("failed to uploadPrimary applications: %w", err)
+			}
 		}
 
-		if err := txu.uploadCalculations(ctx, calculations); err != nil {
-			return fmt.Errorf("failed to uploadPrimary calculations: %w", err)
+		if len(u.payload.Calculations) > 0 {
+			if err := txu.uploadCalculations(ctx, u.payload.Calculations); err != nil {
+				return fmt.Errorf("failed to uploadPrimary calculations: %w", err)
+			}
 		}
 
 		return nil
 	})
 }
 
-func (u *helper) uploadApplications(ctx context.Context) error {
-	var v []struct {
-		Max int `json:"max"`
+func (u *helper) uploadApplications(ctx context.Context, applications []core.ApplicationDTO, students []core.StudentDTO) error {
+	// Create a map of student ID to OriginalSubmitted for fast lookup
+	studentOriginalMap := make(map[string]bool)
+	for _, student := range students {
+		studentOriginalMap[student.ID] = student.OriginalSubmitted
 	}
-	if err := u.client.Application.Query().Aggregate(ent.Max("iteration")).Scan(ctx, &v); err != nil {
-		return fmt.Errorf("failed to get max application iteration: %w", err)
-	}
-	nextIteration := v[0].Max + 1
 
-	for _, student := range u.origin.Students() {
-		applications := student.Applications()
+	for _, app := range applications {
+		h, err := u.headingByCode(ctx, app.HeadingCode)
 
-		for i := range applications {
-			a := &applications[i]
+		if err != nil {
+			return err
+		}
 
-			h, err := u.heading(ctx, a.Heading())
+		originalSubmitted := studentOriginalMap[app.StudentID]
 
-			if err != nil {
-				return err
-			}
+		err = u.client.Application.Create().
+			SetStudentID(app.StudentID).
+			SetPriority(app.Priority).
+			SetCompetitionType(app.CompetitionType).
+			SetRatingPlace(app.RatingPlace).
+			SetScore(app.Score).
+			SetOriginalSubmitted(originalSubmitted).
+			SetRunID(u.runID).
+			SetHeading(h).
+			Exec(ctx)
 
-			err = u.client.Application.Create().
-				SetStudentID(a.StudentID()).
-				SetPriority(a.Priority()).
-				SetCompetitionType(a.CompetitionType()).
-				SetRatingPlace(a.RatingPlace()).
-				SetScore(a.Score()).
-				SetIteration(nextIteration).
-				SetHeading(h).
-				Exec(ctx)
-
-			if err != nil {
-				return fmt.Errorf("failed to create application for student %s: %w", a.StudentID(), err)
-			}
+		if err != nil {
+			return fmt.Errorf("failed to create application for student %s: %w", app.StudentID, err)
 		}
 	}
 
 	return nil
 }
 
-func (u *helper) uploadCalculations(ctx context.Context, calculations []core.CalculationResult) error {
-	var v []struct {
-		Max int `json:"max"`
-	}
-	if err := u.client.Calculation.Query().Aggregate(ent.Max("iteration")).Scan(ctx, &v); err != nil {
-		return fmt.Errorf("failed to get max calculation iteration: %w", err)
-	}
-	nextIteration := v[0].Max + 1
-
-	for i := range calculations {
-		result := &calculations[i]
-
-		h, err := u.heading(ctx, result.Heading)
+func (u *helper) uploadCalculations(ctx context.Context, calculations []core.CalculationResultDTO) error {
+	for _, result := range calculations {
+		h, err := u.headingByCode(ctx, result.HeadingCode)
 
 		if err != nil {
 			return err
@@ -121,15 +123,15 @@ func (u *helper) uploadCalculations(ctx context.Context, calculations []core.Cal
 			admittedPlace := j + 1 // Places are 1-based
 
 			err = u.client.Calculation.Create().
-				SetStudentID(student.ID()).
+				SetStudentID(student.ID).
 				SetAdmittedPlace(admittedPlace).
-				SetIteration(nextIteration).
+				SetRunID(u.runID).
 				SetHeading(h).
 				Exec(ctx)
 
 			if err != nil {
 				return fmt.Errorf("failed to create calculation for student %s in heading %s: %v",
-					student.ID(), h.Code, err)
+					student.ID, h.Code, err)
 			}
 		}
 
@@ -138,24 +140,71 @@ func (u *helper) uploadCalculations(ctx context.Context, calculations []core.Cal
 	return nil
 }
 
-func (u *helper) heading(ctx context.Context, h *core.Heading) (*ent.Heading, error) {
-	if h == nil {
-		return nil, fmt.Errorf("heading is nil")
+// headingByCode finds or creates a heading by its code (which should be in FullCode format)
+func (u *helper) headingByCode(ctx context.Context, headingCode string) (*ent.Heading, error) {
+	if headingCode == "" {
+		return nil, fmt.Errorf("heading code is empty")
 	}
 
-	// Try to find the heading by its full code
-	existingHeading, err := u.client.Heading.Query().Where(heading.Code(h.FullCode())).First(ctx)
+	// Try to find the heading by its code
+	existingHeading, err := u.client.Heading.Query().Where(heading.Code(headingCode)).First(ctx)
 
 	if err != nil && !ent.IsNotFound(err) {
-		return nil, fmt.Errorf("failed to query heading %s: %w", h.FullCode(), err)
+		return nil, fmt.Errorf("failed to query heading %s: %w", headingCode, err)
 	}
 
 	if existingHeading != nil {
 		return existingHeading, nil
 	}
 
-	// If not found, create a new heading
-	return u.createHeading(ctx, h)
+	// If not found, try to create it from the payload's DTOs
+	headingDTO, ok := u.headingsMap[headingCode]
+	if !ok {
+		// This case should ideally not happen if the payload is well-formed.
+		// It means an application or calculation refers to a heading not described in the payload.
+		return nil, fmt.Errorf("heading %s not found in payload DTOs", headingCode)
+	}
+
+	// Extract varsity code from heading code
+	var varsityCode string
+	if colonIndex := strings.LastIndex(headingCode, ":"); colonIndex > 0 {
+		varsityCode = headingCode[:colonIndex]
+	} else {
+		varsityCode = u.payload.VarsityCode // Fallback to the main varsity code
+	}
+
+	return u.createHeadingFromDTO(ctx, headingDTO, varsityCode)
+}
+
+// createHeadingFromDTO creates a new heading in the database from a DTO.
+func (u *helper) createHeadingFromDTO(ctx context.Context, dto core.HeadingDTO, varsityCode string) (*ent.Heading, error) {
+	// Ensure varsity exists
+	v, err := u.varsity(ctx, varsityCode)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get or create varsity %s for heading %s: %w", varsityCode, dto.Code, err)
+	}
+
+	// Create heading with full information from the DTO
+	err = u.client.Heading.Create().
+		SetCode(dto.Code).
+		SetName(dto.Name).
+		SetRegularCapacity(dto.RegularCapacity).
+		SetTargetQuotaCapacity(dto.TargetQuotaCapacity).
+		SetDedicatedQuotaCapacity(dto.DedicatedQuotaCapacity).
+		SetSpecialQuotaCapacity(dto.SpecialQuotaCapacity).
+		SetVarsity(v).
+		Exec(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create heading %s from DTO: %w", dto.Code, err)
+	}
+
+	created, err := u.client.Heading.Query().Where(heading.Code(dto.Code)).Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve created heading %s: %w", dto.Code, err)
+	}
+
+	slog.Info("created heading from DTO", "code", created.Code, "name", created.Name)
+	return created, nil
 }
 
 func (u *helper) varsity(ctx context.Context, code string) (*ent.Varsity, error) {
@@ -174,49 +223,12 @@ func (u *helper) varsity(ctx context.Context, code string) (*ent.Varsity, error)
 		return v, nil
 	}
 
-	// If not found, create a new varsity
-	return u.createVarsity(ctx, code, code)
-}
-
-func (u *helper) createHeading(ctx context.Context, h *core.Heading) (*ent.Heading, error) {
-	v, err := u.client.Varsity.Query().Where(varsity.Code(h.VarsityCode())).First(ctx)
-
-	if err != nil && !ent.IsNotFound(err) {
-		return nil, fmt.Errorf("failed to query varsity %s: %w", h.VarsityCode(), err)
+	// If not found, create a new varsity using payload information
+	prettyName := u.payload.VarsityName
+	if prettyName == "" {
+		prettyName = code // fallback to code if no pretty name
 	}
-
-	if v == nil {
-		v, err = u.createVarsity(ctx, h.VarsityCode(), h.VarsityPrettyName())
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	c := h.Capacities()
-
-	err = u.client.Heading.Create().
-		SetCode(h.FullCode()).
-		SetName(h.PrettyName()).
-		SetRegularCapacity(c.Regular).
-		SetTargetQuotaCapacity(c.TargetQuota).
-		SetDedicatedQuotaCapacity(c.DedicatedQuota).
-		SetSpecialQuotaCapacity(c.SpecialQuota).
-		SetVarsity(v).
-		Exec(ctx)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create heading %s: %w", h.FullCode(), err)
-	}
-
-	save, err := u.client.Heading.Query().Where(heading.Code(h.FullCode())).Only(ctx)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve created heading %s: %w", h.FullCode(), err)
-	}
-
-	slog.Info("created new heading", "code", save.Code, "name", save.Name)
-	return save, nil
+	return u.createVarsity(ctx, code, prettyName)
 }
 
 func (u *helper) createVarsity(ctx context.Context, code, prettyName string) (*ent.Varsity, error) {

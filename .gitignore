@@ -2,3 +2,25 @@
 /cache/
 /analabit
 cli.log
+
+service/aggregator/proto/*.pb.go
+service/aggregator/proto/*.pb.micro.go
+
+service/producer/proto/*.pb.go
+service/producer/proto/*.pb.micro.go
+
+# cursor
+.cursor/*
+
+# Binaries
+/aggregator
+/api
+/producer
+/main
+
+# Service temp files
+service/*/tmp/
+
+# Producer cache
+service/producer/cache/
+test.txt

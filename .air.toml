@@ -1,0 +1,13 @@
+# The working directory for the build and run commands.
+# It's relative to the directory where `air` is executed.
+root = "."
+
+[build]
+# Command to build the application.
+cmd = "go build -o ./tmp/app ."
+# The binary to run after a successful build.
+bin = "./tmp/app"
+# Directories to watch for changes.
+# "." refers to the service's own directory (e.g., service/api).
+# "../../core" is the path to the shared core directory from within a service directory.
+include_dir = [".", "../../core"]

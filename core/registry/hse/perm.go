@@ -8,7 +8,7 @@ import (
 
 const (
 	permCode = "hse_perm"
-	permName = "Высшая школа экономики (Пермь)"
+	permName = "ВШЭ (Пермь)"
 )
 
 func permSourcesList() []source.HeadingSource {

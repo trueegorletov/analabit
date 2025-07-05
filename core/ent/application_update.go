@@ -7,6 +7,7 @@ import (
 	"analabit/core/ent/application"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/predicate"
+	"analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -128,24 +129,31 @@ func (au *ApplicationUpdate) AddScore(i int) *ApplicationUpdate {
 	return au
 }
 
-// SetIteration sets the "iteration" field.
-func (au *ApplicationUpdate) SetIteration(i int) *ApplicationUpdate {
-	au.mutation.ResetIteration()
-	au.mutation.SetIteration(i)
+// SetRunID sets the "run_id" field.
+func (au *ApplicationUpdate) SetRunID(i int) *ApplicationUpdate {
+	au.mutation.SetRunID(i)
 	return au
 }
 
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (au *ApplicationUpdate) SetNillableIteration(i *int) *ApplicationUpdate {
+// SetNillableRunID sets the "run_id" field if the given value is not nil.
+func (au *ApplicationUpdate) SetNillableRunID(i *int) *ApplicationUpdate {
 	if i != nil {
-		au.SetIteration(*i)
+		au.SetRunID(*i)
 	}
 	return au
 }
 
-// AddIteration adds i to the "iteration" field.
-func (au *ApplicationUpdate) AddIteration(i int) *ApplicationUpdate {
-	au.mutation.AddIteration(i)
+// SetOriginalSubmitted sets the "original_submitted" field.
+func (au *ApplicationUpdate) SetOriginalSubmitted(b bool) *ApplicationUpdate {
+	au.mutation.SetOriginalSubmitted(b)
+	return au
+}
+
+// SetNillableOriginalSubmitted sets the "original_submitted" field if the given value is not nil.
+func (au *ApplicationUpdate) SetNillableOriginalSubmitted(b *bool) *ApplicationUpdate {
+	if b != nil {
+		au.SetOriginalSubmitted(*b)
+	}
 	return au
 }
 
@@ -166,6 +174,11 @@ func (au *ApplicationUpdate) SetHeading(h *Heading) *ApplicationUpdate {
 	return au.SetHeadingID(h.ID)
 }
 
+// SetRun sets the "run" edge to the Run entity.
+func (au *ApplicationUpdate) SetRun(r *Run) *ApplicationUpdate {
+	return au.SetRunID(r.ID)
+}
+
 // Mutation returns the ApplicationMutation object of the builder.
 func (au *ApplicationUpdate) Mutation() *ApplicationMutation {
 	return au.mutation
@@ -174,6 +187,12 @@ func (au *ApplicationUpdate) Mutation() *ApplicationMutation {
 // ClearHeading clears the "heading" edge to the Heading entity.
 func (au *ApplicationUpdate) ClearHeading() *ApplicationUpdate {
 	au.mutation.ClearHeading()
+	return au
+}
+
+// ClearRun clears the "run" edge to the Run entity.
+func (au *ApplicationUpdate) ClearRun() *ApplicationUpdate {
+	au.mutation.ClearRun()
 	return au
 }
 
@@ -218,6 +237,9 @@ func (au *ApplicationUpdate) check() error {
 	if au.mutation.HeadingCleared() && len(au.mutation.HeadingIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Application.heading"`)
 	}
+	if au.mutation.RunCleared() && len(au.mutation.RunIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Application.run"`)
+	}
 	return nil
 }
 
@@ -260,11 +282,8 @@ func (au *ApplicationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.AddedScore(); ok {
 		_spec.AddField(application.FieldScore, field.TypeInt, value)
 	}
-	if value, ok := au.mutation.Iteration(); ok {
-		_spec.SetField(application.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := au.mutation.AddedIteration(); ok {
-		_spec.AddField(application.FieldIteration, field.TypeInt, value)
+	if value, ok := au.mutation.OriginalSubmitted(); ok {
+		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)
@@ -291,6 +310,35 @@ func (au *ApplicationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(heading.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.RunCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   application.RunTable,
+			Columns: []string{application.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   application.RunTable,
+			Columns: []string{application.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -416,24 +464,31 @@ func (auo *ApplicationUpdateOne) AddScore(i int) *ApplicationUpdateOne {
 	return auo
 }
 
-// SetIteration sets the "iteration" field.
-func (auo *ApplicationUpdateOne) SetIteration(i int) *ApplicationUpdateOne {
-	auo.mutation.ResetIteration()
-	auo.mutation.SetIteration(i)
+// SetRunID sets the "run_id" field.
+func (auo *ApplicationUpdateOne) SetRunID(i int) *ApplicationUpdateOne {
+	auo.mutation.SetRunID(i)
 	return auo
 }
 
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (auo *ApplicationUpdateOne) SetNillableIteration(i *int) *ApplicationUpdateOne {
+// SetNillableRunID sets the "run_id" field if the given value is not nil.
+func (auo *ApplicationUpdateOne) SetNillableRunID(i *int) *ApplicationUpdateOne {
 	if i != nil {
-		auo.SetIteration(*i)
+		auo.SetRunID(*i)
 	}
 	return auo
 }
 
-// AddIteration adds i to the "iteration" field.
-func (auo *ApplicationUpdateOne) AddIteration(i int) *ApplicationUpdateOne {
-	auo.mutation.AddIteration(i)
+// SetOriginalSubmitted sets the "original_submitted" field.
+func (auo *ApplicationUpdateOne) SetOriginalSubmitted(b bool) *ApplicationUpdateOne {
+	auo.mutation.SetOriginalSubmitted(b)
+	return auo
+}
+
+// SetNillableOriginalSubmitted sets the "original_submitted" field if the given value is not nil.
+func (auo *ApplicationUpdateOne) SetNillableOriginalSubmitted(b *bool) *ApplicationUpdateOne {
+	if b != nil {
+		auo.SetOriginalSubmitted(*b)
+	}
 	return auo
 }
 
@@ -454,6 +509,11 @@ func (auo *ApplicationUpdateOne) SetHeading(h *Heading) *ApplicationUpdateOne {
 	return auo.SetHeadingID(h.ID)
 }
 
+// SetRun sets the "run" edge to the Run entity.
+func (auo *ApplicationUpdateOne) SetRun(r *Run) *ApplicationUpdateOne {
+	return auo.SetRunID(r.ID)
+}
+
 // Mutation returns the ApplicationMutation object of the builder.
 func (auo *ApplicationUpdateOne) Mutation() *ApplicationMutation {
 	return auo.mutation
@@ -462,6 +522,12 @@ func (auo *ApplicationUpdateOne) Mutation() *ApplicationMutation {
 // ClearHeading clears the "heading" edge to the Heading entity.
 func (auo *ApplicationUpdateOne) ClearHeading() *ApplicationUpdateOne {
 	auo.mutation.ClearHeading()
+	return auo
+}
+
+// ClearRun clears the "run" edge to the Run entity.
+func (auo *ApplicationUpdateOne) ClearRun() *ApplicationUpdateOne {
+	auo.mutation.ClearRun()
 	return auo
 }
 
@@ -518,6 +584,9 @@ func (auo *ApplicationUpdateOne) defaults() {
 func (auo *ApplicationUpdateOne) check() error {
 	if auo.mutation.HeadingCleared() && len(auo.mutation.HeadingIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Application.heading"`)
+	}
+	if auo.mutation.RunCleared() && len(auo.mutation.RunIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Application.run"`)
 	}
 	return nil
 }
@@ -578,11 +647,8 @@ func (auo *ApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Applicatio
 	if value, ok := auo.mutation.AddedScore(); ok {
 		_spec.AddField(application.FieldScore, field.TypeInt, value)
 	}
-	if value, ok := auo.mutation.Iteration(); ok {
-		_spec.SetField(application.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := auo.mutation.AddedIteration(); ok {
-		_spec.AddField(application.FieldIteration, field.TypeInt, value)
+	if value, ok := auo.mutation.OriginalSubmitted(); ok {
+		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)
@@ -609,6 +675,35 @@ func (auo *ApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Applicatio
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(heading.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.RunCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   application.RunTable,
+			Columns: []string{application.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   application.RunTable,
+			Columns: []string{application.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -99,9 +99,9 @@ func MedLastAdmittedRatingPlace(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldEQ(FieldMedLastAdmittedRatingPlace, v))
 }
 
-// Iteration applies equality check predicate on the "iteration" field. It's identical to IterationEQ.
-func Iteration(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldEQ(FieldIteration, v))
+// RunID applies equality check predicate on the "run_id" field. It's identical to RunIDEQ.
+func RunID(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldRunID, v))
 }
 
 // DrainedPercentEQ applies the EQ predicate on the "drained_percent" field.
@@ -464,44 +464,24 @@ func MedLastAdmittedRatingPlaceLTE(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldLTE(FieldMedLastAdmittedRatingPlace, v))
 }
 
-// IterationEQ applies the EQ predicate on the "iteration" field.
-func IterationEQ(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldEQ(FieldIteration, v))
+// RunIDEQ applies the EQ predicate on the "run_id" field.
+func RunIDEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldRunID, v))
 }
 
-// IterationNEQ applies the NEQ predicate on the "iteration" field.
-func IterationNEQ(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldNEQ(FieldIteration, v))
+// RunIDNEQ applies the NEQ predicate on the "run_id" field.
+func RunIDNEQ(v int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldRunID, v))
 }
 
-// IterationIn applies the In predicate on the "iteration" field.
-func IterationIn(vs ...int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldIn(FieldIteration, vs...))
+// RunIDIn applies the In predicate on the "run_id" field.
+func RunIDIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldIn(FieldRunID, vs...))
 }
 
-// IterationNotIn applies the NotIn predicate on the "iteration" field.
-func IterationNotIn(vs ...int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldNotIn(FieldIteration, vs...))
-}
-
-// IterationGT applies the GT predicate on the "iteration" field.
-func IterationGT(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldGT(FieldIteration, v))
-}
-
-// IterationGTE applies the GTE predicate on the "iteration" field.
-func IterationGTE(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldGTE(FieldIteration, v))
-}
-
-// IterationLT applies the LT predicate on the "iteration" field.
-func IterationLT(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldLT(FieldIteration, v))
-}
-
-// IterationLTE applies the LTE predicate on the "iteration" field.
-func IterationLTE(v int) predicate.DrainedResult {
-	return predicate.DrainedResult(sql.FieldLTE(FieldIteration, v))
+// RunIDNotIn applies the NotIn predicate on the "run_id" field.
+func RunIDNotIn(vs ...int) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNotIn(FieldRunID, vs...))
 }
 
 // HasHeading applies the HasEdge predicate on the "heading" edge.
@@ -519,6 +499,29 @@ func HasHeading() predicate.DrainedResult {
 func HasHeadingWith(preds ...predicate.Heading) predicate.DrainedResult {
 	return predicate.DrainedResult(func(s *sql.Selector) {
 		step := newHeadingStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRun applies the HasEdge predicate on the "run" edge.
+func HasRun() predicate.DrainedResult {
+	return predicate.DrainedResult(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RunTable, RunColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRunWith applies the HasEdge predicate on the "run" edge with a given conditions (other predicates).
+func HasRunWith(preds ...predicate.Run) predicate.DrainedResult {
+	return predicate.DrainedResult(func(s *sql.Selector) {
+		step := newRunStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

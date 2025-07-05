@@ -8,7 +8,7 @@ import (
 
 const (
 	mskCode = "hse_msk"
-	mskName = "Высшая школа экономики (Москва)"
+	mskName = "ВШЭ (Москва)"
 )
 
 func mskSourcesList() []source.HeadingSource {

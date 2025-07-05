@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package producer;
+
+option go_package = "service/producer/proto";
+
+service Producer {
+	rpc Produce(ProduceRequest) returns (ProduceResponse) {}
+}
+
+message ProduceRequest {
+	repeated string varsities_list = 1;
+	repeated string varsities_excluded = 2;
+	int32 cache_ttl_minutes = 3;
+	repeated int32 drain_stages = 4;
+	int32 drain_iterations = 5;
+}
+
+message ProduceResponse {
+	string bucket_name = 1;
+	repeated string payload_objects = 4;
+}

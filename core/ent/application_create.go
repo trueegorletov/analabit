@@ -6,6 +6,7 @@ import (
 	"analabit/core"
 	"analabit/core/ent/application"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -52,9 +53,23 @@ func (ac *ApplicationCreate) SetScore(i int) *ApplicationCreate {
 	return ac
 }
 
-// SetIteration sets the "iteration" field.
-func (ac *ApplicationCreate) SetIteration(i int) *ApplicationCreate {
-	ac.mutation.SetIteration(i)
+// SetRunID sets the "run_id" field.
+func (ac *ApplicationCreate) SetRunID(i int) *ApplicationCreate {
+	ac.mutation.SetRunID(i)
+	return ac
+}
+
+// SetOriginalSubmitted sets the "original_submitted" field.
+func (ac *ApplicationCreate) SetOriginalSubmitted(b bool) *ApplicationCreate {
+	ac.mutation.SetOriginalSubmitted(b)
+	return ac
+}
+
+// SetNillableOriginalSubmitted sets the "original_submitted" field if the given value is not nil.
+func (ac *ApplicationCreate) SetNillableOriginalSubmitted(b *bool) *ApplicationCreate {
+	if b != nil {
+		ac.SetOriginalSubmitted(*b)
+	}
 	return ac
 }
 
@@ -81,6 +96,11 @@ func (ac *ApplicationCreate) SetHeadingID(id int) *ApplicationCreate {
 // SetHeading sets the "heading" edge to the Heading entity.
 func (ac *ApplicationCreate) SetHeading(h *Heading) *ApplicationCreate {
 	return ac.SetHeadingID(h.ID)
+}
+
+// SetRun sets the "run" edge to the Run entity.
+func (ac *ApplicationCreate) SetRun(r *Run) *ApplicationCreate {
+	return ac.SetRunID(r.ID)
 }
 
 // Mutation returns the ApplicationMutation object of the builder.
@@ -118,6 +138,10 @@ func (ac *ApplicationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ac *ApplicationCreate) defaults() {
+	if _, ok := ac.mutation.OriginalSubmitted(); !ok {
+		v := application.DefaultOriginalSubmitted
+		ac.mutation.SetOriginalSubmitted(v)
+	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		v := application.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
@@ -141,14 +165,20 @@ func (ac *ApplicationCreate) check() error {
 	if _, ok := ac.mutation.Score(); !ok {
 		return &ValidationError{Name: "score", err: errors.New(`ent: missing required field "Application.score"`)}
 	}
-	if _, ok := ac.mutation.Iteration(); !ok {
-		return &ValidationError{Name: "iteration", err: errors.New(`ent: missing required field "Application.iteration"`)}
+	if _, ok := ac.mutation.RunID(); !ok {
+		return &ValidationError{Name: "run_id", err: errors.New(`ent: missing required field "Application.run_id"`)}
+	}
+	if _, ok := ac.mutation.OriginalSubmitted(); !ok {
+		return &ValidationError{Name: "original_submitted", err: errors.New(`ent: missing required field "Application.original_submitted"`)}
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Application.updated_at"`)}
 	}
 	if len(ac.mutation.HeadingIDs()) == 0 {
 		return &ValidationError{Name: "heading", err: errors.New(`ent: missing required edge "Application.heading"`)}
+	}
+	if len(ac.mutation.RunIDs()) == 0 {
+		return &ValidationError{Name: "run", err: errors.New(`ent: missing required edge "Application.run"`)}
 	}
 	return nil
 }
@@ -196,9 +226,9 @@ func (ac *ApplicationCreate) createSpec() (*Application, *sqlgraph.CreateSpec) {
 		_spec.SetField(application.FieldScore, field.TypeInt, value)
 		_node.Score = value
 	}
-	if value, ok := ac.mutation.Iteration(); ok {
-		_spec.SetField(application.FieldIteration, field.TypeInt, value)
-		_node.Iteration = value
+	if value, ok := ac.mutation.OriginalSubmitted(); ok {
+		_spec.SetField(application.FieldOriginalSubmitted, field.TypeBool, value)
+		_node.OriginalSubmitted = value
 	}
 	if value, ok := ac.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)
@@ -219,6 +249,23 @@ func (ac *ApplicationCreate) createSpec() (*Application, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.heading_applications = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   application.RunTable,
+			Columns: []string{application.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RunID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

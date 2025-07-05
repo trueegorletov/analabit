@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/application"
 	"analabit/core/ent/calculation"
+	"analabit/core/ent/run"
 	"analabit/core/ent/schema"
 	"time"
 )
@@ -15,8 +16,12 @@ import (
 func init() {
 	applicationFields := schema.Application{}.Fields()
 	_ = applicationFields
+	// applicationDescOriginalSubmitted is the schema descriptor for original_submitted field.
+	applicationDescOriginalSubmitted := applicationFields[6].Descriptor()
+	// application.DefaultOriginalSubmitted holds the default value on creation for the original_submitted field.
+	application.DefaultOriginalSubmitted = applicationDescOriginalSubmitted.Default.(bool)
 	// applicationDescUpdatedAt is the schema descriptor for updated_at field.
-	applicationDescUpdatedAt := applicationFields[6].Descriptor()
+	applicationDescUpdatedAt := applicationFields[7].Descriptor()
 	// application.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	application.DefaultUpdatedAt = applicationDescUpdatedAt.Default.(func() time.Time)
 	// application.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -29,4 +34,10 @@ func init() {
 	calculation.DefaultUpdatedAt = calculationDescUpdatedAt.Default.(func() time.Time)
 	// calculation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	calculation.UpdateDefaultUpdatedAt = calculationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	runFields := schema.Run{}.Fields()
+	_ = runFields
+	// runDescTriggeredAt is the schema descriptor for triggered_at field.
+	runDescTriggeredAt := runFields[0].Descriptor()
+	// run.DefaultTriggeredAt holds the default value on creation for the triggered_at field.
+	run.DefaultTriggeredAt = runDescTriggeredAt.Default.(func() time.Time)
 }

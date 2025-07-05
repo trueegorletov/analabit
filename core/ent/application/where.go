@@ -82,9 +82,14 @@ func Score(v int) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldScore, v))
 }
 
-// Iteration applies equality check predicate on the "iteration" field. It's identical to IterationEQ.
-func Iteration(v int) predicate.Application {
-	return predicate.Application(sql.FieldEQ(FieldIteration, v))
+// RunID applies equality check predicate on the "run_id" field. It's identical to RunIDEQ.
+func RunID(v int) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldRunID, v))
+}
+
+// OriginalSubmitted applies equality check predicate on the "original_submitted" field. It's identical to OriginalSubmittedEQ.
+func OriginalSubmitted(v bool) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldOriginalSubmitted, v))
 }
 
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
@@ -331,44 +336,34 @@ func ScoreLTE(v int) predicate.Application {
 	return predicate.Application(sql.FieldLTE(FieldScore, v))
 }
 
-// IterationEQ applies the EQ predicate on the "iteration" field.
-func IterationEQ(v int) predicate.Application {
-	return predicate.Application(sql.FieldEQ(FieldIteration, v))
+// RunIDEQ applies the EQ predicate on the "run_id" field.
+func RunIDEQ(v int) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldRunID, v))
 }
 
-// IterationNEQ applies the NEQ predicate on the "iteration" field.
-func IterationNEQ(v int) predicate.Application {
-	return predicate.Application(sql.FieldNEQ(FieldIteration, v))
+// RunIDNEQ applies the NEQ predicate on the "run_id" field.
+func RunIDNEQ(v int) predicate.Application {
+	return predicate.Application(sql.FieldNEQ(FieldRunID, v))
 }
 
-// IterationIn applies the In predicate on the "iteration" field.
-func IterationIn(vs ...int) predicate.Application {
-	return predicate.Application(sql.FieldIn(FieldIteration, vs...))
+// RunIDIn applies the In predicate on the "run_id" field.
+func RunIDIn(vs ...int) predicate.Application {
+	return predicate.Application(sql.FieldIn(FieldRunID, vs...))
 }
 
-// IterationNotIn applies the NotIn predicate on the "iteration" field.
-func IterationNotIn(vs ...int) predicate.Application {
-	return predicate.Application(sql.FieldNotIn(FieldIteration, vs...))
+// RunIDNotIn applies the NotIn predicate on the "run_id" field.
+func RunIDNotIn(vs ...int) predicate.Application {
+	return predicate.Application(sql.FieldNotIn(FieldRunID, vs...))
 }
 
-// IterationGT applies the GT predicate on the "iteration" field.
-func IterationGT(v int) predicate.Application {
-	return predicate.Application(sql.FieldGT(FieldIteration, v))
+// OriginalSubmittedEQ applies the EQ predicate on the "original_submitted" field.
+func OriginalSubmittedEQ(v bool) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldOriginalSubmitted, v))
 }
 
-// IterationGTE applies the GTE predicate on the "iteration" field.
-func IterationGTE(v int) predicate.Application {
-	return predicate.Application(sql.FieldGTE(FieldIteration, v))
-}
-
-// IterationLT applies the LT predicate on the "iteration" field.
-func IterationLT(v int) predicate.Application {
-	return predicate.Application(sql.FieldLT(FieldIteration, v))
-}
-
-// IterationLTE applies the LTE predicate on the "iteration" field.
-func IterationLTE(v int) predicate.Application {
-	return predicate.Application(sql.FieldLTE(FieldIteration, v))
+// OriginalSubmittedNEQ applies the NEQ predicate on the "original_submitted" field.
+func OriginalSubmittedNEQ(v bool) predicate.Application {
+	return predicate.Application(sql.FieldNEQ(FieldOriginalSubmitted, v))
 }
 
 // UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
@@ -426,6 +421,29 @@ func HasHeading() predicate.Application {
 func HasHeadingWith(preds ...predicate.Heading) predicate.Application {
 	return predicate.Application(func(s *sql.Selector) {
 		step := newHeadingStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRun applies the HasEdge predicate on the "run" edge.
+func HasRun() predicate.Application {
+	return predicate.Application(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RunTable, RunColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRunWith applies the HasEdge predicate on the "run" edge with a given conditions (other predicates).
+func HasRunWith(preds ...predicate.Run) predicate.Application {
+	return predicate.Application(func(s *sql.Selector) {
+		step := newRunStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

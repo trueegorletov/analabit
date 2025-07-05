@@ -5,6 +5,7 @@ package ent
 import (
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"fmt"
 	"strings"
 
@@ -35,8 +36,8 @@ type DrainedResult struct {
 	MaxLastAdmittedRatingPlace int `json:"max_last_admitted_rating_place,omitempty"`
 	// MedLastAdmittedRatingPlace holds the value of the "med_last_admitted_rating_place" field.
 	MedLastAdmittedRatingPlace int `json:"med_last_admitted_rating_place,omitempty"`
-	// Iteration holds the value of the "iteration" field.
-	Iteration int `json:"iteration,omitempty"`
+	// RunID holds the value of the "run_id" field.
+	RunID int `json:"run_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DrainedResultQuery when eager-loading is set.
 	Edges                   DrainedResultEdges `json:"edges"`
@@ -48,9 +49,11 @@ type DrainedResult struct {
 type DrainedResultEdges struct {
 	// Heading holds the value of the heading edge.
 	Heading *Heading `json:"heading,omitempty"`
+	// Run holds the value of the run edge.
+	Run *Run `json:"run,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // HeadingOrErr returns the Heading value or an error if the edge
@@ -64,12 +67,23 @@ func (e DrainedResultEdges) HeadingOrErr() (*Heading, error) {
 	return nil, &NotLoadedError{edge: "heading"}
 }
 
+// RunOrErr returns the Run value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e DrainedResultEdges) RunOrErr() (*Run, error) {
+	if e.Run != nil {
+		return e.Run, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: run.Label}
+	}
+	return nil, &NotLoadedError{edge: "run"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*DrainedResult) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case drainedresult.FieldID, drainedresult.FieldDrainedPercent, drainedresult.FieldAvgPassingScore, drainedresult.FieldMinPassingScore, drainedresult.FieldMaxPassingScore, drainedresult.FieldMedPassingScore, drainedresult.FieldAvgLastAdmittedRatingPlace, drainedresult.FieldMinLastAdmittedRatingPlace, drainedresult.FieldMaxLastAdmittedRatingPlace, drainedresult.FieldMedLastAdmittedRatingPlace, drainedresult.FieldIteration:
+		case drainedresult.FieldID, drainedresult.FieldDrainedPercent, drainedresult.FieldAvgPassingScore, drainedresult.FieldMinPassingScore, drainedresult.FieldMaxPassingScore, drainedresult.FieldMedPassingScore, drainedresult.FieldAvgLastAdmittedRatingPlace, drainedresult.FieldMinLastAdmittedRatingPlace, drainedresult.FieldMaxLastAdmittedRatingPlace, drainedresult.FieldMedLastAdmittedRatingPlace, drainedresult.FieldRunID:
 			values[i] = new(sql.NullInt64)
 		case drainedresult.ForeignKeys[0]: // heading_drained_results
 			values[i] = new(sql.NullInt64)
@@ -148,11 +162,11 @@ func (dr *DrainedResult) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				dr.MedLastAdmittedRatingPlace = int(value.Int64)
 			}
-		case drainedresult.FieldIteration:
+		case drainedresult.FieldRunID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field iteration", values[i])
+				return fmt.Errorf("unexpected type %T for field run_id", values[i])
 			} else if value.Valid {
-				dr.Iteration = int(value.Int64)
+				dr.RunID = int(value.Int64)
 			}
 		case drainedresult.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -177,6 +191,11 @@ func (dr *DrainedResult) Value(name string) (ent.Value, error) {
 // QueryHeading queries the "heading" edge of the DrainedResult entity.
 func (dr *DrainedResult) QueryHeading() *HeadingQuery {
 	return NewDrainedResultClient(dr.config).QueryHeading(dr)
+}
+
+// QueryRun queries the "run" edge of the DrainedResult entity.
+func (dr *DrainedResult) QueryRun() *RunQuery {
+	return NewDrainedResultClient(dr.config).QueryRun(dr)
 }
 
 // Update returns a builder for updating this DrainedResult.
@@ -229,8 +248,8 @@ func (dr *DrainedResult) String() string {
 	builder.WriteString("med_last_admitted_rating_place=")
 	builder.WriteString(fmt.Sprintf("%v", dr.MedLastAdmittedRatingPlace))
 	builder.WriteString(", ")
-	builder.WriteString("iteration=")
-	builder.WriteString(fmt.Sprintf("%v", dr.Iteration))
+	builder.WriteString("run_id=")
+	builder.WriteString(fmt.Sprintf("%v", dr.RunID))
 	builder.WriteByte(')')
 	return builder.String()
 }

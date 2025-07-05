@@ -8,7 +8,7 @@ import (
 
 const (
 	nnCode = "hse_nn"
-	nnName = "Высшая школа экономики (НН)"
+	nnName = "ВШЭ (НН)"
 )
 
 func nnSourcesList() []source.HeadingSource {

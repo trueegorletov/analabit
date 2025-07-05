@@ -78,14 +78,14 @@ func (d *Drainer) Run(iterations int) []DrainedResult {
 			passingScore, err := result.PassingScore()
 
 			if err != nil {
-				slog.Error("Failed to get passing score", "error", err, "heading", code)
+				slog.Debug("Passing score unavailable", "error", err, "heading", code)
 				continue
 			}
 
 			lastAdmittedRatingPlace, err := result.LastAdmittedRatingPlace()
 
 			if err != nil {
-				slog.Error("Failed to get last admitted rating place", "error", err, "heading", code)
+				slog.Debug("Last admitted rating place unavailable", "error", err, "heading", code)
 				continue
 			}
 

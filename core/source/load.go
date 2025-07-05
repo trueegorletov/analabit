@@ -66,7 +66,6 @@ func (v *Varsity) AddHeading(hd *HeadingData) {
 }
 
 func (v *Varsity) AddApplication(ad *ApplicationData) {
-	// Assuming ad.StudentID is the ORIGINAL student ID
 	if ad.CompetitionType > core.CompetitionBVI && !ad.OriginalSubmitted {
 		return // Most of the quota guys never submit their originals, so consider only those who did
 	}
@@ -145,6 +144,9 @@ func (v *Varsity) loadFromSources() map[string]bool {
 	close(applicationDataChan) //
 	processingWg.Wait()        // Wait for the processor goroutine to finish all writes
 
+	// After all applications are loaded, normalize them.
+	v.VarsityCalculator.NormalizeApplications()
+
 	return submittedOriginals
 }
 
@@ -159,11 +161,12 @@ func (v *Varsity) loadFromCache() map[string]bool {
 
 	for _, ad := range v.ApplicationsCache {
 		v.AddApplication(ad)
-
 		if ad.OriginalSubmitted {
 			submittedOriginals[ad.StudentID] = true
 		}
 	}
+
+	v.VarsityCalculator.NormalizeApplications()
 
 	return submittedOriginals
 }
@@ -191,8 +194,7 @@ func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) ([]*
 			for studentID := range submittedInThisVarsity { // studentID is original ID
 				if existingVarsityCode, found := studentOriginals[studentID]; found {
 					if existingVarsityCode != currentVarsity.Code { // Log only if different varsity
-						log.Printf("Warning: Student %s submitted original to multiple varsities: %s and %s. Using %s.",
-							studentID, existingVarsityCode, currentVarsity.Code, existingVarsityCode)
+						slog.Debug("Student submitted original to multiple varsities", "studentID", studentID, "varsityFirst", existingVarsityCode, "varsitySecond", currentVarsity.Code, "chosen", existingVarsityCode)
 					}
 				} else {
 					studentOriginals[studentID] = currentVarsity.Code
@@ -288,7 +290,7 @@ func LoadWithCaches(defs []VarsityDefinition, caches []*VarsityDataCache) []*Var
 
 	for studentID, varsityCode := range cachedOrigs {
 		if _, found := removedFromCached[studentID]; found {
-			slog.Warn("Student submitted original to multiple varsities", "studentID", studentID)
+			slog.Debug("Student submitted original to multiple varsities", "studentID", studentID)
 			continue
 		}
 

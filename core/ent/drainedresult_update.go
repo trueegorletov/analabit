@@ -6,6 +6,7 @@ import (
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/predicate"
+	"analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -217,24 +218,17 @@ func (dru *DrainedResultUpdate) AddMedLastAdmittedRatingPlace(i int) *DrainedRes
 	return dru
 }
 
-// SetIteration sets the "iteration" field.
-func (dru *DrainedResultUpdate) SetIteration(i int) *DrainedResultUpdate {
-	dru.mutation.ResetIteration()
-	dru.mutation.SetIteration(i)
+// SetRunID sets the "run_id" field.
+func (dru *DrainedResultUpdate) SetRunID(i int) *DrainedResultUpdate {
+	dru.mutation.SetRunID(i)
 	return dru
 }
 
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (dru *DrainedResultUpdate) SetNillableIteration(i *int) *DrainedResultUpdate {
+// SetNillableRunID sets the "run_id" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableRunID(i *int) *DrainedResultUpdate {
 	if i != nil {
-		dru.SetIteration(*i)
+		dru.SetRunID(*i)
 	}
-	return dru
-}
-
-// AddIteration adds i to the "iteration" field.
-func (dru *DrainedResultUpdate) AddIteration(i int) *DrainedResultUpdate {
-	dru.mutation.AddIteration(i)
 	return dru
 }
 
@@ -249,6 +243,11 @@ func (dru *DrainedResultUpdate) SetHeading(h *Heading) *DrainedResultUpdate {
 	return dru.SetHeadingID(h.ID)
 }
 
+// SetRun sets the "run" edge to the Run entity.
+func (dru *DrainedResultUpdate) SetRun(r *Run) *DrainedResultUpdate {
+	return dru.SetRunID(r.ID)
+}
+
 // Mutation returns the DrainedResultMutation object of the builder.
 func (dru *DrainedResultUpdate) Mutation() *DrainedResultMutation {
 	return dru.mutation
@@ -257,6 +256,12 @@ func (dru *DrainedResultUpdate) Mutation() *DrainedResultMutation {
 // ClearHeading clears the "heading" edge to the Heading entity.
 func (dru *DrainedResultUpdate) ClearHeading() *DrainedResultUpdate {
 	dru.mutation.ClearHeading()
+	return dru
+}
+
+// ClearRun clears the "run" edge to the Run entity.
+func (dru *DrainedResultUpdate) ClearRun() *DrainedResultUpdate {
+	dru.mutation.ClearRun()
 	return dru
 }
 
@@ -291,6 +296,9 @@ func (dru *DrainedResultUpdate) ExecX(ctx context.Context) {
 func (dru *DrainedResultUpdate) check() error {
 	if dru.mutation.HeadingCleared() && len(dru.mutation.HeadingIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "DrainedResult.heading"`)
+	}
+	if dru.mutation.RunCleared() && len(dru.mutation.RunIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "DrainedResult.run"`)
 	}
 	return nil
 }
@@ -361,12 +369,6 @@ func (dru *DrainedResultUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if value, ok := dru.mutation.AddedMedLastAdmittedRatingPlace(); ok {
 		_spec.AddField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
 	}
-	if value, ok := dru.mutation.Iteration(); ok {
-		_spec.SetField(drainedresult.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := dru.mutation.AddedIteration(); ok {
-		_spec.AddField(drainedresult.FieldIteration, field.TypeInt, value)
-	}
 	if dru.mutation.HeadingCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -389,6 +391,35 @@ func (dru *DrainedResultUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(heading.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if dru.mutation.RunCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   drainedresult.RunTable,
+			Columns: []string{drainedresult.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := dru.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   drainedresult.RunTable,
+			Columns: []string{drainedresult.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -605,24 +636,17 @@ func (druo *DrainedResultUpdateOne) AddMedLastAdmittedRatingPlace(i int) *Draine
 	return druo
 }
 
-// SetIteration sets the "iteration" field.
-func (druo *DrainedResultUpdateOne) SetIteration(i int) *DrainedResultUpdateOne {
-	druo.mutation.ResetIteration()
-	druo.mutation.SetIteration(i)
+// SetRunID sets the "run_id" field.
+func (druo *DrainedResultUpdateOne) SetRunID(i int) *DrainedResultUpdateOne {
+	druo.mutation.SetRunID(i)
 	return druo
 }
 
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (druo *DrainedResultUpdateOne) SetNillableIteration(i *int) *DrainedResultUpdateOne {
+// SetNillableRunID sets the "run_id" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableRunID(i *int) *DrainedResultUpdateOne {
 	if i != nil {
-		druo.SetIteration(*i)
+		druo.SetRunID(*i)
 	}
-	return druo
-}
-
-// AddIteration adds i to the "iteration" field.
-func (druo *DrainedResultUpdateOne) AddIteration(i int) *DrainedResultUpdateOne {
-	druo.mutation.AddIteration(i)
 	return druo
 }
 
@@ -637,6 +661,11 @@ func (druo *DrainedResultUpdateOne) SetHeading(h *Heading) *DrainedResultUpdateO
 	return druo.SetHeadingID(h.ID)
 }
 
+// SetRun sets the "run" edge to the Run entity.
+func (druo *DrainedResultUpdateOne) SetRun(r *Run) *DrainedResultUpdateOne {
+	return druo.SetRunID(r.ID)
+}
+
 // Mutation returns the DrainedResultMutation object of the builder.
 func (druo *DrainedResultUpdateOne) Mutation() *DrainedResultMutation {
 	return druo.mutation
@@ -645,6 +674,12 @@ func (druo *DrainedResultUpdateOne) Mutation() *DrainedResultMutation {
 // ClearHeading clears the "heading" edge to the Heading entity.
 func (druo *DrainedResultUpdateOne) ClearHeading() *DrainedResultUpdateOne {
 	druo.mutation.ClearHeading()
+	return druo
+}
+
+// ClearRun clears the "run" edge to the Run entity.
+func (druo *DrainedResultUpdateOne) ClearRun() *DrainedResultUpdateOne {
+	druo.mutation.ClearRun()
 	return druo
 }
 
@@ -692,6 +727,9 @@ func (druo *DrainedResultUpdateOne) ExecX(ctx context.Context) {
 func (druo *DrainedResultUpdateOne) check() error {
 	if druo.mutation.HeadingCleared() && len(druo.mutation.HeadingIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "DrainedResult.heading"`)
+	}
+	if druo.mutation.RunCleared() && len(druo.mutation.RunIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "DrainedResult.run"`)
 	}
 	return nil
 }
@@ -779,12 +817,6 @@ func (druo *DrainedResultUpdateOne) sqlSave(ctx context.Context) (_node *Drained
 	if value, ok := druo.mutation.AddedMedLastAdmittedRatingPlace(); ok {
 		_spec.AddField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
 	}
-	if value, ok := druo.mutation.Iteration(); ok {
-		_spec.SetField(drainedresult.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := druo.mutation.AddedIteration(); ok {
-		_spec.AddField(drainedresult.FieldIteration, field.TypeInt, value)
-	}
 	if druo.mutation.HeadingCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -807,6 +839,35 @@ func (druo *DrainedResultUpdateOne) sqlSave(ctx context.Context) (_node *Drained
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(heading.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if druo.mutation.RunCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   drainedresult.RunTable,
+			Columns: []string{drainedresult.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := druo.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   drainedresult.RunTable,
+			Columns: []string{drainedresult.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

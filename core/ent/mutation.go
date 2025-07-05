@@ -9,6 +9,7 @@ import (
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/predicate"
+	"analabit/core/ent/run"
 	"analabit/core/ent/varsity"
 	"context"
 	"errors"
@@ -33,6 +34,7 @@ const (
 	TypeCalculation   = "Calculation"
 	TypeDrainedResult = "DrainedResult"
 	TypeHeading       = "Heading"
+	TypeRun           = "Run"
 	TypeVarsity       = "Varsity"
 )
 
@@ -51,12 +53,13 @@ type ApplicationMutation struct {
 	addrating_place     *int
 	score               *int
 	addscore            *int
-	iteration           *int
-	additeration        *int
+	original_submitted  *bool
 	updated_at          *time.Time
 	clearedFields       map[string]struct{}
 	heading             *int
 	clearedheading      bool
+	run                 *int
+	clearedrun          bool
 	done                bool
 	oldValue            func(context.Context) (*Application, error)
 	predicates          []predicate.Application
@@ -420,60 +423,76 @@ func (m *ApplicationMutation) ResetScore() {
 	m.addscore = nil
 }
 
-// SetIteration sets the "iteration" field.
-func (m *ApplicationMutation) SetIteration(i int) {
-	m.iteration = &i
-	m.additeration = nil
+// SetRunID sets the "run_id" field.
+func (m *ApplicationMutation) SetRunID(i int) {
+	m.run = &i
 }
 
-// Iteration returns the value of the "iteration" field in the mutation.
-func (m *ApplicationMutation) Iteration() (r int, exists bool) {
-	v := m.iteration
+// RunID returns the value of the "run_id" field in the mutation.
+func (m *ApplicationMutation) RunID() (r int, exists bool) {
+	v := m.run
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIteration returns the old "iteration" field's value of the Application entity.
+// OldRunID returns the old "run_id" field's value of the Application entity.
 // If the Application object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApplicationMutation) OldIteration(ctx context.Context) (v int, err error) {
+func (m *ApplicationMutation) OldRunID(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIteration is only allowed on UpdateOne operations")
+		return v, errors.New("OldRunID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIteration requires an ID field in the mutation")
+		return v, errors.New("OldRunID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIteration: %w", err)
+		return v, fmt.Errorf("querying old value for OldRunID: %w", err)
 	}
-	return oldValue.Iteration, nil
+	return oldValue.RunID, nil
 }
 
-// AddIteration adds i to the "iteration" field.
-func (m *ApplicationMutation) AddIteration(i int) {
-	if m.additeration != nil {
-		*m.additeration += i
-	} else {
-		m.additeration = &i
-	}
+// ResetRunID resets all changes to the "run_id" field.
+func (m *ApplicationMutation) ResetRunID() {
+	m.run = nil
 }
 
-// AddedIteration returns the value that was added to the "iteration" field in this mutation.
-func (m *ApplicationMutation) AddedIteration() (r int, exists bool) {
-	v := m.additeration
+// SetOriginalSubmitted sets the "original_submitted" field.
+func (m *ApplicationMutation) SetOriginalSubmitted(b bool) {
+	m.original_submitted = &b
+}
+
+// OriginalSubmitted returns the value of the "original_submitted" field in the mutation.
+func (m *ApplicationMutation) OriginalSubmitted() (r bool, exists bool) {
+	v := m.original_submitted
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetIteration resets all changes to the "iteration" field.
-func (m *ApplicationMutation) ResetIteration() {
-	m.iteration = nil
-	m.additeration = nil
+// OldOriginalSubmitted returns the old "original_submitted" field's value of the Application entity.
+// If the Application object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApplicationMutation) OldOriginalSubmitted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginalSubmitted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginalSubmitted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginalSubmitted: %w", err)
+	}
+	return oldValue.OriginalSubmitted, nil
+}
+
+// ResetOriginalSubmitted resets all changes to the "original_submitted" field.
+func (m *ApplicationMutation) ResetOriginalSubmitted() {
+	m.original_submitted = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -551,6 +570,33 @@ func (m *ApplicationMutation) ResetHeading() {
 	m.clearedheading = false
 }
 
+// ClearRun clears the "run" edge to the Run entity.
+func (m *ApplicationMutation) ClearRun() {
+	m.clearedrun = true
+	m.clearedFields[application.FieldRunID] = struct{}{}
+}
+
+// RunCleared reports if the "run" edge to the Run entity was cleared.
+func (m *ApplicationMutation) RunCleared() bool {
+	return m.clearedrun
+}
+
+// RunIDs returns the "run" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RunID instead. It exists only for internal usage by the builders.
+func (m *ApplicationMutation) RunIDs() (ids []int) {
+	if id := m.run; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRun resets all changes to the "run" edge.
+func (m *ApplicationMutation) ResetRun() {
+	m.run = nil
+	m.clearedrun = false
+}
+
 // Where appends a list predicates to the ApplicationMutation builder.
 func (m *ApplicationMutation) Where(ps ...predicate.Application) {
 	m.predicates = append(m.predicates, ps...)
@@ -585,7 +631,7 @@ func (m *ApplicationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ApplicationMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.student_id != nil {
 		fields = append(fields, application.FieldStudentID)
 	}
@@ -601,8 +647,11 @@ func (m *ApplicationMutation) Fields() []string {
 	if m.score != nil {
 		fields = append(fields, application.FieldScore)
 	}
-	if m.iteration != nil {
-		fields = append(fields, application.FieldIteration)
+	if m.run != nil {
+		fields = append(fields, application.FieldRunID)
+	}
+	if m.original_submitted != nil {
+		fields = append(fields, application.FieldOriginalSubmitted)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, application.FieldUpdatedAt)
@@ -625,8 +674,10 @@ func (m *ApplicationMutation) Field(name string) (ent.Value, bool) {
 		return m.RatingPlace()
 	case application.FieldScore:
 		return m.Score()
-	case application.FieldIteration:
-		return m.Iteration()
+	case application.FieldRunID:
+		return m.RunID()
+	case application.FieldOriginalSubmitted:
+		return m.OriginalSubmitted()
 	case application.FieldUpdatedAt:
 		return m.UpdatedAt()
 	}
@@ -648,8 +699,10 @@ func (m *ApplicationMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldRatingPlace(ctx)
 	case application.FieldScore:
 		return m.OldScore(ctx)
-	case application.FieldIteration:
-		return m.OldIteration(ctx)
+	case application.FieldRunID:
+		return m.OldRunID(ctx)
+	case application.FieldOriginalSubmitted:
+		return m.OldOriginalSubmitted(ctx)
 	case application.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
 	}
@@ -696,12 +749,19 @@ func (m *ApplicationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetScore(v)
 		return nil
-	case application.FieldIteration:
+	case application.FieldRunID:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIteration(v)
+		m.SetRunID(v)
+		return nil
+	case application.FieldOriginalSubmitted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginalSubmitted(v)
 		return nil
 	case application.FieldUpdatedAt:
 		v, ok := value.(time.Time)
@@ -730,9 +790,6 @@ func (m *ApplicationMutation) AddedFields() []string {
 	if m.addscore != nil {
 		fields = append(fields, application.FieldScore)
 	}
-	if m.additeration != nil {
-		fields = append(fields, application.FieldIteration)
-	}
 	return fields
 }
 
@@ -749,8 +806,6 @@ func (m *ApplicationMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedRatingPlace()
 	case application.FieldScore:
 		return m.AddedScore()
-	case application.FieldIteration:
-		return m.AddedIteration()
 	}
 	return nil, false
 }
@@ -787,13 +842,6 @@ func (m *ApplicationMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddScore(v)
-		return nil
-	case application.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIteration(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Application numeric field %s", name)
@@ -837,8 +885,11 @@ func (m *ApplicationMutation) ResetField(name string) error {
 	case application.FieldScore:
 		m.ResetScore()
 		return nil
-	case application.FieldIteration:
-		m.ResetIteration()
+	case application.FieldRunID:
+		m.ResetRunID()
+		return nil
+	case application.FieldOriginalSubmitted:
+		m.ResetOriginalSubmitted()
 		return nil
 	case application.FieldUpdatedAt:
 		m.ResetUpdatedAt()
@@ -849,9 +900,12 @@ func (m *ApplicationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ApplicationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.heading != nil {
 		edges = append(edges, application.EdgeHeading)
+	}
+	if m.run != nil {
+		edges = append(edges, application.EdgeRun)
 	}
 	return edges
 }
@@ -864,13 +918,17 @@ func (m *ApplicationMutation) AddedIDs(name string) []ent.Value {
 		if id := m.heading; id != nil {
 			return []ent.Value{*id}
 		}
+	case application.EdgeRun:
+		if id := m.run; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ApplicationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -882,9 +940,12 @@ func (m *ApplicationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ApplicationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedheading {
 		edges = append(edges, application.EdgeHeading)
+	}
+	if m.clearedrun {
+		edges = append(edges, application.EdgeRun)
 	}
 	return edges
 }
@@ -895,6 +956,8 @@ func (m *ApplicationMutation) EdgeCleared(name string) bool {
 	switch name {
 	case application.EdgeHeading:
 		return m.clearedheading
+	case application.EdgeRun:
+		return m.clearedrun
 	}
 	return false
 }
@@ -906,6 +969,9 @@ func (m *ApplicationMutation) ClearEdge(name string) error {
 	case application.EdgeHeading:
 		m.ClearHeading()
 		return nil
+	case application.EdgeRun:
+		m.ClearRun()
+		return nil
 	}
 	return fmt.Errorf("unknown Application unique edge %s", name)
 }
@@ -916,6 +982,9 @@ func (m *ApplicationMutation) ResetEdge(name string) error {
 	switch name {
 	case application.EdgeHeading:
 		m.ResetHeading()
+		return nil
+	case application.EdgeRun:
+		m.ResetRun()
 		return nil
 	}
 	return fmt.Errorf("unknown Application edge %s", name)
@@ -930,12 +999,12 @@ type CalculationMutation struct {
 	student_id        *string
 	admitted_place    *int
 	addadmitted_place *int
-	iteration         *int
-	additeration      *int
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
 	heading           *int
 	clearedheading    bool
+	run               *int
+	clearedrun        bool
 	done              bool
 	oldValue          func(context.Context) (*Calculation, error)
 	predicates        []predicate.Calculation
@@ -1131,60 +1200,40 @@ func (m *CalculationMutation) ResetAdmittedPlace() {
 	m.addadmitted_place = nil
 }
 
-// SetIteration sets the "iteration" field.
-func (m *CalculationMutation) SetIteration(i int) {
-	m.iteration = &i
-	m.additeration = nil
+// SetRunID sets the "run_id" field.
+func (m *CalculationMutation) SetRunID(i int) {
+	m.run = &i
 }
 
-// Iteration returns the value of the "iteration" field in the mutation.
-func (m *CalculationMutation) Iteration() (r int, exists bool) {
-	v := m.iteration
+// RunID returns the value of the "run_id" field in the mutation.
+func (m *CalculationMutation) RunID() (r int, exists bool) {
+	v := m.run
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIteration returns the old "iteration" field's value of the Calculation entity.
+// OldRunID returns the old "run_id" field's value of the Calculation entity.
 // If the Calculation object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CalculationMutation) OldIteration(ctx context.Context) (v int, err error) {
+func (m *CalculationMutation) OldRunID(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIteration is only allowed on UpdateOne operations")
+		return v, errors.New("OldRunID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIteration requires an ID field in the mutation")
+		return v, errors.New("OldRunID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIteration: %w", err)
+		return v, fmt.Errorf("querying old value for OldRunID: %w", err)
 	}
-	return oldValue.Iteration, nil
+	return oldValue.RunID, nil
 }
 
-// AddIteration adds i to the "iteration" field.
-func (m *CalculationMutation) AddIteration(i int) {
-	if m.additeration != nil {
-		*m.additeration += i
-	} else {
-		m.additeration = &i
-	}
-}
-
-// AddedIteration returns the value that was added to the "iteration" field in this mutation.
-func (m *CalculationMutation) AddedIteration() (r int, exists bool) {
-	v := m.additeration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetIteration resets all changes to the "iteration" field.
-func (m *CalculationMutation) ResetIteration() {
-	m.iteration = nil
-	m.additeration = nil
+// ResetRunID resets all changes to the "run_id" field.
+func (m *CalculationMutation) ResetRunID() {
+	m.run = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -1262,6 +1311,33 @@ func (m *CalculationMutation) ResetHeading() {
 	m.clearedheading = false
 }
 
+// ClearRun clears the "run" edge to the Run entity.
+func (m *CalculationMutation) ClearRun() {
+	m.clearedrun = true
+	m.clearedFields[calculation.FieldRunID] = struct{}{}
+}
+
+// RunCleared reports if the "run" edge to the Run entity was cleared.
+func (m *CalculationMutation) RunCleared() bool {
+	return m.clearedrun
+}
+
+// RunIDs returns the "run" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RunID instead. It exists only for internal usage by the builders.
+func (m *CalculationMutation) RunIDs() (ids []int) {
+	if id := m.run; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRun resets all changes to the "run" edge.
+func (m *CalculationMutation) ResetRun() {
+	m.run = nil
+	m.clearedrun = false
+}
+
 // Where appends a list predicates to the CalculationMutation builder.
 func (m *CalculationMutation) Where(ps ...predicate.Calculation) {
 	m.predicates = append(m.predicates, ps...)
@@ -1303,8 +1379,8 @@ func (m *CalculationMutation) Fields() []string {
 	if m.admitted_place != nil {
 		fields = append(fields, calculation.FieldAdmittedPlace)
 	}
-	if m.iteration != nil {
-		fields = append(fields, calculation.FieldIteration)
+	if m.run != nil {
+		fields = append(fields, calculation.FieldRunID)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, calculation.FieldUpdatedAt)
@@ -1321,8 +1397,8 @@ func (m *CalculationMutation) Field(name string) (ent.Value, bool) {
 		return m.StudentID()
 	case calculation.FieldAdmittedPlace:
 		return m.AdmittedPlace()
-	case calculation.FieldIteration:
-		return m.Iteration()
+	case calculation.FieldRunID:
+		return m.RunID()
 	case calculation.FieldUpdatedAt:
 		return m.UpdatedAt()
 	}
@@ -1338,8 +1414,8 @@ func (m *CalculationMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldStudentID(ctx)
 	case calculation.FieldAdmittedPlace:
 		return m.OldAdmittedPlace(ctx)
-	case calculation.FieldIteration:
-		return m.OldIteration(ctx)
+	case calculation.FieldRunID:
+		return m.OldRunID(ctx)
 	case calculation.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
 	}
@@ -1365,12 +1441,12 @@ func (m *CalculationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAdmittedPlace(v)
 		return nil
-	case calculation.FieldIteration:
+	case calculation.FieldRunID:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIteration(v)
+		m.SetRunID(v)
 		return nil
 	case calculation.FieldUpdatedAt:
 		v, ok := value.(time.Time)
@@ -1390,9 +1466,6 @@ func (m *CalculationMutation) AddedFields() []string {
 	if m.addadmitted_place != nil {
 		fields = append(fields, calculation.FieldAdmittedPlace)
 	}
-	if m.additeration != nil {
-		fields = append(fields, calculation.FieldIteration)
-	}
 	return fields
 }
 
@@ -1403,8 +1476,6 @@ func (m *CalculationMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case calculation.FieldAdmittedPlace:
 		return m.AddedAdmittedPlace()
-	case calculation.FieldIteration:
-		return m.AddedIteration()
 	}
 	return nil, false
 }
@@ -1420,13 +1491,6 @@ func (m *CalculationMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddAdmittedPlace(v)
-		return nil
-	case calculation.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIteration(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Calculation numeric field %s", name)
@@ -1461,8 +1525,8 @@ func (m *CalculationMutation) ResetField(name string) error {
 	case calculation.FieldAdmittedPlace:
 		m.ResetAdmittedPlace()
 		return nil
-	case calculation.FieldIteration:
-		m.ResetIteration()
+	case calculation.FieldRunID:
+		m.ResetRunID()
 		return nil
 	case calculation.FieldUpdatedAt:
 		m.ResetUpdatedAt()
@@ -1473,9 +1537,12 @@ func (m *CalculationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CalculationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.heading != nil {
 		edges = append(edges, calculation.EdgeHeading)
+	}
+	if m.run != nil {
+		edges = append(edges, calculation.EdgeRun)
 	}
 	return edges
 }
@@ -1488,13 +1555,17 @@ func (m *CalculationMutation) AddedIDs(name string) []ent.Value {
 		if id := m.heading; id != nil {
 			return []ent.Value{*id}
 		}
+	case calculation.EdgeRun:
+		if id := m.run; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CalculationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -1506,9 +1577,12 @@ func (m *CalculationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CalculationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedheading {
 		edges = append(edges, calculation.EdgeHeading)
+	}
+	if m.clearedrun {
+		edges = append(edges, calculation.EdgeRun)
 	}
 	return edges
 }
@@ -1519,6 +1593,8 @@ func (m *CalculationMutation) EdgeCleared(name string) bool {
 	switch name {
 	case calculation.EdgeHeading:
 		return m.clearedheading
+	case calculation.EdgeRun:
+		return m.clearedrun
 	}
 	return false
 }
@@ -1530,6 +1606,9 @@ func (m *CalculationMutation) ClearEdge(name string) error {
 	case calculation.EdgeHeading:
 		m.ClearHeading()
 		return nil
+	case calculation.EdgeRun:
+		m.ClearRun()
+		return nil
 	}
 	return fmt.Errorf("unknown Calculation unique edge %s", name)
 }
@@ -1540,6 +1619,9 @@ func (m *CalculationMutation) ResetEdge(name string) error {
 	switch name {
 	case calculation.EdgeHeading:
 		m.ResetHeading()
+		return nil
+	case calculation.EdgeRun:
+		m.ResetRun()
 		return nil
 	}
 	return fmt.Errorf("unknown Calculation edge %s", name)
@@ -1569,11 +1651,11 @@ type DrainedResultMutation struct {
 	addmax_last_admitted_rating_place *int
 	med_last_admitted_rating_place    *int
 	addmed_last_admitted_rating_place *int
-	iteration                         *int
-	additeration                      *int
 	clearedFields                     map[string]struct{}
 	heading                           *int
 	clearedheading                    bool
+	run                               *int
+	clearedrun                        bool
 	done                              bool
 	oldValue                          func(context.Context) (*DrainedResult, error)
 	predicates                        []predicate.DrainedResult
@@ -2181,60 +2263,40 @@ func (m *DrainedResultMutation) ResetMedLastAdmittedRatingPlace() {
 	m.addmed_last_admitted_rating_place = nil
 }
 
-// SetIteration sets the "iteration" field.
-func (m *DrainedResultMutation) SetIteration(i int) {
-	m.iteration = &i
-	m.additeration = nil
+// SetRunID sets the "run_id" field.
+func (m *DrainedResultMutation) SetRunID(i int) {
+	m.run = &i
 }
 
-// Iteration returns the value of the "iteration" field in the mutation.
-func (m *DrainedResultMutation) Iteration() (r int, exists bool) {
-	v := m.iteration
+// RunID returns the value of the "run_id" field in the mutation.
+func (m *DrainedResultMutation) RunID() (r int, exists bool) {
+	v := m.run
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIteration returns the old "iteration" field's value of the DrainedResult entity.
+// OldRunID returns the old "run_id" field's value of the DrainedResult entity.
 // If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DrainedResultMutation) OldIteration(ctx context.Context) (v int, err error) {
+func (m *DrainedResultMutation) OldRunID(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIteration is only allowed on UpdateOne operations")
+		return v, errors.New("OldRunID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIteration requires an ID field in the mutation")
+		return v, errors.New("OldRunID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIteration: %w", err)
+		return v, fmt.Errorf("querying old value for OldRunID: %w", err)
 	}
-	return oldValue.Iteration, nil
+	return oldValue.RunID, nil
 }
 
-// AddIteration adds i to the "iteration" field.
-func (m *DrainedResultMutation) AddIteration(i int) {
-	if m.additeration != nil {
-		*m.additeration += i
-	} else {
-		m.additeration = &i
-	}
-}
-
-// AddedIteration returns the value that was added to the "iteration" field in this mutation.
-func (m *DrainedResultMutation) AddedIteration() (r int, exists bool) {
-	v := m.additeration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetIteration resets all changes to the "iteration" field.
-func (m *DrainedResultMutation) ResetIteration() {
-	m.iteration = nil
-	m.additeration = nil
+// ResetRunID resets all changes to the "run_id" field.
+func (m *DrainedResultMutation) ResetRunID() {
+	m.run = nil
 }
 
 // SetHeadingID sets the "heading" edge to the Heading entity by id.
@@ -2274,6 +2336,33 @@ func (m *DrainedResultMutation) HeadingIDs() (ids []int) {
 func (m *DrainedResultMutation) ResetHeading() {
 	m.heading = nil
 	m.clearedheading = false
+}
+
+// ClearRun clears the "run" edge to the Run entity.
+func (m *DrainedResultMutation) ClearRun() {
+	m.clearedrun = true
+	m.clearedFields[drainedresult.FieldRunID] = struct{}{}
+}
+
+// RunCleared reports if the "run" edge to the Run entity was cleared.
+func (m *DrainedResultMutation) RunCleared() bool {
+	return m.clearedrun
+}
+
+// RunIDs returns the "run" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RunID instead. It exists only for internal usage by the builders.
+func (m *DrainedResultMutation) RunIDs() (ids []int) {
+	if id := m.run; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRun resets all changes to the "run" edge.
+func (m *DrainedResultMutation) ResetRun() {
+	m.run = nil
+	m.clearedrun = false
 }
 
 // Where appends a list predicates to the DrainedResultMutation builder.
@@ -2338,8 +2427,8 @@ func (m *DrainedResultMutation) Fields() []string {
 	if m.med_last_admitted_rating_place != nil {
 		fields = append(fields, drainedresult.FieldMedLastAdmittedRatingPlace)
 	}
-	if m.iteration != nil {
-		fields = append(fields, drainedresult.FieldIteration)
+	if m.run != nil {
+		fields = append(fields, drainedresult.FieldRunID)
 	}
 	return fields
 }
@@ -2367,8 +2456,8 @@ func (m *DrainedResultMutation) Field(name string) (ent.Value, bool) {
 		return m.MaxLastAdmittedRatingPlace()
 	case drainedresult.FieldMedLastAdmittedRatingPlace:
 		return m.MedLastAdmittedRatingPlace()
-	case drainedresult.FieldIteration:
-		return m.Iteration()
+	case drainedresult.FieldRunID:
+		return m.RunID()
 	}
 	return nil, false
 }
@@ -2396,8 +2485,8 @@ func (m *DrainedResultMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldMaxLastAdmittedRatingPlace(ctx)
 	case drainedresult.FieldMedLastAdmittedRatingPlace:
 		return m.OldMedLastAdmittedRatingPlace(ctx)
-	case drainedresult.FieldIteration:
-		return m.OldIteration(ctx)
+	case drainedresult.FieldRunID:
+		return m.OldRunID(ctx)
 	}
 	return nil, fmt.Errorf("unknown DrainedResult field %s", name)
 }
@@ -2470,12 +2559,12 @@ func (m *DrainedResultMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetMedLastAdmittedRatingPlace(v)
 		return nil
-	case drainedresult.FieldIteration:
+	case drainedresult.FieldRunID:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIteration(v)
+		m.SetRunID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown DrainedResult field %s", name)
@@ -2512,9 +2601,6 @@ func (m *DrainedResultMutation) AddedFields() []string {
 	if m.addmed_last_admitted_rating_place != nil {
 		fields = append(fields, drainedresult.FieldMedLastAdmittedRatingPlace)
 	}
-	if m.additeration != nil {
-		fields = append(fields, drainedresult.FieldIteration)
-	}
 	return fields
 }
 
@@ -2541,8 +2627,6 @@ func (m *DrainedResultMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedMaxLastAdmittedRatingPlace()
 	case drainedresult.FieldMedLastAdmittedRatingPlace:
 		return m.AddedMedLastAdmittedRatingPlace()
-	case drainedresult.FieldIteration:
-		return m.AddedIteration()
 	}
 	return nil, false
 }
@@ -2615,13 +2699,6 @@ func (m *DrainedResultMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddMedLastAdmittedRatingPlace(v)
 		return nil
-	case drainedresult.FieldIteration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddIteration(v)
-		return nil
 	}
 	return fmt.Errorf("unknown DrainedResult numeric field %s", name)
 }
@@ -2676,8 +2753,8 @@ func (m *DrainedResultMutation) ResetField(name string) error {
 	case drainedresult.FieldMedLastAdmittedRatingPlace:
 		m.ResetMedLastAdmittedRatingPlace()
 		return nil
-	case drainedresult.FieldIteration:
-		m.ResetIteration()
+	case drainedresult.FieldRunID:
+		m.ResetRunID()
 		return nil
 	}
 	return fmt.Errorf("unknown DrainedResult field %s", name)
@@ -2685,9 +2762,12 @@ func (m *DrainedResultMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DrainedResultMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.heading != nil {
 		edges = append(edges, drainedresult.EdgeHeading)
+	}
+	if m.run != nil {
+		edges = append(edges, drainedresult.EdgeRun)
 	}
 	return edges
 }
@@ -2700,13 +2780,17 @@ func (m *DrainedResultMutation) AddedIDs(name string) []ent.Value {
 		if id := m.heading; id != nil {
 			return []ent.Value{*id}
 		}
+	case drainedresult.EdgeRun:
+		if id := m.run; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DrainedResultMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -2718,9 +2802,12 @@ func (m *DrainedResultMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DrainedResultMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedheading {
 		edges = append(edges, drainedresult.EdgeHeading)
+	}
+	if m.clearedrun {
+		edges = append(edges, drainedresult.EdgeRun)
 	}
 	return edges
 }
@@ -2731,6 +2818,8 @@ func (m *DrainedResultMutation) EdgeCleared(name string) bool {
 	switch name {
 	case drainedresult.EdgeHeading:
 		return m.clearedheading
+	case drainedresult.EdgeRun:
+		return m.clearedrun
 	}
 	return false
 }
@@ -2742,6 +2831,9 @@ func (m *DrainedResultMutation) ClearEdge(name string) error {
 	case drainedresult.EdgeHeading:
 		m.ClearHeading()
 		return nil
+	case drainedresult.EdgeRun:
+		m.ClearRun()
+		return nil
 	}
 	return fmt.Errorf("unknown DrainedResult unique edge %s", name)
 }
@@ -2752,6 +2844,9 @@ func (m *DrainedResultMutation) ResetEdge(name string) error {
 	switch name {
 	case drainedresult.EdgeHeading:
 		m.ResetHeading()
+		return nil
+	case drainedresult.EdgeRun:
+		m.ResetRun()
 		return nil
 	}
 	return fmt.Errorf("unknown DrainedResult edge %s", name)
@@ -3804,6 +3899,408 @@ func (m *HeadingMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Heading edge %s", name)
+}
+
+// RunMutation represents an operation that mutates the Run nodes in the graph.
+type RunMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	triggered_at  *time.Time
+	payload_meta  *map[string]interface{}
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*Run, error)
+	predicates    []predicate.Run
+}
+
+var _ ent.Mutation = (*RunMutation)(nil)
+
+// runOption allows management of the mutation configuration using functional options.
+type runOption func(*RunMutation)
+
+// newRunMutation creates new mutation for the Run entity.
+func newRunMutation(c config, op Op, opts ...runOption) *RunMutation {
+	m := &RunMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeRun,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withRunID sets the ID field of the mutation.
+func withRunID(id int) runOption {
+	return func(m *RunMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Run
+		)
+		m.oldValue = func(ctx context.Context) (*Run, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Run.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withRun sets the old Run of the mutation.
+func withRun(node *Run) runOption {
+	return func(m *RunMutation) {
+		m.oldValue = func(context.Context) (*Run, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m RunMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m RunMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *RunMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *RunMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Run.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTriggeredAt sets the "triggered_at" field.
+func (m *RunMutation) SetTriggeredAt(t time.Time) {
+	m.triggered_at = &t
+}
+
+// TriggeredAt returns the value of the "triggered_at" field in the mutation.
+func (m *RunMutation) TriggeredAt() (r time.Time, exists bool) {
+	v := m.triggered_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTriggeredAt returns the old "triggered_at" field's value of the Run entity.
+// If the Run object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RunMutation) OldTriggeredAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTriggeredAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTriggeredAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTriggeredAt: %w", err)
+	}
+	return oldValue.TriggeredAt, nil
+}
+
+// ResetTriggeredAt resets all changes to the "triggered_at" field.
+func (m *RunMutation) ResetTriggeredAt() {
+	m.triggered_at = nil
+}
+
+// SetPayloadMeta sets the "payload_meta" field.
+func (m *RunMutation) SetPayloadMeta(value map[string]interface{}) {
+	m.payload_meta = &value
+}
+
+// PayloadMeta returns the value of the "payload_meta" field in the mutation.
+func (m *RunMutation) PayloadMeta() (r map[string]interface{}, exists bool) {
+	v := m.payload_meta
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPayloadMeta returns the old "payload_meta" field's value of the Run entity.
+// If the Run object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RunMutation) OldPayloadMeta(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPayloadMeta is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPayloadMeta requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPayloadMeta: %w", err)
+	}
+	return oldValue.PayloadMeta, nil
+}
+
+// ClearPayloadMeta clears the value of the "payload_meta" field.
+func (m *RunMutation) ClearPayloadMeta() {
+	m.payload_meta = nil
+	m.clearedFields[run.FieldPayloadMeta] = struct{}{}
+}
+
+// PayloadMetaCleared returns if the "payload_meta" field was cleared in this mutation.
+func (m *RunMutation) PayloadMetaCleared() bool {
+	_, ok := m.clearedFields[run.FieldPayloadMeta]
+	return ok
+}
+
+// ResetPayloadMeta resets all changes to the "payload_meta" field.
+func (m *RunMutation) ResetPayloadMeta() {
+	m.payload_meta = nil
+	delete(m.clearedFields, run.FieldPayloadMeta)
+}
+
+// Where appends a list predicates to the RunMutation builder.
+func (m *RunMutation) Where(ps ...predicate.Run) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the RunMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *RunMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Run, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *RunMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *RunMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Run).
+func (m *RunMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *RunMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.triggered_at != nil {
+		fields = append(fields, run.FieldTriggeredAt)
+	}
+	if m.payload_meta != nil {
+		fields = append(fields, run.FieldPayloadMeta)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *RunMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case run.FieldTriggeredAt:
+		return m.TriggeredAt()
+	case run.FieldPayloadMeta:
+		return m.PayloadMeta()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *RunMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case run.FieldTriggeredAt:
+		return m.OldTriggeredAt(ctx)
+	case run.FieldPayloadMeta:
+		return m.OldPayloadMeta(ctx)
+	}
+	return nil, fmt.Errorf("unknown Run field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RunMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case run.FieldTriggeredAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTriggeredAt(v)
+		return nil
+	case run.FieldPayloadMeta:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPayloadMeta(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Run field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *RunMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *RunMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RunMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Run numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *RunMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(run.FieldPayloadMeta) {
+		fields = append(fields, run.FieldPayloadMeta)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *RunMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *RunMutation) ClearField(name string) error {
+	switch name {
+	case run.FieldPayloadMeta:
+		m.ClearPayloadMeta()
+		return nil
+	}
+	return fmt.Errorf("unknown Run nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *RunMutation) ResetField(name string) error {
+	switch name {
+	case run.FieldTriggeredAt:
+		m.ResetTriggeredAt()
+		return nil
+	case run.FieldPayloadMeta:
+		m.ResetPayloadMeta()
+		return nil
+	}
+	return fmt.Errorf("unknown Run field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *RunMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *RunMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *RunMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *RunMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *RunMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *RunMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *RunMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Run unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *RunMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Run edge %s", name)
 }
 
 // VarsityMutation represents an operation that mutates the Varsity nodes in the graph.

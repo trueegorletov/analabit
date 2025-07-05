@@ -6,6 +6,7 @@ import (
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/predicate"
+	"analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -64,24 +65,17 @@ func (cu *CalculationUpdate) AddAdmittedPlace(i int) *CalculationUpdate {
 	return cu
 }
 
-// SetIteration sets the "iteration" field.
-func (cu *CalculationUpdate) SetIteration(i int) *CalculationUpdate {
-	cu.mutation.ResetIteration()
-	cu.mutation.SetIteration(i)
+// SetRunID sets the "run_id" field.
+func (cu *CalculationUpdate) SetRunID(i int) *CalculationUpdate {
+	cu.mutation.SetRunID(i)
 	return cu
 }
 
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (cu *CalculationUpdate) SetNillableIteration(i *int) *CalculationUpdate {
+// SetNillableRunID sets the "run_id" field if the given value is not nil.
+func (cu *CalculationUpdate) SetNillableRunID(i *int) *CalculationUpdate {
 	if i != nil {
-		cu.SetIteration(*i)
+		cu.SetRunID(*i)
 	}
-	return cu
-}
-
-// AddIteration adds i to the "iteration" field.
-func (cu *CalculationUpdate) AddIteration(i int) *CalculationUpdate {
-	cu.mutation.AddIteration(i)
 	return cu
 }
 
@@ -102,6 +96,11 @@ func (cu *CalculationUpdate) SetHeading(h *Heading) *CalculationUpdate {
 	return cu.SetHeadingID(h.ID)
 }
 
+// SetRun sets the "run" edge to the Run entity.
+func (cu *CalculationUpdate) SetRun(r *Run) *CalculationUpdate {
+	return cu.SetRunID(r.ID)
+}
+
 // Mutation returns the CalculationMutation object of the builder.
 func (cu *CalculationUpdate) Mutation() *CalculationMutation {
 	return cu.mutation
@@ -110,6 +109,12 @@ func (cu *CalculationUpdate) Mutation() *CalculationMutation {
 // ClearHeading clears the "heading" edge to the Heading entity.
 func (cu *CalculationUpdate) ClearHeading() *CalculationUpdate {
 	cu.mutation.ClearHeading()
+	return cu
+}
+
+// ClearRun clears the "run" edge to the Run entity.
+func (cu *CalculationUpdate) ClearRun() *CalculationUpdate {
+	cu.mutation.ClearRun()
 	return cu
 }
 
@@ -154,6 +159,9 @@ func (cu *CalculationUpdate) check() error {
 	if cu.mutation.HeadingCleared() && len(cu.mutation.HeadingIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Calculation.heading"`)
 	}
+	if cu.mutation.RunCleared() && len(cu.mutation.RunIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Calculation.run"`)
+	}
 	return nil
 }
 
@@ -177,12 +185,6 @@ func (cu *CalculationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.AddedAdmittedPlace(); ok {
 		_spec.AddField(calculation.FieldAdmittedPlace, field.TypeInt, value)
-	}
-	if value, ok := cu.mutation.Iteration(); ok {
-		_spec.SetField(calculation.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := cu.mutation.AddedIteration(); ok {
-		_spec.AddField(calculation.FieldIteration, field.TypeInt, value)
 	}
 	if value, ok := cu.mutation.UpdatedAt(); ok {
 		_spec.SetField(calculation.FieldUpdatedAt, field.TypeTime, value)
@@ -209,6 +211,35 @@ func (cu *CalculationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(heading.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.RunCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   calculation.RunTable,
+			Columns: []string{calculation.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   calculation.RunTable,
+			Columns: []string{calculation.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -271,24 +302,17 @@ func (cuo *CalculationUpdateOne) AddAdmittedPlace(i int) *CalculationUpdateOne {
 	return cuo
 }
 
-// SetIteration sets the "iteration" field.
-func (cuo *CalculationUpdateOne) SetIteration(i int) *CalculationUpdateOne {
-	cuo.mutation.ResetIteration()
-	cuo.mutation.SetIteration(i)
+// SetRunID sets the "run_id" field.
+func (cuo *CalculationUpdateOne) SetRunID(i int) *CalculationUpdateOne {
+	cuo.mutation.SetRunID(i)
 	return cuo
 }
 
-// SetNillableIteration sets the "iteration" field if the given value is not nil.
-func (cuo *CalculationUpdateOne) SetNillableIteration(i *int) *CalculationUpdateOne {
+// SetNillableRunID sets the "run_id" field if the given value is not nil.
+func (cuo *CalculationUpdateOne) SetNillableRunID(i *int) *CalculationUpdateOne {
 	if i != nil {
-		cuo.SetIteration(*i)
+		cuo.SetRunID(*i)
 	}
-	return cuo
-}
-
-// AddIteration adds i to the "iteration" field.
-func (cuo *CalculationUpdateOne) AddIteration(i int) *CalculationUpdateOne {
-	cuo.mutation.AddIteration(i)
 	return cuo
 }
 
@@ -309,6 +333,11 @@ func (cuo *CalculationUpdateOne) SetHeading(h *Heading) *CalculationUpdateOne {
 	return cuo.SetHeadingID(h.ID)
 }
 
+// SetRun sets the "run" edge to the Run entity.
+func (cuo *CalculationUpdateOne) SetRun(r *Run) *CalculationUpdateOne {
+	return cuo.SetRunID(r.ID)
+}
+
 // Mutation returns the CalculationMutation object of the builder.
 func (cuo *CalculationUpdateOne) Mutation() *CalculationMutation {
 	return cuo.mutation
@@ -317,6 +346,12 @@ func (cuo *CalculationUpdateOne) Mutation() *CalculationMutation {
 // ClearHeading clears the "heading" edge to the Heading entity.
 func (cuo *CalculationUpdateOne) ClearHeading() *CalculationUpdateOne {
 	cuo.mutation.ClearHeading()
+	return cuo
+}
+
+// ClearRun clears the "run" edge to the Run entity.
+func (cuo *CalculationUpdateOne) ClearRun() *CalculationUpdateOne {
+	cuo.mutation.ClearRun()
 	return cuo
 }
 
@@ -374,6 +409,9 @@ func (cuo *CalculationUpdateOne) check() error {
 	if cuo.mutation.HeadingCleared() && len(cuo.mutation.HeadingIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Calculation.heading"`)
 	}
+	if cuo.mutation.RunCleared() && len(cuo.mutation.RunIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Calculation.run"`)
+	}
 	return nil
 }
 
@@ -415,12 +453,6 @@ func (cuo *CalculationUpdateOne) sqlSave(ctx context.Context) (_node *Calculatio
 	if value, ok := cuo.mutation.AddedAdmittedPlace(); ok {
 		_spec.AddField(calculation.FieldAdmittedPlace, field.TypeInt, value)
 	}
-	if value, ok := cuo.mutation.Iteration(); ok {
-		_spec.SetField(calculation.FieldIteration, field.TypeInt, value)
-	}
-	if value, ok := cuo.mutation.AddedIteration(); ok {
-		_spec.AddField(calculation.FieldIteration, field.TypeInt, value)
-	}
 	if value, ok := cuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(calculation.FieldUpdatedAt, field.TypeTime, value)
 	}
@@ -446,6 +478,35 @@ func (cuo *CalculationUpdateOne) sqlSave(ctx context.Context) (_node *Calculatio
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(heading.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.RunCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   calculation.RunTable,
+			Columns: []string{calculation.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RunIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   calculation.RunTable,
+			Columns: []string{calculation.RunColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(run.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

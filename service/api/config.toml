@@ -1,0 +1,16 @@
+# Configuration file for the API service
+
+[server]
+port = "19132"
+
+[database]
+host = "localhost"
+port = 5432
+user = "analabit"
+dbname = "analabit"
+password = "password"
+sslmode = "disable"
+
+[logging]
+file = "api.log"
+

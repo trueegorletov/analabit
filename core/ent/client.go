@@ -15,6 +15,7 @@ import (
 	"analabit/core/ent/calculation"
 	"analabit/core/ent/drainedresult"
 	"analabit/core/ent/heading"
+	"analabit/core/ent/run"
 	"analabit/core/ent/varsity"
 
 	"entgo.io/ent"
@@ -38,6 +39,8 @@ type Client struct {
 	DrainedResult *DrainedResultClient
 	// Heading is the client for interacting with the Heading builders.
 	Heading *HeadingClient
+	// Run is the client for interacting with the Run builders.
+	Run *RunClient
 	// Varsity is the client for interacting with the Varsity builders.
 	Varsity *VarsityClient
 }
@@ -55,6 +58,7 @@ func (c *Client) init() {
 	c.Calculation = NewCalculationClient(c.config)
 	c.DrainedResult = NewDrainedResultClient(c.config)
 	c.Heading = NewHeadingClient(c.config)
+	c.Run = NewRunClient(c.config)
 	c.Varsity = NewVarsityClient(c.config)
 }
 
@@ -152,6 +156,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Calculation:   NewCalculationClient(cfg),
 		DrainedResult: NewDrainedResultClient(cfg),
 		Heading:       NewHeadingClient(cfg),
+		Run:           NewRunClient(cfg),
 		Varsity:       NewVarsityClient(cfg),
 	}, nil
 }
@@ -176,6 +181,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Calculation:   NewCalculationClient(cfg),
 		DrainedResult: NewDrainedResultClient(cfg),
 		Heading:       NewHeadingClient(cfg),
+		Run:           NewRunClient(cfg),
 		Varsity:       NewVarsityClient(cfg),
 	}, nil
 }
@@ -205,21 +211,21 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Application.Use(hooks...)
-	c.Calculation.Use(hooks...)
-	c.DrainedResult.Use(hooks...)
-	c.Heading.Use(hooks...)
-	c.Varsity.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Application, c.Calculation, c.DrainedResult, c.Heading, c.Run, c.Varsity,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Application.Intercept(interceptors...)
-	c.Calculation.Intercept(interceptors...)
-	c.DrainedResult.Intercept(interceptors...)
-	c.Heading.Intercept(interceptors...)
-	c.Varsity.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Application, c.Calculation, c.DrainedResult, c.Heading, c.Run, c.Varsity,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -233,6 +239,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DrainedResult.mutate(ctx, m)
 	case *HeadingMutation:
 		return c.Heading.mutate(ctx, m)
+	case *RunMutation:
+		return c.Run.mutate(ctx, m)
 	case *VarsityMutation:
 		return c.Varsity.mutate(ctx, m)
 	default:
@@ -357,6 +365,22 @@ func (c *ApplicationClient) QueryHeading(a *Application) *HeadingQuery {
 			sqlgraph.From(application.Table, application.FieldID, id),
 			sqlgraph.To(heading.Table, heading.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, application.HeadingTable, application.HeadingColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRun queries the run edge of a Application.
+func (c *ApplicationClient) QueryRun(a *Application) *RunQuery {
+	query := (&RunClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(application.Table, application.FieldID, id),
+			sqlgraph.To(run.Table, run.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, application.RunTable, application.RunColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -513,6 +537,22 @@ func (c *CalculationClient) QueryHeading(ca *Calculation) *HeadingQuery {
 	return query
 }
 
+// QueryRun queries the run edge of a Calculation.
+func (c *CalculationClient) QueryRun(ca *Calculation) *RunQuery {
+	query := (&RunClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(calculation.Table, calculation.FieldID, id),
+			sqlgraph.To(run.Table, run.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, calculation.RunTable, calculation.RunColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CalculationClient) Hooks() []Hook {
 	return c.hooks.Calculation
@@ -655,6 +695,22 @@ func (c *DrainedResultClient) QueryHeading(dr *DrainedResult) *HeadingQuery {
 			sqlgraph.From(drainedresult.Table, drainedresult.FieldID, id),
 			sqlgraph.To(heading.Table, heading.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, drainedresult.HeadingTable, drainedresult.HeadingColumn),
+		)
+		fromV = sqlgraph.Neighbors(dr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRun queries the run edge of a DrainedResult.
+func (c *DrainedResultClient) QueryRun(dr *DrainedResult) *RunQuery {
+	query := (&RunClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := dr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(drainedresult.Table, drainedresult.FieldID, id),
+			sqlgraph.To(run.Table, run.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, drainedresult.RunTable, drainedresult.RunColumn),
 		)
 		fromV = sqlgraph.Neighbors(dr.driver.Dialect(), step)
 		return fromV, nil
@@ -884,6 +940,139 @@ func (c *HeadingClient) mutate(ctx context.Context, m *HeadingMutation) (Value, 
 	}
 }
 
+// RunClient is a client for the Run schema.
+type RunClient struct {
+	config
+}
+
+// NewRunClient returns a client for the Run from the given config.
+func NewRunClient(c config) *RunClient {
+	return &RunClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `run.Hooks(f(g(h())))`.
+func (c *RunClient) Use(hooks ...Hook) {
+	c.hooks.Run = append(c.hooks.Run, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `run.Intercept(f(g(h())))`.
+func (c *RunClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Run = append(c.inters.Run, interceptors...)
+}
+
+// Create returns a builder for creating a Run entity.
+func (c *RunClient) Create() *RunCreate {
+	mutation := newRunMutation(c.config, OpCreate)
+	return &RunCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Run entities.
+func (c *RunClient) CreateBulk(builders ...*RunCreate) *RunCreateBulk {
+	return &RunCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *RunClient) MapCreateBulk(slice any, setFunc func(*RunCreate, int)) *RunCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &RunCreateBulk{err: fmt.Errorf("calling to RunClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*RunCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &RunCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Run.
+func (c *RunClient) Update() *RunUpdate {
+	mutation := newRunMutation(c.config, OpUpdate)
+	return &RunUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RunClient) UpdateOne(r *Run) *RunUpdateOne {
+	mutation := newRunMutation(c.config, OpUpdateOne, withRun(r))
+	return &RunUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RunClient) UpdateOneID(id int) *RunUpdateOne {
+	mutation := newRunMutation(c.config, OpUpdateOne, withRunID(id))
+	return &RunUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Run.
+func (c *RunClient) Delete() *RunDelete {
+	mutation := newRunMutation(c.config, OpDelete)
+	return &RunDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RunClient) DeleteOne(r *Run) *RunDeleteOne {
+	return c.DeleteOneID(r.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RunClient) DeleteOneID(id int) *RunDeleteOne {
+	builder := c.Delete().Where(run.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RunDeleteOne{builder}
+}
+
+// Query returns a query builder for Run.
+func (c *RunClient) Query() *RunQuery {
+	return &RunQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRun},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Run entity by its id.
+func (c *RunClient) Get(ctx context.Context, id int) (*Run, error) {
+	return c.Query().Where(run.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RunClient) GetX(ctx context.Context, id int) *Run {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *RunClient) Hooks() []Hook {
+	return c.hooks.Run
+}
+
+// Interceptors returns the client interceptors.
+func (c *RunClient) Interceptors() []Interceptor {
+	return c.inters.Run
+}
+
+func (c *RunClient) mutate(ctx context.Context, m *RunMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RunCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RunUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RunUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RunDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Run mutation op: %q", m.Op())
+	}
+}
+
 // VarsityClient is a client for the Varsity schema.
 type VarsityClient struct {
 	config
@@ -1036,10 +1225,10 @@ func (c *VarsityClient) mutate(ctx context.Context, m *VarsityMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Application, Calculation, DrainedResult, Heading, Varsity []ent.Hook
+		Application, Calculation, DrainedResult, Heading, Run, Varsity []ent.Hook
 	}
 	inters struct {
-		Application, Calculation, DrainedResult, Heading, Varsity []ent.Interceptor
+		Application, Calculation, DrainedResult, Heading, Run, Varsity []ent.Interceptor
 	}
 )
 
