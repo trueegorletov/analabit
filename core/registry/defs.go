@@ -2,6 +2,7 @@ package registry
 
 import (
 	"analabit/core/registry/hse"
+	"analabit/core/registry/spbsu"
 	"analabit/core/source"
 )
 
@@ -10,4 +11,6 @@ var AllDefinitions = []source.VarsityDefinition{
 	hse.VarsitySpb,
 	hse.VarsityNn,
 	hse.VarsityPerm,
+
+	spbsu.Varsity,
 }
