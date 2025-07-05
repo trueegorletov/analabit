@@ -1,0 +1,36 @@
+name: Deploy to Dev VM
+
+on:
+  push:
+    branches:
+      - services
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Pull & Restart on VM
+    runs-on: ubuntu-latest
+    steps:
+    - name: SSH & pull
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          set -e
+          
+          # if /opt/analabit isn't a git repo, clone it
+          if [ ! -d /opt/analabit/.git ]; then
+            echo "→ Cloning repository for the first time"
+            git clone --branch services https://github.com/trueegorletov/analabit.git /opt/analabit
+            sudo chown -R $USER:$USER /opt/analabit
+          fi
+          
+          cd /opt/analabit
+          git fetch origin services
+          git reset --hard origin/services
+          make
+          # kill any existing dev.sh
+          pkill -f './scripts/dev.sh' || true
+          nohup ./scripts/dev.sh > /var/log/analabit-dev.log 2>&1 &
