@@ -106,6 +106,14 @@ func GetResults(client *ent.Client) fiber.Handler {
 				}
 			}
 		}
+		// Track explicit request for 100% drained
+		explicit100 := false
+		for _, step := range requestedSteps {
+			if step == 100 {
+				explicit100 = true
+				break
+			}
+		}
 
 		resp := ResultsResponse{}
 
@@ -268,46 +276,94 @@ func GetResults(client *ent.Client) fiber.Handler {
 				drQuery = drQuery.Where(drainedresult.HasHeadingWith(heading.HasVarsityWith(varsity.CodeEQ(varsityCode))))
 			}
 
-			if includeDrained && !drainedAll && len(requestedSteps) > 0 {
+			// apply percent filter for requested stages (excluding explicit 100 fallback)
+			if !drainedAll && !explicit100 && len(requestedSteps) > 0 {
 				drQuery = drQuery.Where(drainedresult.DrainedPercentIn(requestedSteps...))
 			}
 
-			drained, err := drQuery.All(ctx)
+			drResults, err := drQuery.All(ctx)
 			if err != nil {
 				log.Printf("error fetching drained results: %v", err)
 				return fiber.ErrInternalServerError
 			}
 
+			// group drained results per heading
 			drainedMap := make(map[int][]DrainedResultDTO)
-			for _, dr := range drained {
-				if dr.Edges.Heading == nil {
-					continue
+			if explicit100 && !drainedAll {
+				temp := make(map[int][]*ent.DrainedResult)
+				for _, dr := range drResults {
+					if dr.Edges.Heading == nil {
+						continue
+					}
+					temp[dr.Edges.Heading.ID] = append(temp[dr.Edges.Heading.ID], dr)
 				}
-				if dr.DrainedPercent <= 0 { // skip non-positive percent in drained response
-					continue
+				for hid, drs := range temp {
+					var chosen *ent.DrainedResult
+					for _, dr := range drs {
+						if dr.DrainedPercent == 100 {
+							chosen = dr
+							break
+						}
+					}
+					if chosen == nil {
+						max := 0
+						for _, dr := range drs {
+							if dr.DrainedPercent > max {
+								max = dr.DrainedPercent
+								chosen = dr
+							}
+						}
+					}
+					if chosen == nil {
+						continue
+					}
+					runID := 0
+					if chosen.Edges.Run != nil {
+						runID = chosen.Edges.Run.ID
+					}
+					dto := DrainedResultDTO{
+						HeadingID:                  hid,
+						HeadingCode:                chosen.Edges.Heading.Code,
+						DrainedPercent:             chosen.DrainedPercent,
+						AvgPassingScore:            chosen.AvgPassingScore,
+						MinPassingScore:            chosen.MinPassingScore,
+						MaxPassingScore:            chosen.MaxPassingScore,
+						MedPassingScore:            chosen.MedPassingScore,
+						AvgLastAdmittedRatingPlace: chosen.AvgLastAdmittedRatingPlace,
+						MinLastAdmittedRatingPlace: chosen.MinLastAdmittedRatingPlace,
+						MaxLastAdmittedRatingPlace: chosen.MaxLastAdmittedRatingPlace,
+						MedLastAdmittedRatingPlace: chosen.MedLastAdmittedRatingPlace,
+						RunID:                      runID,
+					}
+					drainedMap[hid] = []DrainedResultDTO{dto}
 				}
-				hid := dr.Edges.Heading.ID
-				runID := 0
-				if dr.Edges.Run != nil {
-					runID = dr.Edges.Run.ID
+			} else {
+				for _, dr := range drResults {
+					if dr.Edges.Heading == nil || dr.DrainedPercent <= 0 {
+						continue
+					}
+					hid := dr.Edges.Heading.ID
+					runID := 0
+					if dr.Edges.Run != nil {
+						runID = dr.Edges.Run.ID
+					}
+					dto := DrainedResultDTO{
+						HeadingID:                  hid,
+						HeadingCode:                dr.Edges.Heading.Code,
+						DrainedPercent:             dr.DrainedPercent,
+						AvgPassingScore:            dr.AvgPassingScore,
+						MinPassingScore:            dr.MinPassingScore,
+						MaxPassingScore:            dr.MaxPassingScore,
+						MedPassingScore:            dr.MedPassingScore,
+						AvgLastAdmittedRatingPlace: dr.AvgLastAdmittedRatingPlace,
+						MinLastAdmittedRatingPlace: dr.MinLastAdmittedRatingPlace,
+						MaxLastAdmittedRatingPlace: dr.MaxLastAdmittedRatingPlace,
+						MedLastAdmittedRatingPlace: dr.MedLastAdmittedRatingPlace,
+						RunID:                      runID,
+					}
+					drainedMap[hid] = append(drainedMap[hid], dto)
 				}
-				dto := DrainedResultDTO{
-					HeadingID:                  hid,
-					HeadingCode:                dr.Edges.Heading.Code,
-					DrainedPercent:             dr.DrainedPercent,
-					AvgPassingScore:            dr.AvgPassingScore,
-					MinPassingScore:            dr.MinPassingScore,
-					MaxPassingScore:            dr.MaxPassingScore,
-					MedPassingScore:            dr.MedPassingScore,
-					AvgLastAdmittedRatingPlace: dr.AvgLastAdmittedRatingPlace,
-					MinLastAdmittedRatingPlace: dr.MinLastAdmittedRatingPlace,
-					MaxLastAdmittedRatingPlace: dr.MaxLastAdmittedRatingPlace,
-					MedLastAdmittedRatingPlace: dr.MedLastAdmittedRatingPlace,
-					RunID:                      runID,
-				}
-				drainedMap[hid] = append(drainedMap[hid], dto)
 			}
-
 			resp.Drained = drainedMap
 		}
 
