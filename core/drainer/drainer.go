@@ -25,7 +25,7 @@ func New(prototype *source.Varsity, drainPercent int) *Drainer {
 	}
 }
 
-const maxComputeGoroutines = 50
+const maxComputeGoroutines = 64
 
 func (d *Drainer) Run(iterations int) []DrainedResult {
 	type headingResults struct {

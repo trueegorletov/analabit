@@ -117,25 +117,18 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 	}
 	slog.Info("Calculations completed – starting drain simulations")
 	drainedResults := make(map[string]map[int][]drainer.DrainedResult)
-	var wg sync.WaitGroup
-	var mu sync.Mutex
+
 	for _, v := range varsities {
 		drainedResults[v.Code] = make(map[int][]drainer.DrainedResult)
 	}
 	for _, v := range varsities {
 		for _, stage := range params.DrainStages {
-			wg.Add(1)
-			go func(v *source.Varsity, stage int) {
-				defer wg.Done()
-				drainerInstance := drainer.New(v, stage)
-				drainedResultSlice := drainerInstance.Run(params.DrainIterations)
-				mu.Lock()
-				drainedResults[v.Code][stage] = drainedResultSlice
-				mu.Unlock()
-			}(v, stage)
+			drainerInstance := drainer.New(v, stage)
+			drainedResultSlice := drainerInstance.Run(params.DrainIterations)
+
+			drainedResults[v.Code][stage] = drainedResultSlice
 		}
 	}
-	wg.Wait()
 	slog.Info("Drain simulations completed")
 
 	// --- Per-Varsity Payload Creation and Upload ---
