@@ -1,6 +1,8 @@
-package hse
+package oldhse
 
-import "analabit/core/source"
+import (
+	"analabit/core/source"
+)
 
 var VarsitySpb = source.VarsityDefinition{
 	Code:           spbCode,
@@ -13,13 +15,11 @@ var VarsityMsk = source.VarsityDefinition{
 	Name:           mskName,
 	HeadingSources: mskSourcesList(),
 }
-
 var VarsityNn = source.VarsityDefinition{
 	Code:           nnCode,
 	Name:           nnName,
 	HeadingSources: nnSourcesList(),
 }
-
 var VarsityPerm = source.VarsityDefinition{
 	Code:           permCode,
 	Name:           permName,

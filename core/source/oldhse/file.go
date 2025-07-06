@@ -75,7 +75,7 @@ func (s *FileHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		Capacities: s.HeadingCapacities,
 		PrettyName: prettyName,
 	})
-	log.Printf("Sent heading: %s (Code: %s, HeadingCapacities: %d) using name from %s", prettyName, headingCode, s.HeadingCapacities, s.RCListPath)
+	log.Printf("Sent heading: %s (Code: %s, Capacities: %d) using name from %s", prettyName, headingCode, s.HeadingCapacities, s.RCListPath)
 
 	definitions := []listDefinition{
 		{Source: s.BListPath, CompetitionType: core.CompetitionBVI, ListName: "BVI List"},

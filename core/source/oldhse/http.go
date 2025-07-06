@@ -37,12 +37,12 @@ func init() {
 // HttpHeadingSource defines how to load HSE heading data from URLs.
 // It assumes RCListURL is the primary source for the heading name.
 type HttpHeadingSource struct {
-	RCListURL         string // For "Основные конкурсные места" (CompetitionRegular)
-	TQListURL         string // For "Целевая квота" (CompetitionTargetQuota)
-	DQListURL         string // For "Отдельная квота" (CompetitionDedicatedQuota)
-	SQListURL         string // For "Особая квота" (CompetitionSpecialQuota)
-	BListURL          string // For "Без вступительных испытаний" (CompetitionBVI)
-	HeadingCapacities core.Capacities
+	RCListURL  string // For "Основные конкурсные места" (CompetitionRegular)
+	TQListURL  string // For "Целевая квота" (CompetitionTargetQuota)
+	DQListURL  string // For "Отдельная квота" (CompetitionDedicatedQuota)
+	SQListURL  string // For "Особая квота" (CompetitionSpecialQuota)
+	BListURL   string // For "Без вступительных испытаний" (CompetitionBVI)
+	Capacities core.Capacities
 }
 
 // openHttpExcelFile downloads and opens an Excel file from a URL.
@@ -141,10 +141,10 @@ func (s *HttpHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	// Send HeadingData to the channel
 	receiver.PutHeadingData(&source.HeadingData{
 		Code:       headingCode,
-		Capacities: s.HeadingCapacities,
+		Capacities: s.Capacities,
 		PrettyName: prettyName,
 	})
-	log.Printf("Sent heading: %s (Code: %s, Caps: %d) using name from %s (%s)", prettyName, headingCode, s.HeadingCapacities, primaryFileListName, primaryURL)
+	log.Printf("Sent heading: %s (Code: %s, Caps: %d) using name from %s (%s)", prettyName, headingCode, s.Capacities, primaryFileListName, primaryURL)
 
 	// Define rcListURLForDefinitions for clarity, ensuring it's the original s.RCListURL for the Common List definition.
 	// If s.RCListURL is empty, it will be handled by processApplicationsFromLists (skipped).
