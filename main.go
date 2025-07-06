@@ -3,7 +3,7 @@ package main
 import (
 	"analabit/core"
 	"analabit/core/source"
-	"analabit/core/source/hse"
+	"analabit/core/source/oldhse"
 	"os"
 )
 
@@ -18,7 +18,7 @@ func Ser() {
 			Name: "HSE",
 			Code: "hse_msk",
 			HeadingSources: []source.HeadingSource{
-				&hse.FileHeadingSource{
+				&oldhse.FileHeadingSource{
 					RCListPath:        "./sample_data/hse/rc.xlsx",
 					TQListPath:        "./sample_data/hse/tq.xlsx",
 					DQListPath:        "./sample_data/hse/dq.xlsx",

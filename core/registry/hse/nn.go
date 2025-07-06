@@ -3,7 +3,7 @@ package hse
 import (
 	"analabit/core"
 	"analabit/core/source"
-	"analabit/core/source/hse"
+	"analabit/core/source/oldhse"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 func nnSourcesList() []source.HeadingSource {
 	return []source.HeadingSource{
 		// Компьютерные науки и технологии
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_OM_nn_B_KNT_BI_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_KCP_nn_B_KNT_BI_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_SK_nn_B_KNT_BI_O.xlsx",
@@ -28,7 +28,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Международный бакалавриат по бизнесу и экономике
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_OM_nn_B_MBBE_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_KCP_nn_B_MBBE_M_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_SK_nn_B_MBBE_O.xlsx",
@@ -42,7 +42,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Технологии искусственного и дополненного интеллекта
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_OM_nn_B_Ait_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_KCP_nn_B_Ait_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_SK_nn_B_Ait_O.xlsx",
@@ -56,7 +56,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Филология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_OM_nn_B_Philology_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_KCP_nn_B_Philology_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_SK_nn_B_Philology_O.xlsx",
@@ -70,7 +70,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Фундаментальная и прикладная
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_OM_nn_B_Ling_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_KCP_nn_B_Ling_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_SK_nn_B_Ling_O.xlsx",
@@ -84,7 +84,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Фундаментальная и прикладная математика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_OM_nn_B_Math_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_KCP_nn_B_Math_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_SK_nn_B_Math_O.xlsx",
@@ -98,7 +98,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Юриспруденция
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_OM_nn_B_LAW_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_KCP_nn_B_LAW_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_SK_nn_B_LAW_O.xlsx",
@@ -115,7 +115,7 @@ func nnSourcesList() []source.HeadingSource {
 		// TODO The following NN headings do not have capacities determined:
 
 		// Дизайн
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -129,7 +129,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Иностранные языки и межкультурная бизнес-коммуникация
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -143,7 +143,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Программная инженерия
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_OM_nn_B_KNT_SE_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_KCP_nn_B_KNT_SE_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/nn/Bachelors/KS_SK_nn_B_KNT_SE_O.xlsx",
@@ -157,7 +157,7 @@ func nnSourcesList() []source.HeadingSource {
 			},
 		},
 		// Цифровой маркетинг
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -174,7 +174,7 @@ func nnSourcesList() []source.HeadingSource {
 		// TODO The following NN headings do not have list URLs determined:
 
 		// Экономика и бизнес
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",

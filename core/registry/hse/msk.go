@@ -3,7 +3,7 @@ package hse
 import (
 	"analabit/core"
 	"analabit/core/source"
-	"analabit/core/source/hse"
+	"analabit/core/source/oldhse"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 func mskSourcesList() []source.HeadingSource {
 	return []source.HeadingSource{
 		// Античность
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Ant_Ist_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Ant_Ist_O.xlsx",
@@ -28,7 +28,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Востоковедение
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Vostok_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_Vostok_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Vostok_O.xlsx",
@@ -42,7 +42,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// География  глобальных изменений и геоинформационные технологии
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_GGIGT_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_GGIGT_O.xlsx",
@@ -56,7 +56,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Городское планирование
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_GorPlan_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_GorPlan_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_GorPlan_O.xlsx",
@@ -70,7 +70,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Государственное и муниципальное управление
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_GMU_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_GMU_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_GMU_O.xlsx",
@@ -84,7 +84,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Дизайн
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Design_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_Design_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Design_O.xlsx",
@@ -98,7 +98,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Журналистика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_ZHur_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_ZHur_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_ZHur_O.xlsx",
@@ -112,7 +112,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Иностранные языки и межкультурная коммуникация
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_IYAMK_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_IYAMK_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_IYAMK_O.xlsx",
@@ -126,7 +126,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Инфокоммуникационные технологии и системы связи
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_ITSS_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_ITSS_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_ITSS_O.xlsx",
@@ -140,7 +140,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Информатика и вычислительная техника
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_IVT_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_IVT_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_IVT_O.xlsx",
@@ -154,7 +154,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Информационная безопасность
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_IB_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_IB_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_IB_O.xlsx",
@@ -168,7 +168,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// История
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_ISTR_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_ISTR_O.xlsx",
@@ -182,7 +182,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// История искусств
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Isk_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Isk_O.xlsx",
@@ -196,7 +196,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Клеточная и молекулярная биотехнология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_CMB_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_CMB_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_CMB_O.xlsx",
@@ -210,7 +210,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Когнитивная нейробиология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_KogNeir_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_KogNeir_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_KogNeir_O.xlsx",
@@ -224,7 +224,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Компьютерная безопасность
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_KB_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_KB_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_KB_O.xlsx",
@@ -238,7 +238,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Культурология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Cultural_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Cultural_O.xlsx",
@@ -252,7 +252,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Маркетинг и рыночная аналитика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Marketing_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Marketing_O.xlsx",
@@ -266,7 +266,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Математика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Math_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Math_O.xlsx",
@@ -280,7 +280,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Медиакоммуникации
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Media_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_Media_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Media_O.xlsx",
@@ -294,7 +294,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Международные отношения
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_MO_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_MO_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_MO_O.xlsx",
@@ -308,7 +308,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Мировая экономика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_WE_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_WE_O.xlsx",
@@ -322,7 +322,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Политология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Political_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Political_O.xlsx",
@@ -336,7 +336,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Прикладная математика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_AM_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_AM_O.xlsx",
@@ -350,7 +350,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Прикладная математика и информатика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_AMI_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_AMI_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_AMI_O.xlsx",
@@ -364,7 +364,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Программная инженерия
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_SE_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_SE_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_SE_O.xlsx",
@@ -378,7 +378,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Психология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Psy_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_Psy_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Psy_O.xlsx",
@@ -392,7 +392,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Совместная программа по экономике НИУ ВШЭ и РЭШ
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_RESH_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_RESH_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_RESH_O.xlsx",
@@ -406,7 +406,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Совместный бакалавриат НИУ ВШЭ и Центра педагогического мастерства
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_CPM_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_CPM_O.xlsx",
@@ -420,7 +420,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Социология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Soc_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Soc_O.xlsx",
@@ -434,7 +434,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Стратегия и продюсирование в коммуникациях
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Producer_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_Producer_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Producer_O.xlsx",
@@ -448,7 +448,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Управление бизнесом
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_BBA_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_BBA_O.xlsx",
@@ -462,7 +462,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Физика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Physics_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Physics_O.xlsx",
@@ -476,7 +476,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Филология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Philology_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Philology_O.xlsx",
@@ -490,7 +490,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Философия
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Phil_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Phil_O.xlsx",
@@ -504,7 +504,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Фундаментальная и компьютерная лингвистика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_FKL_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_FKL_O.xlsx",
@@ -518,7 +518,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Химия
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Chem_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Chem_O.xlsx",
@@ -532,7 +532,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Экономика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Economy_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_Economy_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Economy_O.xlsx",
@@ -546,7 +546,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Экономика и анализ данных
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_EcAl_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_EcAl_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_EcAl_O.xlsx",
@@ -560,7 +560,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Экономика и статистика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Stat_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_Stat_O_det.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Stat_O.xlsx",
@@ -574,7 +574,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Юриспруденция
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_LAW_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_KCP_moscow_B_LAW_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_LAW_O.xlsx",
@@ -588,7 +588,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Юриспруденция: цифровой юрист
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_OM_moscow_B_Dlawyer_O.xlsx",
 			TQListURL: "",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/moscow/Bachelors/KS_SK_moscow_B_Dlawyer_O.xlsx",
@@ -605,7 +605,7 @@ func mskSourcesList() []source.HeadingSource {
 		// TODO The following headings do not have capacities determined:
 
 		// Дизайн и разработка информационных продуктов
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -619,7 +619,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Международная программа по экономике и финансам
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -633,7 +633,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Мода
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -647,7 +647,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Прикладной анализ данных
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -664,7 +664,7 @@ func mskSourcesList() []source.HeadingSource {
 		// TODO The following headings do not have list URLs determined:
 
 		// Актёр
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -678,7 +678,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Бизнес-информатика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -692,7 +692,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Глобальные цифровые коммуникации (онлайн)
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -706,7 +706,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Кинопроизводство
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -720,7 +720,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Компьютерные науки и анализ данных (онлайн)
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -734,7 +734,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Международная программа «Международные отношения и глобальные исследования»/ International Program «International Relations and Global Studies
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -748,7 +748,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Международный бизнес (реализуется на английском языке)
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -762,7 +762,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Монголия и Тибет
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -776,7 +776,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Программа двух дипломов НИУ ВШЭ и Университета Кёнхи «Экономика и политика в Азии»/KHU-HSE Double Degree Program Economics and Politics in Asia
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -790,7 +790,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Разработка игр и цифровых продуктов
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -804,7 +804,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Реклама и связи с общественностью
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -818,7 +818,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Современное искусство
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -832,7 +832,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Технологии анализа данных в бизнесе
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -846,7 +846,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Турция и тюркский мир
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -860,7 +860,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Управление в креативных индустриях
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -874,7 +874,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Управление цифровым продуктом
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -888,7 +888,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Химия новых материалов
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -902,7 +902,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Экономический анализ (онлайн)
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -916,7 +916,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Эфиопия и арабский мир
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -930,7 +930,7 @@ func mskSourcesList() []source.HeadingSource {
 			},
 		},
 		// Юриспруденция: правовое регулирование бизнеса
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",

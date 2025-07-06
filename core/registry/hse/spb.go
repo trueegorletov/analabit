@@ -3,7 +3,7 @@ package hse
 import (
 	"analabit/core"
 	"analabit/core/source"
-	"analabit/core/source/hse"
+	"analabit/core/source/oldhse"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 func spbSourcesList() []source.HeadingSource {
 	return []source.HeadingSource{
 		// Аналитика в экономике
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_Ave_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_Ave_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_Ave_O.xlsx",
@@ -28,7 +28,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Бизнес-информатика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_BI_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_BI_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_BI_O.xlsx",
@@ -42,7 +42,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Востоковедение
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_Vostok_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_Vostok_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_Vostok_O.xlsx",
@@ -56,7 +56,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Дизайн
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_Design_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_Design_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_Design_O.xlsx",
@@ -70,7 +70,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// История
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_ISTR_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_ISTR_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_ISTR_O.xlsx",
@@ -84,7 +84,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Компьютерные технологии, системы и сети
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -98,7 +98,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Медиакоммуникации
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_Media_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_Media_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_Media_O.xlsx",
@@ -112,7 +112,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Политология и мировая политика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_PMP_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_PMP_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_PMP_O.xlsx",
@@ -126,7 +126,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Прикладная математика и  информатика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_AMI_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_AMI_O.xlsx",
 			DQListURL: "/mirror/pubs/share/947713972",
@@ -140,7 +140,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Прикладной анализ данных и искусственный интеллект
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_PADII_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_PADII_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_PADII_O.xlsx",
@@ -154,7 +154,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Социология и социальная информатика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_Socci_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_Socci_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_Socci_O.xlsx",
@@ -168,7 +168,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Управление бизнесом
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_BBA_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_BBA_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_BBA_O.xlsx",
@@ -182,7 +182,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Управление  и аналитика в государственном секторе
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_GMU_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_GMU_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_GMU_O.xlsx",
@@ -196,7 +196,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Физика
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_Physics_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_Physics_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_Physics_O.xlsx",
@@ -210,7 +210,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Филология
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_Philology_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_Philology_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_Philology_O.xlsx",
@@ -224,7 +224,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Юриспруденция
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_OM_spb_B_LAW_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_KCP_spb_B_LAW_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/spb/Bachelors/KS_SK_spb_B_LAW_O.xlsx",
@@ -241,7 +241,7 @@ func spbSourcesList() []source.HeadingSource {
 		// TODO The following SPB headings do not have list URLs determined:
 
 		// Архитектура **
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -255,7 +255,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Многопрофильный конкурс "Международный бакалавриат по бизнесу и экономике"
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -269,7 +269,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Программирование и инжиниринг компьютерных игр
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -283,7 +283,7 @@ func spbSourcesList() []source.HeadingSource {
 			},
 		},
 		// Тексты, языки и цифровые инструменты
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",

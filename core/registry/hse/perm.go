@@ -3,7 +3,7 @@ package hse
 import (
 	"analabit/core"
 	"analabit/core/source"
-	"analabit/core/source/hse"
+	"analabit/core/source/oldhse"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 func permSourcesList() []source.HeadingSource {
 	return []source.HeadingSource{
 		// Иностранные языки и межкультурная коммуникация в бизнесе
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_OM_perm_B_IYAMK_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_KCP_perm_B_IYAMK_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_SK_perm_B_IYAMK_O.xlsx",
@@ -28,7 +28,7 @@ func permSourcesList() []source.HeadingSource {
 			},
 		},
 		// Международный бакалавриат по бизнесу и экономике
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_OM_perm_B_MBBE_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_KCP_perm_B_MBBE_M_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_SK_perm_B_MBBE_O.xlsx",
@@ -42,7 +42,7 @@ func permSourcesList() []source.HeadingSource {
 			},
 		},
 		// Разработка информационных систем для бизнеса
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_OM_perm_B_IsystemsB_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_KCP_perm_B_IsystemsB_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_SK_perm_B_IsystemsB_O.xlsx",
@@ -56,7 +56,7 @@ func permSourcesList() []source.HeadingSource {
 			},
 		},
 		// Юриспруденция
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_OM_perm_B_LAW_O.xlsx",
 			TQListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_KCP_perm_B_LAW_O.xlsx",
 			DQListURL: "https://enrol.hse.ru/storage/public_report_2024/perm/Bachelors/KS_SK_perm_B_LAW_O.xlsx",
@@ -73,7 +73,7 @@ func permSourcesList() []source.HeadingSource {
 		// TODO The following Perm headings do not have list URLs determined:
 
 		// Менеджмент в креативных индустриях
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -87,7 +87,7 @@ func permSourcesList() []source.HeadingSource {
 			},
 		},
 		// Программные системы и автоматизация процессов разработки (онлайн)
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
@@ -101,7 +101,7 @@ func permSourcesList() []source.HeadingSource {
 			},
 		},
 		// Управление бизнесом (онлайн)
-		&hse.HttpHeadingSource{
+		&oldhse.HttpHeadingSource{
 			RCListURL: "",
 			TQListURL: "",
 			DQListURL: "",
