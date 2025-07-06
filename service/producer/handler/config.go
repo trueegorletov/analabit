@@ -9,7 +9,7 @@ import (
 type Config struct {
 	CacheDir               string `env:"ANALABIT_CACHE_DIR" envDefault:"./cache"`
 	CacheTTLMinutes        int    `env:"ANALABIT_CACHE_TTL_MINUTES" envDefault:"100"`
-	DrainStages            []int  `env:"ANALABIT_DRAIN_SIM_STAGES" envSeparator:"," envDefault:"33,50,66,100"`
+	DrainStages            []int  `env:"ANALABIT_DRAIN_SIM_STAGES" envSeparator:"," envDefault:"33,50,66,80"`
 	DrainIterations        int    `env:"ANALABIT_DRAIN_SIM_ITERATIONS" envDefault:"100"`
 	MinioEndpoint          string `env:"ANALABIT_MINIO_ENDPOINT" envDefault:"minio:9000"`
 	MinioAccessKey         string `env:"ANALABIT_MINIO_ACCESS_KEY" envDefault:"minioadmin"`

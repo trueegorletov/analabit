@@ -30,8 +30,10 @@ type FetchListFunc func(source string) ([]SpbsuApplicationEntry, error)
 // parseAndLoadApplications parses entries and emits ApplicationData to the receiver.
 func parseAndLoadApplications(entries []SpbsuApplicationEntry, competitionType core.Competition, headingCode string, receiver source.DataReceiver) {
 	for _, entry := range entries {
+		competition := competitionType
+
 		if entry.WithoutTrials && competitionType == core.CompetitionRegular {
-			competitionType = core.CompetitionBVI
+			competition = core.CompetitionBVI
 		}
 
 		receiver.PutApplicationData(&source.ApplicationData{
@@ -40,7 +42,7 @@ func parseAndLoadApplications(entries []SpbsuApplicationEntry, competitionType c
 			ScoresSum:         entry.ScoreOverall,
 			RatingPlace:       entry.OrderNumber,
 			Priority:          entry.PriorityNumber,
-			CompetitionType:   competitionType,
+			CompetitionType:   competition,
 			OriginalSubmitted: entry.OriginalDocument,
 		})
 	}

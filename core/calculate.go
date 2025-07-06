@@ -595,6 +595,8 @@ func (v *VarsityCalculator) AddApplication(headingCode, studentID string, rating
 // NormalizeApplications iterates through all headings and normalizes the applications for each one.
 // This should be called after all applications have been loaded and before any calculation is performed.
 func (v *VarsityCalculator) NormalizeApplications() {
+	return // Temporarily disabled normalization
+
 	headingToApplications := make(map[string][]*Application)
 
 	v.students.Range(func(key, value interface{}) bool {

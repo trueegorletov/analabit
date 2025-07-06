@@ -57,15 +57,13 @@ func (n *applicationsNormalizer) normalize() []*Application {
 			return precI > precJ
 		}
 
-		// Secondary sort key (for non-BVI): Rating Place (ascending)
-		if appI.CompetitionType() != CompetitionBVI {
-			if appI.RatingPlace() != appJ.RatingPlace() {
-				return appI.RatingPlace() < appJ.RatingPlace()
-			}
+		// Secondary sort key: Rating Place (ascending)
+		if appI.RatingPlace() != appJ.RatingPlace() {
+			return appI.RatingPlace() < appJ.RatingPlace()
 		}
 
-		// Tertiary sort key / Tie-breaker: Original Score (ascending)
-		return appI.Score() < appJ.Score()
+		// Tertiary sort key / Tie-breaker: Original Score (descending)
+		return appI.Score() > appJ.Score()
 	})
 
 	// Step 4: Re-number the rating places consecutively.
