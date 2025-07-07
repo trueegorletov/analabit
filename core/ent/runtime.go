@@ -40,4 +40,8 @@ func init() {
 	runDescTriggeredAt := runFields[0].Descriptor()
 	// run.DefaultTriggeredAt holds the default value on creation for the triggered_at field.
 	run.DefaultTriggeredAt = runDescTriggeredAt.Default.(func() time.Time)
+	// runDescFinished is the schema descriptor for finished field.
+	runDescFinished := runFields[2].Descriptor()
+	// run.DefaultFinished holds the default value on creation for the finished field.
+	run.DefaultFinished = runDescFinished.Default.(bool)
 }

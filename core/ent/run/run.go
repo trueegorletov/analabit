@@ -17,6 +17,8 @@ const (
 	FieldTriggeredAt = "triggered_at"
 	// FieldPayloadMeta holds the string denoting the payload_meta field in the database.
 	FieldPayloadMeta = "payload_meta"
+	// FieldFinished holds the string denoting the finished field in the database.
+	FieldFinished = "finished"
 	// Table holds the table name of the run in the database.
 	Table = "runs"
 )
@@ -26,6 +28,7 @@ var Columns = []string{
 	FieldID,
 	FieldTriggeredAt,
 	FieldPayloadMeta,
+	FieldFinished,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -41,6 +44,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultTriggeredAt holds the default value on creation for the "triggered_at" field.
 	DefaultTriggeredAt func() time.Time
+	// DefaultFinished holds the default value on creation for the "finished" field.
+	DefaultFinished bool
 )
 
 // OrderOption defines the ordering options for the Run queries.
@@ -54,4 +59,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByTriggeredAt orders the results by the triggered_at field.
 func ByTriggeredAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTriggeredAt, opts...).ToFunc()
+}
+
+// ByFinished orders the results by the finished field.
+func ByFinished(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFinished, opts...).ToFunc()
 }

@@ -17,6 +17,7 @@ func (Run) Fields() []ent.Field {
 	return []ent.Field{
 		field.Time("triggered_at").Default(time.Now),
 		field.JSON("payload_meta", map[string]any{}).Optional(),
+		field.Bool("finished").Default(false),
 	}
 }
 

@@ -40,6 +40,20 @@ func (rc *RunCreate) SetPayloadMeta(m map[string]interface{}) *RunCreate {
 	return rc
 }
 
+// SetFinished sets the "finished" field.
+func (rc *RunCreate) SetFinished(b bool) *RunCreate {
+	rc.mutation.SetFinished(b)
+	return rc
+}
+
+// SetNillableFinished sets the "finished" field if the given value is not nil.
+func (rc *RunCreate) SetNillableFinished(b *bool) *RunCreate {
+	if b != nil {
+		rc.SetFinished(*b)
+	}
+	return rc
+}
+
 // Mutation returns the RunMutation object of the builder.
 func (rc *RunCreate) Mutation() *RunMutation {
 	return rc.mutation
@@ -79,12 +93,19 @@ func (rc *RunCreate) defaults() {
 		v := run.DefaultTriggeredAt()
 		rc.mutation.SetTriggeredAt(v)
 	}
+	if _, ok := rc.mutation.Finished(); !ok {
+		v := run.DefaultFinished
+		rc.mutation.SetFinished(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (rc *RunCreate) check() error {
 	if _, ok := rc.mutation.TriggeredAt(); !ok {
 		return &ValidationError{Name: "triggered_at", err: errors.New(`ent: missing required field "Run.triggered_at"`)}
+	}
+	if _, ok := rc.mutation.Finished(); !ok {
+		return &ValidationError{Name: "finished", err: errors.New(`ent: missing required field "Run.finished"`)}
 	}
 	return nil
 }
@@ -119,6 +140,10 @@ func (rc *RunCreate) createSpec() (*Run, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.PayloadMeta(); ok {
 		_spec.SetField(run.FieldPayloadMeta, field.TypeJSON, value)
 		_node.PayloadMeta = value
+	}
+	if value, ok := rc.mutation.Finished(); ok {
+		_spec.SetField(run.FieldFinished, field.TypeBool, value)
+		_node.Finished = value
 	}
 	return _node, _spec
 }

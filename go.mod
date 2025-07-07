@@ -14,6 +14,7 @@ require (
 	github.com/xuri/excelize/v2 v2.9.1
 	golang.org/x/net v0.40.0
 	golang.org/x/sync v0.14.0
+	rsc.io/pdf v0.1.1
 )
 
 require (
@@ -55,5 +56,4 @@ require (
 	golang.org/x/text v0.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	rsc.io/pdf v0.1.1 // indirect
 )

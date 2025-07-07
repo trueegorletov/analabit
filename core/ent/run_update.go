@@ -54,6 +54,20 @@ func (ru *RunUpdate) ClearPayloadMeta() *RunUpdate {
 	return ru
 }
 
+// SetFinished sets the "finished" field.
+func (ru *RunUpdate) SetFinished(b bool) *RunUpdate {
+	ru.mutation.SetFinished(b)
+	return ru
+}
+
+// SetNillableFinished sets the "finished" field if the given value is not nil.
+func (ru *RunUpdate) SetNillableFinished(b *bool) *RunUpdate {
+	if b != nil {
+		ru.SetFinished(*b)
+	}
+	return ru
+}
+
 // Mutation returns the RunMutation object of the builder.
 func (ru *RunUpdate) Mutation() *RunMutation {
 	return ru.mutation
@@ -104,6 +118,9 @@ func (ru *RunUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if ru.mutation.PayloadMetaCleared() {
 		_spec.ClearField(run.FieldPayloadMeta, field.TypeJSON)
 	}
+	if value, ok := ru.mutation.Finished(); ok {
+		_spec.SetField(run.FieldFinished, field.TypeBool, value)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{run.Label}
@@ -147,6 +164,20 @@ func (ruo *RunUpdateOne) SetPayloadMeta(m map[string]interface{}) *RunUpdateOne 
 // ClearPayloadMeta clears the value of the "payload_meta" field.
 func (ruo *RunUpdateOne) ClearPayloadMeta() *RunUpdateOne {
 	ruo.mutation.ClearPayloadMeta()
+	return ruo
+}
+
+// SetFinished sets the "finished" field.
+func (ruo *RunUpdateOne) SetFinished(b bool) *RunUpdateOne {
+	ruo.mutation.SetFinished(b)
+	return ruo
+}
+
+// SetNillableFinished sets the "finished" field if the given value is not nil.
+func (ruo *RunUpdateOne) SetNillableFinished(b *bool) *RunUpdateOne {
+	if b != nil {
+		ruo.SetFinished(*b)
+	}
 	return ruo
 }
 
@@ -229,6 +260,9 @@ func (ruo *RunUpdateOne) sqlSave(ctx context.Context) (_node *Run, err error) {
 	}
 	if ruo.mutation.PayloadMetaCleared() {
 		_spec.ClearField(run.FieldPayloadMeta, field.TypeJSON)
+	}
+	if value, ok := ruo.mutation.Finished(); ok {
+		_spec.SetField(run.FieldFinished, field.TypeBool, value)
 	}
 	_node = &Run{config: ruo.config}
 	_spec.Assign = _node.assignValues

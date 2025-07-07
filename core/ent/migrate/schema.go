@@ -186,6 +186,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "triggered_at", Type: field.TypeTime},
 		{Name: "payload_meta", Type: field.TypeJSON, Nullable: true},
+		{Name: "finished", Type: field.TypeBool, Default: false},
 	}
 	// RunsTable holds the schema information for the "runs" table.
 	RunsTable = &schema.Table{

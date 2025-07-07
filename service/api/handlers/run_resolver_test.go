@@ -23,6 +23,7 @@ func createTestRuns(t *testing.T, client *ent.Client, count int) []*ent.Run {
 		run, err := client.Run.Create().
 			SetTriggeredAt(time.Now().Add(time.Duration(i) * time.Hour)).
 			SetPayloadMeta(map[string]any{"test_run": i}).
+			SetFinished(true). // Mark as finished for testing
 			Save(context.Background())
 		require.NoError(t, err)
 		runs[i] = run
@@ -40,6 +41,7 @@ func TestResolveRunFromIteration_Basic(t *testing.T) {
 	run, err := client.Run.Create().
 		SetTriggeredAt(time.Now()).
 		SetPayloadMeta(map[string]any{"test": "data"}).
+		SetFinished(true). // Mark as finished for testing
 		Save(ctx)
 	require.NoError(t, err)
 
@@ -144,4 +146,27 @@ func TestGetLatestRunID(t *testing.T) {
 	latestID, err := getLatestRunID(ctx, client)
 	require.NoError(t, err)
 	assert.Equal(t, runs[2].ID, latestID)
+}
+
+func TestGetLatestRunID_OnlyFinishedRuns(t *testing.T) {
+	client := setupTestClient(t)
+	defer client.Close()
+
+	ctx := context.Background()
+
+	// Create finished runs
+	finishedRuns := createTestRuns(t, client, 2)
+
+	// Create an unfinished run (newer than finished ones)
+	_, err := client.Run.Create().
+		SetTriggeredAt(time.Now().Add(24 * time.Hour)).
+		SetPayloadMeta(map[string]any{"test": "unfinished"}).
+		SetFinished(false). // This should be ignored
+		Save(ctx)
+	require.NoError(t, err)
+
+	// Should return the latest finished run, not the unfinished one
+	latestID, err := getLatestRunID(ctx, client)
+	require.NoError(t, err)
+	assert.Equal(t, finishedRuns[1].ID, latestID)
 }

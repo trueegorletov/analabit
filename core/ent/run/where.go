@@ -59,6 +59,11 @@ func TriggeredAt(v time.Time) predicate.Run {
 	return predicate.Run(sql.FieldEQ(FieldTriggeredAt, v))
 }
 
+// Finished applies equality check predicate on the "finished" field. It's identical to FinishedEQ.
+func Finished(v bool) predicate.Run {
+	return predicate.Run(sql.FieldEQ(FieldFinished, v))
+}
+
 // TriggeredAtEQ applies the EQ predicate on the "triggered_at" field.
 func TriggeredAtEQ(v time.Time) predicate.Run {
 	return predicate.Run(sql.FieldEQ(FieldTriggeredAt, v))
@@ -107,6 +112,16 @@ func PayloadMetaIsNil() predicate.Run {
 // PayloadMetaNotNil applies the NotNil predicate on the "payload_meta" field.
 func PayloadMetaNotNil() predicate.Run {
 	return predicate.Run(sql.FieldNotNull(FieldPayloadMeta))
+}
+
+// FinishedEQ applies the EQ predicate on the "finished" field.
+func FinishedEQ(v bool) predicate.Run {
+	return predicate.Run(sql.FieldEQ(FieldFinished, v))
+}
+
+// FinishedNEQ applies the NEQ predicate on the "finished" field.
+func FinishedNEQ(v bool) predicate.Run {
+	return predicate.Run(sql.FieldNEQ(FieldFinished, v))
 }
 
 // And groups predicates with the AND operator between them.

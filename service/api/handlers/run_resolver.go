@@ -62,14 +62,15 @@ func ResolveRunFromIteration(ctx context.Context, client *ent.Client, iterationP
 	return nil, fmt.Errorf("positive iteration values are no longer supported")
 }
 
-// getLatestRunID returns the ID of the most recent run
+// getLatestRunID returns the ID of the most recent finished run
 func getLatestRunID(ctx context.Context, client *ent.Client) (int, error) {
 	latestRun, err := client.Run.Query().
+		Where(run.FinishedEQ(true)).
 		Order(ent.Desc(run.FieldID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return 0, fmt.Errorf("no runs found")
+			return 0, fmt.Errorf("no finished runs found")
 		}
 		return 0, err
 	}
@@ -83,9 +84,10 @@ func getRunAtOffset(ctx context.Context, client *ent.Client, offset int) (int, e
 		return 0, fmt.Errorf("offset must be negative for relative queries")
 	}
 
-	// Get runs ordered by ID descending, skip by absolute offset
+	// Get finished runs ordered by ID descending, skip by absolute offset
 	skip := -offset // Convert negative offset to positive skip value
 	runs, err := client.Run.Query().
+		Where(run.FinishedEQ(true)).
 		Order(ent.Desc(run.FieldID)).
 		Offset(skip).
 		Limit(1).

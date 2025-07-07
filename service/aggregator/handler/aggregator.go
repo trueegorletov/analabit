@@ -247,6 +247,17 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 			}
 		}
 
+		// If no errors occurred for this run, mark it as finished
+		if allErrors == nil {
+			_, updateErr := client.Run.UpdateOneID(run.ID).SetFinished(true).Save(ctx)
+			if updateErr != nil {
+				err = fmt.Errorf("failed to mark run %d as finished: %w", run.ID, updateErr)
+				multierr.AppendInto(&allErrors, err)
+			} else {
+				log.Printf("Run %d completed successfully and marked as finished", run.ID)
+			}
+		}
+
 		client.Close()
 	}
 

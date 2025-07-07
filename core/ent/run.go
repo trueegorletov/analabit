@@ -21,7 +21,9 @@ type Run struct {
 	// TriggeredAt holds the value of the "triggered_at" field.
 	TriggeredAt time.Time `json:"triggered_at,omitempty"`
 	// PayloadMeta holds the value of the "payload_meta" field.
-	PayloadMeta  map[string]interface{} `json:"payload_meta,omitempty"`
+	PayloadMeta map[string]interface{} `json:"payload_meta,omitempty"`
+	// Finished holds the value of the "finished" field.
+	Finished     bool `json:"finished,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -32,6 +34,8 @@ func (*Run) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case run.FieldPayloadMeta:
 			values[i] = new([]byte)
+		case run.FieldFinished:
+			values[i] = new(sql.NullBool)
 		case run.FieldID:
 			values[i] = new(sql.NullInt64)
 		case run.FieldTriggeredAt:
@@ -70,6 +74,12 @@ func (r *Run) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &r.PayloadMeta); err != nil {
 					return fmt.Errorf("unmarshal field payload_meta: %w", err)
 				}
+			}
+		case run.FieldFinished:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field finished", values[i])
+			} else if value.Valid {
+				r.Finished = value.Bool
 			}
 		default:
 			r.selectValues.Set(columns[i], values[i])
@@ -112,6 +122,9 @@ func (r *Run) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("payload_meta=")
 	builder.WriteString(fmt.Sprintf("%v", r.PayloadMeta))
+	builder.WriteString(", ")
+	builder.WriteString("finished=")
+	builder.WriteString(fmt.Sprintf("%v", r.Finished))
 	builder.WriteByte(')')
 	return builder.String()
 }
