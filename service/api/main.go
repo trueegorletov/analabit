@@ -15,14 +15,21 @@ import (
 
 func main() {
 	// Load configuration
-	if err := config.LoadConfig(""); err != nil {
+	if err := config.LoadConfig(); err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
 	// Database Connection
-	dbCfg := config.AppConfig.Database
-	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		dbCfg.Host, dbCfg.Port, dbCfg.User, dbCfg.Password, dbCfg.DBName, dbCfg.SSLMode)
+	cfg := config.AppConfig
+	var connStr string
+
+	// Use legacy connection string if provided, otherwise build from individual fields
+	if cfg.PostgresConnStrings != "" {
+		connStr = cfg.PostgresConnStrings
+	} else {
+		connStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+			cfg.DatabaseHost, cfg.DatabasePort, cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseDBName, cfg.DatabaseSSLMode)
+	}
 
 	client, err := ent.Open("postgres", connStr)
 	if err != nil {
@@ -36,6 +43,11 @@ func main() {
 	// Enable CORS (allow all origins by default; adjust via env if needed)
 	app.Use(cors.New())
 
+	// Health check endpoint
+	app.Get("/health", func(c fiber.Ctx) error {
+		return c.JSON(fiber.Map{"status": "ok"})
+	})
+
 	// API v1 Group
 	api := app.Group("/api")
 
@@ -48,5 +60,6 @@ func main() {
 	api.Get("/results", handlers.GetResults(client))
 
 	// Start the server
-	log.Fatal(app.Listen(":" + config.AppConfig.Server.Port))
+	log.Printf("Starting server on port %s", cfg.ServerPort)
+	log.Fatal(app.Listen(":" + cfg.ServerPort))
 }
