@@ -6,4 +6,5 @@ import (
 
 func init() {
 	gob.RegisterName("RzgmuHttpHeadingSource", &HTTPHeadingSource{})
+	gob.RegisterName("RzgmuFileHeadingSource", &FileHeadingSource{})
 }
