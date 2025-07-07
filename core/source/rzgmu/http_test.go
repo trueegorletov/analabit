@@ -91,7 +91,7 @@ func TestParseRZGMUTextData(t *testing.T) {
 // TestExtractTextFromPDFDebug tests text extraction from PDF and compares with sample
 func TestExtractTextFromPDFDebug(t *testing.T) {
 	// Path to the sample PDF file
-	samplePDFPath := filepath.Join("..", "..", "..", "sample_data", "rzgmu", "rmgu_l_b.pdf")
+	samplePDFPath := filepath.Join("..", "..", "..", "sample_data", "rzgmu", "rzgmu_l_b.pdf")
 
 	// Extract text using rsc.io/pdf
 	extractedText, err := extractTextFromPDFFile(samplePDFPath)
@@ -100,7 +100,7 @@ func TestExtractTextFromPDFDebug(t *testing.T) {
 	}
 
 	// Read the sample text file for comparison
-	sampleTextPath := filepath.Join("..", "..", "..", "sample_data", "rzgmu", "rmgiu_l_b-text-converted.txt")
+	sampleTextPath := filepath.Join("..", "..", "..", "sample_data", "rzgmu", "rzgmu_l_b-text-converted.txt")
 	sampleTextBytes, err := ioutil.ReadFile(sampleTextPath)
 	if err != nil {
 		t.Fatalf("Failed to read sample text file: %v", err)

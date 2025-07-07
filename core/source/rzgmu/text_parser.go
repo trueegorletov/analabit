@@ -92,7 +92,7 @@ func parseRZGMUTextData(textData string) ([]TextProgramData, error) {
 	currentCompetitionType := core.CompetitionRegular
 	lastRatingPlace := 0
 	justChangedCompetitionType := false // Track when we've recently changed competition types
-	justProcessedProposal := false      // Track when we've recently processed a "Предложение РвР" line
+	lastProposalLineIndex := -1         // Track when we last saw a "Предложение РвР" line
 
 	// Application parsing state
 	var currentApp *source.ApplicationData
@@ -171,7 +171,7 @@ func parseRZGMUTextData(textData string) ([]TextProgramData, error) {
 
 		// Check for "Предложение РвР" lines which legitimately reset rankings
 		if isProposalLine(line) {
-			justProcessedProposal = true
+			lastProposalLineIndex = i
 			log.Printf("Detected administrative proposal line: %s", line)
 			continue
 		}
@@ -193,20 +193,23 @@ func parseRZGMUTextData(textData string) ([]TextProgramData, error) {
 				applications = append(applications, currentApp)
 
 				// Check for rating place reset (indicates missing header)
-				// Skip this check if we just changed competition types or processed a proposal
-				if !justChangedCompetitionType && !justProcessedProposal && lastRatingPlace > 0 && appData.RatingPlace < lastRatingPlace && appData.RatingPlace <= 5 {
+				// Skip this check if we just changed competition types or recently saw a proposal
+				recentProposal := lastProposalLineIndex >= 0 && (i-lastProposalLineIndex) <= 15
+				if !justChangedCompetitionType && !recentProposal && lastRatingPlace > 0 && appData.RatingPlace < lastRatingPlace && appData.RatingPlace <= 5 {
 					log.Printf("Warning: Rating place reset detected (from %d to %d) at line %d - possible missing competition type header",
 						lastRatingPlace, appData.RatingPlace, i+1)
 				}
-
-				lastRatingPlace = currentApp.RatingPlace
 			}
 
-			// Start new application and reset flags
+			// Start new application and update tracking variables
 			currentApp = appData
 			examBuffer = nil
-			justChangedCompetitionType = false // Reset the flag after processing first app in new section
-			justProcessedProposal = false      // Reset the proposal flag after processing first app
+			lastRatingPlace = appData.RatingPlace // Always update lastRatingPlace
+
+			// Reset competition type flag only after first application in new section
+			if justChangedCompetitionType {
+				justChangedCompetitionType = false
+			}
 			continue
 		}
 
@@ -220,13 +223,9 @@ func parseRZGMUTextData(textData string) ([]TextProgramData, error) {
 		if currentApp != nil && len(examBuffer) > 0 {
 			// We've finished collecting exam data, now parse the remaining fields
 			if remainingFields := parseRemainingFields(line); remainingFields != nil {
-				currentApp.ScoresSum += remainingFields.BonusPoints
+				// Only update priority and consent status, NOT the ScoresSum
 				currentApp.Priority = remainingFields.Priority
 				currentApp.OriginalSubmitted = remainingFields.OriginalSubmitted
-
-				// Parse exam scores and add to total
-				examScore := parseExamScores(examBuffer)
-				currentApp.ScoresSum += examScore
 
 				// Apply current competition type only if not already set (e.g., for BVI)
 				if currentApp.CompetitionType == 0 {
@@ -344,7 +343,7 @@ func isMetadataLineText(line string) bool {
 
 // parseApplicationStart parses the start of an application entry
 func parseApplicationStart(line string) *source.ApplicationData {
-	// Match pattern like "1. 3867113 - БВИ 10 1 Согласие"
+	// Match pattern like "1. 3867113 - БВИ 10 1 Согласие" or "1. 3785711 - БПВИ 8 Пр.право 8 Нет"
 	re := regexp.MustCompile(`^(\d+)\.\s+(\d+)\s+(-|\d+)\s*(.*)`)
 	matches := re.FindStringSubmatch(line)
 
@@ -361,22 +360,47 @@ func parseApplicationStart(line string) *source.ApplicationData {
 	scoreStr := matches[3]
 	remaining := strings.TrimSpace(matches[4])
 
-	var totalScore int
-	if scoreStr != "-" {
-		totalScore, _ = strconv.Atoi(scoreStr)
+	// Parse remaining fields to detect БВИ first
+	fields := strings.Fields(remaining)
+	isBVI, isBPVI := false, false
+	for _, field := range fields {
+		if field == "БВИ" {
+			isBVI = true
+		} else if field == "БПВИ" {
+			isBPVI = true
+		}
 	}
 
-	// Parse remaining fields (БВИ, bonus points, priority, consent)
-	fields := strings.Fields(remaining)
+	// Handle score parsing - only use the third column ("Балл")
+	var totalScore int
+	if scoreStr == "-" {
+		// Missing score - set defaults based on competition type
+		if isBVI {
+			totalScore = 310 // Default for БВИ
+			log.Printf("Missing score for БВИ student %s, setting to 310", studentID)
+		} else if isBPVI {
+			totalScore = 282 // Default for БПВИ
+			log.Printf("Missing score for БПВИ student %s, setting to 310", studentID)
+		} else {
+			totalScore = 0 // Default for others
+			log.Printf("Missing score for student %s, setting to 0", studentID)
+		}
+	} else {
+		totalScore, err = strconv.Atoi(scoreStr)
+		if err != nil {
+			log.Printf("Invalid score '%s' for student %s, setting to 0", scoreStr, studentID)
+			totalScore = 0
+		}
+	}
 
 	app := &source.ApplicationData{
 		StudentID:   studentID,
 		RatingPlace: ratingPlace,
-		ScoresSum:   totalScore,
-		Priority:    1, // Default
+		ScoresSum:   totalScore, // Only use the third column value
+		Priority:    1,          // Default
 	}
 
-	// Parse БВИ and other fields
+	// Parse other fields (БВИ, consent, priority) but NOT add to ScoresSum
 	for i, field := range fields {
 		if field == "БВИ" {
 			app.CompetitionType = core.CompetitionBVI
@@ -387,13 +411,11 @@ func parseApplicationStart(line string) *source.ApplicationData {
 		} else if field == "Пр.право" {
 			// Preferential right indicator
 		} else if num, err := strconv.Atoi(field); err == nil {
-			// This could be bonus points or priority
-			if i < len(fields)-1 {
-				// Not the last field, likely bonus points
-				app.ScoresSum += num
-			} else {
-				// Last numeric field, likely priority
+			// Only use numeric values for priority, not for score calculation
+			if i == len(fields)-2 || (i == len(fields)-1 && !app.OriginalSubmitted) {
+				// This appears to be the priority field
 				app.Priority = num
+				break
 			}
 		}
 	}
