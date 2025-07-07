@@ -228,8 +228,10 @@ func parseRZGMUTextData(textData string) ([]TextProgramData, error) {
 					currentApp.Priority = remainingFields.Priority
 				}
 
-				// Update consent status (this should be more reliable)
-				currentApp.OriginalSubmitted = remainingFields.OriginalSubmitted
+				// Only update consent status if it was actually found in this line
+				if remainingFields.ConsentFound {
+					currentApp.OriginalSubmitted = remainingFields.OriginalSubmitted
+				}
 
 				// Apply current competition type only if not already set (e.g., for BVI)
 				if currentApp.CompetitionType == 0 {
@@ -466,12 +468,18 @@ type RemainingFields struct {
 	BonusPoints       int
 	Priority          int
 	OriginalSubmitted bool
+	ConsentFound      bool // Whether consent field was actually found in this line
 }
 
 // parseRemainingFields parses remaining fields from a line
 func parseRemainingFields(line string) *RemainingFields {
 	fields := strings.Fields(line)
 	if len(fields) == 0 {
+		return nil
+	}
+
+	// Skip header lines that contain column names
+	if isHeaderLine(line) {
 		return nil
 	}
 
@@ -492,8 +500,10 @@ func parseRemainingFields(line string) *RemainingFields {
 	for i, field := range fields {
 		if field == "Согласие" {
 			result.OriginalSubmitted = true
+			result.ConsentFound = true
 		} else if field == "Нет" {
 			result.OriginalSubmitted = false
+			result.ConsentFound = true
 		} else if field == "Пр.право" {
 			// Preferential right indicator
 		} else if num, err := strconv.Atoi(field); err == nil {
@@ -587,4 +597,23 @@ func DebugTextExtraction(pdfPath, sampleTextPath string) error {
 // isProposalLine checks if a line contains "Предложение РвР" which legitimately resets rankings
 func isProposalLine(line string) bool {
 	return strings.Contains(line, "Предложение РвР")
+}
+
+// isHeaderLine checks if a line contains column headers like "№ Код Балл ВИ ИД ПП Приоритет Согласие"
+func isHeaderLine(line string) bool {
+	lowerLine := strings.ToLower(line)
+
+	// Check for common column header combinations
+	// A header line typically contains multiple of these column names
+	headerKeywords := []string{"№", "код", "балл", "приоритет"}
+	matchCount := 0
+
+	for _, keyword := range headerKeywords {
+		if strings.Contains(lowerLine, keyword) {
+			matchCount++
+		}
+	}
+
+	// If it contains 3 or more header keywords, it's likely a header line
+	return matchCount >= 2
 }

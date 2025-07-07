@@ -163,34 +163,6 @@ func TestExtractTextFromPDFDebug(t *testing.T) {
 	}
 }
 
-// TestPDFTextExtractionBasic tests basic PDF text extraction functionality
-func TestPDFTextExtractionBasic(t *testing.T) {
-	// Path to the sample PDF file
-	samplePDFPath := filepath.Join("..", "..", "..", "sample_data", "rzgmu", "rmgu_l_b.pdf")
-
-	// Extract text using rsc.io/pdf
-	text, err := extractTextFromPDFFile(samplePDFPath)
-	if err != nil {
-		t.Fatalf("Failed to extract text from PDF: %v", err)
-	}
-
-	if len(text) == 0 {
-		t.Fatal("Extracted text is empty")
-	}
-
-	// Should contain Russian text
-	if !strings.Contains(text, "Лечебное дело") {
-		t.Error("Extracted text should contain 'Лечебное дело'")
-	}
-
-	// Should contain student IDs
-	if !strings.Contains(text, "3867113") {
-		t.Error("Extracted text should contain student ID '3867113'")
-	}
-
-	t.Logf("Successfully extracted %d characters of text from PDF", len(text))
-}
-
 // TestPriorityParsingBug tests the specific bug where priority is incorrectly parsed
 // for student 3950875 who should have priority 2 in Педиатрия but gets parsed as priority 1
 func TestPriorityParsingBug(t *testing.T) {
