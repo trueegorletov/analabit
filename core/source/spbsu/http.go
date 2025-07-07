@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 )
 
 // Global semaphore to limit concurrent HTTP requests (mirroring HSE pattern)
@@ -55,11 +54,11 @@ func init() {
 	log.Printf("Initialized SPbSU HTTP request semaphore with limit: %d concurrent requests", maxConcurrentRequests)
 }
 
-// HttpHeadingSource loads SPbSU heading data from up to 4 JSON list IDs.
+// HttpHeadingSource loads SPbSU heading data from multiple JSON list IDs.
 type HttpHeadingSource struct {
 	PrettyName           string
 	RegularListID        int
-	TargetQuotaListID    int
+	TargetQuotaListIDs   []int
 	DedicatedQuotaListID int
 	SpecialQuotaListID   int
 	Capacities           core.Capacities
@@ -70,8 +69,8 @@ func fetchSpbsuListByID(listID int) ([]SpbsuApplicationEntry, error) {
 	if listID == -1 {
 		return nil, nil
 	}
-	url := "https://enrollelists.spbu.ru/lists?id=" + strconv.Itoa(listID) + "&without_control=true"
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	url := "https://enrollelists.spbu.ru/api/contest-results?page=1&per-page=2000&sort=&filter[competitive_group_id]=" + strconv.Itoa(listID)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err := httpRequestSemaphore.Acquire(ctx, 1); err != nil {
 		return nil, fmt.Errorf("failed to acquire semaphore for %s: %w", url, err)
@@ -106,7 +105,6 @@ func (s *HttpHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		ListName    string
 	}{
 		{s.RegularListID, core.CompetitionRegular, "Regular List"},
-		{s.TargetQuotaListID, core.CompetitionTargetQuota, "Target Quota List"},
 		{s.DedicatedQuotaListID, core.CompetitionDedicatedQuota, "Dedicated Quota List"},
 		{s.SpecialQuotaListID, core.CompetitionSpecialQuota, "Special Quota List"},
 	}
@@ -125,6 +123,23 @@ func (s *HttpHeadingSource) LoadTo(receiver source.DataReceiver) error {
 			continue
 		}
 		parseAndLoadApplications(entries, def.Competition, headingCode, receiver)
+	}
+
+	// Handle multiple target quota list IDs
+	for i, listID := range s.TargetQuotaListIDs {
+		if listID == -1 {
+			continue
+		}
+		entries, err := fetchSpbsuListByID(listID)
+		if err != nil {
+			log.Printf("Error fetching Target Quota List %d (%d): %v", i+1, listID, err)
+			continue
+		}
+		if entries == nil {
+			log.Printf("No entries found in Target Quota List %d (%d)", i+1, listID)
+			continue
+		}
+		parseAndLoadApplications(entries, core.CompetitionTargetQuota, headingCode, receiver)
 	}
 	return nil
 }

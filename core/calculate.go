@@ -1,6 +1,7 @@
 package core
 
 import (
+	"analabit/core/utils"
 	"bytes"
 	"container/heap"
 	"container/list" // Added for O(1) queue operations
@@ -583,20 +584,24 @@ func (v *VarsityCalculator) AddHeading(code string, capacities Capacities, prett
 // AddApplication adds a student's application to a specific heading.
 func (v *VarsityCalculator) AddApplication(headingCode, studentID string, ratingPlace, priority int, competitionType Competition, scoresSum int) {
 	headingCode = strings.TrimSpace(headingCode)
+	id, err := utils.PrepareStudentID(studentID)
+
+	if err != nil {
+		slog.Warn("Invalid too-long numeric student ID found", "studentID", studentID)
+		return
+	}
 
 	h, ok := v.headings.Load(headingCode)
 	if !ok {
 		panic(fmt.Sprintf("heading with code %s not found", headingCode))
 	}
-	s := v.student(studentID)
+	s := v.student(id)
 	s.addApplication(h.(*Heading), ratingPlace, priority, competitionType, scoresSum)
 }
 
 // NormalizeApplications iterates through all headings and normalizes the applications for each one.
 // This should be called after all applications have been loaded and before any calculation is performed.
 func (v *VarsityCalculator) NormalizeApplications() {
-	return // Temporarily disabled normalization
-
 	headingToApplications := make(map[string][]*Application)
 
 	v.students.Range(func(key, value interface{}) bool {
@@ -625,25 +630,39 @@ func (v *VarsityCalculator) NormalizeApplications() {
 
 // SetQuit marks a student as having quit.
 func (v *VarsityCalculator) SetQuit(studentID string) {
-	s := v.student(studentID)
+	id, err := utils.PrepareStudentID(studentID)
+
+	if err != nil {
+		slog.Warn("Invalid too-long numeric student ID found", "studentID", studentID)
+		return
+	}
+
+	s := v.student(id)
 	s.mu.Lock()
 	s.quit = true
 	s.mu.Unlock()
 
 	v.quitStudentsMu.Lock()
-	v.quitStudents[studentID] = true
+	v.quitStudents[id] = true
 	v.quitStudentsMu.Unlock()
 }
 
 // SetOriginalSubmitted marks a student as submitting their original.
 func (v *VarsityCalculator) SetOriginalSubmitted(studentID string) {
-	s := v.student(studentID)
+	id, err := utils.PrepareStudentID(studentID)
+
+	if err != nil {
+		slog.Warn("Invalid too-long numeric student ID found", "studentID", studentID)
+		return
+	}
+
+	s := v.student(id)
 	s.mu.Lock()
 	s.originalSubmitted = true
 	s.mu.Unlock()
 
 	v.originalSubmittedStudentsMu.Lock()
-	v.originalSubmittedStudents[studentID] = true
+	v.originalSubmittedStudents[id] = true
 	v.originalSubmittedStudentsMu.Unlock()
 }
 
@@ -663,7 +682,13 @@ func (v *VarsityCalculator) Students() []*Student {
 }
 
 func (v *VarsityCalculator) GetStudent(studentID string) *Student {
-	studentID = strings.TrimSpace(studentID)
+	studentID, err := utils.PrepareStudentID(strings.TrimSpace(studentID))
+
+	if err != nil {
+		slog.Warn("Invalid too-long numeric student ID found", "studentID", studentID)
+		return nil
+	}
+
 	s, ok := v.students.Load(studentID)
 	if !ok {
 		return nil // Student not found

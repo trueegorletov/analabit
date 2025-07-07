@@ -1,0 +1,1380 @@
+[
+    {
+      "id": 1401,
+      "competitive_name": "01.03.01 Математика; Очная; Целевой прием; Математика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "4272a2f3-16c4-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 122,
+        "competitive_group_id": 1401,
+        "competitive_group_name": "Кронштадт",
+        "created_at": "2025-06-25T11:51:29.000000Z",
+        "updated_at": "2025-06-25T11:51:29.000000Z"
+      }
+    },
+    {
+      "id": 2007,
+      "competitive_name": "01.03.01 Математика; Очная; Целевой прием; Математика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "bf22b679-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 2214,
+      "competitive_name": "01.03.02 Прикладная математика и информатика; Очная; Целевой прием; Современное программирование (с дополнительной квалификацией «Программист»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "bf22b796-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1830,
+      "competitive_name": "01.03.02 Прикладная математика и информатика; Факультет прикладной математики-процессов управления; Очная; Целевой прием; Прикладная математика, процессы управления и искусственный интеллект (с дополнительной квалификацией «Программист»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "bf22b737-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 14,
+      "new_name": null
+    },
+    {
+      "id": 561,
+      "competitive_name": "01.03.02 Прикладная математика и информатика; Очная; Целевой прием; Прикладная математика, программирование и искусственный интеллект (с дополнительной квалификацией «Системный аналитик»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "bf22b6d8-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 8,
+      "new_name": null
+    },
+    {
+      "id": 1465,
+      "competitive_name": "01.05.01 Фундаментальные математика и механика; Очная; Целевой прием; Фундаментальная математика (с дополнительной квалификацией «Педагог дополнительного образования»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "c531ec16-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1678,
+      "competitive_name": "01.05.01 Фундаментальные математика и механика; Очная; Целевой прием; Фундаментальная механика (с дополнительной квалификацией «Специалист по научно-исследовательским разработкам»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "c531ec75-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 340,
+      "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Целевой прием; Математика и компьютерные науки",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "52f4b36d-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 144,
+        "competitive_group_id": 340,
+        "competitive_group_name": "СТЦ",
+        "created_at": "2025-06-25T11:58:48.000000Z",
+        "updated_at": "2025-06-25T11:58:48.000000Z"
+      }
+    },
+    {
+      "id": 2000,
+      "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Целевой прием; Математика и компьютерные науки",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "c531ed33-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 6,
+      "new_name": null
+    },
+    {
+      "id": 1226,
+      "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Целевой прием; Математика и компьютерные науки",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "41b56f70-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 117,
+        "competitive_group_id": 1226,
+        "competitive_group_name": "Алмаз-Антей",
+        "created_at": "2025-06-25T11:49:30.000000Z",
+        "updated_at": "2025-06-25T11:49:30.000000Z"
+      }
+    },
+    {
+      "id": 356,
+      "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Целевой прием; AI360: Математика машинного обучения",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "63da8a14-16c4-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 136,
+        "competitive_group_id": 356,
+        "competitive_group_name": "Радар ММС",
+        "created_at": "2025-06-25T11:56:21.000000Z",
+        "updated_at": "2025-06-25T11:56:21.000000Z"
+      }
+    },
+    {
+      "id": 1563,
+      "competitive_name": "02.03.01 Математика и компьютерные науки; Очная; Целевой прием; Науки о данных (с дополнительной квалификацией «Специалист по большим данным»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "c531ed92-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 7,
+      "competitive_name": "02.03.02 Фундаментальная информатика и информационные технологии; Факультет прикладной математики-процессов управления; Очная; Целевой прием; Программирование и информационные технологии",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "cc0734cb-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1060,
+      "competitive_name": "02.03.02 Фундаментальная информатика и информационные технологии; Факультет прикладной математики-процессов управления; Очная; Целевой прием; Большие данные и распределенная цифровая платформа",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "cb2897d3-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1811,
+      "competitive_name": "02.03.03 Математическое обеспечение и администрирование информационных систем; Очная; Целевой прием; Технологии программирования",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "cc6c2578-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1409,
+      "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Целевой прием; Инженерно-ориентированная физика",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "675ff1a3-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 130,
+        "competitive_group_id": 1409,
+        "competitive_group_name": "Минпромторг Карелии",
+        "created_at": "2025-06-25T11:54:11.000000Z",
+        "updated_at": "2025-06-25T11:54:11.000000Z"
+      }
+    },
+    {
+      "id": 1554,
+      "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Целевой прием; Инженерно-ориентированная физика",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "cc6c25d7-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1339,
+      "competitive_name": "03.03.01 Прикладные математика и физика; Очная; Целевой прием; Прикладные физика и математика (с дополнительной квалификацией «Программист»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "7471cf4b-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 132,
+        "competitive_group_id": 1339,
+        "competitive_group_name": "НИИ им. Александрова",
+        "created_at": "2025-06-25T11:54:55.000000Z",
+        "updated_at": "2025-06-25T11:54:55.000000Z"
+      }
+    },
+    {
+      "id": 1263,
+      "competitive_name": "03.03.02 Физика; Очная; Целевой прием; Физика (с дополнительной квалификацией «Программист»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "cc6c2695-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 5,
+      "new_name": null
+    },
+    {
+      "id": 1186,
+      "competitive_name": "04.03.01 Химия; Очная; Целевой прием; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "ba79207a-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 158,
+        "competitive_group_id": 1186,
+        "competitive_group_name": "ЦНИИМ",
+        "created_at": "2025-06-25T12:04:27.000000Z",
+        "updated_at": "2025-06-25T12:04:27.000000Z"
+      }
+    },
+    {
+      "id": 2024,
+      "competitive_name": "04.03.01 Химия; Очная; Целевой прием; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f40e904d-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 137,
+        "competitive_group_id": 2024,
+        "competitive_group_name": "Радиевый институт",
+        "created_at": "2025-06-25T11:56:41.000000Z",
+        "updated_at": "2025-06-25T11:56:41.000000Z"
+      }
+    },
+    {
+      "id": 946,
+      "competitive_name": "04.03.01 Химия; Очная; Целевой прием; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "d0442134-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 129,
+        "competitive_group_id": 946,
+        "competitive_group_name": "Минпромторг Карелии",
+        "created_at": "2025-06-25T11:53:55.000000Z",
+        "updated_at": "2025-06-25T11:53:55.000000Z"
+      }
+    },
+    {
+      "id": 1515,
+      "competitive_name": "04.03.01 Химия; Очная; Целевой прием; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "a6502419-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 118,
+        "competitive_group_id": 1515,
+        "competitive_group_name": "Алмаз-Антей",
+        "created_at": "2025-06-25T11:49:45.000000Z",
+        "updated_at": "2025-06-25T11:49:45.000000Z"
+      }
+    },
+    {
+      "id": 150,
+      "competitive_name": "04.03.01 Химия; Очная; Целевой прием; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "9f5cf75d-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 135,
+        "competitive_group_id": 150,
+        "competitive_group_name": "Пикалёвская сода",
+        "created_at": "2025-06-25T11:56:00.000000Z",
+        "updated_at": "2025-06-25T11:56:00.000000Z"
+      }
+    },
+    {
+      "id": 1994,
+      "competitive_name": "04.03.01 Химия; Очная; Целевой прием; Химия (с дополнительными квалификациями «Специалист в области перевода научно-технической литературы» / «Учитель химии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "ac74fd53-16c5-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 3,
+      "new_name": {
+        "id": 157,
+        "competitive_group_id": 1994,
+        "competitive_group_name": "ЦНИИ Электрон",
+        "created_at": "2025-06-25T12:04:07.000000Z",
+        "updated_at": "2025-06-25T12:04:07.000000Z"
+      }
+    },
+    {
+      "id": 906,
+      "competitive_name": "04.03.02 Химия, физика и механика материалов; Очная; Целевой прием; Химическое материаловедение (с дополнительной квалификацией «Специалист в области перевода научно-технической литературы»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "12d4f749-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 128,
+        "competitive_group_id": 906,
+        "competitive_group_name": "Минпромторг Карелии",
+        "created_at": "2025-06-25T11:53:38.000000Z",
+        "updated_at": "2025-06-25T11:53:38.000000Z"
+      }
+    },
+    {
+      "id": 883,
+      "competitive_name": "04.03.02 Химия, физика и механика материалов; Очная; Целевой прием; Химическое материаловедение (с дополнительной квалификацией «Специалист в области перевода научно-технической литературы»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "d1598689-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 2234,
+      "competitive_name": "05.03.01 Геология; Очная; Целевой прием; Геология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "d15986e8-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": null
+    },
+    {
+      "id": 1318,
+      "competitive_name": "05.03.02 География; Очная; Целевой прием; География (с дополнительной квалификацией «Учитель географии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "d7818555-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": null
+    },
+    {
+      "id": 1097,
+      "competitive_name": "05.03.03 Картография и геоинформатика; Очная; Целевой прием; Картография и геоинформатика",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "d78185b4-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": null
+    },
+    {
+      "id": 1096,
+      "competitive_name": "05.03.04 Гидрометеорология; Очная; Целевой прием; Гидрометеорология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "de2f1fbb-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 1372,
+      "competitive_name": "05.03.04 Гидрометеорология; Очная; Целевой прием; Гидрометеорология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "17d422df-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 121,
+        "competitive_group_id": 1372,
+        "competitive_group_name": "ГСПИ",
+        "created_at": "2025-06-25T11:51:08.000000Z",
+        "updated_at": "2025-06-25T11:51:08.000000Z"
+      }
+    },
+    {
+      "id": 151,
+      "competitive_name": "05.03.06 Экология и природопользование; Очная; Целевой прием; Экология и природопользование",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "29a74336-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 127,
+        "competitive_group_id": 151,
+        "competitive_group_name": "Минпромторг Карелии",
+        "created_at": "2025-06-25T11:53:27.000000Z",
+        "updated_at": "2025-06-25T11:53:27.000000Z"
+      }
+    },
+    {
+      "id": 284,
+      "competitive_name": "05.03.06 Экология и природопользование; Очная; Целевой прием; Экология и природопользование",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "de2f2272-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 702,
+      "competitive_name": "06.03.01 Биология; Биологический факультет; Очная; Целевой прием; Биология (с дополнительной квалификацией «Учитель биологии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "36faacdc-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": {
+        "id": 133,
+        "competitive_group_id": 702,
+        "competitive_group_name": "НИИ им. Пастера",
+        "created_at": "2025-06-25T11:55:23.000000Z",
+        "updated_at": "2025-06-25T11:55:23.000000Z"
+      }
+    },
+    {
+      "id": 609,
+      "competitive_name": "06.03.01 Биология; Биологический факультет; Очная; Целевой прием; Биология (с дополнительной квалификацией «Учитель биологии»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "de2f22d1-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 3,
+      "new_name": null
+    },
+    {
+      "id": 2022,
+      "competitive_name": "06.03.02 Почвоведение; Очная; Целевой прием; Почвоведение",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "e379dce6-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 681,
+      "competitive_name": "09.03.03 Прикладная информатика; Очная; Целевой прием; Искусственный интеллект и наука о данных",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "434c3b81-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 140,
+        "competitive_group_id": 681,
+        "competitive_group_name": "СПбГУТ",
+        "created_at": "2025-06-25T11:57:40.000000Z",
+        "updated_at": "2025-06-25T11:57:40.000000Z"
+      }
+    },
+    {
+      "id": 71,
+      "competitive_name": "09.03.03 Прикладная информатика; Очная; Целевой прием; Искусственный интеллект и наука о данных",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "4b7d9161-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 3,
+      "new_name": {
+        "id": 146,
+        "competitive_group_id": 71,
+        "competitive_group_name": "УФНС по СПб",
+        "created_at": "2025-06-25T11:59:39.000000Z",
+        "updated_at": "2025-06-25T11:59:39.000000Z"
+      }
+    },
+    {
+      "id": 1885,
+      "competitive_name": "09.03.03 Прикладная информатика; Очная; Целевой прием; Прикладная информатика в области искусств и гуманитарных наук (с дополнительной квалификацией «Специалист по информационным системам»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "e379dda4-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 826,
+      "competitive_name": "09.03.03 Прикладная информатика; Очная; Целевой прием; Искусственный интеллект и наука о данных",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "e379dd45-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1562,
+      "competitive_name": "09.03.04 Программная инженерия; Очная; Целевой прием; Программная инженерия",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "5a93f6f6-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 131,
+        "competitive_group_id": 1562,
+        "competitive_group_name": "Минпромторг Карелии",
+        "created_at": "2025-06-25T11:54:24.000000Z",
+        "updated_at": "2025-06-25T11:54:24.000000Z"
+      }
+    },
+    {
+      "id": 978,
+      "competitive_name": "09.03.04 Программная инженерия; Очная; Целевой прием; Программная инженерия",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "e379de03-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 6,
+      "new_name": null
+    },
+    {
+      "id": 593,
+      "competitive_name": "21.03.01 Нефтегазовое дело; Очная; Целевой прием; Нефтегазовая геология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "e9fb1816-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 3,
+      "new_name": null
+    },
+    {
+      "id": 2074,
+      "competitive_name": "21.03.02 Землеустройство и кадастры; Очная; Целевой прием; Кадастр недвижимости: оценка и информационное обеспечение (с дополнительной квалификацией «Специалист в области инженерно-геодезических изысканий для градостроительной деятельности»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "e9fb2e4d-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1435,
+      "competitive_name": "27.03.03 Системный анализ и управление; Факультет прикладной математики-процессов управления; Очная; Целевой прием; Прикладные компьютерные технологии и искусственный интеллект",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "eeb0f4b2-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1680,
+      "competitive_name": "31.05.01 Лечебное дело; Очная; Целевой прием; Лечебное дело",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f02ce949-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 30,
+      "new_name": null
+    },
+    {
+      "id": 1972,
+      "competitive_name": "31.05.01 Лечебное дело; Очная; Целевой прием; Лечебное дело",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "77a1829f-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": {
+        "id": 156,
+        "competitive_group_id": 1972,
+        "competitive_group_name": "ФМБА",
+        "created_at": "2025-06-25T12:03:46.000000Z",
+        "updated_at": "2025-06-25T12:03:46.000000Z"
+      }
+    },
+    {
+      "id": 1769,
+      "competitive_name": "31.05.01 Лечебное дело; Очная; Целевой прием; Лечебное дело",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "6ea65e09-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 125,
+        "competitive_group_id": 1769,
+        "competitive_group_name": "Минздрав Карелии",
+        "created_at": "2025-06-25T11:52:35.000000Z",
+        "updated_at": "2025-06-25T11:52:35.000000Z"
+      }
+    },
+    {
+      "id": 2171,
+      "competitive_name": "31.05.03 Стоматология; Очная; Целевой прием; Стоматология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f02ce9a8-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 11,
+      "new_name": null
+    },
+    {
+      "id": 444,
+      "competitive_name": "31.05.03 Стоматология; Очная; Целевой прием; Стоматология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "83906b12-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": {
+        "id": 124,
+        "competitive_group_id": 444,
+        "competitive_group_name": "Минздрав Карелии",
+        "created_at": "2025-06-25T11:52:21.000000Z",
+        "updated_at": "2025-06-25T11:52:21.000000Z"
+      }
+    },
+    {
+      "id": 1587,
+      "competitive_name": "33.05.01 Фармация; Очная; Целевой прием; Фармация",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f02cea07-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 941,
+      "competitive_name": "37.03.01 Психология; Очная; Целевой прием; Психология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f02cea8c-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 5,
+      "new_name": null
+    },
+    {
+      "id": 723,
+      "competitive_name": "37.05.01 Клиническая психология; Очная; Целевой прием; Клиническая психология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f02ceaeb-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 2207,
+      "competitive_name": "37.05.02 Психология служебной деятельности; Очная; Целевой прием; Психология служебной деятельности",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f6528cd7-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 810,
+      "competitive_name": "38.03.01 Экономика; Очная; Целевой прием; Экономика",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "9c3ec228-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 9,
+      "new_name": {
+        "id": 149,
+        "competitive_group_id": 810,
+        "competitive_group_name": "УФНС по СПб",
+        "created_at": "2025-06-25T12:00:34.000000Z",
+        "updated_at": "2025-06-25T12:00:34.000000Z"
+      }
+    },
+    {
+      "id": 630,
+      "competitive_name": "38.03.01 Экономика; Очная; Целевой прием; Экономика",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f6528d36-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 1781,
+      "competitive_name": "38.03.01 Экономика; Очная; Целевой прием; Экономико-математические методы",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "fcc5f202-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 868,
+      "competitive_name": "38.03.01 Экономика; Очная; Целевой прием; Экономика",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "93e413a5-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 138,
+        "competitive_group_id": 868,
+        "competitive_group_name": "Россети СЗ",
+        "created_at": "2025-06-25T11:57:04.000000Z",
+        "updated_at": "2025-06-25T11:57:04.000000Z"
+      }
+    },
+    {
+      "id": 1103,
+      "competitive_name": "38.03.01 Экономика; Очная; Целевой прием; Экономика (с углубленным изучением экономики Китая и китайского языка)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "f6528d95-10a9-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 1425,
+      "competitive_name": "38.03.02 Менеджмент; Очная; Целевой прием; Менеджмент (с дополнительной квалификацией «Бизнес-аналитик»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "0209b35c-16c7-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 119,
+        "competitive_group_id": 1425,
+        "competitive_group_name": "Газпром Инвест",
+        "created_at": "2025-06-25T11:50:20.000000Z",
+        "updated_at": "2025-06-25T11:50:20.000000Z"
+      }
+    },
+    {
+      "id": 805,
+      "competitive_name": "38.03.02 Менеджмент; Очная; Целевой прием; Менеджмент (с дополнительной квалификацией «Бизнес-аналитик»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "b8d7917f-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 4,
+      "new_name": {
+        "id": 116,
+        "competitive_group_id": 805,
+        "competitive_group_name": "Авиакомпания Россия",
+        "created_at": "2025-06-25T11:49:09.000000Z",
+        "updated_at": "2025-06-25T11:49:09.000000Z"
+      }
+    },
+    {
+      "id": 108,
+      "competitive_name": "38.03.02 Менеджмент; Очная; Целевой прием; Менеджмент (с дополнительной квалификацией «Бизнес-аналитик»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "01d05ce0-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1470,
+      "competitive_name": "38.03.02 Менеджмент; Очная; Целевой прием; Менеджмент (с дополнительной квалификацией «Бизнес-аналитик»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "e9b45965-16c6-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 120,
+        "competitive_group_id": 1470,
+        "competitive_group_name": "Газпром Межрегионгаз",
+        "created_at": "2025-06-25T11:50:47.000000Z",
+        "updated_at": "2025-06-25T11:50:47.000000Z"
+      }
+    },
+    {
+      "id": 1827,
+      "competitive_name": "38.03.03 Управление персоналом; Очная; Целевой прием; Управление персоналом (с дополнительной квалификацией «Консультант в области управления персоналом»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "02c2b0f3-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1243,
+      "competitive_name": "38.03.04 Государственное и муниципальное управление; Очная; Целевой прием; Государственное и муниципальное управление",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "0d7cb98c-16c7-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 3,
+      "new_name": {
+        "id": 152,
+        "competitive_group_id": 1243,
+        "competitive_group_name": "УФНС по СПб",
+        "created_at": "2025-06-25T12:02:30.000000Z",
+        "updated_at": "2025-06-25T12:02:30.000000Z"
+      }
+    },
+    {
+      "id": 165,
+      "competitive_name": "38.03.05 Бизнес-информатика; Очная; Целевой прием; Бизнес-информатика",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "2bbc140e-16c7-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": {
+        "id": 126,
+        "competitive_group_id": 165,
+        "competitive_group_name": "Мининноваций РС(Я)",
+        "created_at": "2025-06-25T11:52:59.000000Z",
+        "updated_at": "2025-06-25T11:52:59.000000Z"
+      }
+    },
+    {
+      "id": 1095,
+      "competitive_name": "39.03.01 Социология; Очная; Целевой прием; Социология (с дополнительной квалификацией «Социолог: специалист по фундаментальным и прикладным социологическим исследованиям»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "0f6facca-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 531,
+      "competitive_name": "39.03.01 Социология; Очная; Целевой прием; Социологические исследования в цифровом обществе (с дополнительной квалификацией «Социолог: специалист по фундаментальным и прикладным социологическим исследованиям»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "091d207f-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1741,
+      "competitive_name": "39.03.01 Социология; Очная; Целевой прием; Прикладная социология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "091d2020-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1258,
+      "competitive_name": "39.03.02 Социальная работа; Очная; Целевой прием; Социальная работа (с дополнительной квалификацией «Специалист по работе с семьей»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "13ac8c6d-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 605,
+      "competitive_name": "40.03.01 Юриспруденция; Очная; Целевой прием; Юриспруденция",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "3deb0920-16c7-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": {
+        "id": 123,
+        "competitive_group_id": 605,
+        "competitive_group_name": "МВД РФ",
+        "created_at": "2025-06-25T11:51:51.000000Z",
+        "updated_at": "2025-06-25T11:51:51.000000Z"
+      }
+    },
+    {
+      "id": 1641,
+      "competitive_name": "40.03.01 Юриспруденция; Очная; Целевой прием; Юриспруденция (с углубленным изучением налогового права)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "769315ac-16c7-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 5,
+      "new_name": {
+        "id": 153,
+        "competitive_group_id": 1641,
+        "competitive_group_name": "УФНС по СПб",
+        "created_at": "2025-06-25T12:02:46.000000Z",
+        "updated_at": "2025-06-25T12:02:46.000000Z"
+      }
+    },
+    {
+      "id": 1734,
+      "competitive_name": "40.03.01 Юриспруденция; Очная; Целевой прием; Юриспруденция (с углубленным изучением китайского языка и права КНР) (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "1bc972c3-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": null
+    },
+    {
+      "id": 2110,
+      "competitive_name": "40.03.01 Юриспруденция; Очная; Целевой прием; Юриспруденция",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "4d1811c7-16c7-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 4,
+      "new_name": {
+        "id": 154,
+        "competitive_group_id": 2110,
+        "competitive_group_name": "УФНС по СПб",
+        "created_at": "2025-06-25T12:02:59.000000Z",
+        "updated_at": "2025-06-25T12:02:59.000000Z"
+      }
+    },
+    {
+      "id": 559,
+      "competitive_name": "40.03.01 Юриспруденция; Очная; Целевой прием; Юриспруденция",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "59eae216-16c7-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": {
+        "id": 155,
+        "competitive_group_id": 559,
+        "competitive_group_name": "Федеральное казначейство",
+        "created_at": "2025-06-25T12:03:25.000000Z",
+        "updated_at": "2025-06-25T12:03:25.000000Z"
+      }
+    },
+    {
+      "id": 1809,
+      "competitive_name": "40.03.01 Юриспруденция; Очная; Целевой прием; Юриспруденция",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "15a1ac75-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 2,
+      "new_name": null
+    },
+    {
+      "id": 1584,
+      "competitive_name": "41.03.04 Политология; Факультет политологии; Очная; Целевой прием; Политология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "21c0c9b0-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 962,
+      "competitive_name": "41.03.05 Международные отношения; Очная; Целевой прием; Международные отношения (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "26010857-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1247,
+      "competitive_name": "42.03.01 Реклама и связи с общественностью; Очная; Целевой прием; Реклама и связи с общественностью (с дополнительной квалификацией «Специалист по продвижению и распространению продукции средств массовой информации»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "2828260f-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 2102,
+      "competitive_name": "42.03.02 Журналистика; Очная; Целевой прием; Журналистика (с дополнительной квалификацией «Специалист по информационным ресурсам»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "2e25810c-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 3,
+      "new_name": null
+    },
+    {
+      "id": 1173,
+      "competitive_name": "42.03.02 Журналистика; Очная; Целевой прием; Международная журналистика (с дополнительной квалификацией «Графический дизайнер»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "2e25816b-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1876,
+      "competitive_name": "43.03.02 Туризм; Очная; Целевой прием; Туризм (с дополнительной квалификацией «Руководитель гостиничного комплекса и иных средств размещения»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "3774b0ea-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1889,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Скандинавские языки и литературы (шведский и норвежский языки) (с дополнительными квалификациями «Учитель иностранного языка и литературы» / «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "495f1d2c-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 45,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Классическая филология (древнегреческий и латинский языки; античная литература) (с дополнительной квалификацией «Учитель древнегреческого и латинского языков»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "40bd45d0-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 595,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Английский язык и литература (с дополнительными квалификациями «Учитель английского языка и литературы» / «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "3aae85d6-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1130,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Отечественная филология (Русский язык и литература) (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "46d25ae8-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 4,
+      "new_name": null
+    },
+    {
+      "id": 1122,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Немецкий язык, литература и перевод (с дополнительными квалификациями «Учитель немецкого языка и литературы» / «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "40bd461c-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1523,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Французский язык, литература и перевод (с дополнительными квалификациями «Учитель французского языка и литературы» / «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "495f1d78-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1252,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Новогреческий язык, византийская и новогреческая филология",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "40bd467b-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 2052,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Испанский язык, литература и перевод (с дополнительными квалификациями «Учитель иностранного языка и литературы» / «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "3aae8622-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 1223,
+      "competitive_name": "45.03.01 Филология; Очная; Целевой прием; Языки балто-славянского культурного пространства (литовский, польский и белорусский языки)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "4cd8416e-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 2115,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Иностранные языки в глобальных коммуникациях (с дополнительными квалификациями «Учитель иностранного языка» / «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "4cd84206-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 759,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Общая и прикладная фонетика",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "4cd84265-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1325,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Английский язык как иностранный в обучении и коммуникации/ English as a Foreign Language in Teaching and Communication (с дополнительными квалификациями «Учитель английского языка» / «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "4cd841ba-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1687,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Языки славянского мира и русский язык как иностранный (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "593da90b-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 897,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Русский язык как иностранный (с дополнительной квалификацией «Учитель русского языка и литературы»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "52f0b8e7-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1873,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Теория и практика межкультурной коммуникации (английский язык) (с дополнительными квалификациями «Учитель английского языка» / «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "569f837f-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 373,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Сравнительно-историческое языкознание (английский язык)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "5416039f-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 871,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Прикладная, компьютерная и математическая лингвистика (английский язык)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "4cd842c4-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 750,
+      "competitive_name": "45.03.02 Лингвистика; Очная; Целевой прием; Теоретическое и экспериментальное языкознание (английский язык) (с дополнительной квалификацией «Учитель иностранного языка»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "541605de-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1443,
+      "competitive_name": "45.05.01 Перевод и переводоведение; Очная; Целевой прием; Перевод и переводоведение (английский язык и языки романского культурного ареала)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "5a9e5a24-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 873,
+      "competitive_name": "46.03.01 История; Очная; Целевой прием; Археология (с дополнительными квалификациями «Учитель истории и обществознания» / «Хранитель музейных ценностей» / «Специалист по учету музейных предметов»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "5b40299b-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 111,
+      "competitive_name": "46.03.01 История; Очная; Целевой прием; Всеобщая история (с дополнительными квалификациями «Учитель истории и обществознания» / «Педагог дополнительного образования»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "5b4029fa-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 2148,
+      "competitive_name": "46.03.01 История; Очная; Целевой прием; История России (с дополнительными квалификациями «Учитель истории и обществознания» / «Педагог дополнительного образования»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "5f4f2851-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 6,
+      "new_name": null
+    },
+    {
+      "id": 260,
+      "competitive_name": "47.03.01 Философия; Очная; Целевой прием; Философия (с дополнительными квалификациями «Учитель обществознания» / «Педагог дополнительного образования»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "5f4f28b0-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1234,
+      "competitive_name": "47.03.03 Религиоведение; Очная; Целевой прием; Религиоведение (с дополнительными квалификациями «Учитель обществознания» / «Учитель основ религиозных культур и светской этики» / «Педагог дополнительного образования» / «Экскурсовод (гид)»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "663843be-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1917,
+      "competitive_name": "48.03.01 Теология; Очная; Целевой прием; Иудейская теология (с дополнительными квалификациями «Педагог дополнительного образования» / «Учитель основ религиозных культур и светской этики»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "6638441d-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1517,
+      "competitive_name": "49.03.01 Физическая культура; Очная; Целевой прием; Физическая культура и спорт (с дополнительной квалификацией «Специалист по фитнесу (фитнес-тренер)»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "6d7bd50d-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1116,
+      "competitive_name": "51.03.04 Музеология и охрана объектов культурного и природного наследия; Очная; Целевой прием; Музеология и охрана объектов культурного и природного наследия (с дополнительной квалификацией «Экскурсовод (гид)»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "7a1b3e30-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": 1,
+      "new_name": null
+    },
+    {
+      "id": 842,
+      "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Целевой прием; История Центральной Азии (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "d21c393b-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 2072,
+      "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Целевой прием; История арабских стран (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "c6e20e2f-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1759,
+      "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Целевой прием; Китайская филология (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "d21c3987-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1683,
+      "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Целевой прием; Исламоведение (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "c6e20de3-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1552,
+      "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Целевой прием; Ассириология (языки, история и культура Древнего Ближнего Востока) (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "bfc3b01e-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 671,
+      "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Целевой прием; История Ирана и Афганистана (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "cbb8408e-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 1140,
+      "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Целевой прием; Языки и культура Западной Африки (языки манде) (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "de7ed259-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    },
+    {
+      "id": 466,
+      "competitive_name": "58.03.01 Востоковедение и африканистика; Очная; Целевой прием; История Кавказа (Армения) (с дополнительной квалификацией «Специалист в области перевода»)",
+      "form_payments_id": 3,
+      "form_education_id": 1,
+      "scenario_id": 6,
+      "external_id": "cbb840ed-10aa-11f0-99b9-a42b5df7d9f5",
+      "competitive_group_places": null,
+      "new_name": null
+    }
+  ]

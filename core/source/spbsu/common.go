@@ -21,7 +21,7 @@ type SpbsuApplicationEntry struct {
 
 // SpbsuListResponse represents the top-level JSON structure.
 type SpbsuListResponse struct {
-	List []SpbsuApplicationEntry `json:"list"`
+	List []SpbsuApplicationEntry `json:"data"`
 }
 
 // FetchListFunc abstracts fetching and decoding a list from a source (e.g., URL or file).

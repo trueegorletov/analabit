@@ -4,7 +4,6 @@ import (
 	"analabit/core"
 	"analabit/core/ent"
 	"analabit/core/ent/heading"
-	"analabit/core/utils"
 	"context"
 	"fmt"
 )
@@ -23,7 +22,7 @@ func DrainedResults(ctx context.Context, client *ent.Client, runID int, results 
 }
 
 func (u *helper) doUploadDrained(ctx context.Context, results []core.DrainedResultDTO) (err error) {
-	return utils.WithTx(ctx, u.client, func(tx *ent.Tx) error {
+	return WithTx(ctx, u.client, func(tx *ent.Tx) error {
 		if err := lock(ctx, tx, drainedResultsLockID); err != nil {
 			return err
 		}

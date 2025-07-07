@@ -5,7 +5,6 @@ import (
 	"analabit/core/ent"
 	"analabit/core/ent/heading"
 	"analabit/core/ent/varsity"
-	"analabit/core/utils"
 	"context"
 	"fmt"
 	"log/slog"
@@ -42,7 +41,7 @@ type helper struct {
 }
 
 func (u *helper) doUploadPrimary(ctx context.Context) (err error) {
-	return utils.WithTx(ctx, u.client, func(tx *ent.Tx) error {
+	return WithTx(ctx, u.client, func(tx *ent.Tx) error {
 		if err := lock(ctx, tx, applicationsLockID); err != nil {
 			return err
 		}
