@@ -206,6 +206,11 @@ func (s *Student) addApplication(heading *Heading, ratingPlace int, priority int
 				s.applications[i] = &app
 
 				return
+			} else if competitionPrecedence(competitionType) == competitionPrecedence(existingApp.competitionType) && score > existingApp.score {
+				// If competition types and ratingPlace are equal, keep the one with higher score.
+				s.applications[i] = &app
+
+				return
 			}
 			// Otherwise, do not add this application as it is worse than the existing one.
 			return
@@ -606,6 +611,37 @@ func (v *VarsityCalculator) NormalizeApplications() {
 
 	v.students.Range(func(key, value interface{}) bool {
 		student := value.(*Student)
+
+		// Check for duplicate priorities and fix them
+		priorityCount := make(map[int]int)
+		for _, app := range student.Applications() {
+			priorityCount[app.Priority()]++
+		}
+
+		hasDuplicates := false
+		for _, count := range priorityCount {
+			if count > 1 {
+				hasDuplicates = true
+				break
+			}
+		}
+
+		if hasDuplicates {
+			slog.Debug("Student has duplicate priorities, fixing them", "studentID", student.ID(), "originalPriorities", func() []int {
+				priorities := make([]int, len(student.Applications()))
+				for i, app := range student.Applications() {
+					priorities[i] = app.Priority()
+				}
+				return priorities
+			}())
+
+			// Fix duplicate priorities by renumbering consecutively
+			student.mu.Lock()
+			for i, app := range student.applications {
+				app.priority = i + 1
+			}
+			student.mu.Unlock()
+		}
 
 		for _, app := range student.Applications() {
 			if _, exists := headingToApplications[app.Heading().Code()]; !exists {
