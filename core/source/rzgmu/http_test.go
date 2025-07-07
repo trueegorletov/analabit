@@ -2,6 +2,7 @@ package rzgmu
 
 import (
 	"analabit/core"
+	"analabit/core/source"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -188,6 +189,238 @@ func TestPDFTextExtractionBasic(t *testing.T) {
 	}
 
 	t.Logf("Successfully extracted %d characters of text from PDF", len(text))
+}
+
+// TestPriorityParsingBug tests the specific bug where priority is incorrectly parsed
+// for student 3950875 who should have priority 2 in Педиатрия but gets parsed as priority 1
+func TestPriorityParsingBug(t *testing.T) {
+	// Test case from rzgmu_p_b-text-converted.txt where student 3950875 should have priority 2
+	// Line: "88.   3950875   275     Химия - 93          5         2               Нет"
+	testData := `Направление подготовки: Педиатрия
+№ Код Балл ВИ ИД ПП Приоритет Согласие
+ПЕДИАТРИЯ (БЮДЖЕТ) (Специалитет)
+Мест: 5
+Конкурсная группа: ОСНОВНЫЕ МЕСТА
+88. 3950875 275
+Биология - 88
+Химия - 93
+5 2 Нет`
+
+	programs, err := parseRZGMUTextData(testData)
+	if err != nil {
+		t.Fatalf("Failed to parse RZGMU text data: %v", err)
+	}
+
+	if len(programs) != 1 {
+		t.Fatalf("Expected 1 program, got %d", len(programs))
+	}
+
+	program := programs[0]
+	if len(program.Applications) != 1 {
+		t.Fatalf("Expected 1 application, got %d", len(program.Applications))
+	}
+
+	app := program.Applications[0]
+	if app.StudentID != "3950875" {
+		t.Errorf("Expected student ID '3950875', got '%s'", app.StudentID)
+	}
+
+	// This is the bug: should be priority 2, but currently parses as priority 1
+	if app.Priority != 2 {
+		t.Errorf("BUG REPRODUCED: Expected priority 2, got %d", app.Priority)
+	}
+
+	if app.ScoresSum != 275 {
+		t.Errorf("Expected score 275, got %d", app.ScoresSum)
+	}
+
+	if app.OriginalSubmitted {
+		t.Error("Expected original submitted to be false (Нет)")
+	}
+}
+
+// TestPriorityParsingVariousCases tests various priority parsing scenarios
+func TestPriorityParsingVariousCases(t *testing.T) {
+	testCases := []struct {
+		name             string
+		line             string
+		expectedPriority int
+		expectedConsent  bool
+	}{
+		{
+			name:             "БВИ with priority 1 and consent",
+			line:             "1. 3867113 - БВИ 10 1 Согласие",
+			expectedPriority: 1,
+			expectedConsent:  true,
+		},
+		{
+			name:             "Regular with Пр.право and priority 2",
+			line:             "4. 3652269 302 10 Пр.право 2 Нет",
+			expectedPriority: 2,
+			expectedConsent:  false,
+		},
+		{
+			name:             "Regular with priority 3 and consent",
+			line:             "5. 3630713 302 10 3 Согласие",
+			expectedPriority: 3,
+			expectedConsent:  true,
+		},
+		{
+			name:             "Student 3950875 case",
+			line:             "88. 3950875 275 5 2 Нет",
+			expectedPriority: 2,
+			expectedConsent:  false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			app := parseApplicationStart(tc.line)
+			if app == nil {
+				t.Fatalf("Failed to parse application from line: %s", tc.line)
+			}
+
+			if app.Priority != tc.expectedPriority {
+				t.Errorf("Expected priority %d, got %d for line: %s", tc.expectedPriority, app.Priority, tc.line)
+			}
+
+			if app.OriginalSubmitted != tc.expectedConsent {
+				t.Errorf("Expected consent %v, got %v for line: %s", tc.expectedConsent, app.OriginalSubmitted, tc.line)
+			}
+		})
+	}
+}
+
+// TestRealDataPriorityParsing tests priority parsing using actual sample data files
+func TestRealDataPriorityParsing(t *testing.T) {
+	// Test with the actual rzgmu_p_b-text-converted.txt file
+	sampleTextPath := filepath.Join("..", "..", "..", "sample_data", "rzgmu", "rzgmu_p_b-text-converted.txt")
+	sampleTextBytes, err := ioutil.ReadFile(sampleTextPath)
+	if err != nil {
+		t.Skipf("Skipping test: sample file not found: %v", err)
+	}
+	sampleText := string(sampleTextBytes)
+
+	programs, err := parseRZGMUTextData(sampleText)
+	if err != nil {
+		t.Fatalf("Failed to parse RZGMU text data: %v", err)
+	}
+
+	if len(programs) != 1 {
+		t.Fatalf("Expected 1 program, got %d", len(programs))
+	}
+
+	program := programs[0]
+
+	// Find student 3950875 in the applications
+	var student3950875 *source.ApplicationData
+	for _, app := range program.Applications {
+		if app.StudentID == "3950875" {
+			student3950875 = app
+			break
+		}
+	}
+
+	if student3950875 == nil {
+		t.Fatal("Student 3950875 not found in parsed applications")
+	}
+
+	// Verify correct priority parsing - should be 2 according to source data
+	if student3950875.Priority != 2 {
+		t.Errorf("Expected priority 2 for student 3950875 in Педиатрия, got %d", student3950875.Priority)
+	}
+
+	// Verify score
+	if student3950875.ScoresSum != 275 {
+		t.Errorf("Expected score 275 for student 3950875, got %d", student3950875.ScoresSum)
+	}
+
+	// Verify consent (should be false for "Нет")
+	if student3950875.OriginalSubmitted {
+		t.Error("Expected original submitted to be false for student 3950875")
+	}
+
+	t.Logf("SUCCESS: Student 3950875 correctly parsed with priority=%d, score=%d, consent=%v",
+		student3950875.Priority, student3950875.ScoresSum, student3950875.OriginalSubmitted)
+}
+
+// TestActualSingleLineFormat tests parsing with the actual single-line format from the sample files
+func TestActualSingleLineFormat(t *testing.T) {
+	// Test case from rzgmu_p_b-text-converted.txt - should have priority 2
+	testDataPediatrics := `Направление подготовки: Педиатрия
+№ Код Балл ВИ ИД ПП Приоритет Согласие
+ПЕДИАТРИЯ (БЮДЖЕТ) (Специалитет)
+Мест: 5
+Конкурсная группа: ОСНОВНЫЕ МЕСТА
+88. 3950875 275     Химия - 93          5         2               Нет`
+
+	programs, err := parseRZGMUTextData(testDataPediatrics)
+	if err != nil {
+		t.Fatalf("Failed to parse Pediatrics data: %v", err)
+	}
+
+	if len(programs) != 1 {
+		t.Fatalf("Expected 1 program, got %d", len(programs))
+	}
+
+	if len(programs[0].Applications) != 1 {
+		t.Fatalf("Expected 1 application, got %d", len(programs[0].Applications))
+	}
+
+	app := programs[0].Applications[0]
+	if app.StudentID != "3950875" {
+		t.Errorf("Expected student ID '3950875', got '%s'", app.StudentID)
+	}
+
+	if app.Priority != 2 {
+		t.Errorf("PEDIATRICS BUG: Expected priority 2, got %d", app.Priority)
+	}
+
+	if app.ScoresSum != 275 {
+		t.Errorf("Expected score 275, got %d", app.ScoresSum)
+	}
+
+	if app.OriginalSubmitted {
+		t.Error("Expected original submitted to be false (Нет)")
+	}
+
+	// Test case from rzgmu_l_b-text-converted.txt - should have priority 1
+	testDataMedicine := `Направление подготовки: Лечебное дело
+№ Код Балл ВИ ИД ПП Приоритет Согласие
+ЛЕЧЕБНОЕ ДЕЛО (БЮДЖЕТ) (Специалитет)
+Мест: 19
+Конкурсная группа: ОСНОВНЫЕ МЕСТА
+93. 3950875 278     Химия - 93          8         1               Нет`
+
+	programs2, err := parseRZGMUTextData(testDataMedicine)
+	if err != nil {
+		t.Fatalf("Failed to parse Medicine data: %v", err)
+	}
+
+	if len(programs2) != 1 {
+		t.Fatalf("Expected 1 program, got %d", len(programs2))
+	}
+
+	if len(programs2[0].Applications) != 1 {
+		t.Fatalf("Expected 1 application, got %d", len(programs2[0].Applications))
+	}
+
+	app2 := programs2[0].Applications[0]
+	if app2.StudentID != "3950875" {
+		t.Errorf("Expected student ID '3950875', got '%s'", app2.StudentID)
+	}
+
+	if app2.Priority != 1 {
+		t.Errorf("MEDICINE BUG: Expected priority 1, got %d", app2.Priority)
+	}
+
+	if app2.ScoresSum != 278 {
+		t.Errorf("Expected score 278, got %d", app2.ScoresSum)
+	}
+
+	if app2.OriginalSubmitted {
+		t.Error("Expected original submitted to be false (Нет)")
+	}
 }
 
 // Helper function to truncate string for display

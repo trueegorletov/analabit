@@ -223,8 +223,12 @@ func parseRZGMUTextData(textData string) ([]TextProgramData, error) {
 		if currentApp != nil && len(examBuffer) > 0 {
 			// We've finished collecting exam data, now parse the remaining fields
 			if remainingFields := parseRemainingFields(line); remainingFields != nil {
-				// Only update priority and consent status, NOT the ScoresSum
-				currentApp.Priority = remainingFields.Priority
+				// Only update priority if it's still the default (1) and we found a better value
+				if currentApp.Priority == 1 && remainingFields.Priority != 1 {
+					currentApp.Priority = remainingFields.Priority
+				}
+
+				// Update consent status (this should be more reliable)
 				currentApp.OriginalSubmitted = remainingFields.OriginalSubmitted
 
 				// Apply current competition type only if not already set (e.g., for BVI)
@@ -400,6 +404,15 @@ func parseApplicationStart(line string) *source.ApplicationData {
 		Priority:    1,          // Default
 	}
 
+	// First pass: find the consent field position ("Согласие" or "Нет")
+	consentIndex := -1
+	for j, field := range fields {
+		if field == "Согласие" || field == "Нет" {
+			consentIndex = j
+			break
+		}
+	}
+
 	// Parse other fields (БВИ, consent, priority) but NOT add to ScoresSum
 	for i, field := range fields {
 		if field == "БВИ" {
@@ -411,11 +424,9 @@ func parseApplicationStart(line string) *source.ApplicationData {
 		} else if field == "Пр.право" {
 			// Preferential right indicator
 		} else if num, err := strconv.Atoi(field); err == nil {
-			// Only use numeric values for priority, not for score calculation
-			if i == len(fields)-2 || (i == len(fields)-1 && !app.OriginalSubmitted) {
-				// This appears to be the priority field
+			// If this numeric field is immediately before consent, it's the priority
+			if consentIndex >= 0 && i == consentIndex-1 {
 				app.Priority = num
-				break
 			}
 		}
 	}
@@ -468,20 +479,32 @@ func parseRemainingFields(line string) *RemainingFields {
 		Priority: 1, // Default
 	}
 
-	for _, field := range fields {
+	// First pass: find the consent field position ("Согласие" or "Нет")
+	consentIndex := -1
+	for j, field := range fields {
+		if field == "Согласие" || field == "Нет" {
+			consentIndex = j
+			break
+		}
+	}
+
+	// Parse fields using the same logic as parseApplicationStart
+	for i, field := range fields {
 		if field == "Согласие" {
 			result.OriginalSubmitted = true
 		} else if field == "Нет" {
 			result.OriginalSubmitted = false
+		} else if field == "Пр.право" {
+			// Preferential right indicator
 		} else if num, err := strconv.Atoi(field); err == nil {
-			// Could be bonus points or priority
-			if num > 20 {
+			// If this numeric field is immediately before consent, it's the priority
+			if consentIndex >= 0 && i == consentIndex-1 {
+				result.Priority = num
+			} else if num > 20 {
 				// Likely bonus points (higher values)
 				result.BonusPoints = num
-			} else {
-				// Likely priority (lower values)
-				result.Priority = num
 			}
+			// Don't assign random numeric values as priority unless they're in the right position
 		}
 	}
 
