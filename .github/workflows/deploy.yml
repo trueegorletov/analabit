@@ -109,8 +109,7 @@ jobs:
         push: true
         tags: ${{ steps.meta-api.outputs.tags }}
         labels: ${{ steps.meta-api.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        no-cache: true
         
     - name: Build and push Aggregator
       id: build-aggregator
@@ -121,8 +120,7 @@ jobs:
         push: true
         tags: ${{ steps.meta-aggregator.outputs.tags }}
         labels: ${{ steps.meta-aggregator.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        no-cache: true
         
     - name: Build and push Producer
       id: build-producer
@@ -133,8 +131,7 @@ jobs:
         push: true
         tags: ${{ steps.meta-producer.outputs.tags }}
         labels: ${{ steps.meta-producer.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        no-cache: true
 
   deploy:
     needs: build
