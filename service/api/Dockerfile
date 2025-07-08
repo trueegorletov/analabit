@@ -22,6 +22,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o api-service ./ser
 # ---- Final Stage ----
 FROM alpine:latest
 
+# Install poppler-utils for pdftotext
+RUN apk add --no-cache poppler-utils
+
 # Create a non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 

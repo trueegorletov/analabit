@@ -5,6 +5,10 @@ MODULE=analabit
 TABULA_VERSION=1.0.5
 TABULA_JAR=tools/tabula.jar
 
+.PHONY: check-deps
+check-deps:
+	@which pdftotext > /dev/null 2>&1 || (echo "Error: pdftotext not found. Please install poppler-utils package. On Ubuntu/Debian: sudo apt-get install poppler-utils. On Alpine: apk add poppler-utils" && exit 1)
+
 .PHONY: proto
 proto:
 	protoc --go_out=$(GO_OUT) --micro_out=$(GO_OUT) --go-grpc_out=$(GO_OUT) $(PROTO_SRC)
@@ -20,5 +24,9 @@ $(TABULA_JAR):
 	@echo "Tabula JAR downloaded to $(TABULA_JAR)"
 
 .PHONY: dev
-dev: tools
+dev: check-deps tools
 	bash scripts/dev.sh
+
+.PHONY: test
+test: check-deps
+	go test ./...
