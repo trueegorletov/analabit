@@ -39,3 +39,4 @@ aggregator_*.remote
 *_main.go.remote
 *_config.go.remote
 *_handler.go.remote
+.remote/

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"analabit/core/source"
 	"bytes"
 	"context"
 	"encoding/gob"
@@ -18,9 +17,10 @@ import (
 	"github.com/streadway/amqp"
 	"go-micro.dev/v5/errors"
 
-	"analabit/core"
-	"analabit/core/drainer"
-	"analabit/core/registry"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/drainer"
+	"github.com/trueegorletov/analabit/core/registry"
+	"github.com/trueegorletov/analabit/core/source"
 	"analabit/service/producer/proto"
 
 	"go.uber.org/multierr"
