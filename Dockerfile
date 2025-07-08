@@ -29,8 +29,8 @@ WORKDIR /root/
 # Copy the binary from builder
 COPY --from=builder /app/main .
 
-# Copy tools if needed
-COPY --from=builder /app/tools ./tools || true
+# Copy tools directory from builder (always present, even if empty)
+COPY --from=builder /app/tools ./tools
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
