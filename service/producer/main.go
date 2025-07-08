@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"analabit/service/producer/handler"
-	"analabit/service/producer/proto"
+	"github.com/trueegorletov/analabit/service/producer/handler"
+	"github.com/trueegorletov/analabit/service/producer/proto"
 
 	"github.com/caarlos0/env/v11"
 	micro "go-micro.dev/v5"
