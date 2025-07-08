@@ -49,7 +49,7 @@ func main() {
 	})
 
 	// API v1 Group
-	api := app.Group("/api")
+	api := app.Group("/v1")
 
 	// Routes
 	api.Get("/varsities", handlers.GetVarsities(client))
