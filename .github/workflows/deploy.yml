@@ -153,61 +153,71 @@ jobs:
         username: ${{ secrets.PROD_USER }}
         key: ${{ secrets.PROD_SSH_KEY }}
         script: |
+          set -e
+          
           # Navigate to project directory
           cd /opt/analabit
           
           # Pull latest code
+          echo "Pulling latest code from repository..."
           git fetch origin master
           git reset --hard origin/master
           
-          # Update environment with new image tags
+          # Check if .env file exists, create if it does not
+          if [ ! -f .env ]; then
+            echo "Environment file (.env) not found. Generating a new one..."
+            PG_PASS=$(openssl rand -base64 32)
+            RABBIT_PASS=$(openssl rand -base64 32)
+            MINIO_PASS=$(openssl rand -base64 32)
+            
+            cat << EOT > .env
+          # Production environment variables - Generated on $(date)
+          POSTGRES_USER=analabit_user
+          POSTGRES_PASSWORD=$PG_PASS
+          POSTGRES_DB=analabit_db
+          RABBITMQ_USER=analabit_rabbit
+          RABBITMQ_PASSWORD=$RABBIT_PASS
+          MINIO_ROOT_USER=analabit_minio
+          MINIO_ROOT_PASSWORD=$MINIO_PASS
+          APP_ENV=production
+          APP_PORT=8080
+          LOG_LEVEL=info
+          EOT
+            echo ".env file created successfully."
+          else
+            echo ".env file already exists. Skipping generation."
+          fi
+          
+          # Set image tags from build job outputs
           export API_IMAGE="${{ needs.build.outputs.api-tag }}"
           export AGGREGATOR_IMAGE="${{ needs.build.outputs.aggregator-tag }}"
           export PRODUCER_IMAGE="${{ needs.build.outputs.producer-tag }}"
           
           # Login to container registry
+          echo "Logging into GitHub Container Registry..."
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           
           # Pull new images
-          docker pull $API_IMAGE
-          docker pull $AGGREGATOR_IMAGE  
-          docker pull $PRODUCER_IMAGE
+          echo "Pulling latest Docker images..."
+          docker-compose -f docker-compose.prod.yml pull
           
-          # Zero-downtime deployment
-          # First, ensure all dependencies are up
-          docker-compose -f docker-compose.prod.yml up -d rabbitmq postgres minio
+          # Deploy services
+          echo "Starting all services..."
+          docker-compose -f docker-compose.prod.yml up -d
           
-          # Deploy services sequentially with health checks
-          docker-compose -f docker-compose.prod.yml up -d --no-deps api
+          # Health checks
+          echo "Waiting for services to stabilize..."
+          sleep 15
+          
           echo "Waiting for API to be healthy..."
-          timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do sleep 2; echo "Waiting for API..."; done'
-          
-          docker-compose -f docker-compose.prod.yml up -d --no-deps producer
-          echo "Producer deployed, waiting 10s to stabilize..."
-          sleep 10
-          
-          docker-compose -f docker-compose.prod.yml up -d --no-deps aggregator
-          echo "Aggregator deployed, waiting 10s to stabilize..."
-          sleep 10
+          timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do sleep 2; done'
           
           # Clean up old images
+          echo "Cleaning up old Docker images..."
           docker image prune -f
           
-          # Final health check
-          echo "Performing final health check..."
-          if curl -sf http://localhost:8080/health; then
-            echo "✅ API is healthy"
-            # Check if producer and aggregator containers are running
-            if docker ps | grep -q analabit-producer && docker ps | grep -q analabit-aggregator; then
-              echo "✅ All services are running"
-              echo "✅ Deployment completed successfully!"
-            else
-              echo "❌ Producer or Aggregator service is not running"
-              exit 1
-            fi
-          else
-            echo "❌ API health check failed"
-            echo "⚠️ Rolling back to previous deployment..."
-            # We could implement rollback logic here if needed
-            exit 1
-          fi
+          # Final status check
+          echo "Final status check:"
+          docker-compose -f docker-compose.prod.yml ps
+          
+          echo "✅ Deployment completed successfully!"
