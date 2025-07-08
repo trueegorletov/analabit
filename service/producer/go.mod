@@ -5,7 +5,7 @@ go 1.24
 toolchain go1.24.4
 
 require (
-	analabit v0.0.0-00010101000000-000000000000
+	github.com/trueegorletov/analabit v0.0.0-00010101000000-000000000000
 	github.com/minio/minio-go/v7 v7.0.94
 	go-micro.dev/v5 v5.8.0
 	google.golang.org/grpc v1.72.1
@@ -93,4 +93,4 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
 )
 
-replace analabit => ../../
+replace github.com/trueegorletov/analabit => ../../
