@@ -17,20 +17,19 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
 FROM deps AS builder
 WORKDIR /app
 
-# Copy entire repo for context
+# Copy entire repository and generate protobuf code
 COPY . .
-
-# Generate protobuf files
 RUN protoc --proto_path=./service/producer/proto \
     --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
     --micro_out=. --micro_opt=paths=source_relative service/producer/proto/producer.proto
 
-# Change to producer directory and build without workspace (avoid module conflicts)
-WORKDIR /app/service/producer
-ENV GOWORK=off
+# Sync modules via go.work and download dependencies
+RUN go work sync
 RUN go mod download
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o producer-service .
+
+# Build producer binary from monorepo root path
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o producer-service ./service/producer
 
 # ---- Runtime Stage ----
 FROM alpine:latest AS runtime
