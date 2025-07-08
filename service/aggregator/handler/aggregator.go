@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/trueegorletov/analabit/core"
@@ -134,15 +133,15 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 		return fmt.Errorf("failed to initialize minio client: %w", err)
 	}
 
-	pgConnStrings := cfg.PostgresConnStrings
-	if pgConnStrings == "" {
-		log.Println("POSTGRES_CONN_STRINGS is not set. Skipping database upload.")
+	connStrings := []string{cfg.PostgresPrimaryConnString, cfg.PostgresReplicaConnString}
+	if cfg.PostgresPrimaryConnString == "" {
+		log.Println("POSTGRES_PRIMARY_CONN_STRING is not set. Skipping database upload.")
 		return nil
 	}
 
 	var allErrors error
 	// Process each database connection string
-	for _, connStr := range strings.Split(pgConnStrings, ";") {
+	for _, connStr := range connStrings {
 		if connStr == "" {
 			continue
 		}

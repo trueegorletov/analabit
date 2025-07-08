@@ -163,12 +163,6 @@ jobs:
           git fetch origin master
           git reset --hard origin/master
           
-          # Remove old incorrect .env if it contains COMPOSE_BAKE
-          if [ -f ".env" ] && grep -q "COMPOSE_BAKE" .env; then
-              echo "Removing old, incorrect .env file."
-              rm .env
-          fi
-          
           # Check if .env file exists, if not, create it
           if [ ! -f ".env" ]; then
               echo "No .env file found. Generating a new one with secure credentials..."
