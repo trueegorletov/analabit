@@ -40,3 +40,4 @@ aggregator_*.remote
 *_config.go.remote
 *_handler.go.remote
 .remote/
+.env*
