@@ -17,8 +17,11 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
 FROM deps AS builder
 WORKDIR /app
 
-# Copy entire repository and generate protobuf code
+// Copy entire repository and remove submodule go files to use root module
 COPY . .
+// Remove submodule go.mod so build uses root module and workspace
+RUN rm -f service/producer/go.mod service/producer/go.sum
+RUN rm -f service/producer/go.mod service/producer/go.sum
 RUN protoc --proto_path=./service/producer/proto \
     --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \

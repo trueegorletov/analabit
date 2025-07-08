@@ -94,4 +94,6 @@ require (
 )
 
 replace github.com/trueegorletov/analabit => ../../
+
 replace github.com/trueegorletov/analabit/service/producer => .
+replace github.com/trueegorletov/analabit/service/producer/proto => ./proto
