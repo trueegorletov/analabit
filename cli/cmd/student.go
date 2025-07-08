@@ -39,8 +39,8 @@ var studentCmd = &cobra.Command{
 
 		// Collect all varsities where student is admitted in primary results
 		// and the corresponding headings. Keep varsity order same as LoadedVarsities.
-		varsityToPrimaryHeading := make(map[string]string)              // varsityCode -> headingPrettyName
-		studentPrimaryApplications := make(map[string]core.Application) // varsityCode -> student's winning Application
+		varsityToPrimaryHeading := make(map[string]string)               // varsityCode -> headingPrettyName
+		studentPrimaryApplications := make(map[string]*core.Application) // varsityCode -> student's winning Application
 
 		for _, varsity := range corestate.LoadedVarsities { // Iterate in fixed order
 			primaryResultsForVarsity, ok := corestate.PrimaryResults[varsity.Code]
