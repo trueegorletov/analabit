@@ -84,7 +84,6 @@ jobs:
       with:
         images: ${{ env.REGISTRY }}/${{ github.actor }}/analabit-api
         tags: |
-          type=ref,event=branch
           type=sha,prefix={{branch}}-
           
     - name: Extract metadata for Aggregator
@@ -93,7 +92,6 @@ jobs:
       with:
         images: ${{ env.REGISTRY }}/${{ github.actor }}/analabit-aggregator
         tags: |
-          type=ref,event=branch
           type=sha,prefix={{branch}}-
           
     - name: Extract metadata for Producer
@@ -102,7 +100,6 @@ jobs:
       with:
         images: ${{ env.REGISTRY }}/${{ github.actor }}/analabit-producer
         tags: |
-          type=ref,event=branch
           type=sha,prefix={{branch}}-
     
     - name: Build and push Producer
