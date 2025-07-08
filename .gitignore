@@ -25,3 +25,17 @@ service/*/tmp/
 service/producer/cache/
 test.txt
 /tools/tabula.jar
+
+# Environment files
+.env
+.env.local
+.env.prod
+*.env.remote
+
+# Temporary files
+docker-compose.*.remote
+nginx-temp.conf
+aggregator_*.remote
+*_main.go.remote
+*_config.go.remote
+*_handler.go.remote
