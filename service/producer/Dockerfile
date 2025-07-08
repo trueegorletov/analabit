@@ -1,37 +1,37 @@
 # ---- Base Builder ----
-FROM golang:1.21-alpine AS builder
-
-# Set the Current Working Directory inside the container
+# ---- Base Builder ----
+FROM golang:1.24-alpine AS builder
+# Prepare workspace at repository root for multi-module go.work support
 WORKDIR /app
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org,direct
 
 # We want to install git to be able to pull over ssh from private repos
 # and protobuf-dev for code generation
-RUN apk add --no-cache git protobuf-dev
+RUN apk add --no-cache git protobuf protobuf-dev ca-certificates && update-ca-certificates
 
 # Install go tools for protobuf
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 RUN go install github.com/asim/go-micro/cmd/protoc-gen-micro/v4@latest
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
-RUN go mod download
-
-# Copy the source code into the container
+# Copy workspace and module definitions
+COPY go.work go.mod go.sum ./
+# Copy service modules
+COPY service/producer/go.mod service/producer/go.sum service/api/go.mod service/api/go.sum service/aggregator/go.mod service/aggregator/go.sum ./
+# Download all dependencies for workspace
+RUN go work download
+# Copy entire repository
 COPY . .
 
 # Generate protobuf files
-RUN cd /app && \
-    protoc --proto_path=. \
+RUN protoc --proto_path=./proto \
     --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-    --micro_out=. --micro_opt=paths=source_relative \
-    service/producer/proto/producer.proto
+    --micro_out=. --micro_opt=paths=source_relative proto/producer.proto
 
-# Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o producer-service ./service/producer/main.go
+# Build the Go app for producer service
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o producer-service ./service/producer
 
 # ---- Final Stage ----
 FROM alpine:latest
@@ -46,7 +46,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/producer-service .
+COPY --from=builder /app/service/producer/producer-service /app/producer-service
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
@@ -55,4 +55,4 @@ EXPOSE 8080
 USER appuser
 
 # Command to run the executable
-CMD ["./producer-service"] 
+CMD ["./producer-service"]

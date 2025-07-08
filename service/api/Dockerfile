@@ -1,11 +1,17 @@
 # ---- Base Builder ----
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine AS builder
+ENV GO111MODULE=on
+ENV GOPROXY="https://proxy.golang.org,direct"
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org,direct
+ENV GO111MODULE=on
+ENV GOPROXY=https://proxy.golang.org,direct
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
-# We want to install git to be able to pull over ssh from private repos
-RUN apk add --no-cache git
+RUN apk add --no-cache git ca-certificates && update-ca-certificates
+RUN apk add --no-cache git ca-certificates && update-ca-certificates
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -42,4 +48,4 @@ EXPOSE 3000
 USER appuser
 
 # Command to run the executable
-CMD ["./api-service"] 
+CMD ["./api-service"]

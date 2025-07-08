@@ -1,4 +1,4 @@
-module analabit
+module github.com/trueegorletov/analabit
 
 go 1.24
 
