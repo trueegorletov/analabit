@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"analabit/core/ent/predicate"
-	"analabit/core/ent/run"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 	"fmt"
 	"math"

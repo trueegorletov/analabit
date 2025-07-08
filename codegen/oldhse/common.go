@@ -1,8 +1,8 @@
 package main
 
 import (
-	"analabit/core"
-	"analabit/core/source/oldhse"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source/oldhse"
 	"fmt"
 	"io/ioutil"
 	"log"

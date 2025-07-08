@@ -3,7 +3,7 @@
 package run
 
 import (
-	"analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"

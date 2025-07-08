@@ -3,10 +3,10 @@
 package ent
 
 import (
-	"analabit/core/ent/application"
-	"analabit/core/ent/calculation"
-	"analabit/core/ent/run"
-	"analabit/core/ent/schema"
+	"github.com/trueegorletov/analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/run"
+	"github.com/trueegorletov/analabit/core/ent/schema"
 	"time"
 )
 

@@ -1,10 +1,10 @@
 package upload
 
 import (
-	"analabit/core"
-	"analabit/core/ent"
-	"analabit/core/ent/heading"
-	"analabit/core/ent/varsity"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"fmt"
 	"log/slog"

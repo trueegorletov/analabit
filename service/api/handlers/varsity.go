@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent"
 	"context"
 	"log"
 	"strconv"

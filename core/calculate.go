@@ -1,7 +1,7 @@
 package core
 
 import (
-	"analabit/core/utils"
+	"github.com/trueegorletov/analabit/core/utils"
 	"bytes"
 	"container/heap"
 	"container/list" // Added for O(1) queue operations

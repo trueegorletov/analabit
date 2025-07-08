@@ -3,9 +3,9 @@
 package ent
 
 import (
-	"analabit/core/ent/heading"
-	"analabit/core/ent/predicate"
-	"analabit/core/ent/varsity"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"errors"
 	"fmt"

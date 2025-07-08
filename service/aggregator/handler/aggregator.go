@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"analabit/core"
-	"analabit/core/ent"
-	"analabit/core/upload"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/upload"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"

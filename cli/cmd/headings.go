@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"analabit/cli/corestate"
-	"analabit/core"
-	"analabit/core/source"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
 	"fmt"
 	"os"
 	"sort"

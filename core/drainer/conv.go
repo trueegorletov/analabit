@@ -1,7 +1,7 @@
 package drainer
 
 import (
-	"analabit/core"
+	"github.com/trueegorletov/analabit/core"
 	"log/slog"
 )
 

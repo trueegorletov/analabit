@@ -1,7 +1,7 @@
 package source
 
 import (
-	"analabit/core"
+	"github.com/trueegorletov/analabit/core"
 	"log"
 	"log/slog"
 	"sync"

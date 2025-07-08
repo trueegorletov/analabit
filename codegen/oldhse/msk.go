@@ -1,7 +1,7 @@
 package main
 
 import (
-	"analabit/core/source/oldhse"
+	"github.com/trueegorletov/analabit/core/source/oldhse"
 	"fmt"
 	"log"
 	"sort"

@@ -1,6 +1,6 @@
 package drainer
 
-import "analabit/core"
+import "github.com/trueegorletov/analabit/core"
 
 type DrainedResult struct {
 	Heading *core.Heading

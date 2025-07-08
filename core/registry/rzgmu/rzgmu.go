@@ -1,8 +1,8 @@
 package rzgmu
 
 import (
-	"analabit/core/source"
-	"analabit/core/source/rzgmu"
+	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/source/rzgmu"
 )
 
 var Varsity = source.VarsityDefinition{

@@ -3,7 +3,7 @@
 package hook
 
 import (
-	"analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent"
 	"context"
 	"fmt"
 )

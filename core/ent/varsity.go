@@ -3,7 +3,7 @@
 package ent
 
 import (
-	"analabit/core/ent/varsity"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"fmt"
 	"strings"
 

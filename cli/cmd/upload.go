@@ -3,14 +3,14 @@ package cmd
 import (
 	"analabit/cli/config"
 	"analabit/cli/corestate"
-	"analabit/core"
-	"analabit/core/ent"
-	"analabit/core/upload"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/upload"
 	"context"
 	"fmt"
 	"log"
 
-	"analabit/core/drainer"
+	"github.com/trueegorletov/analabit/core/drainer"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/spf13/cobra"

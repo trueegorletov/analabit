@@ -1,7 +1,7 @@
 package oldhse
 
 import (
-	"analabit/core/source"
+	"github.com/trueegorletov/analabit/core/source"
 )
 
 var VarsitySpb = source.VarsityDefinition{

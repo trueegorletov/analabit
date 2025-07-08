@@ -1,6 +1,6 @@
 package drainer
 
-import "analabit/core"
+import "github.com/trueegorletov/analabit/core"
 
 // NewDrainedResultDTOs converts a slice of DrainedResult to a slice of DrainedResultDTO.
 func NewDrainedResultDTOs(results []DrainedResult) []core.DrainedResultDTO {

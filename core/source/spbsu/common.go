@@ -1,8 +1,8 @@
 package spbsu
 
 import (
-	"analabit/core"
-	"analabit/core/source"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
 	"encoding/json"
 	"fmt"
 	"io"

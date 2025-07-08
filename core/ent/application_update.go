@@ -3,11 +3,11 @@
 package ent
 
 import (
-	"analabit/core"
-	"analabit/core/ent/application"
-	"analabit/core/ent/heading"
-	"analabit/core/ent/predicate"
-	"analabit/core/ent/run"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"

@@ -1,9 +1,9 @@
 package hse
 
 import (
-	"analabit/core"
-	"analabit/core/source"
-	"analabit/core/source/hse"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/source/hse"
 )
 
 const (

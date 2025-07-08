@@ -1,9 +1,9 @@
 package upload
 
 import (
-	"analabit/core"
-	"analabit/core/ent"
-	"analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/heading"
 	"context"
 	"fmt"
 )

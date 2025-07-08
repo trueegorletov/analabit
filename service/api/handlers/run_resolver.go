@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"analabit/core/ent"
-	"analabit/core/ent/run"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 	"fmt"
 	"strconv"

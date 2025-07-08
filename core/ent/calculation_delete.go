@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"analabit/core/ent/calculation"
-	"analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
 	"context"
 
 	"entgo.io/ent/dialect/sql"

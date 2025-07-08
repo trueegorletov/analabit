@@ -3,7 +3,7 @@
 package varsity
 
 import (
-	"analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

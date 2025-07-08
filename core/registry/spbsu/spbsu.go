@@ -1,9 +1,9 @@
 package spbsu
 
 import (
-	"analabit/core"
-	"analabit/core/source"
-	"analabit/core/source/spbsu"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/source/spbsu"
 )
 
 var Varsity = source.VarsityDefinition{

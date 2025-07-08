@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"analabit/core"
+	"github.com/trueegorletov/analabit/core"
 	"time"
 
 	"entgo.io/ent"

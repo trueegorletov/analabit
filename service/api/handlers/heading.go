@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"analabit/core/ent"
-	"analabit/core/ent/heading"
-	"analabit/core/ent/varsity"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"log"
 	"strconv"

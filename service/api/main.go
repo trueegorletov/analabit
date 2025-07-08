@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"log"
 
-	"analabit/core/ent"
-	"analabit/core/ent/migrate"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/migrate"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"

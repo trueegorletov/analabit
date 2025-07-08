@@ -1,6 +1,6 @@
 package hse
 
-import "analabit/core/source"
+import "github.com/trueegorletov/analabit/core/source"
 
 var VarsitySpb = source.VarsityDefinition{
 	Code:           spbCode,

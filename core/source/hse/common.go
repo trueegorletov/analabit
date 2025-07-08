@@ -5,8 +5,8 @@
 package hse
 
 import (
-	"analabit/core"
-	"analabit/core/source"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
 	"fmt"
 	"log"
 	"regexp"

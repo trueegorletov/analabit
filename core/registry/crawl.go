@@ -1,7 +1,7 @@
 package registry
 
 import (
-	"analabit/core/source"
+	"github.com/trueegorletov/analabit/core/source"
 	"fmt"
 	"io/fs"
 	"log"

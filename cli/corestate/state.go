@@ -1,9 +1,9 @@
 package corestate
 
 import (
-	"analabit/core"
-	"analabit/core/drainer"
-	"analabit/core/source"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/drainer"
+	"github.com/trueegorletov/analabit/core/source"
 	"sync"
 	"sync/atomic"
 )

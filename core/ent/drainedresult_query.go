@@ -3,10 +3,10 @@
 package ent
 
 import (
-	"analabit/core/ent/drainedresult"
-	"analabit/core/ent/heading"
-	"analabit/core/ent/predicate"
-	"analabit/core/ent/run"
+	"github.com/trueegorletov/analabit/core/ent/drainedresult"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 	"fmt"
 	"math"

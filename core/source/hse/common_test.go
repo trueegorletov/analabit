@@ -1,8 +1,8 @@
 package hse
 
 import (
-	"analabit/core"
-	"analabit/core/source"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
 	"testing"
 
 	"github.com/xuri/excelize/v2"

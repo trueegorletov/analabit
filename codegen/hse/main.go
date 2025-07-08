@@ -1,7 +1,7 @@
 package main
 
 import (
-	"analabit/core"
+	"github.com/trueegorletov/analabit/core"
 	"flag"
 	"fmt"
 	"io/ioutil"

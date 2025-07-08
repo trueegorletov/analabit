@@ -5,11 +5,11 @@ package enttest
 import (
 	"context"
 
-	"analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent"
 	// required by schema hooks.
-	_ "analabit/core/ent/runtime"
+	_ "github.com/trueegorletov/analabit/core/ent/runtime"
 
-	"analabit/core/ent/migrate"
+	"github.com/trueegorletov/analabit/core/ent/migrate"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

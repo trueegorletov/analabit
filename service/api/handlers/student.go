@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"analabit/core/ent"
-	"analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/application"
 	"context"
 	"log"
 

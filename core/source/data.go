@@ -1,6 +1,6 @@
 package source
 
-import "analabit/core"
+import "github.com/trueegorletov/analabit/core"
 
 // ApplicationData mirrors the data needed for core.VarsityCalculator.AddApplication
 // and adds additional fields which could be useful for further processing.

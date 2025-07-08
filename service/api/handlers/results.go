@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"analabit/core/ent"
-	"analabit/core/ent/application"
-	"analabit/core/ent/calculation"
-	"analabit/core/ent/drainedresult"
-	"analabit/core/ent/heading"
-	"analabit/core/ent/varsity"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/drainedresult"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"log"
 	"sort"

@@ -1,9 +1,9 @@
 package oldhse
 
 import (
-	"analabit/core"
-	"analabit/core/source"
-	"analabit/core/utils"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/utils"
 	"context"
 	"fmt"
 	"log"

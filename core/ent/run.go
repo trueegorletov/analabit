@@ -3,7 +3,7 @@
 package ent
 
 import (
-	"analabit/core/ent/run"
+	"github.com/trueegorletov/analabit/core/ent/run"
 	"encoding/json"
 	"fmt"
 	"strings"
