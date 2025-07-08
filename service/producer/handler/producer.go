@@ -21,7 +21,7 @@ import (
 	"github.com/trueegorletov/analabit/core/drainer"
 	"github.com/trueegorletov/analabit/core/registry"
 	"github.com/trueegorletov/analabit/core/source"
-	"analabit/service/producer/proto"
+	"github.com/trueegorletov/analabit/service/producer/proto"
 
 	"go.uber.org/multierr"
 )

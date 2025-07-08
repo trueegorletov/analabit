@@ -1,12 +1,12 @@
-module analabit/service/producer
+module github.com/trueegorletov/analabit/service/producer
 
 go 1.24
 
 toolchain go1.24.4
 
 require (
-	github.com/trueegorletov/analabit v0.0.0-00010101000000-000000000000
 	github.com/minio/minio-go/v7 v7.0.94
+	github.com/trueegorletov/analabit v0.0.0-00010101000000-000000000000
 	go-micro.dev/v5 v5.8.0
 	google.golang.org/grpc v1.72.1
 	google.golang.org/protobuf v1.36.6
@@ -94,3 +94,4 @@ require (
 )
 
 replace github.com/trueegorletov/analabit => ../../
+replace github.com/trueegorletov/analabit/service/producer => .

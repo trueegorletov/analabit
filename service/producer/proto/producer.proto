@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package producer;
 
-option go_package = "service/producer/proto";
+option go_package = "github.com/trueegorletov/analabit/service/producer/proto;proto";
 
 service Producer {
 	rpc Produce(ProduceRequest) returns (ProduceResponse) {}
