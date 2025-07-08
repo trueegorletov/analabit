@@ -10,8 +10,6 @@ WORKDIR /app
 # Copy go files and source code
 COPY . .
 
-RUN mkdir -p /app/tools
-
 # Download dependencies
 RUN go mod download
 RUN go work sync
@@ -29,8 +27,6 @@ WORKDIR /root/
 # Copy the binary from builder
 COPY --from=builder /app/main .
 
-# Copy tools directory from builder (always present, even if empty)
-COPY --from=builder /app/tools ./tools
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
