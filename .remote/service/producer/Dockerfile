@@ -1,7 +1,7 @@
 # ---- Base Builder ----
+# ---- Base Builder ----
 FROM golang:1.24-alpine AS builder
-
-# Set the Current Working Directory inside the container
+# Prepare workspace at repository root for multi-module go.work support
 WORKDIR /app
 ENV GO111MODULE=on
 ENV GOPROXY=https://proxy.golang.org,direct
@@ -17,23 +17,20 @@ RUN go install github.com/asim/go-micro/cmd/protoc-gen-micro/v4@latest
 
 # Copy workspace and module definitions
 COPY go.work go.mod go.sum ./
-# Copy service modules to proper locations
-COPY service/aggregator/go.mod service/aggregator/go.sum service/aggregator/
-COPY service/api/go.mod service/api/go.sum service/api/
-COPY service/producer/go.mod service/producer/go.sum service/producer/
-# Sync workspace build list to modules
-RUN go work sync
+# Copy service modules
+COPY service/producer/go.mod service/producer/go.sum service/api/go.mod service/api/go.sum service/aggregator/go.mod service/aggregator/go.sum ./    # Sync workspace build list to modules
+    RUN go work sync
 # Copy entire repository
 COPY . .
 
 # Generate protobuf files
-RUN protoc --proto_path=./service/aggregator/proto \
+RUN protoc --proto_path=./proto \
     --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-    --micro_out=. --micro_opt=paths=source_relative service/aggregator/proto/aggregator.proto
+    --micro_out=. --micro_opt=paths=source_relative proto/producer.proto
 
-# Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o aggregator-service ./service/aggregator
+# Build the Go app for producer service
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o producer-service ./service/producer
 
 # ---- Final Stage ----
 FROM alpine:latest
@@ -48,13 +45,13 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 
 # Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/aggregator-service .
+COPY --from=builder /app/service/producer/producer-service /app/producer-service
 
-# Expose port 8081 to the outside world
-EXPOSE 8081
+# Expose port 8080 to the outside world
+EXPOSE 8080
 
 # Switch to our non-root user
 USER appuser
 
 # Command to run the executable
-CMD ["./aggregator-service"]
+CMD ["./producer-service"]
