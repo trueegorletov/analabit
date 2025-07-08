@@ -17,10 +17,10 @@ import (
 	"github.com/streadway/amqp"
 	"go-micro.dev/v5/errors"
 
-	"github.com/trueegorletov/github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/github.com/trueegorletov/analabit/core/drainer"
-	"github.com/trueegorletov/github.com/trueegorletov/analabit/core/registry"
-	"github.com/trueegorletov/github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/drainer"
+	"github.com/trueegorletov/analabit/core/registry"
+	"github.com/trueegorletov/analabit/core/source"
 	"analabit/service/producer/proto"
 
 	"go.uber.org/multierr"
