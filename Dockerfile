@@ -10,10 +10,11 @@ WORKDIR /app
 # Copy go files and source code
 COPY . .
 
+RUN mkdir -p /app/tools
+
 # Download dependencies
 RUN go mod download
-
-# Build the specific service
+RUN go work sync
 ARG SERVICE_NAME
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./service/${SERVICE_NAME}
 
@@ -29,7 +30,7 @@ WORKDIR /root/
 COPY --from=builder /app/main .
 
 # Copy tools if needed
-COPY --from=builder /app/tools ./tools
+COPY --from=builder /app/tools ./tools || true
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
