@@ -36,7 +36,7 @@ FROM alpine:latest AS runtime
 RUN apk add --no-cache poppler-utils ca-certificates
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
-COPY --from=builder /app/service/producer/producer-service .
+COPY --from=builder /app/producer-service .
 USER appuser
 EXPOSE 8080
 CMD ["./producer-service"]
