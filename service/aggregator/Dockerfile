@@ -11,6 +11,7 @@ RUN apk add --no-cache git protobuf-dev
 # Install go tools for protobuf
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+RUN go install github.com/asim/go-micro/cmd/protoc-gen-micro/v4@latest
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -20,6 +21,14 @@ RUN go mod download
 
 # Copy the source code into the container
 COPY . .
+
+# Generate protobuf files
+RUN cd /app && \
+    protoc --proto_path=. \
+    --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    --micro_out=. --micro_opt=paths=source_relative \
+    service/aggregator/proto/aggregator.proto
 
 # Build the Go app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o aggregator-service ./service/aggregator/main.go
