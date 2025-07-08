@@ -105,6 +105,18 @@ jobs:
           type=ref,event=branch
           type=sha,prefix={{branch}}-
     
+    - name: Build and push Producer
+      id: build-producer
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./service/producer/Dockerfile
+        push: true
+        tags: ${{ steps.meta-producer.outputs.tags }}
+        labels: ${{ steps.meta-producer.outputs.labels }}
+        no-cache: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Build and push API
       id: build-api
       uses: docker/build-push-action@v5
@@ -126,18 +138,6 @@ jobs:
         push: true
         tags: ${{ steps.meta-aggregator.outputs.tags }}
         labels: ${{ steps.meta-aggregator.outputs.labels }}
-        no-cache: true
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Build and push Producer
-      id: build-producer
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./service/producer/Dockerfile
-        push: true
-        tags: ${{ steps.meta-producer.outputs.tags }}
-        labels: ${{ steps.meta-producer.outputs.labels }}
         no-cache: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
 

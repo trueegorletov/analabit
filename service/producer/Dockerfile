@@ -20,8 +20,6 @@ WORKDIR /app
 #+ Copy entire repository and remove submodule go files to use root module
 #
 COPY . .
-# Remove submodule go.mod so build uses root module and workspace
-RUN rm -f service/producer/go.mod service/producer/go.sum
 RUN protoc --proto_path=. \
     --go_out=. --go_opt=paths=source_relative \
     --micro_out=. --micro_opt=paths=source_relative \
