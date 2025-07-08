@@ -1,0 +1,185 @@
+name: Deploy Analabit Backend
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: analabit
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        cache: true
+        
+    - name: Run tests
+      run: |
+        go mod tidy
+        go test -v ./...
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      api-tag: ${{ steps.meta-api.outputs.tags }}
+      aggregator-tag: ${{ steps.meta-aggregator.outputs.tags }}
+      producer-tag: ${{ steps.meta-producer.outputs.tags }}
+      api-digest: ${{ steps.build-api.outputs.digest }}
+      aggregator-digest: ${{ steps.build-aggregator.outputs.digest }}
+      producer-digest: ${{ steps.build-producer.outputs.digest }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Login to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Extract metadata for API
+      id: meta-api
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}-api
+        tags: |
+          type=ref,event=branch
+          type=sha,prefix={{branch}}-
+          
+    - name: Extract metadata for Aggregator
+      id: meta-aggregator
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}-aggregator
+        tags: |
+          type=ref,event=branch
+          type=sha,prefix={{branch}}-
+          
+    - name: Extract metadata for Producer
+      id: meta-producer
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}-producer
+        tags: |
+          type=ref,event=branch
+          type=sha,prefix={{branch}}-
+    
+    - name: Build and push API
+      id: build-api
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./service/api/Dockerfile
+        push: true
+        tags: ${{ steps.meta-api.outputs.tags }}
+        labels: ${{ steps.meta-api.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Build and push Aggregator
+      id: build-aggregator
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./service/aggregator/Dockerfile
+        push: true
+        tags: ${{ steps.meta-aggregator.outputs.tags }}
+        labels: ${{ steps.meta-aggregator.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Build and push Producer
+      id: build-producer
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./service/producer/Dockerfile
+        push: true
+        tags: ${{ steps.meta-producer.outputs.tags }}
+        labels: ${{ steps.meta-producer.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+    - name: Deploy to production
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.PROD_HOST }}
+        username: ${{ secrets.PROD_USER }}
+        key: ${{ secrets.PROD_SSH_KEY }}
+        script: |
+          # Navigate to project directory
+          cd /opt/analabit
+          
+          # Pull latest code
+          git fetch origin master
+          git reset --hard origin/master
+          
+          # Update environment with new image tags
+          export API_IMAGE="${{ needs.build.outputs.api-tag }}"
+          export AGGREGATOR_IMAGE="${{ needs.build.outputs.aggregator-tag }}"
+          export PRODUCER_IMAGE="${{ needs.build.outputs.producer-tag }}"
+          
+          # Login to container registry
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+          # Pull new images
+          docker pull $API_IMAGE
+          docker pull $AGGREGATOR_IMAGE  
+          docker pull $PRODUCER_IMAGE
+          
+          # Zero-downtime deployment
+          # First, ensure all dependencies are up
+          docker-compose -f docker-compose.prod.yml up -d rabbitmq postgres minio
+          
+          # Deploy services sequentially with health checks
+          docker-compose -f docker-compose.prod.yml up -d --no-deps api
+          echo "Waiting for API to be healthy..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do sleep 2; echo "Waiting for API..."; done'
+          
+          docker-compose -f docker-compose.prod.yml up -d --no-deps producer
+          echo "Producer deployed, waiting 10s to stabilize..."
+          sleep 10
+          
+          docker-compose -f docker-compose.prod.yml up -d --no-deps aggregator
+          echo "Aggregator deployed, waiting 10s to stabilize..."
+          sleep 10
+          
+          # Clean up old images
+          docker image prune -f
+          
+          # Final health check
+          echo "Performing final health check..."
+          if curl -sf http://localhost:8080/health; then
+            echo "✅ API is healthy"
+            # Check if producer and aggregator containers are running
+            if docker ps | grep -q analabit-producer && docker ps | grep -q analabit-aggregator; then
+              echo "✅ All services are running"
+              echo "✅ Deployment completed successfully!"
+            else
+              echo "❌ Producer or Aggregator service is not running"
+              exit 1
+            fi
+          else
+            echo "❌ API health check failed"
+            echo "⚠️ Rolling back to previous deployment..."
+            # We could implement rollback logic here if needed
+            exit 1
+          fi

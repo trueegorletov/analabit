@@ -54,7 +54,7 @@ services:
       retries: 3
 
   api:
-    image: analabit/api:latest
+    image: ${API_IMAGE:-ghcr.io/analabit/analabit-api:latest}
     depends_on:
       - rabbitmq
       - minio
@@ -82,7 +82,7 @@ services:
       retries: 3
 
   aggregator:
-    image: analabit/aggregator:latest
+    image: ${AGGREGATOR_IMAGE:-ghcr.io/analabit/analabit-aggregator:latest}
     depends_on:
       - rabbitmq
       - minio
@@ -103,7 +103,7 @@ services:
     restart: unless-stopped
 
   producer:
-    image: analabit/producer:latest
+    image: ${PRODUCER_IMAGE:-ghcr.io/analabit/analabit-producer:latest}
     depends_on:
       - rabbitmq
       - minio
