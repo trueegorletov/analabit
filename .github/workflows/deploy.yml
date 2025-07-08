@@ -52,6 +52,7 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # Increase timeout for builds
     outputs:
       api-tag: ${{ steps.meta-api.outputs.tags }}
       aggregator-tag: ${{ steps.meta-aggregator.outputs.tags }}
@@ -70,6 +71,7 @@ jobs:
           image=moby/buildkit:v0.12.0
       
     - name: Login to Container Registry
+      id: login
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
@@ -113,6 +115,7 @@ jobs:
         tags: ${{ steps.meta-api.outputs.tags }}
         labels: ${{ steps.meta-api.outputs.labels }}
         no-cache: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Build and push Aggregator
       id: build-aggregator
@@ -124,6 +127,7 @@ jobs:
         tags: ${{ steps.meta-aggregator.outputs.tags }}
         labels: ${{ steps.meta-aggregator.outputs.labels }}
         no-cache: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Build and push Producer
       id: build-producer
@@ -135,6 +139,7 @@ jobs:
         tags: ${{ steps.meta-producer.outputs.tags }}
         labels: ${{ steps.meta-producer.outputs.labels }}
         no-cache: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     needs: build
