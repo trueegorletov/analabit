@@ -3,10 +3,12 @@ package main
 import (
 	"analabit/service/api/config"
 	"analabit/service/api/handlers"
+	"context"
 	"fmt"
 	"log"
 
 	"analabit/core/ent"
+	"analabit/core/ent/migrate"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -36,6 +38,11 @@ func main() {
 		log.Fatalf("failed opening connection to postgres: %v", err)
 	}
 	defer client.Close()
+
+	// Run database migrations
+	if err := client.Schema.Create(context.Background(), migrate.WithDropIndex(true), migrate.WithDropColumn(true)); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
 
 	// Initialize a new Fiber app
 	app := fiber.New()
