@@ -163,14 +163,20 @@ jobs:
           git fetch origin master
           git reset --hard origin/master
           
-          # Check if .env file exists, create if it does not
-          if [ ! -f .env ]; then
-            echo "Environment file (.env) not found. Generating a new one..."
-            PG_PASS=$(openssl rand -base64 32)
-            RABBIT_PASS=$(openssl rand -base64 32)
-            MINIO_PASS=$(openssl rand -base64 32)
-            
-            cat << EOT > .env
+          # Remove old incorrect .env if it contains COMPOSE_BAKE
+          if [ -f ".env" ] && grep -q "COMPOSE_BAKE" .env; then
+              echo "Removing old, incorrect .env file."
+              rm .env
+          fi
+          
+          # Check if .env file exists, if not, create it
+          if [ ! -f ".env" ]; then
+              echo "No .env file found. Generating a new one with secure credentials..."
+              PG_PASS=$(openssl rand -base64 32)
+              RABBIT_PASS=$(openssl rand -base64 32)
+              MINIO_PASS=$(openssl rand -base64 32)
+              
+              cat << EOT > .env
           # Production environment variables - Generated on $(date)
           POSTGRES_USER=analabit_user
           POSTGRES_PASSWORD=$PG_PASS
@@ -183,15 +189,20 @@ jobs:
           APP_PORT=8080
           LOG_LEVEL=info
           EOT
-            echo ".env file created successfully."
+              echo ".env file created."
           else
-            echo ".env file already exists. Skipping generation."
+              echo ".env file already exists. Skipping generation."
           fi
           
-          # Set image tags from build job outputs
-          export API_IMAGE="${{ needs.build.outputs.api-tag }}"
-          export AGGREGATOR_IMAGE="${{ needs.build.outputs.aggregator-tag }}"
-          export PRODUCER_IMAGE="${{ needs.build.outputs.producer-tag }}"
+          # Append/update image tags in .env file
+          sed -i '/_IMAGE=/d' .env
+          cat << EOT >> .env
+          
+          # Image tags from CI build
+          API_IMAGE=${{ needs.build.outputs.api-tag }}
+          AGGREGATOR_IMAGE=${{ needs.build.outputs.aggregator-tag }}
+          PRODUCER_IMAGE=${{ needs.build.outputs.producer-tag }}
+          EOT
           
           # Login to container registry
           echo "Logging into GitHub Container Registry..."
@@ -199,22 +210,22 @@ jobs:
           
           # Pull new images
           echo "Pulling latest Docker images..."
-          docker-compose -f docker-compose.prod.yml pull
+          docker-compose -f docker-compose.prod.yml --env-file .env pull
           
-          # Deploy services
-          echo "Starting all services..."
-          docker-compose -f docker-compose.prod.yml up -d
+          # Stop old containers and start new ones
+          echo "Restarting services with new images and configuration..."
+          docker-compose -f docker-compose.prod.yml --env-file .env up -d --force-recreate --remove-orphans
           
           # Health checks
-          echo "Waiting for services to stabilize..."
-          sleep 15
+          echo "Waiting for services to stabilize (30s)..."
+          sleep 30
           
           echo "Waiting for API to be healthy..."
-          timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do echo "Retrying API health check..."; sleep 5; done'
           
           # Clean up old images
           echo "Cleaning up old Docker images..."
-          docker image prune -f
+          docker image prune -a -f --filter "until=24h"
           
           # Final status check
           echo "Final status check:"
