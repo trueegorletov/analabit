@@ -18,9 +18,8 @@ RUN go install github.com/asim/go-micro/cmd/protoc-gen-micro/v4@latest
 # Copy workspace and module definitions
 COPY go.work go.mod go.sum ./
 # Copy service modules
-COPY service/producer/go.mod service/producer/go.sum service/api/go.mod service/api/go.sum service/aggregator/go.mod service/aggregator/go.sum ./
-# Download all dependencies for workspace
-RUN go work download
+COPY service/producer/go.mod service/producer/go.sum service/api/go.mod service/api/go.sum service/aggregator/go.mod service/aggregator/go.sum ./    # Sync workspace build list to modules
+    RUN go work sync
 # Copy entire repository
 COPY . .
 
