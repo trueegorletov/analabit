@@ -58,38 +58,78 @@ EOF
 if grep -q "listen 443 ssl" "$NGINX_CONF"; then
     echo "Found HTTPS server block, inserting monitoring locations..."
     
-    # A simpler approach: find the last closing brace of the HTTPS server block
-    # and insert our locations before it
-    SERVER_BLOCK_START=$(grep -n -B 1 "server {" "$NGINX_CONF" | grep -B 1000 "listen 443 ssl" | tail -n 1 | cut -d: -f1)
+    # Use awk to find the HTTPS server block and insert monitoring locations
+    # This approach is more reliable than complex grep chains
+    awk '
+    BEGIN { 
+        in_https_server = 0
+        brace_count = 0
+        server_start = 0
+        monitoring_inserted = 0
+    }
     
-    # Extract the file up to the start of the HTTPS server block
-    sudo head -n "$SERVER_BLOCK_START" "$NGINX_CONF" > /tmp/nginx_start
+    # Look for server block start
+    /^[[:space:]]*server[[:space:]]*{/ {
+        if (!in_https_server) {
+            server_start = NR
+            brace_count = 1
+            in_https_server = 1
+            print $0
+            next
+        }
+    }
     
-    # Extract the server block to a temporary file
-    sudo sed -n "$SERVER_BLOCK_START,\$p" "$NGINX_CONF" > /tmp/server_block
+    # If we are in a server block, check for HTTPS
+    in_https_server && /listen[[:space:]]+443[[:space:]]+ssl/ {
+        in_https_server = 2  # Mark as HTTPS server block
+        print $0
+        next
+    }
     
-    # Find the first occurrence of a closing brace in the server block
-    # This will be the end of the HTTPS server block
-    SERVER_BLOCK_END=$(grep -n "}" /tmp/server_block | head -n 1 | cut -d: -f1)
+    # Count braces when in server block
+    in_https_server {
+        # Count opening braces
+        gsub(/{/, "&")
+        brace_count += gsub(/{/, "&")
+        
+        # Count closing braces
+        gsub(/}/, "&")
+        close_braces = gsub(/}/, "&")
+        brace_count -= close_braces
+        
+        # If this is the closing brace of the HTTPS server block
+        if (in_https_server == 2 && brace_count == 0 && close_braces > 0) {
+            # Insert monitoring locations before the closing brace
+            if (!monitoring_inserted) {
+                while ((getline line < "/tmp/monitoring.locations") > 0) {
+                    print line
+                }
+                close("/tmp/monitoring.locations")
+                monitoring_inserted = 1
+            }
+            print $0
+            in_https_server = 0
+            next
+        }
+        
+        # If brace count reaches 0 but this was not HTTPS, reset
+        if (brace_count == 0) {
+            in_https_server = 0
+        }
+    }
     
-    # Edit the server block to insert our locations before the closing brace
-    head -n $(( SERVER_BLOCK_END - 1 )) /tmp/server_block > /tmp/server_start
-    cat /tmp/monitoring.locations >> /tmp/server_start
-    echo "}" >> /tmp/server_start
+    # Print all other lines as-is
+    { print $0 }
+    ' "$NGINX_CONF" > /tmp/nginx_new
     
-    # Get the rest of the file after the server block
-    tail -n +$(( SERVER_BLOCK_START + SERVER_BLOCK_END )) "$NGINX_CONF" > /tmp/nginx_end
-    
-    # Combine everything back together
-    cat /tmp/nginx_start /tmp/server_start /tmp/nginx_end > /tmp/nginx_new
-    sudo mv /tmp/nginx_new "$NGINX_CONF"
-    sudo chmod 644 "$NGINX_CONF"
-    
-    # Verify the changes were applied
-    if grep -q "location /prometheus/" "$NGINX_CONF"; then
+    # Check if monitoring locations were inserted
+    if grep -q "location /prometheus/" /tmp/nginx_new; then
+        sudo mv /tmp/nginx_new "$NGINX_CONF"
+        sudo chmod 644 "$NGINX_CONF"
         echo "Successfully added monitoring locations to HTTPS server block"
     else
-        echo "Modification failed, falling back to append method"
+        echo "AWK method failed, falling back to append method"
+        rm -f /tmp/nginx_new
         # Fallback to appending a new server block
         cat > /tmp/new_server_block << EOF
 
@@ -138,7 +178,7 @@ EOF
 fi
 
 # Clean up temporary files
-rm -f /tmp/nginx_start /tmp/server_block /tmp/server_start /tmp/nginx_end /tmp/monitoring.locations /tmp/new_server_block
+rm -f /tmp/monitoring.locations /tmp/new_server_block /tmp/nginx_new
 
 # Create htpasswd file for Prometheus authentication
 echo "Setting up Prometheus authentication..."
