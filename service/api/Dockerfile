@@ -39,7 +39,6 @@ WORKDIR /app
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/api-service .
-COPY --from=builder /app/service/api/config.toml .
 
 # Expose port 3000 to the outside world
 EXPOSE 3000
