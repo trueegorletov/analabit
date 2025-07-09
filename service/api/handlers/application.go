@@ -1,16 +1,18 @@
 package handlers
 
 import (
+	"context"
+	"log"
+	"strconv"
+	"time"
+
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/ent/application"
 	"github.com/trueegorletov/analabit/core/ent/calculation"
 	"github.com/trueegorletov/analabit/core/ent/heading"
 	"github.com/trueegorletov/analabit/core/ent/varsity"
-	"context"
-	"log"
-	"strconv"
-	"time"
+	"github.com/trueegorletov/analabit/core/utils"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -38,12 +40,23 @@ func GetApplications(client *ent.Client) fiber.Handler {
 	return func(c fiber.Ctx) error {
 		limit, _ := strconv.Atoi(c.Query("limit", "1000"))
 		offset, _ := strconv.Atoi(c.Query("offset", "0"))
-		studentID := c.Query("studentID")
+		studentIDRaw := c.Query("studentID")
 		varsityCode := c.Query("varsityCode")
 		headingID, _ := strconv.Atoi(c.Query("headingId", "0"))
 		runParam := c.Query("run", "latest")
 
 		ctx := context.Background()
+
+		// Validate and prepare student ID if provided
+		var studentID string
+		if studentIDRaw != "" {
+			preparedID, err := utils.PrepareStudentID(studentIDRaw)
+			if err != nil {
+				log.Printf("invalid student ID parameter '%s': %v", studentIDRaw, err)
+				return fiber.NewError(fiber.StatusBadRequest, "invalid student ID parameter")
+			}
+			studentID = preparedID
+		}
 
 		// Resolve the run ID from the parameter
 		runResolution, err := ResolveRunFromIteration(ctx, client, runParam)
@@ -188,7 +201,7 @@ func GetApplications(client *ent.Client) fiber.Handler {
 
 			response[i] = ApplicationResponse{
 				ID:                    app.ID,
-				StudentID:             app.StudentID,
+				StudentID:             utils.PrettifyStudentID(app.StudentID),
 				Priority:              app.Priority,
 				CompetitionType:       core.Competition(app.CompetitionType).String(),
 				RatingPlace:           app.RatingPlace,
