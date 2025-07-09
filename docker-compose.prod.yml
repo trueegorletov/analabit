@@ -147,9 +147,12 @@ services:
       - DATABASE_PASSWORD=${ANALABIT_DB_PASSWORD}
       - DATABASE_DBNAME=${ANALABIT_DB_NAME}
       - DATABASE_SSLMODE=disable
+    volumes:
+      - producer_cache:/app/cache
     restart: unless-stopped
 
 volumes:
   rabbitmq_data:
   minio_data:
   postgres_data:
+  producer_cache:

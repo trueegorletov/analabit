@@ -133,34 +133,40 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 		return fmt.Errorf("failed to initialize minio client: %w", err)
 	}
 
-	connStrings := []string{cfg.PostgresPrimaryConnString, cfg.PostgresReplicaConnString}
-	if cfg.PostgresPrimaryConnString == "" {
-		log.Println("POSTGRES_PRIMARY_CONN_STRING is not set. Skipping database upload.")
+	connStrings := cfg.GetAllConnStrings()
+	if len(connStrings) == 0 {
+		log.Println("No database connection strings configured. Skipping database upload.")
 		return nil
 	}
 
 	var allErrors error
-	// Process each database connection string
-	for _, connStr := range connStrings {
+	// Process each database connection string (primary + replicas)
+	for i, connStr := range connStrings {
 		if connStr == "" {
 			continue
 		}
-		log.Printf("Connecting to database...")
+
+		dbType := "primary"
+		if i > 0 {
+			dbType = fmt.Sprintf("replica-%d", i)
+		}
+
+		log.Printf("Connecting to %s database...", dbType)
 		client, err := ent.Open("postgres", connStr)
 		if err != nil {
-			err = fmt.Errorf("failed to connect to postgres with conn string %q: %w", connStr, err)
+			err = fmt.Errorf("failed to connect to %s postgres with conn string %q: %w", dbType, connStr, err)
 			multierr.AppendInto(&allErrors, err)
 			continue
 		}
 
 		// Ensure schema is up-to-date once per database connection.
 		if err := client.Schema.Create(ctx); err != nil {
-			err = fmt.Errorf("failed to run schema migrations for conn string %q: %w", connStr, err)
+			err = fmt.Errorf("failed to run schema migrations for %s database %q: %w", dbType, connStr, err)
 			multierr.AppendInto(&allErrors, err)
 			client.Close()
 			continue
 		}
-		log.Printf("Schema check complete for %q.", connStr)
+		log.Printf("Schema check complete for %s database.", dbType)
 
 		// Create one Run per RabbitMQ notification before processing objects
 		run, err := client.Run.Create().
@@ -168,17 +174,17 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 				"bucket_name":    bucketName,
 				"object_count":   len(objectNames),
 				"object_names":   objectNames,
-				"conn_string_id": connStr, // Consider hashing this for security
+				"conn_string_id": fmt.Sprintf("%s-%s", dbType, connStr), // More descriptive ID
 			}).
 			Save(ctx)
 		if err != nil {
-			err = fmt.Errorf("failed to create run for bucket %s with conn string %q: %w", bucketName, connStr, err)
+			err = fmt.Errorf("failed to create run for bucket %s with %s database %q: %w", bucketName, dbType, connStr, err)
 			multierr.AppendInto(&allErrors, err)
 			client.Close()
 			continue
 		}
 
-		log.Printf("Created run %d for bucket %s with %d objects", run.ID, bucketName, len(objectNames))
+		log.Printf("Created run %d for bucket %s with %d objects (%s database)", run.ID, bucketName, len(objectNames), dbType)
 
 		// Process each object for the current database connection
 		var payload core.UploadPayload // Reuse this variable
@@ -204,10 +210,10 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 
 			// 3. Perform the unified upload with runID
 			if err := upload.Primary(ctx, client, run.ID, &payload); err != nil {
-				err = fmt.Errorf("failed to upload payload from object %s with conn string %q: %w", objectName, connStr, err)
+				err = fmt.Errorf("failed to upload payload from object %s with %s database %q: %w", objectName, dbType, connStr, err)
 				multierr.AppendInto(&allErrors, err)
 			} else {
-				log.Printf("Successfully uploaded payload for object %s in run %d", objectName, run.ID)
+				log.Printf("Successfully uploaded payload for object %s in run %d (%s database)", objectName, run.ID, dbType)
 				// Build synthetic drained results for stage=0 TODO: move to producer service
 				synthetic := make([]core.DrainedResultDTO, 0, len(payload.Calculations))
 				for _, calc := range payload.Calculations {
@@ -238,10 +244,10 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 				}
 				// Upload drained results with runID
 				if err := upload.DrainedResults(ctx, client, run.ID, drainedDTOs); err != nil {
-					err = fmt.Errorf("failed to upload drained results from object %s with conn string %q: %w", objectName, connStr, err)
+					err = fmt.Errorf("failed to upload drained results from object %s with %s database %q: %w", objectName, dbType, connStr, err)
 					multierr.AppendInto(&allErrors, err)
 				} else {
-					log.Printf("Successfully uploaded drained results for object %s in run %d", objectName, run.ID)
+					log.Printf("Successfully uploaded drained results for object %s in run %d (%s database)", objectName, run.ID, dbType)
 				}
 			}
 		}
@@ -253,7 +259,7 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 				err = fmt.Errorf("failed to mark run %d as finished: %w", run.ID, updateErr)
 				multierr.AppendInto(&allErrors, err)
 			} else {
-				log.Printf("Run %d completed successfully and marked as finished", run.ID)
+				log.Printf("Run %d completed successfully and marked as finished (%s database)", run.ID, dbType)
 			}
 		}
 
