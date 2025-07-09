@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Start dependency containers (RabbitMQ, MinIO, Postgres)
-docker compose -f docker-compose.deps.yml up -d
+docker compose -f docker-compose.dev.yml up -d
 
 echo "Dependencies are up."
 

@@ -2,6 +2,7 @@ package registry
 
 import (
 	"github.com/trueegorletov/analabit/core/registry/hse"
+	"github.com/trueegorletov/analabit/core/registry/itmo"
 	"github.com/trueegorletov/analabit/core/registry/rzgmu"
 	"github.com/trueegorletov/analabit/core/registry/spbsu"
 	"github.com/trueegorletov/analabit/core/source"
@@ -15,4 +16,5 @@ var AllDefinitions = []source.VarsityDefinition{
 
 	spbsu.Varsity,
 	rzgmu.Varsity,
+	itmo.Varsity,
 }
