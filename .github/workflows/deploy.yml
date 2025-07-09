@@ -166,16 +166,24 @@ jobs:
               PG_PASS=$(openssl rand -base64 32)
               RABBIT_PASS=$(openssl rand -base64 32)
               MINIO_PASS=$(openssl rand -base64 32)
+              ANALABIT_DB_PASS=$(openssl rand -base64 32)
               
               cat << EOT > .env
           # Production environment variables - Generated on $(date)
-          POSTGRES_USER=analabit_user
+          POSTGRES_USER=postgres
           POSTGRES_PASSWORD=$PG_PASS
-          POSTGRES_DB=analabit_db
+          POSTGRES_DB=postgres
+
           RABBITMQ_USER=analabit_rabbit
           RABBITMQ_PASSWORD=$RABBIT_PASS
           MINIO_ROOT_USER=analabit_minio
           MINIO_ROOT_PASSWORD=$MINIO_PASS
+
+          # Analabit specific database
+          ANALABIT_DB_NAME=analabit_db
+          ANALABIT_DB_USER=analabit_user
+          ANALABIT_DB_PASSWORD=$ANALABIT_DB_PASS
+
           APP_ENV=production
           APP_PORT=8080
           LOG_LEVEL=info
