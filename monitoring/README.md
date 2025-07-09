@@ -15,6 +15,43 @@ monitoring/
 │   │       └── dashboards.yml  # Dashboard provider configuration
 │   └── dashboards/             # Pre-built dashboards
 │       └── analabit-api-metrics.json  # Main API metrics dashboard
+├── README.md                   # This documentation file
+└── DEPLOYMENT_CHECKLIST.md     # Production deployment checklist
+```
+
+## Architecture Overview
+
+The monitoring stack is designed to be:
+
+- **Secure** - Access controlled via authentication
+- **Lightweight** - Only the API service is instrumented to minimize overhead
+- **Informative** - Key metrics are visualized in Grafana dashboards
+- **Production-ready** - Configured for both development and production environments
+
+```
+                                   ┌──────────────┐
+                                   │              │
+                                   │   Grafana    │───┐
+                                   │              │   │
+                                   └──────▲───────┘   │
+                                          │           │
+                                          │           │
+                                   ┌──────┴───────┐   │
+                                   │              │   │
+                       ┌──────────►  Prometheus  │   │
+                       │           │              │   │
+                       │           └──────────────┘   │
+                       │                              │
+┌──────────────┐       │                         ┌────▼─────────┐
+│              │       │                         │              │
+│  API Service ├───────┘                         │    Nginx     │
+│              │                                 │              │
+└──────────────┘                                 └──────────────┘
+                                                       ▲
+                                                       │
+                                                       │
+                                                       ▼
+                                                    Users
 ```
 
 ## Prometheus Configuration
