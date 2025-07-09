@@ -127,6 +127,13 @@ services:
       - DATABASE_SSLMODE=disable
     restart: unless-stopped
 
+  producer-cache-init:
+    image: alpine:latest
+    volumes:
+      - producer_cache:/cache
+    command: sh -c "chmod 777 /cache && chown 65534:65534 /cache"
+    restart: "no"
+
   producer:
     image: ${PRODUCER_IMAGE:-ghcr.io/analabit/analabit-producer:latest}
     depends_on:
@@ -134,6 +141,7 @@ services:
       - minio
       - postgres
       - postgres-init
+      - producer-cache-init
     environment:
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
       - MINIO_ENDPOINT=minio:9000
@@ -148,9 +156,7 @@ services:
       - DATABASE_DBNAME=${ANALABIT_DB_NAME}
       - DATABASE_SSLMODE=disable
     volumes:
-      - producer_cache:/app/cache
-    working_dir: /app
-    command: sh -c "chmod 777 /app/cache 2>/dev/null || true && exec /app/producer"
+      - producer_cache:/cache
     restart: unless-stopped
 
 volumes:
