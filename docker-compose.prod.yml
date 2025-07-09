@@ -130,8 +130,8 @@ services:
   producer-cache-init:
     image: alpine:latest
     volumes:
-      - producer_cache:/cache
-    command: sh -c "chmod 777 /cache && chown 65534:65534 /cache"
+      - producer_cache:/app/cache
+    command: sh -c "mkdir -p /app/cache && chmod 777 /app/cache"
     restart: "no"
 
   producer:
@@ -156,7 +156,7 @@ services:
       - DATABASE_DBNAME=${ANALABIT_DB_NAME}
       - DATABASE_SSLMODE=disable
     volumes:
-      - producer_cache:/cache
+      - producer_cache:/app/cache
     restart: unless-stopped
 
 volumes:
