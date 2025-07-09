@@ -167,6 +167,8 @@ jobs:
               RABBIT_PASS=$(openssl rand -base64 32)
               MINIO_PASS=$(openssl rand -base64 32)
               ANALABIT_DB_PASS=$(openssl rand -base64 32)
+              GRAFANA_PASS=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9!@#$%^&*()_+?><:{}[]' | head -c 24)
+              PROMETHEUS_PASS=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9!@#$%^&*()_+?><:{}[]' | head -c 24)
               
               cat << EOT > .env
           # Production environment variables - Generated on $(date)
@@ -184,6 +186,12 @@ jobs:
           ANALABIT_DB_USER=analabit_user
           ANALABIT_DB_PASSWORD=$ANALABIT_DB_PASS
 
+          # Monitoring credentials
+          GRAFANA_USER=admin
+          GRAFANA_PASSWORD=$GRAFANA_PASS
+          PROMETHEUS_USER=prometheus
+          PROMETHEUS_PASSWORD=$PROMETHEUS_PASS
+
           APP_ENV=production
           APP_PORT=8080
           LOG_LEVEL=info
@@ -191,6 +199,27 @@ jobs:
               echo ".env file created."
           else
               echo ".env file already exists. Skipping generation."
+          fi
+          
+          # Check if Grafana and Prometheus credentials exist in .env, add if missing
+          if ! grep -q "GRAFANA_USER" .env; then
+              echo "Adding Grafana credentials to .env..."
+              GRAFANA_PASS=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9!@#$%^&*()_+?><:{}[]' | head -c 24)
+              echo "" >> .env
+              echo "# Monitoring credentials" >> .env
+              echo "GRAFANA_USER=admin" >> .env
+              echo "GRAFANA_PASSWORD=${GRAFANA_PASS}" >> .env
+          fi
+          
+          if ! grep -q "PROMETHEUS_USER" .env; then
+              echo "Adding Prometheus credentials to .env..."
+              PROMETHEUS_PASS=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9!@#$%^&*()_+?><:{}[]' | head -c 24)
+              if ! grep -q "# Monitoring credentials" .env; then
+                  echo "" >> .env
+                  echo "# Monitoring credentials" >> .env
+              fi
+              echo "PROMETHEUS_USER=prometheus" >> .env
+              echo "PROMETHEUS_PASSWORD=${PROMETHEUS_PASS}" >> .env
           fi
           
           # Append/update image tags in .env file
@@ -221,6 +250,65 @@ jobs:
           
           echo "Waiting for API to be healthy..."
           timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do echo "Retrying API health check..."; sleep 5; done'
+          
+          echo "Checking Prometheus health..."
+          timeout 30 bash -c 'until curl -sf http://localhost:9090/-/healthy; do echo "Retrying Prometheus health check..."; sleep 5; done'
+          
+          echo "Checking Grafana health..."
+          timeout 30 bash -c 'until curl -sf http://localhost:3500/api/health; do echo "Retrying Grafana health check..."; sleep 5; done'
+          
+          # Configure nginx for Prometheus and Grafana if not already configured
+          NGINX_CONF="/etc/nginx/sites-available/analabit"
+          if [ -f "$NGINX_CONF" ] && ! grep -q "location /prometheus" "$NGINX_CONF"; then
+              echo "Configuring nginx for monitoring endpoints..."
+              
+              # Create a backup of the current config
+              sudo cp "$NGINX_CONF" "${NGINX_CONF}.bak.$(date +%Y%m%d%H%M%S)"
+              
+              # Create prometheus nginx config
+              echo "    # Prometheus endpoint (restricted to authenticated users)" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "    location /prometheus/ {" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        auth_basic \"Prometheus\";" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        auth_basic_user_file /etc/nginx/.prometheus_htpasswd;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_pass http://localhost:9090/;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_set_header Host \$host;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_set_header X-Real-IP \$remote_addr;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_set_header X-Forwarded-Proto \$scheme;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "    }" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "" | sudo tee -a "$NGINX_CONF" > /dev/null
+              
+              # Create grafana nginx config
+              echo "    # Grafana endpoint" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "    location /grafana/ {" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_pass http://localhost:3500/;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_set_header Host \$host;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_set_header X-Real-IP \$remote_addr;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "        proxy_set_header X-Forwarded-Proto \$scheme;" | sudo tee -a "$NGINX_CONF" > /dev/null
+              echo "    }" | sudo tee -a "$NGINX_CONF" > /dev/null
+
+              # Create a secure htpasswd file for Prometheus
+              PROM_USER="prometheus"
+              if grep -q "PROMETHEUS_PASSWORD" .env; then
+                  # Use the password from .env
+                  PROM_PASS=$(grep "PROMETHEUS_PASSWORD" .env | cut -d= -f2)
+              else
+                  # Generate a new strong password
+                  PROM_PASS=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9!@#$%^&*()_+?><:{}[]' | head -c 24)
+              fi
+              
+              echo "Creating htpasswd file for Prometheus with username: $PROM_USER"
+              sudo htpasswd -bc /etc/nginx/.prometheus_htpasswd "$PROM_USER" "$PROM_PASS"
+              
+              echo "Prometheus access credentials (SAVE THESE SECURELY):"
+              echo "Username: $PROM_USER"
+              echo "Password: $PROM_PASS"
+              
+              # Test and reload nginx
+              sudo nginx -t && sudo systemctl reload nginx
+              echo "Nginx configuration updated for monitoring endpoints"
+          fi
           
           # Clean up old images
           echo "Cleaning up old Docker images..."

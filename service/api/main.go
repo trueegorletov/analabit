@@ -6,6 +6,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/ent/migrate"
@@ -13,6 +15,8 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/common/expfmt"
 )
 
 func main() {
@@ -44,8 +48,68 @@ func main() {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
+	// Create Prometheus metrics
+	requestTotal := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "http_requests_total",
+			Help: "Total number of HTTP requests",
+		},
+		[]string{"method", "endpoint", "status_code"},
+	)
+
+	requestDuration := prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name: "http_request_duration_seconds",
+			Help: "Duration of HTTP requests in seconds",
+		},
+		[]string{"method", "endpoint"},
+	)
+
+	// Register metrics with Prometheus
+	prometheus.MustRegister(requestTotal)
+	prometheus.MustRegister(requestDuration)
+
 	// Initialize a new Fiber app
 	app := fiber.New()
+
+	// Custom Prometheus middleware
+	app.Use(func(c fiber.Ctx) error {
+		start := time.Now()
+
+		// Continue to next handler
+		err := c.Next()
+
+		// Record metrics
+		duration := time.Since(start).Seconds()
+		statusCode := strconv.Itoa(c.Response().StatusCode())
+		method := c.Method()
+		endpoint := c.Route().Path
+
+		requestTotal.WithLabelValues(method, endpoint, statusCode).Inc()
+		requestDuration.WithLabelValues(method, endpoint).Observe(duration)
+
+		return err
+	})
+
+	// Prometheus metrics endpoint
+	app.Get("/metrics", func(c fiber.Ctx) error {
+		registry := prometheus.DefaultGatherer
+		metricFamilies, err := registry.Gather()
+		if err != nil {
+			return c.Status(500).SendString("Error gathering metrics")
+		}
+
+		c.Set("Content-Type", string(expfmt.FmtText))
+
+		encoder := expfmt.NewEncoder(c, expfmt.FmtText)
+		for _, mf := range metricFamilies {
+			if err := encoder.Encode(mf); err != nil {
+				return c.Status(500).SendString("Error encoding metrics")
+			}
+		}
+
+		return nil
+	})
 
 	// Enable CORS (allow all origins by default; adjust via env if needed)
 	app.Use(cors.New())

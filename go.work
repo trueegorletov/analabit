@@ -5,6 +5,6 @@ toolchain go1.24.4
 use (
 	.
 	service/aggregator
-	service/producer
 	service/api
+	service/producer
 )
