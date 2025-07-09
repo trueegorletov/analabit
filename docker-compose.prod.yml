@@ -149,6 +149,8 @@ services:
       - DATABASE_SSLMODE=disable
     volumes:
       - producer_cache:/app/cache
+    working_dir: /app
+    command: sh -c "chmod 777 /app/cache 2>/dev/null || true && exec /app/producer"
     restart: unless-stopped
 
 volumes:
