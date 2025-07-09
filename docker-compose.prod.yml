@@ -167,7 +167,8 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
-      - '--web.external-url=http://localhost:9090'
+      - '--web.external-url=https://analabit.ru/prometheus/'
+      - '--web.route-prefix=/prometheus/'
     ports:
       - "127.0.0.1:9090:9090"
     volumes:

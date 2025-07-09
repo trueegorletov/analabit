@@ -37,7 +37,7 @@ cat > /tmp/monitoring.locations << EOF
     location /prometheus/ {
         auth_basic "Prometheus";
         auth_basic_user_file /etc/nginx/.prometheus_htpasswd;
-        proxy_pass http://localhost:9090/;
+        proxy_pass http://localhost:9090/prometheus/;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -51,6 +51,8 @@ cat > /tmp/monitoring.locations << EOF
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Host \$host;
+        proxy_set_header X-Forwarded-Server \$host;
     }
 EOF
 
