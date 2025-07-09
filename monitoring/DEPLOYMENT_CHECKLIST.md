@@ -1,6 +1,29 @@
 # Analabit Monitoring Production Deployment Checklist
 
-This document provides a step-by-step checklist for deploying the monitoring setup to production.
+This document provides a step-b### Troubleshooting
+
+### API Metrics Not Showing
+
+- Check if API service is properly instrumented
+- Verify Prometheus configuration is targeting the correct endpoint
+- Check API container logs for any errors
+
+### Nginx Configuration Issues
+
+- Check nginx error logs: `sudo cat /var/log/nginx/error.log`
+- Verify nginx configuration: `sudo nginx -t`
+- Restart nginx: `sudo systemctl restart nginx`
+
+### Authentication Issues
+
+- Reset Prometheus credentials: `sudo htpasswd -bc /etc/nginx/.prometheus_htpasswd prometheus <new_password>`
+- Update Grafana password in .env and restart services
+
+### Port Conflicts
+
+- If Grafana fails to start, check for port conflicts: `sudo netstat -tuln | grep 3500`
+- If port 3500 is already in use, modify docker-compose.prod.yml to use a different port
+- Update nginx configuration accordingly if you change the portfor deploying the monitoring setup to production.
 
 ## Pre-Deployment
 
@@ -50,13 +73,16 @@ chmod +x scripts/deploy_monitoring.sh
 - [ ] Prometheus authentication is working
 - [ ] Prometheus is scraping API metrics
 - [ ] Grafana dashboard is properly provisioned and shows API metrics
+- [ ] Grafana is running on port 3500 (not conflicting with Next.js frontend on port 3000)
 
 ### 6. Security Verification
 
 - [ ] Prometheus is only accessible with valid credentials
-- [ ] Grafana requires login
+- [ ] Grafana requires login with secure password (not default or weak password)
 - [ ] Monitoring endpoints only accessible via HTTPS
 - [ ] No sensitive credentials exposed in logs or configuration files
+- [ ] Both Grafana and Prometheus credentials are generated with strong passwords
+- [ ] Credentials are stored in a secure password manager for future reference
 
 ### 7. Merge to Main
 

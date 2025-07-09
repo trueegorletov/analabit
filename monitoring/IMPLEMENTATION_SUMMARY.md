@@ -37,6 +37,9 @@
    - Configured nginx reverse proxy with authentication for Prometheus
    - Implemented proper access controls for monitoring endpoints
    - Created scripts to generate secure credentials for production
+   - Modified Grafana port to 3500 to avoid conflict with NextJS on port 3000
+   - Ensured truly strong, random passwords for all monitoring services
+   - Added extra layer of security with nginx basic auth
 
 7. **CI/CD Integration**
    - Updated GitHub Actions workflow to deploy monitoring stack
@@ -61,6 +64,9 @@
 - ✅ Security measures implemented for production environment
 - ✅ CI/CD workflow updated with monitoring support
 - ✅ Scripts created for local testing and production deployment
+- ✅ Grafana configured to run on port 3500 to avoid conflict with NextJS
+- ✅ Strong, cryptographically secure passwords generated for all services
+- ✅ Extra security layer added with nginx basic auth
 
 ## Future Improvements
 
@@ -71,6 +77,9 @@
 5. **Automated Dashboard Updates**: Implement automated dashboard versioning
 6. **Expanded Metrics**: Add resource utilization metrics for containers
 7. **Business KPIs**: Add dashboards for business-specific KPIs
+8. **Enhanced Security**: Implement certificate-based authentication for Prometheus
+9. **IP Restrictions**: Add IP-based access controls for monitoring endpoints
+10. **Regular Credential Rotation**: Set up automated credential rotation for all monitoring services
 
 ## Production Deployment
 
@@ -81,6 +90,16 @@ The monitoring stack is ready to be deployed to production following these steps
 3. Verify all services are running correctly
 4. Check metrics collection and visualization
 5. Secure all monitoring endpoints
+
+Two critical scripts have been created to ensure proper deployment and security:
+- `scripts/deploy_monitoring.sh` - Handles all aspects of production deployment
+- `scripts/setup_monitoring_auth.sh` - Sets up secure authentication with strong, random passwords
+
+These scripts ensure that:
+- Grafana runs on port 3500 to avoid conflict with NextJS on port 3000
+- All passwords are cryptographically secure and randomly generated
+- Nginx is properly configured to route traffic to monitoring services
+- Access to monitoring endpoints is properly secured with multiple layers of authentication
 
 ## Conclusion
 

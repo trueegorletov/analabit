@@ -30,6 +30,10 @@ echo "- The monitoring setup has been deployed to production"
 echo "- All monitoring services are working correctly"
 echo "- The monitoring endpoints are properly secured"
 echo "- The CI/CD workflow has been tested with the new changes"
+echo "- Grafana is running on port 3500 (not conflicting with NextJS)"
+echo "- Strong, secure passwords have been generated for all services"
+echo "- Nginx is properly configured to route traffic to monitoring services"
+echo "- Both Grafana auth and nginx basic auth are working correctly"
 echo ""
 read -p "Have you completed all the validation steps? (y/n): " VALIDATED
 if [ "$VALIDATED" != "y" ]; then
@@ -58,6 +62,14 @@ git push origin main
 echo "===== Monitoring setup has been successfully merged to main at $(date) ====="
 echo "The CI/CD pipeline should now deploy the changes to production."
 echo "Please verify that the monitoring services continue to work after the CI/CD deployment."
+echo ""
+echo "SECURITY REMINDER:"
+echo "- Ensure all generated credentials are stored in a secure password manager"
+echo "- Verify that Grafana is running on port 3500 and not conflicting with NextJS"
+echo "- Check that all monitoring endpoints are only accessible via HTTPS"
+echo "- Verify that both authentication layers (Grafana and nginx) are working"
+echo "- Consider scheduling regular security audits for the monitoring stack"
+echo ""
 
 # 10. Optional: Switch back to the monitoring-setup branch
 git checkout monitoring-setup

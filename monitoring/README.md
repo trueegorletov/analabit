@@ -23,16 +23,17 @@ monitoring/
 
 The monitoring stack is designed to be:
 
-- **Secure** - Access controlled via authentication
+- **Secure** - Access controlled via authentication with strong passwords
 - **Lightweight** - Only the API service is instrumented to minimize overhead
 - **Informative** - Key metrics are visualized in Grafana dashboards
 - **Production-ready** - Configured for both development and production environments
+- **Non-intrusive** - Avoids port conflicts with existing services (NextJS on port 3000)
 
 ```
                                    ┌──────────────┐
                                    │              │
                                    │   Grafana    │───┐
-                                   │              │   │
+                                   │  (port 3500) │   │
                                    └──────▲───────┘   │
                                           │           │
                                           │           │
@@ -45,7 +46,7 @@ The monitoring stack is designed to be:
 ┌──────────────┐       │                         ┌────▼─────────┐
 │              │       │                         │              │
 │  API Service ├───────┘                         │    Nginx     │
-│              │                                 │              │
+│              │                                 │  (Basic Auth)│
 └──────────────┘                                 └──────────────┘
                                                        ▲
                                                        │
@@ -121,7 +122,19 @@ Located at: `grafana/dashboards/analabit-api-metrics.json`
 ### Authentication
 
 - **Development**: `admin` / `admin`
-- **Production**: Uses `GRAFANA_USER` / `GRAFANA_PASSWORD` environment variables
+- **Production**: 
+  - Uses `GRAFANA_USER` / `GRAFANA_PASSWORD` environment variables
+  - Passwords are cryptographically secure, randomly generated
+  - Additional security with nginx basic auth
+  - All credentials are generated using the `setup_monitoring_auth.sh` script
+
+### Port Configuration
+
+- **Grafana**: Runs on port 3500 instead of default 3000 to avoid conflict with NextJS frontend
+- **Prometheus**: Runs on port 9090
+- **External Access**: All monitoring services are accessed through nginx on HTTPS
+  - Grafana: https://analabit.ru/grafana/
+  - Prometheus: https://analabit.ru/prometheus/
 
 ## Available Metrics
 
@@ -211,6 +224,12 @@ func init() {
 2. **Authentication**: Grafana requires login with strong passwords
 3. **Network**: Use reverse proxy for external access
 4. **Data**: No sensitive data should be included in metric labels
+5. **Port Configuration**: Grafana runs on port 3500 to avoid conflict with NextJS frontend on port 3000
+6. **Strong Passwords**: All production passwords are cryptographically secure and randomly generated
+7. **Dual Authentication**: Both Grafana auth and nginx basic auth provide layered security
+8. **Credential Management**: Secure scripts for generating and storing credentials
+9. **Defense Against Attacks**: Protection against previous security threats like cryptocurrency miners
+10. **Secure Communications**: All monitoring traffic passes through HTTPS
 
 ## Troubleshooting
 
@@ -231,6 +250,19 @@ func init() {
 1. Generate API traffic: `curl http://localhost:8080/health`
 2. Wait for scrape interval (5-15 seconds)
 3. Check Prometheus query browser
+
+### Port Conflicts
+
+1. Check for port conflicts: `sudo netstat -tuln | grep 3500`
+2. If Grafana fails to start, check logs: `docker logs analabit_grafana_1`
+3. Modify port in docker-compose.yml and nginx configuration if needed
+4. Restart services and nginx: `docker-compose restart grafana && sudo systemctl restart nginx`
+
+### Authentication Issues
+
+1. Regenerate Grafana password: `sed -i "s/^GRAFANA_PASSWORD=.*$/GRAFANA_PASSWORD=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9!@#$%^&*()_+?><:{}[]' | head -c 24)/" .env`
+2. Regenerate nginx basic auth: `sudo htpasswd -bc /etc/nginx/.htpasswd prometheus $(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9!@#$%^&*()_+?><:{}[]' | head -c 24)`
+3. Restart services: `docker-compose -f docker-compose.prod.yml restart && sudo systemctl restart nginx`
 
 ## Performance
 

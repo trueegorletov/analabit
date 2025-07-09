@@ -79,18 +79,18 @@ fi
 
 # 7. Test Grafana
 echo "Testing Grafana..."
-curl -s http://localhost:3000/api/health | grep -q "ok" && echo "✅ Grafana is working" || echo "❌ Grafana is not accessible"
+curl -s http://localhost:3500/api/health | grep -q "ok" && echo "✅ Grafana is working" || echo "❌ Grafana is not accessible"
 
 # 8. Test Grafana datasource
 echo "Testing Grafana Prometheus datasource..."
-curl -s -u admin:admin http://localhost:3000/api/datasources | grep -q "Prometheus" && echo "✅ Prometheus datasource is configured in Grafana" || echo "❌ Prometheus datasource is not configured in Grafana"
+curl -s -u admin:admin http://localhost:3500/api/datasources | grep -q "Prometheus" && echo "✅ Prometheus datasource is configured in Grafana" || echo "❌ Prometheus datasource is not configured in Grafana"
 
 # 9. Test Grafana dashboard
 echo "Testing Grafana dashboard provisioning..."
-curl -s -u admin:admin http://localhost:3000/api/search?query=analabit | grep -q "dashboard" && echo "✅ Analabit dashboard is provisioned" || echo "❌ Analabit dashboard is not provisioned"
+curl -s -u admin:admin http://localhost:3500/api/search?query=analabit | grep -q "dashboard" && echo "✅ Analabit dashboard is provisioned" || echo "❌ Analabit dashboard is not provisioned"
 
 echo "===== Local testing completed at $(date) ====="
 echo "Local monitoring URLs:"
 echo "- API Metrics: http://localhost:8080/metrics"
 echo "- Prometheus: http://localhost:9090/"
-echo "- Grafana: http://localhost:3000/ (login with admin/admin)"
+echo "- Grafana: http://localhost:3500/ (login with admin/admin)"
