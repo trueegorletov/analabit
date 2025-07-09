@@ -76,6 +76,7 @@ services:
       - rabbitmq
       - minio
       - postgres
+      - postgres-init
     environment:
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
       - MINIO_ENDPOINT=minio:9000
@@ -104,6 +105,7 @@ services:
       - rabbitmq
       - minio
       - postgres
+      - postgres-init
     environment:
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
       - MINIO_ENDPOINT=minio:9000
@@ -125,6 +127,7 @@ services:
       - rabbitmq
       - minio
       - postgres
+      - postgres-init
     environment:
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
       - MINIO_ENDPOINT=minio:9000
