@@ -67,6 +67,12 @@ services:
       psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"SELECT 1 FROM pg_roles WHERE rolname = '${ANALABIT_DB_USER}'\" | grep -q 1 || 
       psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"CREATE USER ${ANALABIT_DB_USER} WITH PASSWORD '${ANALABIT_DB_PASSWORD}';\";
       psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c \"GRANT ALL PRIVILEGES ON DATABASE ${ANALABIT_DB_NAME} TO ${ANALABIT_DB_USER};\";
+      psql -h postgres -U ${POSTGRES_USER} -d ${ANALABIT_DB_NAME} -c \"GRANT ALL ON SCHEMA public TO ${ANALABIT_DB_USER};\";
+      psql -h postgres -U ${POSTGRES_USER} -d ${ANALABIT_DB_NAME} -c \"GRANT CREATE ON SCHEMA public TO ${ANALABIT_DB_USER};\";
+      psql -h postgres -U ${POSTGRES_USER} -d ${ANALABIT_DB_NAME} -c \"GRANT USAGE ON SCHEMA public TO ${ANALABIT_DB_USER};\";
+      psql -h postgres -U ${POSTGRES_USER} -d ${ANALABIT_DB_NAME} -c \"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO ${ANALABIT_DB_USER};\";
+      psql -h postgres -U ${POSTGRES_USER} -d ${ANALABIT_DB_NAME} -c \"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO ${ANALABIT_DB_USER};\";
+      psql -h postgres -U ${POSTGRES_USER} -d ${ANALABIT_DB_NAME} -c \"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO ${ANALABIT_DB_USER};\";
       "
     restart: "no"
 
