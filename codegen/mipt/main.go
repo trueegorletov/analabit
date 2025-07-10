@@ -103,32 +103,7 @@ func parsePrograms(content string) ([]MiptProgram, error) {
 
 			// Filter out direction codes, headers, organization names, and irrelevant text
 			if strings.Contains(programName, ".") || // Skip codes like "03.03.01"
-				len(programName) < 15 || // Skip very short strings
-				strings.Contains(strings.ToLower(programName), "направление") ||
-				strings.Contains(strings.ToLower(programName), "уровень") ||
-				strings.Contains(strings.ToLower(programName), "подготовка") ||
-				strings.Contains(strings.ToLower(programName), "программа") ||
-				strings.Contains(strings.ToLower(programName), "специальность") ||
-				strings.Contains(strings.ToLower(programName), "профиль") ||
-				strings.HasPrefix(programName, "0") || // Skip numeric codes
-				strings.Contains(programName, "ФГОС") ||
-				strings.Contains(programName, "г.") || // Skip years like "2023 г."
-				strings.Contains(strings.ToLower(programName), "акционерное") ||
-				strings.Contains(strings.ToLower(programName), "общество") ||
-				strings.Contains(strings.ToLower(programName), "федеральное") ||
-				strings.Contains(strings.ToLower(programName), "государственное") ||
-				strings.Contains(strings.ToLower(programName), "автономное") ||
-				strings.Contains(strings.ToLower(programName), "учреждение") ||
-				strings.Contains(strings.ToLower(programName), "предприятие") ||
-				strings.Contains(strings.ToLower(programName), "институт") ||
-				strings.Contains(strings.ToLower(programName), "завод") ||
-				strings.Contains(strings.ToLower(programName), "центр") ||
-				strings.Contains(strings.ToLower(programName), "организации") ||
-				strings.Contains(strings.ToLower(programName), "иные") ||
-				strings.Contains(programName, "АО") ||
-				strings.Contains(programName, "ПАО") ||
-				strings.Contains(programName, "ФГУП") ||
-				strings.Contains(programName, "ООО") {
+				len(programName) < 15 {
 				continue
 			}
 
@@ -147,6 +122,7 @@ func parsePrograms(content string) ([]MiptProgram, error) {
 				regular, _ := strconv.Atoi(regularStr)
 				special, _ := strconv.Atoi(specialStr)
 				dedicated, _ := strconv.Atoi(dedicatedStr)
+				target := total - regular - special - dedicated
 
 				// Validate reasonable capacity numbers
 				if total > 0 && total < 1000 && regular >= 0 && special >= 0 && dedicated >= 0 {
@@ -156,11 +132,11 @@ func parsePrograms(content string) ([]MiptProgram, error) {
 						SpecialQuota:   special,
 						DedicatedQuota: dedicated,
 						BVI:            0, // BVI will be calculated or set separately
-						TargetQuota:    0, // Target quota will be calculated
+						TargetQuota:    target,
 					}
 
-					fmt.Printf("// Found program: %s - Total: %d, Regular: %d, Special: %d, Dedicated: %d\n",
-						programName, total, regular, special, dedicated)
+					fmt.Printf("// Found program: %s - Total: %d, Regular: %d, Special: %d, Dedicated: %d, Target: %d\n",
+						programName, total, regular, special, dedicated, target)
 				}
 			}
 		}

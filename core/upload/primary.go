@@ -213,12 +213,6 @@ func (u *helper) createHeadingFromDTO(ctx context.Context, dto core.HeadingDTO, 
 
 	slog.Info("created heading from DTO", "code", created.Code, "name", created.Name)
 
-	// Check and update capacities if needed
-	_, err = u.updateHeadingCapacitiesIfNeeded(ctx, created, dto)
-	if err != nil {
-		return nil, err
-	}
-
 	return created, nil
 }
 
@@ -279,7 +273,7 @@ func (u *helper) updateHeadingCapacitiesIfNeeded(ctx context.Context, existingHe
 	}
 
 	// Log the capacity update
-	slog.Info("updating heading capacities",
+	slog.Debug("updating heading capacities",
 		"code", existingHeading.Code,
 		"name", existingHeading.Name,
 		"old_regular", existingHeading.RegularCapacity,
