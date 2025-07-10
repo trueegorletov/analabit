@@ -1,10 +1,11 @@
 package source
 
 import (
-	"github.com/trueegorletov/analabit/core"
 	"log"
 	"log/slog"
 	"sync"
+
+	"github.com/trueegorletov/analabit/core"
 )
 
 type VarsityDefinition struct {
@@ -133,7 +134,8 @@ func (v *Varsity) loadFromSources() map[string]bool {
 			defer sourceWg.Done()
 			err := s.LoadTo(receiver)
 			if err != nil {
-				// TODO: Define a more robust error handling strategy. For now, log it.
+				// TODO: we need to add several (3) retries here with 10, 20, 40 seconds between them
+				// and log warnings before each retry and on total failure, but using slog.Warn instead of log.Printf
 				log.Printf("Error loading data from source: %v", err)
 			}
 		}(hs)

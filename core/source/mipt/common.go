@@ -129,10 +129,10 @@ func parseApplicantFromTableRow(row *html.Node, defaultCompetitionType core.Comp
 		}
 	}
 
-	// Column 9: "Согласие на зачисление" (consent for enrollment) - look for checkmark "✓"
+	// Column 10: "Согласие на зачисление" (consent for enrollment) - look for checkmark "✓"
 	originalSubmitted := false
-	if len(cells) > 9 {
-		consentText := strings.TrimSpace(getTextContent(cells[9]))
+	if len(cells) > 10 {
+		consentText := strings.TrimSpace(getTextContent(cells[10]))
 		originalSubmitted = strings.Contains(consentText, "✓")
 	}
 
