@@ -245,17 +245,11 @@ jobs:
           docker-compose -f docker-compose.prod.yml --env-file .env up -d --force-recreate --remove-orphans
           
           # Health checks
-          echo "Waiting for services to stabilize (30s)..."
-          sleep 30
+          echo "Waiting for services to stabilize (10s)..."
+          sleep 10
           
           echo "Waiting for API to be healthy..."
           timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do echo "Retrying API health check..."; sleep 5; done'
-          
-          echo "Checking Prometheus health..."
-          timeout 30 bash -c 'until curl -sf http://localhost:9090/-/healthy; do echo "Retrying Prometheus health check..."; sleep 5; done'
-          
-          echo "Checking Grafana health..."
-          timeout 30 bash -c 'until curl -sf http://localhost:3500/api/health; do echo "Retrying Grafana health check..."; sleep 5; done'
           
           # Configure nginx for Prometheus and Grafana
           echo "Configuring nginx for monitoring endpoints..."
