@@ -1,14 +1,15 @@
 package upload
 
 import (
-	"github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/analabit/core/ent"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"fmt"
 	"log/slog"
 	"strings"
+
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 )
 
 const (
@@ -153,7 +154,15 @@ func (u *helper) headingByCode(ctx context.Context, headingCode string) (*ent.He
 	}
 
 	if existingHeading != nil {
-		return existingHeading, nil
+		// Check if we have DTO for this heading and update capacities if needed
+		headingDTO, ok := u.headingsMap[headingCode]
+		if !ok {
+			// If no DTO found, return existing heading as-is
+			return existingHeading, nil
+		}
+
+		// Update capacities if they differ from DTO values
+		return u.updateHeadingCapacitiesIfNeeded(ctx, existingHeading, headingDTO)
 	}
 
 	// If not found, try to create it from the payload's DTOs
@@ -203,6 +212,13 @@ func (u *helper) createHeadingFromDTO(ctx context.Context, dto core.HeadingDTO, 
 	}
 
 	slog.Info("created heading from DTO", "code", created.Code, "name", created.Name)
+
+	// Check and update capacities if needed
+	_, err = u.updateHeadingCapacitiesIfNeeded(ctx, created, dto)
+	if err != nil {
+		return nil, err
+	}
+
 	return created, nil
 }
 
@@ -247,4 +263,51 @@ func (u *helper) createVarsity(ctx context.Context, code, prettyName string) (*e
 	}
 
 	return save, nil
+}
+
+// updateHeadingCapacitiesIfNeeded compares the existing heading capacities with DTO values
+// and updates the heading if any capacities differ
+func (u *helper) updateHeadingCapacitiesIfNeeded(ctx context.Context, existingHeading *ent.Heading, dto core.HeadingDTO) (*ent.Heading, error) {
+	// Check if any capacity values differ
+	needsUpdate := existingHeading.RegularCapacity != dto.RegularCapacity ||
+		existingHeading.TargetQuotaCapacity != dto.TargetQuotaCapacity ||
+		existingHeading.DedicatedQuotaCapacity != dto.DedicatedQuotaCapacity ||
+		existingHeading.SpecialQuotaCapacity != dto.SpecialQuotaCapacity
+
+	if !needsUpdate {
+		return existingHeading, nil
+	}
+
+	// Log the capacity update
+	slog.Info("updating heading capacities",
+		"code", existingHeading.Code,
+		"name", existingHeading.Name,
+		"old_regular", existingHeading.RegularCapacity,
+		"new_regular", dto.RegularCapacity,
+		"old_target_quota", existingHeading.TargetQuotaCapacity,
+		"new_target_quota", dto.TargetQuotaCapacity,
+		"old_dedicated_quota", existingHeading.DedicatedQuotaCapacity,
+		"new_dedicated_quota", dto.DedicatedQuotaCapacity,
+		"old_special_quota", existingHeading.SpecialQuotaCapacity,
+		"new_special_quota", dto.SpecialQuotaCapacity)
+
+	// Update the heading capacities
+	err := u.client.Heading.UpdateOneID(existingHeading.ID).
+		SetRegularCapacity(dto.RegularCapacity).
+		SetTargetQuotaCapacity(dto.TargetQuotaCapacity).
+		SetDedicatedQuotaCapacity(dto.DedicatedQuotaCapacity).
+		SetSpecialQuotaCapacity(dto.SpecialQuotaCapacity).
+		Exec(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to update heading capacities for %s: %w", existingHeading.Code, err)
+	}
+
+	// Fetch and return the updated heading
+	updatedHeading, err := u.client.Heading.Get(ctx, existingHeading.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch updated heading %s: %w", existingHeading.Code, err)
+	}
+
+	return updatedHeading, nil
 }
