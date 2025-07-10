@@ -1,12 +1,13 @@
 package drainer
 
 import (
-	"github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/analabit/core/source"
 	"fmt"
 	"log/slog"
 	"sort"
 	"sync"
+
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
 )
 
 type Drainer struct {
@@ -25,7 +26,7 @@ func New(prototype *source.Varsity, drainPercent int) *Drainer {
 	}
 }
 
-const maxComputeGoroutines = 64
+const maxComputeGoroutines = 128
 
 func (d *Drainer) Run(iterations int) []DrainedResult {
 	type headingResults struct {

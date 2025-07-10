@@ -1,37 +1,17 @@
 package hse
 
 import (
-	"github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/analabit/core/source"
-	"github.com/trueegorletov/analabit/core/utils"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
+
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/utils"
 
 	"github.com/xuri/excelize/v2"
-	"golang.org/x/sync/semaphore"
 )
-
-// Global semaphore to limit concurrent HTTP requests
-var httpRequestSemaphore *semaphore.Weighted
-
-func init() {
-	// Default to 3 concurrent requests for HSE, but allow override via environment variable
-	maxConcurrentRequests := int64(3)
-	if envVal := os.Getenv("HSE_HTTP_MAX_CONCURRENT_REQUESTS"); envVal != "" {
-		if parsed, err := strconv.ParseInt(envVal, 10, 64); err == nil && parsed > 0 {
-			maxConcurrentRequests = parsed
-		} else {
-			log.Printf("Warning: Invalid HSE_HTTP_MAX_CONCURRENT_REQUESTS value '%s', using default %d", envVal, maxConcurrentRequests)
-		}
-	}
-
-	httpRequestSemaphore = semaphore.NewWeighted(maxConcurrentRequests)
-	log.Printf("Initialized HSE HTTP request semaphore with limit: %d concurrent requests", maxConcurrentRequests)
-}
 
 // HTTPHeadingSource defines how to load HSE heading data from a single XLSX file URL.
 // The new HSE format contains all applications for one program in a single file.
@@ -52,10 +32,11 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if err := httpRequestSemaphore.Acquire(ctx, 1); err != nil {
-		return fmt.Errorf("failed to acquire semaphore for HSE list from %s: %w", s.URL, err)
+	release, err := source.AcquireHTTPSemaphores(ctx, "hse")
+	if err != nil {
+		return fmt.Errorf("failed to acquire semaphores for HSE list from %s: %w", s.URL, err)
 	}
-	defer httpRequestSemaphore.Release(1)
+	defer release()
 
 	resp, err := http.Get(s.URL)
 	if err != nil {

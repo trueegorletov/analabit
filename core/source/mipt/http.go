@@ -6,8 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
 	"strings"
 
 	"github.com/trueegorletov/analabit/core"
@@ -15,48 +13,6 @@ import (
 	"github.com/trueegorletov/analabit/core/utils"
 	"golang.org/x/net/html"
 )
-
-// Global semaphore to limit concurrent HTTP requests (mirroring SPbSU pattern)
-var httpRequestSemaphore *semaphoreWeighted
-
-type semaphoreWeighted struct {
-	ch chan struct{}
-}
-
-func newSemaphoreWeighted(n int64) *semaphoreWeighted {
-	return &semaphoreWeighted{ch: make(chan struct{}, n)}
-}
-
-func (s *semaphoreWeighted) Acquire(ctx context.Context, n int64) error {
-	for i := int64(0); i < n; i++ {
-		select {
-		case s.ch <- struct{}{}:
-			// acquired
-		case <-ctx.Done():
-			return ctx.Err()
-		}
-	}
-	return nil
-}
-
-func (s *semaphoreWeighted) Release(n int64) {
-	for i := int64(0); i < n; i++ {
-		<-s.ch
-	}
-}
-
-func init() {
-	maxConcurrentRequests := int64(4)
-	if envVal := os.Getenv("HTTP_MAX_CONCURRENT_REQUESTS"); envVal != "" {
-		if parsed, err := strconv.ParseInt(envVal, 10, 64); err == nil && parsed > 0 {
-			maxConcurrentRequests = parsed
-		} else {
-			log.Printf("Warning: Invalid HTTP_MAX_CONCURRENT_REQUESTS value '%s', using default %d", envVal, maxConcurrentRequests)
-		}
-	}
-	httpRequestSemaphore = newSemaphoreWeighted(maxConcurrentRequests)
-	log.Printf("Initialized MIPT HTTP request semaphore with limit: %d concurrent requests", maxConcurrentRequests)
-}
 
 // HTTPHeadingSource loads MIPT heading data from multiple HTML list URLs.
 type HTTPHeadingSource struct {
@@ -77,10 +33,11 @@ func fetchMiptListByURL(listURL string, competitionType core.Competition) ([]*so
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if err := httpRequestSemaphore.Acquire(ctx, 1); err != nil {
-		return nil, fmt.Errorf("failed to acquire semaphore for %s: %w", listURL, err)
+	release, err := source.AcquireHTTPSemaphores(ctx, "mipt")
+	if err != nil {
+		return nil, fmt.Errorf("failed to acquire semaphores for %s: %w", listURL, err)
 	}
-	defer httpRequestSemaphore.Release(1)
+	defer release()
 
 	resp, err := http.Get(listURL)
 	if err != nil {

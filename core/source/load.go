@@ -1,9 +1,10 @@
 package source
 
 import (
-	"log"
 	"log/slog"
+	"math"
 	"sync"
+	"time"
 
 	"github.com/trueegorletov/analabit/core"
 )
@@ -132,11 +133,11 @@ func (v *Varsity) loadFromSources() map[string]bool {
 		sourceWg.Add(1)
 		go func(s HeadingSource) {
 			defer sourceWg.Done()
-			err := s.LoadTo(receiver)
+			err := Retry(func() error { return s.LoadTo(receiver) }, 3, func(attempt int) time.Duration {
+				return time.Duration(math.Pow(2, float64(attempt-1))) * 10 * time.Second
+			})
 			if err != nil {
-				// TODO: we need to add several (3) retries here with 10, 20, 40 seconds between them
-				// and log warnings before each retry and on total failure, but using slog.Warn instead of log.Printf
-				log.Printf("Error loading data from source: %v", err)
+				slog.Error("Failed to load source after retries", "error", err)
 			}
 		}(hs)
 	}

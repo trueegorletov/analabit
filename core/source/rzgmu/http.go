@@ -3,9 +3,6 @@
 package rzgmu
 
 import (
-	"github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/analabit/core/source"
-	"github.com/trueegorletov/analabit/core/utils"
 	"bytes"
 	"context"
 	"fmt"
@@ -13,31 +10,15 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 	"time"
 
-	"golang.org/x/sync/semaphore"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/utils"
+
 	"rsc.io/pdf"
 )
-
-// Global semaphore to limit concurrent HTTP requests
-var httpRequestSemaphore *semaphore.Weighted
-
-func init() {
-	// Default to 2 concurrent requests for RZGMU, but allow override via environment variable
-	maxConcurrentRequests := int64(2)
-	if envVal := os.Getenv("RZGMU_HTTP_MAX_CONCURRENT_REQUESTS"); envVal != "" {
-		if parsed, err := strconv.ParseInt(envVal, 10, 64); err == nil && parsed > 0 {
-			maxConcurrentRequests = parsed
-		} else {
-			log.Printf("Warning: Invalid RZGMU_HTTP_MAX_CONCURRENT_REQUESTS value '%s', using default %d", envVal, maxConcurrentRequests)
-		}
-	}
-
-	httpRequestSemaphore = semaphore.NewWeighted(maxConcurrentRequests)
-	log.Printf("Initialized RZGMU HTTP request semaphore with limit: %d concurrent requests", maxConcurrentRequests)
-}
 
 // HTTPHeadingSource defines how to load RZGMU heading data from a PDF file URL.
 // RZGMU provides admission lists in PDF format that are parsed using rsc.io/pdf.
@@ -60,10 +41,11 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	if err := httpRequestSemaphore.Acquire(ctx, 1); err != nil {
-		return fmt.Errorf("failed to acquire semaphore for RZGMU list from %s: %w", s.URL, err)
+	release, err := source.AcquireHTTPSemaphores(ctx, "rzgmu")
+	if err != nil {
+		return fmt.Errorf("failed to acquire semaphores for RZGMU list from %s: %w", s.URL, err)
 	}
-	defer httpRequestSemaphore.Release(1)
+	defer release()
 
 	// Download PDF to temporary file
 	tempPDFPath, err := downloadPDFToTemp(ctx, s.URL)

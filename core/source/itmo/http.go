@@ -1,6 +1,7 @@
 package itmo
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -22,6 +23,13 @@ type HTTPHeadingSource struct {
 // LoadTo fetches and parses ITMO application data from the configured URL
 func (h *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	// Fetch the HTML content
+	ctx := context.Background()
+	release, err := source.AcquireHTTPSemaphores(ctx, "itmo")
+	if err != nil {
+		return fmt.Errorf("failed to acquire semaphores for ITMO list from %s: %v", h.URL, err)
+	}
+	defer release()
+
 	resp, err := http.Get(h.URL)
 	if err != nil {
 		return fmt.Errorf("failed to fetch URL %s: %v", h.URL, err)

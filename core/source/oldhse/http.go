@@ -1,38 +1,18 @@
 package oldhse
 
 import (
-	"github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/analabit/core/source"
-	"github.com/trueegorletov/analabit/core/utils"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
-	"os"
-	"strconv"
+
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/utils"
 
 	"github.com/xuri/excelize/v2"
-	"golang.org/x/sync/semaphore"
 )
-
-// Global semaphore to limit concurrent HTTP requests
-var httpRequestSemaphore *semaphore.Weighted
-
-func init() {
-	// Default to 10 concurrent requests, but allow override via environment variable
-	maxConcurrentRequests := int64(1)
-	if envVal := os.Getenv("HTTP_MAX_CONCURRENT_REQUESTS"); envVal != "" {
-		if parsed, err := strconv.ParseInt(envVal, 10, 64); err == nil && parsed > 0 {
-			maxConcurrentRequests = parsed
-		} else {
-			log.Printf("Warning: Invalid HTTP_MAX_CONCURRENT_REQUESTS value '%s', using default %d", envVal, maxConcurrentRequests)
-		}
-	}
-
-	httpRequestSemaphore = semaphore.NewWeighted(maxConcurrentRequests)
-	log.Printf("Initialized HTTP request semaphore with limit: %d concurrent requests", maxConcurrentRequests)
-}
 
 // HttpHeadingSource defines how to load HSE heading data from URLs.
 // It assumes RCListURL is the primary source for the heading name.
@@ -58,10 +38,11 @@ func openHttpExcelFile(urlStr string, listName string) (*excelize.File, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel() // Ensure cancellation on function exit
 
-	if err := httpRequestSemaphore.Acquire(ctx, 1); err != nil {
-		return nil, fmt.Errorf("failed to acquire semaphore for %s from %s: %w", listName, urlStr, err)
+	release, err := source.AcquireHTTPSemaphores(ctx, "oldhse")
+	if err != nil {
+		return nil, fmt.Errorf("failed to acquire semaphores for %s from %s: %w", listName, urlStr, err)
 	}
-	defer httpRequestSemaphore.Release(1) // Ensure release on function exit
+	defer release()
 
 	resp, err := http.Get(urlStr)
 	if err != nil {
