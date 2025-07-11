@@ -212,10 +212,10 @@ func sourcesList() []source.HeadingSource {
 		// EXACT MATCH: 'Электроника и наноэлектроника'
 		&mipt.HTTPHeadingSource{
 			PrettyName:        "Электроника и наноэлектроника",
-			RegularBVIListURL: "https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvRWxla3Ryb25pa2EgaSBuYW5vZWxla3Ryb25pa2FfQnl1ZHpoZXRfTmEgb2JzaGNoaWtoIG9zbm92YW5peWFraC5odG1z",
+			RegularBVIListURL: "https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvRWxla3Ryb25pa2EgaSBuYW5vZWxla3Ryb25pa2FfQnl1ZHpoZXRfTmEgb2JzaGNoaWtoIG9zbm92YW5peWFraC5odG1s",
 			TargetQuotaListURLs: []string{
 				"https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvRWxla3Ryb25pa2EgaSBuYW5vZWxla3Ryb25pa2EgQWt0c2lvbmVybm9lIG9ic2hjaGVzdHZvIMKrTWlrcm9uwrtfVHNlbGV2b2UuaHRtbA==",
-				"https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvRWxla3Ryb25pa2EgaSBuYW5vZWxla3Ryb25pa2EgQWt0c2lvbmVybm9lIG9ic2hjaGVzdHZvIMKrTmF1Y2huby1pc3NsZWRvdmF0ZWxza2l5IGluc3RpdHV0IG1vbGVrdWx5YXJub3kgZWxla3Ryb25pa2nCu19Uc2VsZXZvZS5odG1z",
+				"https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvRWxla3Ryb25pa2EgaSBuYW5vZWxla3Ryb25pa2EgQWt0c2lvbmVybm9lIG9ic2hjaGVzdHZvIMKrTmF1Y2huby1pc3NsZWRvdmF0ZWxza2l5IGluc3RpdHV0IG1vbGVrdWx5YXJub3kgZWxla3Ryb25pa2nCu19Uc2VsZXZvZS5odG1s",
 				"https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvRWxla3Ryb25pa2EgaSBuYW5vZWxla3Ryb25pa2EgQWt0c2lvbmVybm9lIG9ic2hjaGVzdHZvIMKrTmF1Y2huby1wcm9penZvZHN0dmVubm9lIHByZWRwcml5YXRpZSDCq1Rvcml5wrtfVHNlbGV2b2UuaHRtbA==",
 			},
 			DedicatedQuotaListURL: "https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvRWxla3Ryb25pa2EgaSBuYW5vZWxla3Ryb25pa2FfQnl1ZHpoZXRfT3RkZWxuYXlhIGt2b3RhLmh0bWw=",
