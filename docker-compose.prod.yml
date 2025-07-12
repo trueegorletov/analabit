@@ -156,7 +156,7 @@ services:
       - SETUID
       - SYS_ADMIN
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8191/v1"]
+      test: ["CMD", "curl", "-f", "http://localhost:8191/"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -190,6 +190,8 @@ services:
       - DATABASE_PASSWORD=${ANALABIT_DB_PASSWORD}
       - DATABASE_DBNAME=${ANALABIT_DB_NAME}
       - DATABASE_SSLMODE=disable
+      - FLARESOLVERR_URL=http://flaresolverr:8191
+      - FLARESOLVERR_TIMEOUT_MS=100000
     volumes:
       - producer_cache:/app/cache
     restart: unless-stopped

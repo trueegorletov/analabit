@@ -252,9 +252,6 @@ jobs:
           echo "Waiting for services to stabilize (10s)..."
           sleep 10
           
-          echo "Waiting for FlareSolverr to be ready..."
-          timeout 60 bash -c 'until docker exec $(docker-compose -f docker-compose.prod.yml ps -q flaresolverr) curl -sf http://localhost:8191/v1 >/dev/null 2>&1; do echo "Retrying FlareSolverr health check..."; sleep 5; done'
-          
           echo "Waiting for API to be healthy..."
           timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do echo "Retrying API health check..."; sleep 5; done'
           

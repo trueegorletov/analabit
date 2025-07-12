@@ -70,7 +70,7 @@ services:
       - "8191:8191"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8191/v1"]
+      test: ["CMD", "curl", "-f", "http://localhost:8191/"]
       interval: 30s
       timeout: 10s
       retries: 3
