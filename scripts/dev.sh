@@ -45,5 +45,9 @@ export CACHE_TTL_MINUTES="300"
 export SELF_QUERY_PERIOD_MINUTES="150"
 export DRAIN_SIM_ITERATIONS="10"
 
+# FlareSolverr configuration for bypassing DDoS-Guard protection
+export FLARESOLVERR_URL="http://localhost:8191"
+export FLARESOLVERR_TIMEOUT_MS="60000"
+
 # Launch all Go micro-services with live reload
 goreman -f Procfile.dev start 

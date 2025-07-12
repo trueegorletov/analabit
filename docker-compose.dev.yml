@@ -59,7 +59,23 @@ services:
       - grafana_data:/var/lib/grafana
     restart: unless-stopped
 
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Europe/Moscow
+    ports:
+      - "8191:8191"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8191/v1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   minio_data:
   prometheus_data:
-  grafana_data: 
+  grafana_data:

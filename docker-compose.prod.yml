@@ -96,6 +96,8 @@ services:
       - DATABASE_PASSWORD=${ANALABIT_DB_PASSWORD}
       - DATABASE_DBNAME=${ANALABIT_DB_NAME}
       - DATABASE_SSLMODE=disable
+      - FLARESOLVERR_URL=http://flaresolverr:8191
+      - FLARESOLVERR_TIMEOUT_MS=60000
     ports:
       - "127.0.0.1:8080:8080"
     restart: unless-stopped
@@ -127,6 +129,36 @@ services:
       - DATABASE_SSLMODE=disable
     restart: unless-stopped
 
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    environment:
+      - LOG_LEVEL=warn
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Europe/London
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: '1.0'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+      - SYS_ADMIN
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8191/v1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   producer-cache-init:
     image: alpine:latest
     volumes:
@@ -142,6 +174,7 @@ services:
       - postgres
       - postgres-init
       - producer-cache-init
+      - flaresolverr
     environment:
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
       - MINIO_ENDPOINT=minio:9000

@@ -19,7 +19,7 @@ var defaultLimits = map[string]int64{
 	"hse":    6,
 	"itmo":   10,
 	"mipt":   6,
-	"mirea":  1,
+	"mirea":  3, // Low limit due to FlareSolverr browser instances being memory-intensive
 	"oldhse": 1,
 	"spbstu": 6,
 	"spbsu":  6,
@@ -67,7 +67,12 @@ func init() {
 		}
 		if limit > 0 {
 			VarsitySemaphores[code] = semaphore.NewWeighted(limit)
-			slog.Info("Loaded varsity HTTP limit", "varsity", code, "limit", limit)
+			// Special logging for MIREA to explain the low limit
+			if code == "mirea" {
+				slog.Info("Loaded varsity HTTP limit (low due to FlareSolverr browser instances)", "varsity", code, "limit", limit)
+			} else {
+				slog.Info("Loaded varsity HTTP limit", "varsity", code, "limit", limit)
+			}
 		} else {
 			slog.Info("No per-varsity limit for", "varsity", code)
 		}

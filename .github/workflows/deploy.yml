@@ -186,6 +186,10 @@ jobs:
           ANALABIT_DB_USER=analabit_user
           ANALABIT_DB_PASSWORD=$ANALABIT_DB_PASS
 
+          # FlareSolverr configuration
+          FLARESOLVERR_URL=http://flaresolverr:8191
+          FLARESOLVERR_TIMEOUT_MS=60000
+
           # Monitoring credentials
           GRAFANA_USER=admin
           GRAFANA_PASSWORD=$GRAFANA_PASS
@@ -236,7 +240,7 @@ jobs:
           echo "Logging into GitHub Container Registry..."
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           
-          # Pull new images
+          # Pull new images (including FlareSolverr automatically via compose file)
           echo "Pulling latest Docker images..."
           docker-compose -f docker-compose.prod.yml --env-file .env pull
           
@@ -247,6 +251,9 @@ jobs:
           # Health checks
           echo "Waiting for services to stabilize (10s)..."
           sleep 10
+          
+          echo "Waiting for FlareSolverr to be ready..."
+          timeout 60 bash -c 'until docker exec $(docker-compose -f docker-compose.prod.yml ps -q flaresolverr) curl -sf http://localhost:8191/v1 >/dev/null 2>&1; do echo "Retrying FlareSolverr health check..."; sleep 5; done'
           
           echo "Waiting for API to be healthy..."
           timeout 60 bash -c 'until curl -sf http://localhost:8080/health; do echo "Retrying API health check..."; sleep 5; done'
