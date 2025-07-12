@@ -41,6 +41,9 @@ export DATABASE_USER="postgres"
 export DATABASE_PASSWORD="postgres"
 export DATABASE_DBNAME="postgres"
 export DATABASE_SSLMODE="disable"
+export CACHE_TTL_MINUTES="300"
+export SELF_QUERY_PERIOD_MINUTES="150"
+export DRAIN_SIM_ITERATIONS="10"
 
 # Launch all Go micro-services with live reload
 goreman -f Procfile.dev start 

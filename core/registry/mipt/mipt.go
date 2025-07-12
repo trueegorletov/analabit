@@ -103,7 +103,7 @@ func sourcesList() []source.HeadingSource {
 		// EXACT MATCH: 'Биофизика и биоинформатика'
 		&mipt.HTTPHeadingSource{
 			PrettyName:        "Биофизика и биоинформатика",
-			RegularBVIListURL: "https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvQmlvZml6aWthIGkgYmlvaW5mb3JtYXRpa2FfQnl1ZHpoZXRfTmEgb2JzaGNoaWtoIG9zbm92YW5peWFraC5odG1z",
+			RegularBVIListURL: "https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvQmlvZml6aWthIGkgYmlvaW5mb3JtYXRpa2FfQnl1ZHpoZXRfTmEgb2JzaGNoaWtoIG9zbm92YW5peWFraC5odG1s",
 			TargetQuotaListURLs: []string{
 				"https://priem.mipt.ru/applications_v2/YmFjaGVsb3IvQmlvZml6aWthIGkgYmlvaW5mb3JtYXRpa2EgSW55ZSBvcmdhbml6YXRzaWlfVHNlbGV2b2UuaHRtbA==",
 			},
