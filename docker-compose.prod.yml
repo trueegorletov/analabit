@@ -132,16 +132,18 @@ services:
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     environment:
-      - LOG_LEVEL=warn
+      - LOG_LEVEL=info
       - LOG_HTML=false
       - CAPTCHA_SOLVER=none
-      - TZ=Europe/London
+      - TZ=Europe/Moscow
+    ports:
+      - "8191:8191"
     restart: unless-stopped
     deploy:
       resources:
         limits:
-          memory: 2g
-          cpus: '1.0'
+          memory: 2500m
+          cpus: '2.0'
     security_opt:
       - no-new-privileges:true
     cap_drop:
