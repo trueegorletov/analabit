@@ -1,3 +1,4 @@
+// Package source provides data source implementations and HTTP request limiting for analabit.
 package source
 
 import (
@@ -18,7 +19,9 @@ var defaultLimits = map[string]int64{
 	"hse":    6,
 	"itmo":   10,
 	"mipt":   6,
+	"mirea":  1,
 	"oldhse": 1,
+	"spbstu": 6,
 	"spbsu":  6,
 	"rzgmu":  3,
 }
@@ -27,7 +30,9 @@ var envVars = map[string]string{
 	"hse":    "HSE_HTTP_MAX_CONCURRENT",
 	"itmo":   "ITMO_HTTP_MAX_CONCURRENT",
 	"mipt":   "MIPT_HTTP_MAX_CONCURRENT",
+	"mirea":  "MIREA_HTTP_MAX_CONCURRENT",
 	"oldhse": "OLDHSE_HTTP_MAX_CONCURRENT",
+	"spbstu": "SPBSTU_HTTP_MAX_CONCURRENT",
 	"spbsu":  "SPBSU_HTTP_MAX_CONCURRENT",
 	"rzgmu":  "RZGMU_HTTP_MAX_CONCURRENT",
 }
