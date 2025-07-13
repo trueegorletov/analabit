@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"log"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -86,11 +87,13 @@ func GetApplications(client *ent.Client) fiber.Handler {
 		}
 
 		// Collect student and heading IDs for batch queries
+		studentIDsSet := make(map[string]struct{}, len(applications))
 		studentIDs := make([]string, 0, len(applications))
-		headingIDs := make([]int, 0, len(applications))
 		for _, app := range applications {
-			studentIDs = append(studentIDs, app.StudentID)
-			headingIDs = append(headingIDs, app.Edges.Heading.ID)
+			if _, exists := studentIDsSet[app.StudentID]; !exists {
+				studentIDs = append(studentIDs, app.StudentID)
+				studentIDsSet[app.StudentID] = struct{}{}
+			}
 		}
 
 		// Fetch all applications for the students in this run to calculate related fields
@@ -118,6 +121,11 @@ func GetApplications(client *ent.Client) fiber.Handler {
 		allHeadingIDs := make([]int, 0)
 		for _, studentApps := range appsByStudent {
 			for _, app := range studentApps {
+				if app.Edges.Heading == nil {
+					slog.Error("application has no heading, skipping", "appID", app.ID)
+					continue // Skip applications without a heading
+				}
+
 				allHeadingIDs = append(allHeadingIDs, app.Edges.Heading.ID)
 			}
 		}
@@ -134,70 +142,132 @@ func GetApplications(client *ent.Client) fiber.Handler {
 			return fiber.ErrInternalServerError
 		}
 
+		type studentPassingInfo struct {
+			appHeadingID int
+			appPriority  int
+		}
+
+		saferAppHeadingID := func(app *ent.Application) int {
+			if app.Edges.Heading == nil {
+				slog.Error("application has no heading, returning 0 for safer handling", "appID", app.ID)
+				return 0 // No heading, return 0 to avoid panic
+			}
+			return app.Edges.Heading.ID
+		}
+		saferHeadingVarsityID := func(heading *ent.Heading) int {
+			if heading.Edges.Varsity == nil {
+				slog.Error("heading has no varsity, returning 0 for safer handling", "headingID", heading.ID)
+				return 0 // No varsity, return 0 to avoid panic
+			}
+			return heading.Edges.Varsity.ID
+		}
+		saferAppVarsityID := func(app *ent.Application) int {
+			if app.Edges.Heading == nil {
+				slog.Error("application has no heading, returning 0 for safer handling", "appID", app.ID)
+				return 0 // No heading or varsity, return 0 to avoid panic
+			}
+
+			if app.Edges.Heading.Edges.Varsity == nil {
+				slog.Error("application heading has no varsity, returning 0 for safer handling", "appID", app.ID, "headingID", app.Edges.Heading.ID)
+				return 0 // No varsity, return 0 to avoid panic
+			}
+
+			return app.Edges.Heading.Edges.Varsity.ID
+		}
+
 		// Create a map for quick lookup of passing students
 		passingStudents := make(map[int]map[string]struct{})
+
+		studentsPassingInfosByVarsity := make(map[string]map[int]studentPassingInfo)
+
 		for _, calc := range passingCalculations {
-			calcHeading, err := calc.QueryHeading().Only(ctx)
+			calcHeading, err := calc.QueryHeading().WithVarsity().Only(ctx)
 			if err != nil {
-				log.Printf("error getting heading for calculation: %v", err)
+				slog.Error("error getting heading for calculation", "err", err)
 				return fiber.ErrInternalServerError
 			}
 			if _, ok := passingStudents[calcHeading.ID]; !ok {
 				passingStudents[calcHeading.ID] = make(map[string]struct{})
 			}
 			passingStudents[calcHeading.ID][calc.StudentID] = struct{}{}
+
+			varsityID := saferHeadingVarsityID(calcHeading)
+
+			if _, ok := studentsPassingInfosByVarsity[calc.StudentID]; !ok {
+				studentsPassingInfosByVarsity[calc.StudentID] = make(map[int]studentPassingInfo)
+			}
+
+			if _, ok := studentsPassingInfosByVarsity[calc.StudentID][varsityID]; !ok {
+				studentsPassingInfosByVarsity[calc.StudentID][varsityID] = studentPassingInfo{
+					appHeadingID: calcHeading.ID,
+					appPriority:  -1,
+				}
+			}
+		}
+
+		origVarsityIDByStudent := make(map[string]int)
+		varsitiesCountByStudent := make(map[string]int)
+
+		for id, apps := range appsByStudent {
+			varsities := make(map[int]struct{})
+
+			for _, app := range apps {
+				appVarsityID := saferAppVarsityID(app)
+
+				varsities[appVarsityID] = struct{}{}
+
+				if _, ok := origVarsityIDByStudent[id]; !ok {
+					if app.OriginalSubmitted {
+						origVarsityIDByStudent[id] = appVarsityID
+					}
+				}
+
+				if passingInfo, ok := studentsPassingInfosByVarsity[id][appVarsityID]; ok {
+					if passingInfo.appHeadingID == saferAppHeadingID(app) {
+						passingInfo.appPriority = app.Priority
+						studentsPassingInfosByVarsity[id][appVarsityID] = passingInfo
+					}
+				}
+			}
+
+			varsitiesCountByStudent[id] = len(varsities)
 		}
 
 		// Build the response
 		response := make([]ApplicationResponse, len(applications))
 		for i, app := range applications {
-			studentApps := appsByStudent[app.StudentID]
+			originalSubmitted, originalQuit := false, false
 
-			// Calculate original_quit
-			originalQuit := false
-			if !app.OriginalSubmitted {
-				for _, otherApp := range studentApps {
-					if otherApp.ID != app.ID && otherApp.OriginalSubmitted {
-						originalQuit = true
-						break
-					}
+			appVarsityID := saferAppVarsityID(app)
+			appHeadingID := saferAppHeadingID(app)
+
+			studentOriginalVarsityID, originalDetermined := origVarsityIDByStudent[app.StudentID]
+
+			if originalDetermined {
+				if appVarsityID == studentOriginalVarsityID {
+					originalSubmitted = true
+					originalQuit = false
+				} else {
+					originalSubmitted = false
+					originalQuit = true
 				}
 			}
 
 			// Calculate passing_now and passing_to_more_priority
 			passingNow := false
 			passingToMorePriority := false
-			if headingPassing, ok := passingStudents[app.Edges.Heading.ID]; ok {
-				if _, ok := headingPassing[app.StudentID]; ok {
+
+			if passingInfo, ok := studentsPassingInfosByVarsity[app.StudentID][appVarsityID]; ok {
+				if passingInfo.appPriority == app.Priority || passingInfo.appHeadingID == appHeadingID {
 					passingNow = true
+					passingToMorePriority = false
+				} else if passingInfo.appPriority < app.Priority {
+					passingNow = false
+					passingToMorePriority = true
 				}
 			}
 
-			if !passingNow {
-				for _, otherApp := range studentApps {
-					if otherApp.Edges.Heading.Edges.Varsity.ID == app.Edges.Heading.Edges.Varsity.ID && otherApp.Priority < app.Priority {
-						otherAppHeading, err := otherApp.QueryHeading().Only(ctx)
-						if err != nil {
-							log.Printf("error getting heading for otherApp: %v", err)
-							return fiber.ErrInternalServerError
-						}
-						if headingPassing, ok := passingStudents[otherAppHeading.ID]; ok {
-							if _, ok := headingPassing[app.StudentID]; ok {
-								passingToMorePriority = true
-								break
-							}
-						}
-					}
-				}
-			}
-
-			// Calculate another_varsities_count
-			varsitySet := make(map[int]struct{})
-			for _, studentApp := range studentApps {
-				varsitySet[studentApp.Edges.Heading.Edges.Varsity.ID] = struct{}{}
-			}
-			delete(varsitySet, app.Edges.Heading.Edges.Varsity.ID)
-			anotherVarsitiesCount := len(varsitySet)
+			anotherVarsitiesCount := varsitiesCountByStudent[app.StudentID] - 1
 
 			response[i] = ApplicationResponse{
 				ID:                    app.ID,
@@ -208,8 +278,8 @@ func GetApplications(client *ent.Client) fiber.Handler {
 				Score:                 app.Score,
 				RunID:                 app.RunID,
 				UpdatedAt:             app.UpdatedAt,
-				HeadingID:             app.Edges.Heading.ID,
-				OriginalSubmitted:     app.OriginalSubmitted,
+				HeadingID:             appHeadingID,
+				OriginalSubmitted:     originalSubmitted,
 				OriginalQuit:          originalQuit,
 				PassingNow:            passingNow,
 				PassingToMorePriority: passingToMorePriority,

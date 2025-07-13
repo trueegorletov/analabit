@@ -28,7 +28,10 @@ func startSelfQuery(p *handler.Producer) func() error {
 			// The initial call no longer uses an RPC client. It calls the workflow directly.
 			// This runs after the service is already registered, avoiding the old race condition.
 			log.Println("Self-query hook started. Making initial Produce call directly.")
-			err := p.Produce(context.Background(), &proto.ProduceRequest{}, &proto.ProduceResponse{})
+			err := p.Produce(context.Background(), &proto.ProduceRequest{
+				VarsitiesList:     handler.Cfg.VarsitiesList,
+				VarsitiesExcluded: handler.Cfg.VarsitiesExcluded,
+			}, &proto.ProduceResponse{})
 
 			if err != nil {
 				// If the first call fails, it's a significant issue.
@@ -43,7 +46,10 @@ func startSelfQuery(p *handler.Producer) func() error {
 
 			for range ticker.C {
 				log.Printf("Self-query ticker triggered. Making periodic Produce call directly.")
-				err := p.Produce(context.Background(), &proto.ProduceRequest{}, &proto.ProduceResponse{})
+				err := p.Produce(context.Background(), &proto.ProduceRequest{
+					VarsitiesList:     handler.Cfg.VarsitiesList,
+					VarsitiesExcluded: handler.Cfg.VarsitiesExcluded,
+				}, &proto.ProduceResponse{})
 				if err != nil {
 					log.Printf("ERROR: Self-query periodic Produce call failed: %v", err)
 				}
