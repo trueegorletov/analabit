@@ -3,10 +3,10 @@
 package run
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

@@ -3,11 +3,12 @@
 package ent
 
 import (
+	"time"
+
 	"github.com/trueegorletov/analabit/core/ent/application"
 	"github.com/trueegorletov/analabit/core/ent/calculation"
 	"github.com/trueegorletov/analabit/core/ent/run"
 	"github.com/trueegorletov/analabit/core/ent/schema"
-	"time"
 )
 
 // The init function reads all schema descriptors with runtime code

@@ -3,13 +3,13 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/application"
-	"github.com/trueegorletov/analabit/core/ent/predicate"
 	"context"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
 )
 
 // ApplicationDelete is the builder for deleting a Application entity.

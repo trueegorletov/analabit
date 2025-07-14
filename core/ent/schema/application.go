@@ -54,5 +54,8 @@ func (Application) Indexes() []ent.Index {
 		index.Fields("run_id", "student_id"),
 		// Index for original_submitted queries
 		index.Fields("original_submitted"),
+		// New indexes for optimization
+		index.Fields("run_id", "rating_place"),
+		index.Fields("run_id", "student_id").Edges("heading"),
 	}
 }

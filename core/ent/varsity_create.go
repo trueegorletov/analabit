@@ -3,14 +3,14 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 )
 
 // VarsityCreate is the builder for creating a Varsity entity.

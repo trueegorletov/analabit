@@ -3,10 +3,9 @@
 package heading
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/predicate"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

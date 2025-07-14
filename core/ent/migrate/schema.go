@@ -56,6 +56,16 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{ApplicationsColumns[6]},
 			},
+			{
+				Name:    "application_run_id_rating_place",
+				Unique:  false,
+				Columns: []*schema.Column{ApplicationsColumns[8], ApplicationsColumns[4]},
+			},
+			{
+				Name:    "application_run_id_student_id_heading_applications",
+				Unique:  false,
+				Columns: []*schema.Column{ApplicationsColumns[8], ApplicationsColumns[1], ApplicationsColumns[9]},
+			},
 		},
 	}
 	// CalculationsColumns holds the columns for the "calculations" table.

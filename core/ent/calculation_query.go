@@ -3,10 +3,6 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/calculation"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/predicate"
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 	"fmt"
 	"math"
@@ -15,6 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // CalculationQuery is the builder for querying Calculation entities.

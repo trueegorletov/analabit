@@ -3,13 +3,13 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/predicate"
-	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 )
 
 // VarsityDelete is the builder for deleting a Varsity entity.

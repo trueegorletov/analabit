@@ -3,16 +3,16 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/analabit/core/ent/application"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // Application is the model entity for the Application schema.

@@ -3,13 +3,13 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/predicate"
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // RunDelete is the builder for deleting a Run entity.

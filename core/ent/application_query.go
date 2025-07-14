@@ -3,10 +3,6 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/application"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/predicate"
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 	"fmt"
 	"math"
@@ -15,6 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // ApplicationQuery is the builder for querying Application entities.

@@ -9,9 +9,8 @@ import (
 	// required by schema hooks.
 	_ "github.com/trueegorletov/analabit/core/ent/runtime"
 
-	"github.com/trueegorletov/analabit/core/ent/migrate"
-
 	"entgo.io/ent/dialect/sql/schema"
+	"github.com/trueegorletov/analabit/core/ent/migrate"
 )
 
 type (

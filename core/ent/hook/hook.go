@@ -3,9 +3,10 @@
 package hook
 
 import (
-	"github.com/trueegorletov/analabit/core/ent"
 	"context"
 	"fmt"
+
+	"github.com/trueegorletov/analabit/core/ent"
 )
 
 // The ApplicationFunc type is an adapter to allow the use of ordinary

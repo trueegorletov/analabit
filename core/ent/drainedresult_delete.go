@@ -3,13 +3,13 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/drainedresult"
-	"github.com/trueegorletov/analabit/core/ent/predicate"
 	"context"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/drainedresult"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
 )
 
 // DrainedResultDelete is the builder for deleting a DrainedResult entity.

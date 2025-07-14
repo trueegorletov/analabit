@@ -3,7 +3,6 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -11,6 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // Run is the model entity for the Run schema.

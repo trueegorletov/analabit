@@ -3,15 +3,15 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/calculation"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // Calculation is the model entity for the Calculation schema.

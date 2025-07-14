@@ -3,12 +3,6 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/application"
-	"github.com/trueegorletov/analabit/core/ent/calculation"
-	"github.com/trueegorletov/analabit/core/ent/drainedresult"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/predicate"
-	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"database/sql/driver"
 	"fmt"
@@ -18,6 +12,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/drainedresult"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 )
 
 // HeadingQuery is the builder for querying Heading entities.

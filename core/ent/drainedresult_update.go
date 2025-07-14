@@ -3,10 +3,6 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/drainedresult"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/predicate"
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -14,6 +10,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/drainedresult"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/predicate"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // DrainedResultUpdate is the builder for updating DrainedResult entities.

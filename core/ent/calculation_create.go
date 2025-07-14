@@ -3,9 +3,6 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/calculation"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"context"
 	"errors"
 	"fmt"
@@ -13,6 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // CalculationCreate is the builder for creating a Calculation entity.

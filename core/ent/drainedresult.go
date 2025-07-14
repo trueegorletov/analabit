@@ -3,14 +3,14 @@
 package ent
 
 import (
-	"github.com/trueegorletov/analabit/core/ent/drainedresult"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/run"
 	"fmt"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/trueegorletov/analabit/core/ent/drainedresult"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/run"
 )
 
 // DrainedResult is the model entity for the DrainedResult schema.
