@@ -2,18 +2,20 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"log/slog"
 	"strconv"
 	"time"
 
-	"github.com/trueegorletov/analabit/core"
+	"entgo.io/ent/dialect/sql"
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/ent/application"
-	"github.com/trueegorletov/analabit/core/ent/calculation"
 	"github.com/trueegorletov/analabit/core/ent/heading"
 	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"github.com/trueegorletov/analabit/core/utils"
+
+	"encoding/base64"
+	"strings"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -36,17 +38,21 @@ type ApplicationResponse struct {
 	AnotherVarsitiesCount int       `json:"another_varsities_count"`
 }
 
-// GetApplications retrieves a list of applications, with optional filtering.
+// GetApplications retrieves a list of applications with cursor-based pagination.
 func GetApplications(client *ent.Client) fiber.Handler {
 	return func(c fiber.Ctx) error {
-		limit, _ := strconv.Atoi(c.Query("limit", "1000"))
-		offset, _ := strconv.Atoi(c.Query("offset", "0"))
+		ctx := context.Background()
+
+		// Parse query parameters
 		studentIDRaw := c.Query("studentID")
 		varsityCode := c.Query("varsityCode")
 		headingID, _ := strconv.Atoi(c.Query("headingId", "0"))
 		runParam := c.Query("run", "latest")
-
-		ctx := context.Background()
+		first, err := strconv.Atoi(c.Query("first", "100"))
+		if err != nil || first <= 0 {
+			first = 100
+		}
+		after := c.Query("after")
 
 		// Validate and prepare student ID if provided
 		var studentID string
@@ -66,6 +72,7 @@ func GetApplications(client *ent.Client) fiber.Handler {
 			return fiber.NewError(fiber.StatusBadRequest, "invalid run parameter")
 		}
 
+		// Base query
 		q := client.Application.Query().Where(application.RunIDEQ(runResolution.RunID))
 
 		if studentID != "" {
@@ -80,214 +87,151 @@ func GetApplications(client *ent.Client) fiber.Handler {
 			q = q.Where(application.HasHeadingWith(heading.ID(headingID)))
 		}
 
-		applications, err := q.WithHeading(func(hq *ent.HeadingQuery) { hq.WithVarsity() }).WithRun().Order(application.ByRatingPlace()).Limit(limit).Offset(offset).All(ctx)
+		// Order: by rating place ASC (assuming lower is better), then by ID ASC for stability
+		q = q.Order(ent.Asc(application.FieldRatingPlace), ent.Asc(application.FieldID))
+
+		// Handle cursor
+		limit := first + 1 // fetch one extra to check hasNextPage
+		if after != "" {
+			decoded, err := base64.StdEncoding.DecodeString(after)
+			if err != nil {
+				return fiber.NewError(fiber.StatusBadRequest, "invalid cursor")
+			}
+			parts := strings.Split(string(decoded), ":")
+			if len(parts) != 2 {
+				return fiber.NewError(fiber.StatusBadRequest, "invalid cursor format")
+			}
+			lastRatingPlace, err := strconv.Atoi(parts[0])
+			if err != nil {
+				return fiber.NewError(fiber.StatusBadRequest, "invalid cursor")
+			}
+			lastID, err := strconv.Atoi(parts[1])
+			if err != nil {
+				return fiber.NewError(fiber.StatusBadRequest, "invalid cursor")
+			}
+			// Predicate: (rating_place > last) OR (rating_place == last AND id > lastID)
+			q = q.Where(
+				func(s *sql.Selector) {
+					s.Where(sql.Or(
+						sql.GT(s.C(application.FieldRatingPlace), lastRatingPlace),
+						sql.And(
+							sql.EQ(s.C(application.FieldRatingPlace), lastRatingPlace),
+							sql.GT(s.C(application.FieldID), lastID),
+						),
+					))
+				},
+			)
+		}
+
+		// Fetch applications
+		applications, err := q.WithHeading(func(hq *ent.HeadingQuery) { hq.WithVarsity() }).WithRun().Limit(limit).All(ctx)
 		if err != nil {
 			log.Printf("error getting applications: %v", err)
 			return fiber.ErrInternalServerError
 		}
 
-		// Collect student and heading IDs for batch queries
-		studentIDsSet := make(map[string]struct{}, len(applications))
-		studentIDs := make([]string, 0, len(applications))
-		for _, app := range applications {
-			if _, exists := studentIDsSet[app.StudentID]; !exists {
-				studentIDs = append(studentIDs, app.StudentID)
-				studentIDsSet[app.StudentID] = struct{}{}
-			}
+		// Determine hasNextPage
+		hasNextPage := len(applications) > first
+		if hasNextPage {
+			applications = applications[:first]
 		}
 
-		// Fetch all applications for the students in this run to calculate related fields
-		allStudentApplications, err := client.Application.Query().
-			Where(
-				application.RunIDEQ(runResolution.RunID),
-				application.StudentIDIn(studentIDs...),
-			).
-			WithHeading(func(hq *ent.HeadingQuery) {
-				hq.WithVarsity()
-			}).
-			All(ctx)
-		if err != nil {
-			log.Printf("error getting all student applications: %v", err)
-			return fiber.ErrInternalServerError
-		}
-
-		// Group applications by student ID for quick lookup
-		appsByStudent := make(map[string][]*ent.Application)
-		for _, app := range allStudentApplications {
-			appsByStudent[app.StudentID] = append(appsByStudent[app.StudentID], app)
-		}
-
-		// Collect all heading IDs from all applications of the students on this page
-		allHeadingIDs := make([]int, 0)
-		for _, studentApps := range appsByStudent {
-			for _, app := range studentApps {
-				if app.Edges.Heading == nil {
-					slog.Error("application has no heading, skipping", "appID", app.ID)
-					continue // Skip applications without a heading
-				}
-
-				allHeadingIDs = append(allHeadingIDs, app.Edges.Heading.ID)
-			}
-		}
-
-		// Fetch passing calculation results for all relevant headings
-		passingCalculations, err := client.Calculation.Query().
-			Where(
-				calculation.RunIDEQ(runResolution.RunID),
-				calculation.HasHeadingWith(heading.IDIn(allHeadingIDs...)),
-			).
-			WithHeading(func(hq *ent.HeadingQuery) { hq.WithVarsity() }).
-			All(ctx)
-		if err != nil {
-			log.Printf("error getting passing calculations: %v", err)
-			return fiber.ErrInternalServerError
-		}
-
-		type studentPassingInfo struct {
-			appHeadingID int
-			appPriority  int
-		}
-
-		saferAppHeadingID := func(app *ent.Application) int {
-			if app.Edges.Heading == nil {
-				slog.Error("application has no heading, returning 0 for safer handling", "appID", app.ID)
-				return 0 // No heading, return 0 to avoid panic
-			}
-			return app.Edges.Heading.ID
-		}
-		saferHeadingVarsityID := func(heading *ent.Heading) int {
-			if heading.Edges.Varsity == nil {
-				slog.Error("heading has no varsity, returning 0 for safer handling", "headingID", heading.ID)
-				return 0 // No varsity, return 0 to avoid panic
-			}
-			return heading.Edges.Varsity.ID
-		}
-		saferAppVarsityID := func(app *ent.Application) int {
-			if app.Edges.Heading == nil {
-				slog.Error("application has no heading, returning 0 for safer handling", "appID", app.ID)
-				return 0 // No heading or varsity, return 0 to avoid panic
-			}
-
-			if app.Edges.Heading.Edges.Varsity == nil {
-				slog.Error("application heading has no varsity, returning 0 for safer handling", "appID", app.ID, "headingID", app.Edges.Heading.ID)
-				return 0 // No varsity, return 0 to avoid panic
-			}
-
-			return app.Edges.Heading.Edges.Varsity.ID
-		}
-
-		// Create a map for quick lookup of passing students
-		passingStudents := make(map[int]map[string]struct{})
-
-		studentsPassingInfosByVarsity := make(map[string]map[int]studentPassingInfo)
-
-		for _, calc := range passingCalculations {
-			calcHeading := calc.Edges.Heading
-			if calcHeading == nil {
-				slog.Error("calculation has no heading, skipping", "calcID", calc.ID)
-				continue
-			}
-			if _, ok := passingStudents[calcHeading.ID]; !ok {
-				passingStudents[calcHeading.ID] = make(map[string]struct{})
-			}
-			passingStudents[calcHeading.ID][calc.StudentID] = struct{}{}
-
-			varsityID := saferHeadingVarsityID(calcHeading)
-
-			if _, ok := studentsPassingInfosByVarsity[calc.StudentID]; !ok {
-				studentsPassingInfosByVarsity[calc.StudentID] = make(map[int]studentPassingInfo)
-			}
-
-			if _, ok := studentsPassingInfosByVarsity[calc.StudentID][varsityID]; !ok {
-				studentsPassingInfosByVarsity[calc.StudentID][varsityID] = studentPassingInfo{
-					appHeadingID: calcHeading.ID,
-					appPriority:  -1,
-				}
-			}
-		}
-
-		origVarsityIDByStudent := make(map[string]int)
-		varsitiesCountByStudent := make(map[string]int)
-
-		for id, apps := range appsByStudent {
-			varsities := make(map[int]struct{})
-
-			for _, app := range apps {
-				appVarsityID := saferAppVarsityID(app)
-
-				varsities[appVarsityID] = struct{}{}
-
-				if _, ok := origVarsityIDByStudent[id]; !ok {
-					if app.OriginalSubmitted {
-						origVarsityIDByStudent[id] = appVarsityID
-					}
-				}
-
-				if passingInfo, ok := studentsPassingInfosByVarsity[id][appVarsityID]; ok {
-					if passingInfo.appHeadingID == saferAppHeadingID(app) {
-						passingInfo.appPriority = app.Priority
-						studentsPassingInfosByVarsity[id][appVarsityID] = passingInfo
-					}
-				}
-			}
-
-			varsitiesCountByStudent[id] = len(varsities)
-		}
-
-		// Build the response
-		response := make([]ApplicationResponse, len(applications))
+		// Fetch precomputed flags from materialized view
+		appIDs := make([]int, len(applications))
 		for i, app := range applications {
-			originalSubmitted, originalQuit := false, false
+			appIDs[i] = app.ID
+		}
+		flagsQuery := fmt.Sprintf("SELECT application_id, passing_now, passing_to_more_priority, another_varsities_count, original_submitted FROM application_flags WHERE application_id IN (%s)", utils.IntsToSQLIn(appIDs))
+		rows, err := client.QueryContext(ctx, flagsQuery)
+		if err != nil {
+			log.Printf("error querying materialized view: %v", err)
+			return fiber.ErrInternalServerError
+		}
+		defer rows.Close()
 
-			appVarsityID := saferAppVarsityID(app)
-			appHeadingID := saferAppHeadingID(app)
-
-			studentOriginalVarsityID, originalDetermined := origVarsityIDByStudent[app.StudentID]
-
-			if originalDetermined {
-				if appVarsityID == studentOriginalVarsityID {
-					originalSubmitted = true
-					originalQuit = false
-				} else {
-					originalSubmitted = false
-					originalQuit = true
-				}
+		flagsMap := make(map[int]struct {
+			PassingNow, PassingToMorePriority bool
+			AnotherVarsitiesCount             int
+			OriginalSubmitted                 bool
+		})
+		for rows.Next() {
+			var appID int
+			var passingNow, passingToMorePriority, originalSubmitted bool
+			var anotherVarsitiesCount int
+			if err := rows.Scan(&appID, &passingNow, &passingToMorePriority, &anotherVarsitiesCount, &originalSubmitted); err != nil {
+				log.Printf("error scanning flags: %v", err)
+				return fiber.ErrInternalServerError
 			}
+			flagsMap[appID] = struct {
+				PassingNow, PassingToMorePriority bool
+				AnotherVarsitiesCount             int
+				OriginalSubmitted                 bool
+			}{passingNow, passingToMorePriority, anotherVarsitiesCount, originalSubmitted}
+		}
 
-			// Calculate passing_now and passing_to_more_priority
-			passingNow := false
-			passingToMorePriority := false
-
-			if passingInfo, ok := studentsPassingInfosByVarsity[app.StudentID][appVarsityID]; ok {
-				if passingInfo.appPriority == app.Priority || passingInfo.appHeadingID == appHeadingID {
-					passingNow = true
-					passingToMorePriority = false
-				} else if passingInfo.appPriority < app.Priority {
-					passingNow = false
-					passingToMorePriority = true
-				}
-			}
-
-			anotherVarsitiesCount := varsitiesCountByStudent[app.StudentID] - 1
-
-			response[i] = ApplicationResponse{
+		// Build edges
+		edges := make([]ApplicationEdge, len(applications))
+		for i, app := range applications {
+			flags := flagsMap[app.ID]
+			node := ApplicationResponse{
 				ID:                    app.ID,
-				StudentID:             utils.PrettifyStudentID(app.StudentID),
+				StudentID:             app.StudentID,
 				Priority:              app.Priority,
-				CompetitionType:       core.Competition(app.CompetitionType).String(),
+				CompetitionType:       app.CompetitionType.String(),
 				RatingPlace:           app.RatingPlace,
 				Score:                 app.Score,
 				RunID:                 app.RunID,
 				UpdatedAt:             app.UpdatedAt,
-				HeadingID:             appHeadingID,
-				OriginalSubmitted:     originalSubmitted,
-				OriginalQuit:          originalQuit,
-				PassingNow:            passingNow,
-				PassingToMorePriority: passingToMorePriority,
-				AnotherVarsitiesCount: anotherVarsitiesCount,
+				HeadingID:             app.Edges.Heading.ID,
+				OriginalSubmitted:     flags.OriginalSubmitted,
+				OriginalQuit:          false, // TODO: Compute or precompute if needed
+				PassingNow:            flags.PassingNow,
+				PassingToMorePriority: flags.PassingToMorePriority,
+				AnotherVarsitiesCount: flags.AnotherVarsitiesCount,
+			}
+			cursorStr := fmt.Sprintf("%d:%d", app.RatingPlace, app.ID)
+			edges[i] = ApplicationEdge{
+				Node:   node,
+				Cursor: base64.StdEncoding.EncodeToString([]byte(cursorStr)),
 			}
 		}
 
-		return c.JSON(response)
+		// PageInfo
+		var endCursor string
+		if len(edges) > 0 {
+			endCursor = edges[len(edges)-1].Cursor
+		}
+
+		// Total count (approximate or exact)
+		totalCount, err := q.Clone().Count(ctx)
+		if err != nil {
+			log.Printf("error counting applications: %v", err)
+			totalCount = 0
+		}
+
+		connection := ApplicationsConnection{
+			Edges:      edges,
+			PageInfo:   PageInfo{HasNextPage: hasNextPage, EndCursor: endCursor},
+			TotalCount: totalCount,
+		}
+
+		return c.JSON(connection)
 	}
+}
+
+// Cursor-based pagination structures
+type PageInfo struct {
+	HasNextPage bool   `json:"hasNextPage"`
+	EndCursor   string `json:"endCursor"`
+}
+
+type ApplicationEdge struct {
+	Node   ApplicationResponse `json:"node"`
+	Cursor string              `json:"cursor"`
+}
+
+type ApplicationsConnection struct {
+	Edges      []ApplicationEdge `json:"edges"`
+	PageInfo   PageInfo          `json:"pageInfo"`
+	TotalCount int               `json:"totalCount"`
 }

@@ -48,6 +48,42 @@ func main() {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
+	// Create materialized view for application flags
+	createViewQuery := `
+CREATE MATERIALIZED VIEW IF NOT EXISTS application_flags AS
+SELECT
+  a.id AS application_id,
+  a.run_id,
+  a.student_id,
+  a.heading_id,
+  a.priority,
+  a.original_submitted,
+  (SELECT COUNT(*) FROM application a2
+   WHERE a2.student_id = a.student_id
+     AND a2.run_id = a.run_id
+     AND a2.priority < a.priority
+     AND a2.heading_id != a.heading_id
+     AND EXISTS (SELECT 1 FROM calculation c
+                 WHERE c.student_id = a2.student_id
+                   AND c.heading_id = a2.heading_id
+                   AND c.run_id = a2.run_id)) AS passing_to_more_priority,
+  EXISTS (SELECT 1 FROM calculation c
+          WHERE c.student_id = a.student_id
+            AND c.heading_id = a.heading_id
+            AND c.run_id = a.run_id) AS passing_now,
+  (SELECT COUNT(*) FROM application a2
+   JOIN heading h2 ON a2.heading_id = h2.id
+   WHERE a2.student_id = a.student_id
+     AND a2.run_id = a.run_id
+     AND h2.varsity_id != (SELECT varsity_id FROM heading h3 WHERE h3.id = a.heading_id)) AS another_varsities_count
+FROM application a;
+
+CREATE UNIQUE INDEX IF NOT EXISTS application_flags_pkey ON application_flags (application_id);
+`
+	if _, err := client.ExecContext(context.Background(), createViewQuery); err != nil {
+		log.Fatalf("failed creating materialized view: %v", err)
+	}
+
 	// Create Prometheus metrics
 	requestTotal := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
