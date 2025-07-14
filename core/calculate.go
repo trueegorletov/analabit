@@ -1,7 +1,6 @@
 package core
 
 import (
-	"github.com/trueegorletov/analabit/core/utils"
 	"bytes"
 	"container/heap"
 	"container/list" // Added for O(1) queue operations
@@ -13,6 +12,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/trueegorletov/analabit/core/utils"
 )
 
 // Capacities hold the quotas and capacities of a heading for different competition types.
@@ -1075,37 +1076,36 @@ func (v *VarsityCalculator) SimulateOriginalsDrain(drainPercent int) {
 		return
 	}
 
-	nonQuitCount := 0
+	drainableCount := 0
 
-	var eligibleStudents []*Student
+	var drainableStudents []*Student
 	v.students.Range(func(key, value interface{}) bool {
 		student := value.(*Student)
 		student.mu.Lock()
-		if !student.quit {
-			nonQuitCount += 1
-		}
 
 		if !student.quit && !student.originalSubmitted {
-			eligibleStudents = append(eligibleStudents, student)
+			drainableCount += 1
+			drainableStudents = append(drainableStudents, student)
 		}
+
 		student.mu.Unlock()
 		return true
 	})
 
-	if len(eligibleStudents) == 0 {
+	if len(drainableStudents) == 0 {
 		return
 	}
 
-	numToDrain := (len(eligibleStudents) * drainPercent) / 100
+	numToDrain := (len(drainableStudents) * drainPercent) / 100
 
 	// Shuffle eligible students to pick randomly
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	r.Shuffle(len(eligibleStudents), func(i, j int) {
-		eligibleStudents[i], eligibleStudents[j] = eligibleStudents[j], eligibleStudents[i]
+	r.Shuffle(len(drainableStudents), func(i, j int) {
+		drainableStudents[i], drainableStudents[j] = drainableStudents[j], drainableStudents[i]
 	})
 
-	for i := 0; i < numToDrain && i < len(eligibleStudents); i++ {
-		studentToDrain := eligibleStudents[i]
+	for i := 0; i < numToDrain && i < len(drainableStudents); i++ {
+		studentToDrain := drainableStudents[i]
 		studentToDrain.mu.Lock()
 		studentToDrain.quit = true
 		studentToDrain.mu.Unlock()
