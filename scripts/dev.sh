@@ -17,8 +17,12 @@ fi
 if ! command -v air &> /dev/null; then
   echo "Installing air (hot-reload for Go)..."
   curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
-  export PATH="$(go env GOPATH)/bin:$PATH"
 fi
+
+# Define path to air, ensure it's executable, and add to PATH
+AIR_BIN_PATH="$(go env GOPATH)/bin"
+chmod +x "$AIR_BIN_PATH/air"
+export PATH="$AIR_BIN_PATH:$PATH"
 
 # Export environment so that services connect to local container ports
 export RABBITMQ_URL="amqp://guest:guest@localhost:5672/"
@@ -44,11 +48,11 @@ export DATABASE_SSLMODE="disable"
 export CACHE_TTL_MINUTES="300"
 export SELF_QUERY_PERIOD_MINUTES="150"
 export DRAIN_SIM_ITERATIONS="10"
-export VARSITIES_EXCLUDED="mirea,rzgmu,spbstu"
+export VARSITIES_LIST="spbsu"
 
 # FlareSolverr configuration for bypassing DDoS-Guard protection
 export FLARESOLVERR_URL="http://localhost:8191"
 export FLARESOLVERR_TIMEOUT_MS="60000"
 
 # Launch all Go micro-services with live reload
-goreman -f Procfile.dev start 
+goreman -f Procfile.dev start

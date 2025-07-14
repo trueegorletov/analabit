@@ -27,7 +27,7 @@ func fetchSpbsuListByID(listID int) ([]SpbsuApplicationEntry, error) {
 	if listID == -1 {
 		return nil, nil
 	}
-	url := "https://enrollelists.spbu.ru/api/contest-results?page=1&per-page=2000&sort=&filter[competitive_group_id]=" + strconv.Itoa(listID)
+	url := "https://back-enrollelists.spbu.ru/api/contest-results?page=1&per-page=1500&sort=&filter[competitive_group_id]=" + strconv.Itoa(listID)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	release, err := source.AcquireHTTPSemaphores(ctx, "spbsu")

@@ -1,11 +1,13 @@
 package spbsu
 
 import (
-	"github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/analabit/core/source"
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
+
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
 )
 
 // SpbsuApplicationEntry represents a single application entry in the SPbSU JSON list.
@@ -14,9 +16,10 @@ type SpbsuApplicationEntry struct {
 	ScoreOverall       int         `json:"score_overall"`
 	OrderNumber        int         `json:"order_number"`
 	PriorityNumber     int         `json:"priority_number"`
-	OriginalDocument   bool        `json:"original_document"`
+	AdmissionAgreement bool        `json:"admission_agreement"`
 	TargetOrganization interface{} `json:"target_organization"`
 	WithoutTrials      bool        `json:"without_trials"`
+	SSPVOStatus        string      `json:"sspvo_statu"`
 }
 
 // SpbsuListResponse represents the top-level JSON structure.
@@ -36,6 +39,10 @@ func parseAndLoadApplications(entries []SpbsuApplicationEntry, competitionType c
 			competition = core.CompetitionBVI
 		}
 
+		if strings.Contains(strings.ToLower(entry.SSPVOStatus), "отозвано") {
+			continue
+		}
+
 		receiver.PutApplicationData(&source.ApplicationData{
 			HeadingCode:       headingCode,
 			StudentID:         entry.UserCode,
@@ -43,7 +50,7 @@ func parseAndLoadApplications(entries []SpbsuApplicationEntry, competitionType c
 			RatingPlace:       entry.OrderNumber,
 			Priority:          entry.PriorityNumber,
 			CompetitionType:   competition,
-			OriginalSubmitted: entry.OriginalDocument,
+			OriginalSubmitted: entry.AdmissionAgreement,
 		})
 	}
 }
