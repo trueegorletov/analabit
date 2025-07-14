@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -66,4 +67,18 @@ func MustParseURL(rawURL string) *url.URL {
 		log.Fatalf("failed to parse URL %q: %v", rawURL, err)
 	}
 	return u
+}
+
+func IntsToSQLIn(ints []int) string {
+    if len(ints) == 0 {
+        return ""
+    }
+    var sb strings.Builder
+    for i, id := range ints {
+        if i > 0 {
+            sb.WriteString(",")
+        }
+        sb.WriteString(strconv.Itoa(id))
+    }
+    return sb.String()
 }

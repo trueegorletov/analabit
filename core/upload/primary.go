@@ -137,6 +137,13 @@ func (u *helper) uploadCalculations(ctx context.Context, calculations []core.Cal
 
 	}
 
+	// Refresh the materialized view after uploading calculations
+	refreshQuery := "REFRESH MATERIALIZED VIEW application_flags"
+	_, err := u.client.ExecContext(ctx, refreshQuery)
+	if err != nil {
+		return fmt.Errorf("failed to refresh materialized view: %w", err)
+	}
+
 	return nil
 }
 
