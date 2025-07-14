@@ -136,6 +136,7 @@ func GetApplications(client *ent.Client) fiber.Handler {
 				calculation.RunIDEQ(runResolution.RunID),
 				calculation.HasHeadingWith(heading.IDIn(allHeadingIDs...)),
 			).
+			WithHeading(func(hq *ent.HeadingQuery) { hq.WithVarsity() }).
 			All(ctx)
 		if err != nil {
 			log.Printf("error getting passing calculations: %v", err)
@@ -181,10 +182,10 @@ func GetApplications(client *ent.Client) fiber.Handler {
 		studentsPassingInfosByVarsity := make(map[string]map[int]studentPassingInfo)
 
 		for _, calc := range passingCalculations {
-			calcHeading, err := calc.QueryHeading().WithVarsity().Only(ctx)
-			if err != nil {
-				slog.Error("error getting heading for calculation", "err", err)
-				return fiber.ErrInternalServerError
+			calcHeading := calc.Edges.Heading
+			if calcHeading == nil {
+				slog.Error("calculation has no heading, skipping", "calcID", calc.ID)
+				continue
 			}
 			if _, ok := passingStudents[calcHeading.ID]; !ok {
 				passingStudents[calcHeading.ID] = make(map[string]struct{})
