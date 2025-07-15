@@ -26,6 +26,10 @@ type config struct {
 
 	// Optional replica database connection strings (comma-separated)
 	PostgresReplicaConnStrings string `env:"POSTGRES_REPLICA_CONN_STRINGS"`
+
+	// Cleanup configuration
+	CleanupRetentionRuns int    `env:"CLEANUP_RETENTION_RUNS" envDefault:"5"`
+	CleanupBackupDir     string `env:"CLEANUP_BACKUP_DIR" envDefault:"./backups"`
 }
 
 // GetPrimaryConnString builds the primary database connection string from individual components
@@ -56,4 +60,33 @@ func (c *config) GetAllConnStrings() []string {
 	connStrings := []string{c.GetPrimaryConnString()}
 	connStrings = append(connStrings, c.GetReplicaConnStrings()...)
 	return connStrings
+}
+
+// ParseConnStr parses a Postgres connection string into individual components
+func ParseConnStr(connStr string) (user, password, host, port, dbname string, err error) {
+	parts := strings.Split(connStr, " ")
+	for _, part := range parts {
+		kv := strings.SplitN(part, "=", 2)
+		if len(kv) != 2 {
+			continue
+		}
+		key := kv[0]
+		value := kv[1]
+		switch key {
+		case "user":
+			user = value
+		case "password":
+			password = value
+		case "host":
+			host = value
+		case "port":
+			port = value
+		case "dbname":
+			dbname = value
+		}
+	}
+	if user == "" || host == "" || dbname == "" || port == "" {
+		return "", "", "", "", "", fmt.Errorf("missing required connection parameters")
+	}
+	return user, password, host, port, dbname, nil
 }

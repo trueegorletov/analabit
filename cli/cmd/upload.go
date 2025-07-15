@@ -4,6 +4,7 @@ import (
 	"analabit/cli/config"
 	"analabit/cli/corestate"
 	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/database"
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/upload"
 	"context"
@@ -126,6 +127,31 @@ var uploadCmd = &cobra.Command{
 		}
 		corestate.ResultsMutex.RUnlock()
 		fmt.Println("Drained simulation results upload finished.")
+
+		// Refresh materialized views after all uploads are complete
+		fmt.Println("Refreshing materialized views...")
+		dbClient, err := database.NewClient(client)
+		if err != nil {
+			log.Printf("Warning: Failed to create database client for view refresh: %v", err)
+		} else {
+			if err := upload.RefreshMaterializedViews(ctx, dbClient); err != nil {
+				log.Printf("Warning: Failed to refresh materialized views: %v", err)
+			} else {
+			fmt.Println("Materialized views refreshed successfully.")
+			}
+		}
+
+		// Mark run as finished
+		_, err = client.Run.UpdateOneID(run.ID).SetFinished(true).Save(ctx)
+		if err != nil {
+			log.Printf("Warning: Failed to mark run as finished: %v", err)
+		} else {
+			fmt.Printf("Run %d marked as finished.\n", run.ID)
+			// Run cleanup job
+			if cleanupErr := dbClient.PerformBackupAndCleanup(ctx, config.AppConfig.Cleanup.RetentionRuns, config.AppConfig.Cleanup.BackupDir); cleanupErr != nil {
+				log.Printf("Warning: Cleanup job failed for run %d: %v", run.ID, cleanupErr)
+			}
+		}
 
 		fmt.Printf("Upload process complete. All data uploaded under run ID: %d\n", run.ID)
 	},

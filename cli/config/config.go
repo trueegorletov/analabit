@@ -31,6 +31,10 @@ type Config struct {
 		Directory  string `mapstructure:"directory"`
 		TTLMinutes int    `mapstructure:"ttl_minutes"`
 	} `mapstructure:"cache"`
+	Cleanup struct {
+		RetentionRuns int    `mapstructure:"retention_runs"`
+		BackupDir     string `mapstructure:"backup_dir"`
+	} `mapstructure:"cleanup"`
 	Logging struct {
 		File string `mapstructure:"file"` // Path to the log file. If empty, logs to stderr.
 	} `mapstructure:"logging"`

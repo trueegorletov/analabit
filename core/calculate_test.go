@@ -8,6 +8,49 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestCalculateAdmissions_PriorityNormalization tests that priority normalization works correctly
+func TestCalculateAdmissions_PriorityNormalization(t *testing.T) {
+	v := NewVarsityCalculator("TEST_VARSITY", "")
+	v.AddHeading("H1", Capacities{Regular: 1}, "Heading 1")
+	v.AddHeading("H2", Capacities{Regular: 1}, "Heading 2")
+	v.AddHeading("H3", Capacities{Regular: 1}, "Heading 3")
+
+	// Student with gaps in priorities: 1, 5, 10
+	// Should be normalized to: 1, 2, 3
+	v.AddApplication("H1", sid(1), 10, 1, CompetitionRegular, 0)  // Priority 1 -> 1
+	v.AddApplication("H2", sid(1), 20, 5, CompetitionRegular, 0)  // Priority 5 -> 2
+	v.AddApplication("H3", sid(1), 30, 10, CompetitionRegular, 0) // Priority 10 -> 3
+
+	// Student with duplicate priorities: 2, 2, 3
+	// Should be normalized to: 1, 2, 3 (duplicates handled by order)
+	v.AddApplication("H1", sid(2), 15, 2, CompetitionRegular, 0) // Priority 2 -> 1
+	v.AddApplication("H2", sid(2), 25, 2, CompetitionRegular, 0) // Priority 2 -> 2
+	v.AddApplication("H3", sid(2), 35, 3, CompetitionRegular, 0) // Priority 3 -> 3
+
+	// Student with reverse order priorities: 3, 2, 1
+	// Should be normalized to: 3, 2, 1 (priority 1 is highest)
+	v.AddApplication("H1", sid(3), 5, 3, CompetitionRegular, 0)  // Priority 3 -> 3
+	v.AddApplication("H2", sid(3), 15, 2, CompetitionRegular, 0) // Priority 2 -> 2
+	v.AddApplication("H3", sid(3), 25, 1, CompetitionRegular, 0) // Priority 1 -> 1
+
+	results := v.CalculateAdmissions()
+	admittedH1 := getAdmittedStudentIDs(results, "H1")
+	admittedH2 := getAdmittedStudentIDs(results, "H2")
+	admittedH3 := getAdmittedStudentIDs(results, "H3")
+
+	// Student 1: Should get H1 (priority 1, rating 10)
+	// Student 2: Should get H2 (H1 taken, priority 2 normalized to 2, rating 25)
+	// Student 3: Should get H3 (H1 and H2 taken, priority 1, rating 25)
+	assert.Contains(t, admittedH1, "0000000000001", "Student 1 should get H1 (highest priority)")
+	assert.Contains(t, admittedH2, "0000000000002", "Student 2 should get H2 (after H1 taken)")
+	assert.Contains(t, admittedH3, "0000000000003", "Student 3 should get H3 (highest priority available)")
+
+	// Verify each heading has exactly one student
+	assert.Len(t, admittedH1, 1, "H1 should have exactly 1 student")
+	assert.Len(t, admittedH2, 1, "H2 should have exactly 1 student")
+	assert.Len(t, admittedH3, 1, "H3 should have exactly 1 student")
+}
+
 // Helper to get admitted student IDs for a specific heading code from results.
 func getAdmittedStudentIDs(results []CalculationResult, headingCode string) []string {
 	for _, res := range results {

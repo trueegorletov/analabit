@@ -114,6 +114,7 @@ services:
       - minio
       - postgres
       - postgres-init
+      - aggregator-volume-init
     environment:
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
       - MINIO_ENDPOINT=minio:9000
@@ -127,6 +128,10 @@ services:
       - DATABASE_PASSWORD=${ANALABIT_DB_PASSWORD}
       - DATABASE_DBNAME=${ANALABIT_DB_NAME}
       - DATABASE_SSLMODE=disable
+      - CLEANUP_RETENTION_RUNS=5
+      - CLEANUP_BACKUP_DIR=./backups
+    volumes:
+      - backups:/app/backups
     restart: unless-stopped
 
   flaresolverr:
@@ -161,11 +166,18 @@ services:
       timeout: 10s
       retries: 3
 
-  producer-cache-init:
+  producer-volume-init:
     image: alpine:latest
     volumes:
       - producer_cache:/app/cache
     command: sh -c "mkdir -p /app/cache && chmod 777 /app/cache"
+    restart: "no"
+
+  aggregator-volume-init:
+    image: alpine:latest
+    volumes:
+      - backups:/app/backups
+    command: sh -c "mkdir -p /app/backups && chmod 777 /app/backups"
     restart: "no"
 
   producer:
@@ -175,7 +187,7 @@ services:
       - minio
       - postgres
       - postgres-init
-      - producer-cache-init
+      - producer-volume-init
       - flaresolverr
     environment:
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/

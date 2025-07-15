@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/trueegorletov/analabit/core/database"
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/ent/application"
 	"github.com/trueegorletov/analabit/core/ent/heading"
@@ -40,6 +41,11 @@ type ApplicationResponse struct {
 
 // GetApplications retrieves a list of applications with cursor-based pagination.
 func GetApplications(client *ent.Client) fiber.Handler {
+	// Create database client wrapper
+	dbClient, err := database.NewClient(client)
+	if err != nil {
+		log.Fatalf("failed creating database client: %v", err)
+	}
 	return func(c fiber.Ctx) error {
 		ctx := context.Background()
 
@@ -136,43 +142,37 @@ func GetApplications(client *ent.Client) fiber.Handler {
 			applications = applications[:first]
 		}
 
-		// Fetch precomputed flags from materialized view
+		// Fetch precomputed flags from materialized view using the new database layer
 		appIDs := make([]int, len(applications))
 		for i, app := range applications {
 			appIDs[i] = app.ID
 		}
-		flagsQuery := fmt.Sprintf("SELECT application_id, passing_now, passing_to_more_priority, another_varsities_count, original_submitted FROM application_flags WHERE application_id IN (%s)", utils.IntsToSQLIn(appIDs))
-		rows, err := client.QueryContext(ctx, flagsQuery)
+		flags, err := dbClient.GetApplicationFlags(ctx, appIDs)
 		if err != nil {
-			log.Printf("error querying materialized view: %v", err)
+			log.Printf("error querying application flags: %v", err)
 			return fiber.ErrInternalServerError
 		}
-		defer rows.Close()
 
-		flagsMap := make(map[int]struct {
-			PassingNow, PassingToMorePriority bool
-			AnotherVarsitiesCount             int
-			OriginalSubmitted                 bool
-		})
-		for rows.Next() {
-			var appID int
-			var passingNow, passingToMorePriority, originalSubmitted bool
-			var anotherVarsitiesCount int
-			if err := rows.Scan(&appID, &passingNow, &passingToMorePriority, &anotherVarsitiesCount, &originalSubmitted); err != nil {
-				log.Printf("error scanning flags: %v", err)
-				return fiber.ErrInternalServerError
-			}
-			flagsMap[appID] = struct {
-				PassingNow, PassingToMorePriority bool
-				AnotherVarsitiesCount             int
-				OriginalSubmitted                 bool
-			}{passingNow, passingToMorePriority, anotherVarsitiesCount, originalSubmitted}
+		flagsMap := make(map[int]database.ApplicationFlags)
+		for _, flag := range flags {
+			flagsMap[flag.ApplicationID] = flag
 		}
 
 		// Build edges
 		edges := make([]ApplicationEdge, len(applications))
 		for i, app := range applications {
-			flags := flagsMap[app.ID]
+			flags, exists := flagsMap[app.ID]
+			if !exists {
+				// Default values if flags not found
+				flags = database.ApplicationFlags{
+					ApplicationID:         app.ID,
+					PassingNow:            false,
+					PassingToMorePriority: false,
+					AnotherVarsitiesCount: 0,
+					OriginalSubmitted:     false,
+					OriginalQuit:          false,
+				}
+			}
 			node := ApplicationResponse{
 				ID:                    app.ID,
 				StudentID:             app.StudentID,
@@ -184,7 +184,7 @@ func GetApplications(client *ent.Client) fiber.Handler {
 				UpdatedAt:             app.UpdatedAt,
 				HeadingID:             app.Edges.Heading.ID,
 				OriginalSubmitted:     flags.OriginalSubmitted,
-				OriginalQuit:          false, // TODO: Compute or precompute if needed
+				OriginalQuit:          flags.OriginalQuit,
 				PassingNow:            flags.PassingNow,
 				PassingToMorePriority: flags.PassingToMorePriority,
 				AnotherVarsitiesCount: flags.AnotherVarsitiesCount,

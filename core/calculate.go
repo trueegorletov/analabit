@@ -605,6 +605,63 @@ func (v *VarsityCalculator) AddApplication(headingCode, studentID string, rating
 	s.addApplication(h.(*Heading), ratingPlace, priority, competitionType, scoresSum)
 }
 
+// isValidPrioritySequence checks if the applications have a valid priority sequence (1, 2, 3, ..., N)
+func isValidPrioritySequence(applications []*Application) bool {
+	if len(applications) == 0 {
+		return true
+	}
+
+	// Collect all priorities
+	priorities := make([]int, len(applications))
+	for i, app := range applications {
+		priorities[i] = app.Priority()
+	}
+
+	// Sort priorities to check for valid sequence
+	sort.Ints(priorities)
+
+	// Check if sequence starts at 1 and has no gaps or duplicates
+	for i, priority := range priorities {
+		expected := i + 1
+		if priority != expected {
+			return false
+		}
+	}
+
+	return true
+}
+
+// normalizePriorities fixes priority sequence while preserving relative order
+func normalizePriorities(student *Student) {
+	applications := student.Applications()
+	if len(applications) == 0 {
+		return
+	}
+
+	// Create a slice of application-priority pairs for sorting
+	type appPriorityPair struct {
+		app      *Application
+		priority int
+	}
+
+	pairs := make([]appPriorityPair, len(applications))
+	for i, app := range applications {
+		pairs[i] = appPriorityPair{app: app, priority: app.Priority()}
+	}
+
+	// Sort by original priority to preserve relative order
+	sort.Slice(pairs, func(i, j int) bool {
+		return pairs[i].priority < pairs[j].priority
+	})
+
+	// Assign new consecutive priorities starting from 1
+	student.mu.Lock()
+	for i, pair := range pairs {
+		pair.app.priority = i + 1
+	}
+	student.mu.Unlock()
+}
+
 // NormalizeApplications iterates through all headings and normalizes the applications for each one.
 // This should be called after all applications have been loaded and before any calculation is performed.
 func (v *VarsityCalculator) NormalizeApplications() {
@@ -613,22 +670,9 @@ func (v *VarsityCalculator) NormalizeApplications() {
 	v.students.Range(func(key, value interface{}) bool {
 		student := value.(*Student)
 
-		// Check for duplicate priorities and fix them
-		priorityCount := make(map[int]int)
-		for _, app := range student.Applications() {
-			priorityCount[app.Priority()]++
-		}
-
-		hasDuplicates := false
-		for _, count := range priorityCount {
-			if count > 1 {
-				hasDuplicates = true
-				break
-			}
-		}
-
-		if hasDuplicates {
-			slog.Debug("Student has duplicate priorities, fixing them", "studentID", student.ID(), "originalPriorities", func() []int {
+		// Check if priorities need normalization (duplicates, gaps, wrong start, etc.)
+		if !isValidPrioritySequence(student.Applications()) {
+			slog.Debug("Student has invalid priority sequence, normalizing", "studentID", student.ID(), "originalPriorities", func() []int {
 				priorities := make([]int, len(student.Applications()))
 				for i, app := range student.Applications() {
 					priorities[i] = app.Priority()
@@ -636,12 +680,8 @@ func (v *VarsityCalculator) NormalizeApplications() {
 				return priorities
 			}())
 
-			// Fix duplicate priorities by renumbering consecutively
-			student.mu.Lock()
-			for i, app := range student.applications {
-				app.priority = i + 1
-			}
-			student.mu.Unlock()
+			// Normalize priorities while preserving relative order
+			normalizePriorities(student)
 		}
 
 		for _, app := range student.Applications() {

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/database"
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/upload"
 
@@ -252,14 +253,40 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 			}
 		}
 
-		// If no errors occurred for this run, mark it as finished
+		// If no errors occurred for this run, refresh materialized views and mark it as finished
 		if allErrors == nil {
-			_, updateErr := client.Run.UpdateOneID(run.ID).SetFinished(true).Save(ctx)
-			if updateErr != nil {
-				err = fmt.Errorf("failed to mark run %d as finished: %w", run.ID, updateErr)
+			// Create database client wrapper for materialized view operations
+			dbClient, err := database.NewClient(client)
+			if err != nil {
+				err = fmt.Errorf("failed to create database client for run %d: %w", run.ID, err)
 				multierr.AppendInto(&allErrors, err)
 			} else {
-				log.Printf("Run %d completed successfully and marked as finished (%s database)", run.ID, dbType)
+				// Run cleanup job first
+				if cleanupErr := dbClient.PerformBackupAndCleanup(ctx, cfg.CleanupRetentionRuns, cfg.CleanupBackupDir); cleanupErr != nil {
+					if database.IsBackupError(cleanupErr) {
+						// Backup failed but cleanup succeeded - log warning and continue
+						log.Printf("Warning: Backup failed for run %d but cleanup succeeded: %v", run.ID, cleanupErr)
+					} else {
+						// Cleanup itself failed - this is a serious error
+						log.Printf("Error: Cleanup job failed for run %d: %v", run.ID, cleanupErr)
+						multierr.AppendInto(&allErrors, cleanupErr)
+					}
+				}
+
+				// Refresh materialized views after cleanup
+				if err := upload.RefreshMaterializedViews(ctx, dbClient); err != nil {
+					err = fmt.Errorf("failed to refresh materialized views for run %d: %w", run.ID, err)
+					multierr.AppendInto(&allErrors, err)
+				} else {
+					// Mark run as finished only after successful view refresh
+					_, updateErr := client.Run.UpdateOneID(run.ID).SetFinished(true).Save(ctx)
+					if updateErr != nil {
+						err = fmt.Errorf("failed to mark run %d as finished: %w", run.ID, updateErr)
+						multierr.AppendInto(&allErrors, err)
+					} else {
+						log.Printf("Run %d completed successfully, cleanup performed, materialized views refreshed, and marked as finished (%s database)", run.ID, dbType)
+					}
+				}
 			}
 		}
 

@@ -9,8 +9,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/trueegorletov/analabit/core/database"
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/ent/migrate"
+	"github.com/trueegorletov/analabit/core/metrics"
+	"github.com/trueegorletov/analabit/core/migrations"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -43,45 +46,25 @@ func main() {
 	}
 	defer client.Close()
 
+	// Initialize metrics
+	metrics.InitMetrics()
+	log.Println("Metrics initialized")
+
 	// Run database migrations
 	if err := client.Schema.Create(context.Background(), migrate.WithDropIndex(true), migrate.WithDropColumn(true)); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
-	// Create materialized view for application flags
-	createViewQuery := `
-CREATE MATERIALIZED VIEW IF NOT EXISTS application_flags AS
-SELECT
-  a.id AS application_id,
-  a.run_id,
-  a.student_id,
-  a.heading_id,
-  a.priority,
-  a.original_submitted,
-  (SELECT COUNT(*) FROM application a2
-   WHERE a2.student_id = a.student_id
-     AND a2.run_id = a.run_id
-     AND a2.priority < a.priority
-     AND a2.heading_id != a.heading_id
-     AND EXISTS (SELECT 1 FROM calculation c
-                 WHERE c.student_id = a2.student_id
-                   AND c.heading_id = a2.heading_id
-                   AND c.run_id = a2.run_id)) AS passing_to_more_priority,
-  EXISTS (SELECT 1 FROM calculation c
-          WHERE c.student_id = a.student_id
-            AND c.heading_id = a.heading_id
-            AND c.run_id = a.run_id) AS passing_now,
-  (SELECT COUNT(*) FROM application a2
-   JOIN heading h2 ON a2.heading_id = h2.id
-   WHERE a2.student_id = a.student_id
-     AND a2.run_id = a.run_id
-     AND h2.varsity_id != (SELECT varsity_id FROM heading h3 WHERE h3.id = a.heading_id)) AS another_varsities_count
-FROM application a;
+	// Create database client wrapper
+	dbClient, err := database.NewClient(client)
+	if err != nil {
+		log.Fatalf("failed creating database client: %v", err)
+	}
 
-CREATE UNIQUE INDEX IF NOT EXISTS application_flags_pkey ON application_flags (application_id);
-`
-	if _, err := client.ExecContext(context.Background(), createViewQuery); err != nil {
-		log.Fatalf("failed creating materialized view: %v", err)
+	// Run custom migrations
+	migrationRunner := migrations.NewMigrationRunner(dbClient)
+	if err := migrationRunner.Run(context.Background()); err != nil {
+		log.Fatalf("failed running migrations: %v", err)
 	}
 
 	// Create Prometheus metrics
@@ -165,6 +148,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS application_flags_pkey ON application_flags (a
 	api.Get("/applications", handlers.GetApplications(client))
 	api.Get("/students/:id", handlers.GetStudentByID(client))
 	api.Get("/results", handlers.GetResults(client))
+
+
 
 	// Start the server
 	log.Printf("Starting server on port %s", cfg.ServerPort)
