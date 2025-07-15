@@ -246,5 +246,6 @@ volumes:
   minio_data:
   postgres_data:
   producer_cache:
+  backups:
   prometheus_data:
   grafana_data:
