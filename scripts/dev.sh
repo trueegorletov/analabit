@@ -48,7 +48,7 @@ export DATABASE_SSLMODE="disable"
 export CACHE_TTL_MINUTES="600"
 export SELF_QUERY_PERIOD_MINUTES="150"
 export DRAIN_SIM_ITERATIONS="10"
-export VARSITIES_LIST="mipt,itmo,spbsu"
+export VARSITIES_LIST="rsmu"
 
 # FlareSolverr configuration for bypassing DDoS-Guard protection
 export FLARESOLVERR_URL="http://localhost:8191"

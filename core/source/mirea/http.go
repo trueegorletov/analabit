@@ -80,8 +80,8 @@ func fetchMireaListByID(listID string) (*MireaListResponse, error) {
 	}
 	defer release()
 
-	// Make HTTP request through FlareSolverr
-	resp, err := flaresolverr.SafeGetWithHeaders(apiURL, nil) // Headers are not supported anymore
+	// Make HTTP request through FlareSolverr with session management
+	resp, err := flaresolverr.SafeGetWithDomain(apiURL, getMireaHeaders())
 	if err != nil {
 		if flaresolverr.IsFlareSolverrError(err) {
 			return nil, fmt.Errorf("FlareSolverr unavailable for list %s: %w", listID, err)
