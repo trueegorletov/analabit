@@ -1,13 +1,11 @@
 package flaresolverr
 
 import (
-	"context"
 	"log"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-	"time"
 )
 
 var (
@@ -23,7 +21,7 @@ func InitGracefulShutdown() {
 	})
 }
 
-// handleShutdownSignals listens for termination signals and triggers graceful shutdown
+// handleShutdownSignals handles graceful shutdown of FlareSolverr sessions
 func handleShutdownSignals() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -31,17 +29,11 @@ func handleShutdownSignals() {
 	<-sigChan
 	log.Println("Shutdown signal received, cleaning up FlareSolverr sessions...")
 
-	// Create a context with timeout for shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	// Shutdown session manager if it exists
-	if sessionManager != nil {
-		if err := sessionManager.Shutdown(ctx); err != nil {
-			log.Printf("Error during session manager shutdown: %v", err)
-		} else {
-			log.Println("FlareSolverr sessions cleaned up successfully")
-		}
+	// Use the iteration-level cleanup for application shutdown
+	if err := StopForIteration(); err != nil {
+		log.Printf("Failed to cleanup FlareSolverr sessions during shutdown: %v", err)
+	} else {
+		log.Println("FlareSolverr sessions cleaned up successfully")
 	}
 
 	// Signal that shutdown is complete

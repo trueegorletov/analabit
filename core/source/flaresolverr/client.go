@@ -98,6 +98,7 @@ var (
 	clientError    error
 	sessionManager *SessionManager
 	sessionOnce    sync.Once
+	sessionMutex   sync.RWMutex // Protects sessionManager during iteration transitions
 )
 
 // GetClient returns a singleton FlareSolverr client instance
@@ -110,6 +111,13 @@ func GetClient() (*Client, error) {
 
 // GetSessionManager returns a singleton SessionManager instance
 func GetSessionManager() (*SessionManager, error) {
+	sessionMutex.RLock()
+	defer sessionMutex.RUnlock()
+	
+	if sessionManager != nil {
+		return sessionManager, nil
+	}
+	
 	sessionOnce.Do(func() {
 		client, err := GetClient()
 		if err != nil {
@@ -404,59 +412,26 @@ func SafeGetWithHeaders(url string, headers map[string]string) (*GetResponse, er
 // GetWithDomain performs a GET request using domain-specific session management
 // This function automatically manages sessions for the domain extracted from the URL
 func GetWithDomain(url string, headers map[string]string) (*GetResponse, error) {
-	// Extract domain from URL
-	domain, err := extractDomain(url)
-	if err != nil {
-		return &GetResponse{Error: err}, fmt.Errorf("failed to extract domain from URL: %w", err)
+	sessionMutex.RLock()
+	defer sessionMutex.RUnlock()
+	
+	if sessionManager == nil {
+		return nil, fmt.Errorf("session manager not initialized - call StartForIteration() first")
 	}
-
-	// Get session manager
-	sessionManager, err := GetSessionManager()
-	if err != nil {
-		// Fallback to sessionless request
-		return SafeGetWithHeaders(url, headers)
-	}
-
-	// Get session for domain
-	session, err := sessionManager.GetSessionForDomain(domain)
-	if err != nil {
-		// Fallback to sessionless request
-		return SafeGetWithHeaders(url, headers)
-	}
-
-	// Make request with session
-	client, err := GetClient()
-	if err != nil {
-		return &GetResponse{Error: err}, fmt.Errorf("FlareSolverr unavailable: %w", err)
-	}
-
-	resp, err := client.GetWithSession(url, session.ID, headers)
-
-	// Update session stats
-	session.mutex.Lock()
-	session.RequestCount++
-	session.mutex.Unlock()
-
-	// Release session back to pool
-	sessionManager.ReleaseSession(session)
-
-	if err != nil {
-		// If session request failed, try to recreate session or fallback
-		if strings.Contains(err.Error(), "session") {
-			// Session might be invalid, mark as unhealthy
-			session.mutex.Lock()
-			session.Healthy = false
-			session.mutex.Unlock()
-		}
-		return resp, err
-	}
-
-	return resp, nil
+	
+	return sessionManager.GetWithDomain(url, headers)
 }
 
 // SafeGetWithDomain performs a GET request with domain-specific session management and graceful fallback
 func SafeGetWithDomain(url string, headers map[string]string) (*GetResponse, error) {
-	resp, err := GetWithDomain(url, headers)
+	sessionMutex.RLock()
+	defer sessionMutex.RUnlock()
+	
+	if sessionManager == nil {
+		return SafeGetWithHeaders(url, headers)
+	}
+	
+	resp, err := sessionManager.GetWithDomain(url, headers)
 	if err != nil && IsFlareSolverrError(err) {
 		return &GetResponse{Error: err}, fmt.Errorf("FlareSolverr unavailable: %w", err)
 	}
@@ -496,6 +471,51 @@ func indexOfSubstring(s, substr string) int {
 }
 
 // SessionManager methods
+
+// GetWithDomain performs a GET request using domain-specific session management for the SessionManager
+func (sm *SessionManager) GetWithDomain(url string, headers map[string]string) (*GetResponse, error) {
+	// Extract domain from URL
+	domain, err := extractDomain(url)
+	if err != nil {
+		return &GetResponse{Error: err}, fmt.Errorf("failed to extract domain from URL: %w", err)
+	}
+
+	// Get session for domain
+	session, err := sm.GetSessionForDomain(domain)
+	if err != nil {
+		// Fallback to sessionless request
+		return SafeGetWithHeaders(url, headers)
+	}
+
+	// Make request with session
+	client, err := GetClient()
+	if err != nil {
+		return &GetResponse{Error: err}, fmt.Errorf("FlareSolverr unavailable: %w", err)
+	}
+
+	resp, err := client.GetWithSession(url, session.ID, headers)
+
+	// Update session stats
+	session.mutex.Lock()
+	session.RequestCount++
+	session.mutex.Unlock()
+
+	// Release session back to pool
+	sm.ReleaseSession(session)
+
+	if err != nil {
+		// If session request failed, try to recreate session or fallback
+		if strings.Contains(err.Error(), "session") {
+			// Session might be invalid, mark as unhealthy
+			session.mutex.Lock()
+			session.Healthy = false
+			session.mutex.Unlock()
+		}
+		return resp, err
+	}
+
+	return resp, nil
+}
 
 // extractDomain extracts the domain from a URL
 func extractDomain(urlStr string) (string, error) {
@@ -598,6 +618,67 @@ func (sm *SessionManager) healthCheckSessions() {
 	for _, pool := range sm.pools {
 		pool.healthCheckSessions()
 	}
+}
+
+// StartForIteration initializes session management for a new producer iteration.
+// This should be called at the beginning of each producer workflow to ensure
+// fresh sessions are created and any previous sessions are properly cleaned up.
+// This function is thread-safe and can be called concurrently.
+func StartForIteration() error {
+	sessionMutex.Lock()
+	defer sessionMutex.Unlock()
+	
+	// If there's an existing session manager, clean it up first
+	if sessionManager != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		
+		if err := sessionManager.Shutdown(ctx); err != nil {
+			return fmt.Errorf("failed to shutdown existing session manager: %w", err)
+		}
+	}
+	
+	// Reset the singleton state
+	sessionManager = nil
+	sessionOnce = sync.Once{}
+	clientError = nil
+	
+	// Initialize new session manager
+	client, err := GetClient()
+	if err != nil {
+		return fmt.Errorf("failed to get FlareSolverr client: %w", err)
+	}
+	
+	sessionManager = initializeSessionManager(client)
+	return nil
+}
+
+// StopForIteration cleans up all sessions after a producer iteration.
+// This should be called at the end of each producer workflow to ensure
+// all FlareSolverr sessions are properly destroyed and resources are freed.
+// This function is thread-safe and should be called in a defer block to
+// guarantee cleanup even if the workflow encounters errors.
+func StopForIteration() error {
+	sessionMutex.Lock()
+	defer sessionMutex.Unlock()
+	
+	if sessionManager == nil {
+		return nil // Nothing to clean up
+	}
+	
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	
+	if err := sessionManager.Shutdown(ctx); err != nil {
+		return fmt.Errorf("failed to shutdown session manager: %w", err)
+	}
+	
+	// Reset singleton state
+	sessionManager = nil
+	sessionOnce = sync.Once{}
+	clientError = nil
+	
+	return nil
 }
 
 // SessionPool methods

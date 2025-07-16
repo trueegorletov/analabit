@@ -21,6 +21,7 @@ import (
 	"github.com/trueegorletov/analabit/core/drainer"
 	"github.com/trueegorletov/analabit/core/registry"
 	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/source/flaresolverr"
 	"github.com/trueegorletov/analabit/service/producer/proto"
 
 	"go.uber.org/multierr"
@@ -60,6 +61,19 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 // runProduceWorkflow contains the core logic for crawling, calculating, and uploading results.
 // This can be called either by the public RPC endpoint or an internal ticker.
 func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceRequest, rsp *proto.ProduceResponse) error {
+	// Initialize FlareSolverr session management for this iteration
+	if err := flaresolverr.StartForIteration(); err != nil {
+		slog.Warn("Failed to initialize FlareSolverr sessions", "error", err)
+		// Continue without FlareSolverr - some sources might still work
+	}
+
+	// Ensure cleanup happens regardless of success or failure
+	defer func() {
+		if err := flaresolverr.StopForIteration(); err != nil {
+			slog.Error("Failed to cleanup FlareSolverr sessions", "error", err)
+		}
+	}()
+
 	varsitiesList := req.GetVarsitiesList()
 	if len(varsitiesList) == 0 {
 		varsitiesList = []string{"all"}
