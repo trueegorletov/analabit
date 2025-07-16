@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"github.com/trueegorletov/analabit/core/ent"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"log"
 	"strconv"
+
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -14,7 +15,7 @@ import (
 // GetHeadings retrieves a list of headings, with optional filtering.
 func GetHeadings(client *ent.Client) fiber.Handler {
 	return func(c fiber.Ctx) error {
-		limit, _ := strconv.Atoi(c.Query("limit", "100"))
+		limit, _ := strconv.Atoi(c.Query("limit", "0"))
 		offset, _ := strconv.Atoi(c.Query("offset", "0"))
 		varsityCode := c.Query("varsityCode")
 
@@ -25,7 +26,16 @@ func GetHeadings(client *ent.Client) fiber.Handler {
 		}
 
 		// preload varsity to access code
-		headings, err := q.WithVarsity().Limit(limit).Offset(offset).All(context.Background())
+
+		var headings []*ent.Heading
+		var err error
+
+		if limit > 0 {
+			headings, err = q.WithVarsity().Limit(limit).Offset(offset).All(context.Background())
+		} else {
+			headings, err = q.WithVarsity().All(context.Background())
+		}
+
 		if err != nil {
 			log.Printf("error getting headings: %v", err)
 			return fiber.ErrInternalServerError
