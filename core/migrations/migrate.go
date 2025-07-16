@@ -132,6 +132,53 @@ func (mr *MigrationRunner) recordMigration(ctx context.Context, migration Migrat
 func getAllMigrations() []Migration {
 	return []Migration{
 		{
+			Version:     4,
+			Description: "Fix passing_to_more_priority to only consider applications within same varsity",
+			Up: `
+DROP MATERIALIZED VIEW IF EXISTS application_flags;
+
+CREATE MATERIALIZED VIEW application_flags AS
+SELECT
+  a.id AS application_id,
+  a.run_id,
+  a.student_id,
+  a.priority,
+  a.original_submitted,
+  a.heading_applications AS heading_id,
+  EXISTS (SELECT 1 FROM applications a2
+   JOIN headings h_a2 ON a2.heading_applications = h_a2.id
+   JOIN headings h_current ON a.heading_applications = h_current.id
+   WHERE a2.student_id = a.student_id
+     AND a2.run_id = a.run_id
+     AND a2.priority < a.priority
+     AND a2.heading_applications != a.heading_applications
+     AND h_a2.varsity_headings = h_current.varsity_headings
+     AND EXISTS (SELECT 1 FROM calculations c
+                 WHERE c.student_id = a2.student_id
+                   AND c.heading_calculations = a2.heading_applications
+                   AND c.run_id = a2.run_id)) AS passing_to_more_priority,
+  EXISTS (SELECT 1 FROM calculations c
+          WHERE c.student_id = a.student_id
+            AND c.heading_calculations = a.heading_applications
+            AND c.run_id = a.run_id) AS passing_now,
+  EXISTS (SELECT 1 FROM applications a2
+   JOIN headings h2 ON a2.heading_applications = h2.id
+   WHERE a2.student_id = a.student_id
+     AND a2.run_id = a.run_id
+     AND a2.original_submitted = true
+     AND h2.varsity_headings != (SELECT varsity_headings FROM headings h3 WHERE h3.id = a.heading_applications)) AS original_quit,
+  (SELECT COUNT(DISTINCT h2.varsity_headings) FROM applications a2
+   JOIN headings h2 ON a2.heading_applications = h2.id
+   WHERE a2.student_id = a.student_id
+     AND a2.run_id = a.run_id
+     AND h2.varsity_headings != (SELECT varsity_headings FROM headings h3 WHERE h3.id = a.heading_applications))::int AS another_varsities_count
+FROM applications a;
+
+CREATE UNIQUE INDEX IF NOT EXISTS application_flags_pkey ON application_flags (application_id);
+`,
+			Down: "DROP MATERIALIZED VIEW IF EXISTS application_flags;",
+		},
+		{
 			Version:     3,
 			Description: "Ensure column order in application_flags materialized view",
 			Up: `
