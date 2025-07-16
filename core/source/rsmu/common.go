@@ -24,14 +24,15 @@ type Offer struct {
 
 // IndividualList represents the structure of an individual list JSON file
 type IndividualList struct {
-	Program      string      `json:"program"`      // Program name
-	Type         string      `json:"type"`         // Competition type
-	Plan         int         `json:"plan"`         // Number of places available
-	Count        int         `json:"count"`        // Total number of applicants
-	Exams        []string    `json:"exams"`        // List of required exams
-	Achievements []string    `json:"achievements"` // List of achievements
-	Offers       []Offer     `json:"offers"`       // List of offers
-	Applicants   []Applicant `json:"applicants"`   // List of applicants
+	Program               string           `json:"program"`      // Program name
+	Type                  string           `json:"type"`         // Competition type
+	Plan                  int              `json:"plan"`         // Number of places available
+	Count                 int              `json:"count"`        // Total number of applicants
+	Exams                 []string         `json:"exams"`        // List of required exams
+	Achievements          []string         `json:"achievements"` // List of achievements
+	Offers                []Offer          `json:"offers"`       // List of offers
+	Applicants            []Applicant      `json:"applicants"`   // List of applicants
+	SourceCompetitionType core.Competition `json:"-"`            // Set based on source URL, not serialized
 }
 
 // Applicant represents a single applicant in the individual list

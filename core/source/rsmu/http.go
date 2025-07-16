@@ -19,11 +19,11 @@ import (
 // HTTPHeadingSource defines how to load RSMU heading data from JSON URLs.
 // RSMU provides admission lists in JSON format with target quota lists and individual applicant data.
 type HTTPHeadingSource struct {
-	ProgramName            string
-	TargetQuotaListURLs    []string
-	RegularListURL         string
-	SpecialQuotaListURL    string
-	DedicatedQuotaListURL  string
+	ProgramName           string
+	TargetQuotaListURLs   []string
+	RegularListURL        string
+	SpecialQuotaListURL   string
+	DedicatedQuotaListURL string
 }
 
 // LoadTo loads data from HTTP source, downloading JSON files and sending HeadingData and ApplicationData to the provided receiver.
@@ -51,6 +51,8 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 			log.Printf("Warning: failed to download target quota list from %s: %v", url, err)
 			continue
 		}
+		// Mark this list as target quota
+		list.SourceCompetitionType = core.CompetitionTargetQuota
 		allLists = append(allLists, list)
 		capacities.TargetQuota += list.Plan
 	}
@@ -61,6 +63,8 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if err != nil {
 			log.Printf("Warning: failed to download regular list from %s: %v", s.RegularListURL, err)
 		} else {
+			// Mark this list as regular competition
+			list.SourceCompetitionType = core.CompetitionRegular
 			allLists = append(allLists, list)
 			capacities.Regular = list.Plan
 		}
@@ -72,6 +76,8 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if err != nil {
 			log.Printf("Warning: failed to download special quota list from %s: %v", s.SpecialQuotaListURL, err)
 		} else {
+			// Mark this list as special quota
+			list.SourceCompetitionType = core.CompetitionSpecialQuota
 			allLists = append(allLists, list)
 			capacities.SpecialQuota = list.Plan
 		}
@@ -83,6 +89,8 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if err != nil {
 			log.Printf("Warning: failed to download dedicated quota list from %s: %v", s.DedicatedQuotaListURL, err)
 		} else {
+			// Mark this list as dedicated quota
+			list.SourceCompetitionType = core.CompetitionDedicatedQuota
 			allLists = append(allLists, list)
 			capacities.DedicatedQuota = list.Plan
 		}
@@ -107,9 +115,14 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	totalApplicants := 0
 	for _, list := range allLists {
 		for _, applicant := range list.Applicants {
-			competitionType := mapCompetitionType(list.Type)
-			// Override to BVI if noExam is true
-			if applicant.NoExam {
+			if applicant.Rejected {
+				continue
+			}
+
+			// Use the competition type determined by source URL
+			competitionType := list.SourceCompetitionType
+			// Override to BVI only if noExam is true AND it's a regular competition
+			if applicant.NoExam && list.SourceCompetitionType == core.CompetitionRegular {
 				competitionType = core.CompetitionBVI
 			}
 
@@ -120,7 +133,7 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 				RatingPlace:       applicant.Order,
 				Priority:          applicant.Priority,
 				CompetitionType:   competitionType,
-				OriginalSubmitted: applicant.Original,
+				OriginalSubmitted: applicant.Approval || applicant.Original,
 			}
 			receiver.PutApplicationData(appData)
 			totalApplicants++
@@ -130,8 +143,6 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	log.Printf("Sent %d applications for RSMU heading %s", totalApplicants, s.ProgramName)
 	return nil
 }
-
-
 
 // downloadIndividualList downloads and parses an individual list JSON
 func (s *HTTPHeadingSource) downloadIndividualList(ctx context.Context, url string) (*IndividualList, error) {
