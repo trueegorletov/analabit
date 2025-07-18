@@ -78,10 +78,15 @@ func (f *FileHeadingSource) LoadTo(receiver source.DataReceiver) error {
 
 // parseApplicationsFromTable extracts applications from the MIPT HTML table
 func (f *FileHeadingSource) parseApplicationsFromTable(doc *html.Node, receiver source.DataReceiver, headingCode string, competitionType core.Competition) error {
-	// Find all table rows
-	rows := findTableRows(doc)
+	// Find the header row to detect the table format
+	headerRow, tableNode := findTableHeaderRow(doc)
+	if headerRow == nil {
+		return fmt.Errorf("table header not found in MIPT HTML")
+	}
+	format := detectTableFormat(headerRow)
 
-	fmt.Printf("DEBUG: Found %d total table rows\n", len(rows))
+	// Find all table rows
+	rows := findTableRows(tableNode)
 
 	if len(rows) == 0 {
 		return fmt.Errorf("no table rows found in MIPT HTML file")
@@ -92,11 +97,6 @@ func (f *FileHeadingSource) parseApplicationsFromTable(doc *html.Node, receiver 
 
 	// Process each row
 	for i, row := range rows {
-		// Skip header rows (usually the first row or rows with th elements)
-		if f.isHeaderRow(row) {
-			//fmt.Printf("DEBUG: Row %d is header row, skipping\n", i+1)
-			continue
-		}
 
 		// Skip empty rows
 		cells := extractTableCells(row)
@@ -107,16 +107,14 @@ func (f *FileHeadingSource) parseApplicationsFromTable(doc *html.Node, receiver 
 
 		// Check if this looks like a data row (first cell should be a position number)
 		firstCellText := strings.TrimSpace(getTextContent(cells[0]))
-		//fmt.Printf("DEBUG: Row %d first cell: '%s' (cells: %d)\n", i+1, firstCellText, len(cells))
 
 		// Skip header rows and invalid rows - MIPT data has position numbers like "1", "2", "315" etc.
 		if firstCellText == "" || !positionRegex.MatchString(firstCellText) {
-			//fmt.Printf("DEBUG: Row %d first cell doesn't match position format, skipping\n", i+1)
 			continue
 		}
 
 		// Parse the applicant data
-		app, err := parseApplicantFromTableRow(row, competitionType)
+		app, err := parseApplicantFromTableRow(row, competitionType, format)
 		if err != nil {
 			errors = append(errors, fmt.Sprintf("row %d: %v", i+1, err))
 			continue
@@ -145,42 +143,4 @@ func (f *FileHeadingSource) parseApplicationsFromTable(doc *html.Node, receiver 
 	}
 
 	return nil
-}
-
-// isHeaderRow determines if a table row is a header row
-func (f *FileHeadingSource) isHeaderRow(row *html.Node) bool {
-	// Check if row contains th elements (table header cells)
-	var hasThElements bool
-	var checkForTh func(*html.Node)
-	checkForTh = func(n *html.Node) {
-		if hasThElements {
-			return
-		}
-		if n.Type == html.ElementNode && n.Data == "th" {
-			hasThElements = true
-			return
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			checkForTh(c)
-		}
-	}
-	checkForTh(row)
-
-	if hasThElements {
-		return true
-	}
-
-	// Check if first cell looks like a header (contains column names)
-	cells := extractTableCells(row)
-	if len(cells) > 0 {
-		firstCellText := strings.ToLower(strings.TrimSpace(getTextContent(cells[0])))
-		headerKeywords := []string{"№", "номер", "место", "позиция", "фио", "имя"}
-		for _, keyword := range headerKeywords {
-			if strings.Contains(firstCellText, keyword) {
-				return true
-			}
-		}
-	}
-
-	return false
 }

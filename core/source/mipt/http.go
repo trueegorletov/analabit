@@ -67,46 +67,31 @@ func fetchMiptListByURL(listURL string, competitionType core.Competition) ([]*so
 
 // parseApplicationsFromHTML extracts applications from MIPT HTML document
 func parseApplicationsFromHTML(doc *html.Node, defaultCompetitionType core.Competition) ([]*source.ApplicationData, error) {
-	// Find all table rows
-	rows := findTableRows(doc)
+	// Find the header row to detect the table format
+	headerRow, tableNode := findTableHeaderRow(doc)
+	if headerRow == nil {
+		return nil, fmt.Errorf("table header not found in MIPT HTML")
+	}
+	format := detectTableFormat(headerRow)
 
-	if len(rows) == 0 {
-		return nil, fmt.Errorf("no table rows found in MIPT HTML")
+	// Find all table rows
+	rows := findTableRows(tableNode)
+	if len(rows) <= 1 { // Should have at least a header and one data row
+		return nil, fmt.Errorf("no data rows found in MIPT HTML")
 	}
 
 	var applications []*source.ApplicationData
 	var errors []string
 
-	// Process each row
-	for i, row := range rows {
-		// Skip header rows
-		if isHeaderRowFromHTML(row) {
-			continue
-		}
-
-		// Skip empty rows
-		cells := extractTableCells(row)
-		if len(cells) == 0 {
-			continue
-		}
-
-		// Check if this looks like a data row (first cell should be a position number)
-		firstCellText := strings.TrimSpace(getTextContent(cells[0]))
-		if firstCellText == "" || !positionRegex.MatchString(firstCellText) {
-			continue
-		}
-
-		// Parse the applicant data
-		app, err := parseApplicantFromTableRow(row, defaultCompetitionType)
+	// Process each row, skipping the header row (index 0)
+	for i, row := range rows[1:] {
+		app, err := parseApplicantFromTableRow(row, defaultCompetitionType, format)
 		if err != nil {
-			errors = append(errors, fmt.Sprintf("row %d: %v", i+1, err))
+			errors = append(errors, fmt.Sprintf("row %d: %v", i+2, err)) // i+2 because we skip the header
 			continue
 		}
-
 		applications = append(applications, app)
 	}
-
-	log.Printf("MIPT HTTP parser processed %d applications", len(applications))
 
 	if len(errors) > 0 {
 		log.Printf("MIPT HTTP parser encountered %d errors:", len(errors))
@@ -118,43 +103,6 @@ func parseApplicationsFromHTML(doc *html.Node, defaultCompetitionType core.Compe
 	return applications, nil
 }
 
-// isHeaderRowFromHTML determines if a table row is a header row
-func isHeaderRowFromHTML(row *html.Node) bool {
-	// Check if row contains th elements (table header cells)
-	var hasThElements bool
-	var checkForTh func(*html.Node)
-	checkForTh = func(n *html.Node) {
-		if hasThElements {
-			return
-		}
-		if n.Type == html.ElementNode && n.Data == "th" {
-			hasThElements = true
-			return
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			checkForTh(c)
-		}
-	}
-	checkForTh(row)
-
-	if hasThElements {
-		return true
-	}
-
-	// Check if first cell looks like a header (contains column names)
-	cells := extractTableCells(row)
-	if len(cells) > 0 {
-		firstCellText := strings.ToLower(strings.TrimSpace(getTextContent(cells[0])))
-		headerKeywords := []string{"№", "номер", "место", "позиция", "фио", "имя"}
-		for _, keyword := range headerKeywords {
-			if strings.Contains(firstCellText, keyword) {
-				return true
-			}
-		}
-	}
-
-	return false
-}
 
 // LoadTo implements source.HeadingSource for HTTPHeadingSource.
 func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
