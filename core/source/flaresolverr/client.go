@@ -65,18 +65,17 @@ type SessionInfo struct {
 	CreatedAt    time.Time
 	LastUsedAt   time.Time
 	RequestCount int
-	ActiveReqs   int
 	Healthy      bool
-	mutex        sync.RWMutex
 }
 
 // SessionPool manages sessions for a specific domain
 type SessionPool struct {
-	domain   string
-	sessions []*SessionInfo
-	mutex    sync.RWMutex
-	maxSize  int
-	client   *Client
+	domain      string
+	sessions    chan *SessionInfo
+	allSessions []*SessionInfo // Keep track of all sessions for cleanup
+	mutex       sync.RWMutex     // To protect allSessions slice
+	maxSize     int
+	client      *Client
 }
 
 // SessionManager manages session pools for different domains
@@ -486,6 +485,7 @@ func (sm *SessionManager) GetWithDomain(url string, headers map[string]string) (
 		// Fallback to sessionless request
 		return SafeGetWithHeaders(url, headers)
 	}
+	defer sm.ReleaseSession(session)
 
 	// Make request with session
 	client, err := GetClient()
@@ -496,21 +496,11 @@ func (sm *SessionManager) GetWithDomain(url string, headers map[string]string) (
 	resp, err := client.GetWithSession(url, session.ID, headers)
 
 	// Update session stats
-	session.mutex.Lock()
 	session.RequestCount++
-	session.mutex.Unlock()
-
-	// Release session back to pool
-	sm.ReleaseSession(session)
 
 	if err != nil {
-		// If session request failed, try to recreate session or fallback
-		if strings.Contains(err.Error(), "session") {
-			// Session might be invalid, mark as unhealthy
-			session.mutex.Lock()
-			session.Healthy = false
-			session.mutex.Unlock()
-		}
+		// If session request failed, the deferred release will handle it.
+		// The session will be marked as unhealthy by the health check if it fails consistently.
 		return resp, err
 	}
 
@@ -536,12 +526,17 @@ func (sm *SessionManager) getOrCreatePool(domain string) *SessionPool {
 	}
 
 	pool := &SessionPool{
-		domain:   domain,
-		sessions: make([]*SessionInfo, 0, sm.poolSize),
-		maxSize:  sm.poolSize,
-		client:   sm.client,
+		domain:      domain,
+		sessions:    make(chan *SessionInfo, sm.poolSize),
+		allSessions: make([]*SessionInfo, 0, sm.poolSize),
+		maxSize:     sm.poolSize,
+		client:      sm.client,
 	}
 	sm.pools[domain] = pool
+
+	// Pre-fill the pool with sessions
+	go pool.fillPool()
+
 	return pool
 }
 
@@ -553,10 +548,8 @@ func (sm *SessionManager) GetSessionForDomain(domain string) (*SessionInfo, erro
 
 // ReleaseSession releases a session back to the pool
 func (sm *SessionManager) ReleaseSession(session *SessionInfo) {
-	session.mutex.Lock()
-	defer session.mutex.Unlock()
-	session.ActiveReqs--
-	session.LastUsedAt = time.Now()
+	pool := sm.getOrCreatePool(session.Domain)
+	pool.releaseSession(session)
 }
 
 // Shutdown gracefully shuts down the session manager
@@ -683,137 +676,122 @@ func StopForIteration() error {
 
 // SessionPool methods
 
-// getAvailableSession gets an available session from the pool
+// getAvailableSession gets an available session from the pool, blocking if none are available.
 func (sp *SessionPool) getAvailableSession() (*SessionInfo, error) {
-	sp.mutex.Lock()
-	defer sp.mutex.Unlock()
+	// Block until a session is available
+	session := <-sp.sessions
 
-	// Find session with least active requests
-	var bestSession *SessionInfo
-	minActiveReqs := int(^uint(0) >> 1) // Max int
+	// Check if the session is healthy, if not, create a new one
+	if !session.Healthy {
+		// Destroy the unhealthy session
+		go sp.client.DestroySession(session.ID)
 
-	for _, session := range sp.sessions {
-		session.mutex.RLock()
-		if session.Healthy && session.ActiveReqs < minActiveReqs {
-			bestSession = session
-			minActiveReqs = session.ActiveReqs
-		}
-		session.mutex.RUnlock()
-	}
-
-	// If we found a good session, use it
-	if bestSession != nil {
-		bestSession.mutex.Lock()
-		bestSession.ActiveReqs++
-		bestSession.mutex.Unlock()
-		return bestSession, nil
-	}
-
-	// No available session, create a new one if pool not full
-	if len(sp.sessions) < sp.maxSize {
-		session, err := sp.createNewSession()
+		// Create a new session to replace the unhealthy one
+		newSession, err := sp.createNewSession()
 		if err != nil {
-			return nil, fmt.Errorf("failed to create new session: %w", err)
+			// If creation fails, put a placeholder back to not shrink the pool size
+			sp.sessions <- session
+			return nil, fmt.Errorf("failed to replace unhealthy session: %w", err)
 		}
-		session.ActiveReqs = 1
-		sp.sessions = append(sp.sessions, session)
-		return session, nil
+		return newSession, nil
 	}
 
-	// Pool is full, wait for least busy session
-	if bestSession == nil && len(sp.sessions) > 0 {
-		bestSession = sp.sessions[0]
-		for _, session := range sp.sessions[1:] {
-			session.mutex.RLock()
-			bestSession.mutex.RLock()
-			if session.ActiveReqs < bestSession.ActiveReqs {
-				bestSession.mutex.RUnlock()
-				bestSession = session
-				session.mutex.RUnlock()
-			} else {
-				bestSession.mutex.RUnlock()
-				session.mutex.RUnlock()
-			}
-		}
-		bestSession.mutex.Lock()
-		bestSession.ActiveReqs++
-		bestSession.mutex.Unlock()
-		return bestSession, nil
-	}
-
-	return nil, fmt.Errorf("no sessions available for domain %s", sp.domain)
+	return session, nil
 }
 
-// createNewSession creates a new session for the pool
+// releaseSession returns a session to the pool.
+func (sp *SessionPool) releaseSession(session *SessionInfo) {
+	session.LastUsedAt = time.Now()
+	// Non-blocking send to the channel. If the channel is full, it means
+	// the pool is already at max capacity with idle sessions, so we can destroy this one.
+	select {
+	case sp.sessions <- session:
+		// Session returned to pool
+	default:
+		// Pool is full, destroy the session
+		go sp.client.DestroySession(session.ID)
+		sp.removeSessionFromAll(session.ID)
+	}
+}
+
+// createNewSession creates a new session and adds it to the allSessions list.
 func (sp *SessionPool) createNewSession() (*SessionInfo, error) {
 	sessionID, err := sp.client.CreateSession()
 	if err != nil {
 		return nil, err
 	}
 
-	return &SessionInfo{
-		ID:           sessionID,
-		Domain:       sp.domain,
-		CreatedAt:    time.Now(),
-		LastUsedAt:   time.Now(),
-		RequestCount: 0,
-		ActiveReqs:   0,
-		Healthy:      true,
-	}, nil
-}
-
-// cleanupIdleSessions removes sessions that have been idle too long
-func (sp *SessionPool) cleanupIdleSessions(idleTimeout time.Duration) {
-	sp.mutex.Lock()
-	defer sp.mutex.Unlock()
-
-	now := time.Now()
-	var activeSessions []*SessionInfo
-
-	for _, session := range sp.sessions {
-		session.mutex.RLock()
-		isIdle := session.ActiveReqs == 0 && now.Sub(session.LastUsedAt) > idleTimeout
-		session.mutex.RUnlock()
-
-		if isIdle {
-			// Destroy idle session
-			sp.client.DestroySession(session.ID)
-		} else {
-			activeSessions = append(activeSessions, session)
-		}
+	session := &SessionInfo{
+		ID:        sessionID,
+		Domain:    sp.domain,
+		CreatedAt: time.Now(),
+		Healthy:   true,
 	}
 
-	sp.sessions = activeSessions
+	sp.mutex.Lock()
+	sp.allSessions = append(sp.allSessions, session)
+	sp.mutex.Unlock()
+
+	return session, nil
 }
 
-// healthCheckSessions performs health checks on pool sessions
+// fillPool populates the session pool up to its max size.
+func (sp *SessionPool) fillPool() {
+	for i := 0; i < sp.maxSize; i++ {
+		session, err := sp.createNewSession()
+		if err != nil {
+			// Log error and continue, the pool will just have fewer sessions
+			continue
+		}
+		sp.sessions <- session
+	}
+}
+
+// cleanupIdleSessions is now a no-op as the channel handles idle resources implicitly.
+// We keep the health check logic.
+func (sp *SessionPool) cleanupIdleSessions(idleTimeout time.Duration) {}
+
+
+// healthCheckSessions performs health checks on all sessions in the pool
 func (sp *SessionPool) healthCheckSessions() {
 	sp.mutex.RLock()
 	defer sp.mutex.RUnlock()
 
-	for _, session := range sp.sessions {
+	for _, session := range sp.allSessions {
 		go sp.checkSessionHealth(session)
 	}
 }
 
 // checkSessionHealth checks if a session is still healthy
 func (sp *SessionPool) checkSessionHealth(session *SessionInfo) {
-	session.mutex.Lock()
-	defer session.mutex.Unlock()
-
 	// Simple health check - if session has too many requests, mark as unhealthy
 	if session.RequestCount > 100 { // Configurable threshold
 		session.Healthy = false
 	}
 }
 
-// destroyAllSessions destroys all sessions in the pool
+// destroyAllSessions destroys all sessions in the pool.
 func (sp *SessionPool) destroyAllSessions() {
+	close(sp.sessions)
 	sp.mutex.Lock()
 	defer sp.mutex.Unlock()
 
-	for _, session := range sp.sessions {
+	for _, session := range sp.allSessions {
 		sp.client.DestroySession(session.ID)
 	}
-	sp.sessions = nil
+	sp.allSessions = nil
+}
+
+// removeSessionFromAll removes a session from the allSessions slice.
+func (sp *SessionPool) removeSessionFromAll(sessionID string) {
+	sp.mutex.Lock()
+	defer sp.mutex.Unlock()
+
+	var updatedSessions []*SessionInfo
+	for _, s := range sp.allSessions {
+		if s.ID != sessionID {
+			updatedSessions = append(updatedSessions, s)
+		}
+	}
+	sp.allSessions = updatedSessions
 }

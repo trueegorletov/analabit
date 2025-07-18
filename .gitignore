@@ -23,6 +23,7 @@ service/*/tmp/
 
 # Producer cache
 service/producer/cache/
+service/aggregator/backups/
 test.txt
 /tools/tabula.jar
 
@@ -41,3 +42,4 @@ aggregator_*.remote
 *_handler.go.remote
 .remote/
 .env*
+.trae/

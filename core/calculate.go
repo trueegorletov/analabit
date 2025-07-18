@@ -6,6 +6,7 @@ import (
 	"container/list" // Added for O(1) queue operations
 	"encoding/gob"
 	"fmt"
+	"log"
 	"log/slog"
 	"math/rand"
 	"sort"
@@ -576,6 +577,9 @@ func (v *VarsityCalculator) AddHeading(code string, capacities Capacities, prett
 	code = strings.TrimSpace(code)
 	prettyName = strings.TrimSpace(prettyName)
 
+	if _, ok := v.headings.Load(code); ok {
+		log.Printf("DUPLICATE HEADING CODE: Overwriting heading %s with prettyName %s and capacities %v", code, prettyName, capacities)
+	}
 	heading := &Heading{
 		CodeValue:               code,
 		varsity:                 v, // Link back to varsity

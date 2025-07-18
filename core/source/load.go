@@ -1,6 +1,7 @@
 package source
 
 import (
+	"log"
 	"log/slog"
 	"math"
 	"sync"
@@ -228,8 +229,20 @@ func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) ([]*
 }
 
 func LoadFromDefinitions(defs []VarsityDefinition) []*Varsity {
+	log.Printf("🔍 LOAD DEBUG: LoadFromDefinitions called with %d definitions", len(defs))
+	
 	var varsities []*Varsity
-	for _, def := range defs {
+	for i, def := range defs {
+		log.Printf("🔍 LOAD DEBUG: Processing definition %d: Code=%s, Name=%s, Sources=%d", i, def.Code, def.Name, len(def.HeadingSources))
+		
+		// Special debug for MIREA
+		if def.Code == "mirea" {
+			log.Printf("🔍 LOAD DEBUG: [MIREA] Found MIREA definition with %d heading sources", len(def.HeadingSources))
+			for j, src := range def.HeadingSources {
+				log.Printf("🔍 LOAD DEBUG: [MIREA] Source %d: %T", j, src)
+			}
+		}
+		
 		v := &Varsity{
 			VarsityDefinition: &def,
 			VarsityCalculator: nil,

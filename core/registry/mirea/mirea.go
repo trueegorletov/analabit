@@ -14,7 +14,9 @@ var Varsity = source.VarsityDefinition{
 
 func sourcesList() []source.HeadingSource {
 	return []source.HeadingSource{
+		// Автономные роботы
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Автономные роботы",
 			RegularListIDs:        []string{"1829098830464818486"},
 			BVIListIDs:            []string{"1829098830460624182"},
 			TargetQuotaListIDs:    []string{"1829098830463769910"},
@@ -22,7 +24,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098830461672758"},
 		},
 
+		// Анализ безопасности компьютерных систем
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Анализ безопасности компьютерных систем",
 			RegularListIDs:        []string{"1829098644022762806"},
 			BVIListIDs:            []string{"1829098644019617078"},
 			TargetQuotaListIDs:    []string{},
@@ -30,7 +34,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098644020665654"},
 		},
 
+		// Анализ данных
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Анализ данных",
 			RegularListIDs:        []string{"1829098280654478646"},
 			BVIListIDs:            []string{"1829098280651332918"},
 			TargetQuotaListIDs:    []string{},
@@ -38,7 +44,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098280652381494"},
 		},
 
+		// Аппаратное программирование встраиваемых систем
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Аппаратное программирование встраиваемых систем",
 			RegularListIDs:        []string{"1829098359733886262"},
 			BVIListIDs:            []string{"1829098359728643382"},
 			TargetQuotaListIDs:    []string{"1829098359731789110", "1829098359732837686"},
@@ -46,7 +54,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098359729691958"},
 		},
 
+		// Аудиовизуальные системы и технологии медиасвязи
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Аудиовизуальные системы и технологии медиасвязи",
 			RegularListIDs:        []string{"1829098713741532470"},
 			BVIListIDs:            []string{"1829098713736289590"},
 			TargetQuotaListIDs:    []string{"1829098713739435318", "1829098713740483894"},
@@ -54,7 +64,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098713737338166"},
 		},
 
+		// Безопасность автоматизированных систем (в сфере связи, информационных и коммуникационных технологий)
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Безопасность автоматизированных систем (в сфере связи, информационных и коммуникационных технологий)",
 			RegularListIDs:        []string{"1829098622271102262"},
 			BVIListIDs:            []string{"1829098622258519350"},
 			TargetQuotaListIDs:    []string{"1829098622262713654", "1829098622263762230", "1829098622264810806", "1829098622265859382", "1829098622266907958", "1829098622267956534", "1829098622269005110", "1829098622270053686", "1829185534518369590"},
@@ -62,7 +74,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098622259567926"},
 		},
 
+		// Безопасность программных решений
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Безопасность программных решений",
 			RegularListIDs:        []string{"1829098428193316150"},
 			BVIListIDs:            []string{"1829098428187024694"},
 			TargetQuotaListIDs:    []string{"1829098428191218998", "1829098428192267574", "1829185420161719606"},
@@ -70,7 +84,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098428188073270"},
 		},
 
+		// Бизнес-аналитика
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Бизнес-аналитика",
 			RegularListIDs:        []string{"1829098290594979126"},
 			BVIListIDs:            []string{"1829098290589736246"},
 			TargetQuotaListIDs:    []string{"1829098290592881974", "1829098290593930550"},
@@ -78,7 +94,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098290590784822"},
 		},
 
+		// Биотехнология
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Биотехнология",
 			RegularListIDs:        []string{"1829098929896037686"},
 			BVIListIDs:            []string{"1829098929890794806"},
 			TargetQuotaListIDs:    []string{"1829098929894989110", "1829185975260028214"},
@@ -86,7 +104,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098929891843382"},
 		},
 
+		// Геоинформационные системы и комплексы
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Геоинформационные системы и комплексы",
 			RegularListIDs:        []string{"1829098349764025654"},
 			BVIListIDs:            []string{"1829098349759831350"},
 			TargetQuotaListIDs:    []string{"1829184047658573110"},
@@ -94,7 +114,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098349760879926"},
 		},
 
+		// Гражданско-правовая
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Гражданско-правовая",
 			RegularListIDs:        []string{"1829101057973689654"},
 			BVIListIDs:            []string{"1829101057972641078"},
 			TargetQuotaListIDs:    []string{},
@@ -102,7 +124,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{},
 		},
 
+		// Дизайн сред смешанной реальности
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Дизайн сред смешанной реальности",
 			RegularListIDs:        []string{"1829099154690809142"},
 			BVIListIDs:            []string{"1829099154687663414"},
 			TargetQuotaListIDs:    []string{},
@@ -110,7 +134,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099154688711990"},
 		},
 
+		// Инженерия автоматизированных систем
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Инженерия автоматизированных систем",
 			RegularListIDs:        []string{"1829098982235708726"},
 			BVIListIDs:            []string{"1829098982230465846"},
 			TargetQuotaListIDs:    []string{"1829098982233611574", "1829098982234660150"},
@@ -118,7 +144,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098982231514422"},
 		},
 
+		// Инженерная защита окружающей среды
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Инженерная защита окружающей среды",
 			RegularListIDs:        []string{"1829098939903647030"},
 			BVIListIDs:            []string{"1829098939899452726"},
 			TargetQuotaListIDs:    []string{"1829184162223889718"},
@@ -126,7 +154,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098939900501302"},
 		},
 
+		// Инновационные технологии беспилотных систем
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Инновационные технологии беспилотных систем",
 			RegularListIDs:        []string{"1829098991581666614"},
 			BVIListIDs:            []string{"1829098991577472310"},
 			TargetQuotaListIDs:    []string{"1829185985294900534"},
@@ -134,7 +164,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098991578520886"},
 		},
 
+		// Интеллектуальные системы безопасности и аналитическое приборостроение
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Интеллектуальные системы безопасности и аналитическое приборостроение",
 			RegularListIDs:        []string{"1829098767469518134"},
 			BVIListIDs:            []string{"1829098767464275254"},
 			TargetQuotaListIDs:    []string{"1829098767467420982", "1829098767468469558"},
@@ -142,7 +174,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098767465323830"},
 		},
 
+		// Интеллектуальные системы обработки медико-биологической информации
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Интеллектуальные системы обработки медико-биологической информации",
 			RegularListIDs:        []string{"1829098778444963126"},
 			BVIListIDs:            []string{"1829098778439720246"},
 			TargetQuotaListIDs:    []string{"1829098778442865974", "1829098778443914550"},
@@ -150,7 +184,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098778440768822"},
 		},
 
+		// Интеллектуальные системы поддержки принятия решений
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Интеллектуальные системы поддержки принятия решений",
 			RegularListIDs:        []string{"1829098545798454582"},
 			BVIListIDs:            []string{"1829098545794260278"},
 			TargetQuotaListIDs:    []string{"1829098545797406006"},
@@ -158,7 +194,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098545795308854"},
 		},
 
+		// Интеллектуальные системы управления и обработки информации
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Интеллектуальные системы управления и обработки информации",
 			RegularListIDs:        []string{"1829098369850547510"},
 			BVIListIDs:            []string{"1829098369845304630"},
 			TargetQuotaListIDs:    []string{"1829098369848450358", "1829098369849498934"},
@@ -166,7 +204,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098369846353206"},
 		},
 
+		// Инфокоммуникационные системы и сети
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Инфокоммуникационные системы и сети",
 			RegularListIDs:        []string{"1829098723858193718"},
 			BVIListIDs:            []string{"1829098723848756534"},
 			TargetQuotaListIDs:    []string{"1829098723852950838", "1829098723853999414", "1829098723855047990", "1829098723856096566", "1829098723857145142", "1829185800051367222"},
@@ -174,7 +214,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098723849805110"},
 		},
 
+		// Информатизация организаций
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Информатизация организаций",
 			RegularListIDs:        []string{"1829098511654722870"},
 			BVIListIDs:            []string{"1829098511648431414"},
 			TargetQuotaListIDs:    []string{"1829098511651577142", "1829098511652625718", "1829098511653674294"},
@@ -182,7 +224,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098511649479990"},
 		},
 
+		// Информационные системы управления ресурсами предприятия
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Информационные системы управления ресурсами предприятия",
 			RegularListIDs:        []string{"1829098557629537590"},
 			BVIListIDs:            []string{"1829098557623246134"},
 			TargetQuotaListIDs:    []string{"1829098557626391862", "1829098557627440438", "1829098557628489014"},
@@ -190,7 +234,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098557624294710"},
 		},
 
+		// Информационные технологии в атомной отрасли
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Информационные технологии в атомной отрасли",
 			RegularListIDs:        []string{"1829098567545920822"},
 			BVIListIDs:            []string{"1829098567540677942"},
 			TargetQuotaListIDs:    []string{"1829098567543823670", "1829098567544872246"},
@@ -198,7 +244,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098567541726518"},
 		},
 
+		// Информационные технологии в государственном управлении
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Информационные технологии в государственном управлении",
 			RegularListIDs:        []string{"1829099079887494454"},
 			BVIListIDs:            []string{"1829099079884348726"},
 			TargetQuotaListIDs:    []string{},
@@ -206,7 +254,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099079885397302"},
 		},
 
+		// Инфраструктура информационных технологий
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Инфраструктура информационных технологий",
 			RegularListIDs:        []string{"1829098380367764790"},
 			BVIListIDs:            []string{"1829098380362521910"},
 			TargetQuotaListIDs:    []string{"1829098380365667638", "1829098380366716214"},
@@ -214,7 +264,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098380363570486"},
 		},
 
+		// Искусственный интеллект и машинное обучение
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Искусственный интеллект и машинное обучение",
 			RegularListIDs:        []string{"1829098300710591798"},
 			BVIListIDs:            []string{"1829098300705348918"},
 			TargetQuotaListIDs:    []string{"1829098300708494646", "1829098300709543222"},
@@ -222,7 +274,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098300706397494"},
 		},
 
+		// Киберфизические системы
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Киберфизические системы",
 			RegularListIDs:        []string{"1829098388712332598"},
 			BVIListIDs:            []string{"1829098388709186870"},
 			TargetQuotaListIDs:    []string{},
@@ -230,7 +284,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098388710235446"},
 		},
 
+		// Компьютерная экспертиза
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Компьютерная экспертиза",
 			RegularListIDs:        []string{"1829098693184199990"},
 			BVIListIDs:            []string{"1829098693180005686"},
 			TargetQuotaListIDs:    []string{"1829184113205058870"},
@@ -238,7 +294,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098693181054262"},
 		},
 
+		// Компьютерный дизайн
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Компьютерный дизайн",
 			RegularListIDs:        []string{"1829098438313123126"},
 			BVIListIDs:            []string{"1829098438307880246"},
 			TargetQuotaListIDs:    []string{"1829098438312074550", "1829185433435643190"},
@@ -246,7 +304,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098438308928822"},
 		},
 
+		// Лазерная инженерия
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Лазерная инженерия",
 			RegularListIDs:        []string{"1829098789358542134"},
 			BVIListIDs:            []string{"1829098789354347830"},
 			TargetQuotaListIDs:    []string{"1829098789357493558"},
@@ -254,7 +314,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098789355396406"},
 		},
 
+		// Математическое моделирование и вычислительная математика
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Математическое моделирование и вычислительная математика",
 			RegularListIDs:        []string{"1829098260805983542"},
 			BVIListIDs:            []string{"1829098260798643510"},
 			TargetQuotaListIDs:    []string{"1829098260801789238", "1829098260802837814", "1829098260803886390", "1829098260804934966"},
@@ -262,7 +324,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098260799692086"},
 		},
 
+		// Медицинская и фармацевтическая химия
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Медицинская и фармацевтическая химия",
 			RegularListIDs:        []string{"1829098320139656502"},
 			BVIListIDs:            []string{"1829098320134413622"},
 			TargetQuotaListIDs:    []string{"1829098320138607926", "1829185325289708854"},
@@ -270,7 +334,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098320135462198"},
 		},
 
+		// Медицинская физика
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Медицинская физика",
 			RegularListIDs:        []string{"1829098310219078966"},
 			BVIListIDs:            []string{"1829098310214884662"},
 			TargetQuotaListIDs:    []string{"1829184032826465590"},
@@ -278,7 +344,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098310215933238"},
 		},
 
+		// Менеджмент в сфере систем вооружений
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Менеджмент в сфере систем вооружений",
 			RegularListIDs:        []string{"1829099000878341430"},
 			BVIListIDs:            []string{"1829099000874147126"},
 			TargetQuotaListIDs:    []string{"1829099000877292854"},
@@ -286,7 +354,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099000875195702"},
 		},
 
+		// Наноэлектроника
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Наноэлектроника",
 			RegularListIDs:        []string{"1829098744493120822"},
 			BVIListIDs:            []string{"1829098744484732214"},
 			TargetQuotaListIDs:    []string{"1829098744487877942", "1829098744488926518", "1829098744489975094", "1829098744491023670", "1829098744492072246"},
@@ -294,7 +364,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098744485780790"},
 		},
 
+		// Оптико-электронные информационно-измерительные приборы и системы
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Оптико-электронные информационно-измерительные приборы и системы",
 			RegularListIDs:        []string{"1829098799676529974"},
 			BVIListIDs:            []string{"1829098799662898486"},
 			TargetQuotaListIDs:    []string{"1829098799667092790", "1829098799668141366", "1829098799669189942", "1829098799670238518", "1829098799671287094", "1829098799672335670", "1829098799673384246", "1829098799674432822", "1829098799675481398", "1829185826818366774"},
@@ -302,7 +374,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098799663947062"},
 		},
 
+		// Организационно-управленческая деятельность в государственной и муниципальной службе
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Организационно-управленческая деятельность в государственной и муниципальной службе",
 			RegularListIDs:        []string{"1829099071726427446"},
 			BVIListIDs:            []string{"1829099071723281718"},
 			TargetQuotaListIDs:    []string{},
@@ -310,7 +384,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099071724330294"},
 		},
 
+		// Организация и технологии защиты информации (в сфере связи, информационных и коммуникационных технологий)
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Организация и технологии защиты информации (в сфере связи, информационных и коммуникационных технологий)",
 			RegularListIDs:        []string{"1829098634136788278"},
 			BVIListIDs:            []string{"1829098634128399670"},
 			TargetQuotaListIDs:    []string{"1829098634132593974", "1829098634133642550", "1829098634134691126", "1829098634135739702", "1829185547806973238"},
@@ -318,7 +394,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098634129448246"},
 		},
 
+		// Прикладные ИТ-решения для бизнеса
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Прикладные ИТ-решения для бизнеса",
 			RegularListIDs:        []string{"1829099090126839094"},
 			BVIListIDs:            []string{"1829099090122644790"},
 			TargetQuotaListIDs:    []string{"1829099090125790518"},
@@ -326,7 +404,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099090123693366"},
 		},
 
+		// Проектирование и разработка сред и приложений дополненной и виртуальной реальностей
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Проектирование и разработка сред и приложений дополненной и виртуальной реальностей",
 			RegularListIDs:        []string{"1829098577307114806"},
 			BVIListIDs:            []string{"1829098577302920502"},
 			TargetQuotaListIDs:    []string{"1829185498868882742"},
@@ -334,7 +414,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098577303969078"},
 		},
 
+		// Промышленная информатика
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Промышленная информатика",
 			RegularListIDs:        []string{"1829098399056534838"},
 			BVIListIDs:            []string{"1829098399048146230"},
 			TargetQuotaListIDs:    []string{"1829098399051291958", "1829098399052340534", "1829098399053389110", "1829098399054437686", "1829098399055486262"},
@@ -342,7 +424,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098399049194806"},
 		},
 
+		// Радиоинформатика, мониторинг и телеметрия
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Радиоинформатика, мониторинг и телеметрия",
 			RegularListIDs:        []string{"1829098703560908086"},
 			BVIListIDs:            []string{"1829098703548325174"},
 			TargetQuotaListIDs:    []string{"1829098703551470902", "1829098703552519478", "1829098703553568054", "1829098703554616630", "1829098703555665206", "1829098703556713782", "1829098703557762358", "1829098703558810934", "1829098703559859510"},
@@ -350,7 +434,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098703549373750"},
 		},
 
+		// Радиоэлектронные комплексы связи, локации и навигации
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Радиоэлектронные комплексы связи, локации и навигации",
 			RegularListIDs:        []string{"1829116789938724150"},
 			BVIListIDs:            []string{"1829116789925092662"},
 			TargetQuotaListIDs:    []string{"1829116789928238390", "1829116789929286966", "1829116789930335542", "1829116789931384118", "1829116789932432694", "1829116789933481270", "1829116789934529846", "1829116789935578422", "1829116789936626998", "1829116789937675574"},
@@ -358,7 +444,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829116789926141238"},
 		},
 
+		// Разработка автоматизированных систем в защищённом исполнении
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Разработка автоматизированных систем в защищённом исполнении",
 			RegularListIDs:        []string{"1829098673703755062"},
 			BVIListIDs:            []string{"1829098673698512182"},
 			TargetQuotaListIDs:    []string{"1829098673701657910", "1829098673702706486"},
@@ -366,7 +454,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098673699560758"},
 		},
 
+		// Разработка защищённого программного обеспечения
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Разработка защищённого программного обеспечения",
 			RegularListIDs:        []string{"1829098654396325174"},
 			BVIListIDs:            []string{"1829098654393179446"},
 			TargetQuotaListIDs:    []string{},
@@ -374,7 +464,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098654394228022"},
 		},
 
+		// Разработка защищённых телекоммуникационных систем
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Разработка защищённых телекоммуникационных систем",
 			RegularListIDs:        []string{"1829098663636376886"},
 			BVIListIDs:            []string{"1829098663632182582"},
 			TargetQuotaListIDs:    []string{"1829098663635328310"},
@@ -382,7 +474,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098663633231158"},
 		},
 
+		// Разработка и дизайн компьютерных игр и мультимедийных приложений
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Разработка и дизайн компьютерных игр и мультимедийных приложений",
 			RegularListIDs:        []string{"1829098587239226678"},
 			BVIListIDs:            []string{"1829098587235032374"},
 			TargetQuotaListIDs:    []string{"1829185513459817782"},
@@ -390,7 +484,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098587236080950"},
 		},
 
+		// Разработка кроссплатформенных бизнес-приложений
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Разработка кроссплатформенных бизнес-приложений",
 			RegularListIDs:        []string{"1829098448354286902"},
 			BVIListIDs:            []string{"1829098448350092598"},
 			TargetQuotaListIDs:    []string{"1829185446571154742"},
@@ -398,7 +494,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098448351141174"},
 		},
 
+		// Разработка программных продуктов и проектирование информационных систем
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Разработка программных продуктов и проектирование информационных систем",
 			RegularListIDs:        []string{"1829098599124835638"},
 			BVIListIDs:            []string{"1829098599113301302"},
 			TargetQuotaListIDs:    []string{"1829098599116447030", "1829098599117495606", "1829098599118544182", "1829098599119592758", "1829098599120641334", "1829098599121689910", "1829098599122738486", "1829098599123787062"},
@@ -406,7 +504,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098599114349878"},
 		},
 
+		// Роботизированные мультироторные беспилотные авиационные системы
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Роботизированные мультироторные беспилотные авиационные системы",
 			RegularListIDs:        []string{"1829098841639492918"},
 			BVIListIDs:            []string{"1829098841635298614"},
 			TargetQuotaListIDs:    []string{"1829098841638444342"},
@@ -414,7 +514,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098841636347190"},
 		},
 
+		// Системная и программная инженерия
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Системная и программная инженерия",
 			RegularListIDs:        []string{"1829098611608132918"},
 			BVIListIDs:            []string{"1829098611596598582"},
 			TargetQuotaListIDs:    []string{"1829098611599744310", "1829098611600792886", "1829098611601841462", "1829098611602890038", "1829098611603938614", "1829098611604987190", "1829098611606035766", "1829098611607084342"},
@@ -422,7 +524,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098611597647158"},
 		},
 
+		// Системное программирование и компьютерные технологии
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Системное программирование и компьютерные технологии",
 			RegularListIDs:        []string{"1829098270878604598"},
 			BVIListIDs:            []string{"1829098270874410294"},
 			TargetQuotaListIDs:    []string{"1829098270877556022"},
@@ -430,7 +534,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098270875458870"},
 		},
 
+		// Современные и перспективные материалы
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Современные и перспективные материалы",
 			RegularListIDs:        []string{"1829098949899722038"},
 			BVIListIDs:            []string{"1829098949894479158"},
 			TargetQuotaListIDs:    []string{"1829098949897624886", "1829098949898673462"},
@@ -438,7 +544,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098949895527734"},
 		},
 
+		// Современные технологии управления документами
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Современные технологии управления документами",
 			RegularListIDs:        []string{"1829099145912130870"},
 			BVIListIDs:            []string{"1829099145907936566"},
 			TargetQuotaListIDs:    []string{"1829099145911082294"},
@@ -446,7 +554,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099145908985142"},
 		},
 
+		// Технологии виртуальных пространств
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Технологии виртуальных пространств",
 			RegularListIDs:        []string{"1829098459304566070"},
 			BVIListIDs:            []string{"1829098459300371766"},
 			TargetQuotaListIDs:    []string{"1829185459018800438"},
@@ -454,7 +564,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098459301420342"},
 		},
 
+		// Технологии и системы искусственного интеллекта в здравоохранении
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Технологии и системы искусственного интеллекта в здравоохранении",
 			RegularListIDs:        []string{"1829098407870864694"},
 			BVIListIDs:            []string{"1829098407867718966"},
 			TargetQuotaListIDs:    []string{},
@@ -462,7 +574,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098407868767542"},
 		},
 
+		// Технологии информационно-аналитического мониторинга
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Технологии информационно-аналитического мониторинга",
 			RegularListIDs:        []string{"1829098683758550326"},
 			BVIListIDs:            []string{"1829098683750161718"},
 			TargetQuotaListIDs:    []string{"1829098683754356022", "1829098683755404598", "1829098683756453174", "1829098683757501750", "1829185560074263862"},
@@ -470,7 +584,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098683751210294"},
 		},
 
+		// Технологии искусственного интеллекта и анализ данных
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Технологии искусственного интеллекта и анализ данных",
 			RegularListIDs:        []string{"1829098469564882230"},
 			BVIListIDs:            []string{"1829098469557542198"},
 			TargetQuotaListIDs:    []string{"1829098469560687926", "1829098469561736502", "1829098469562785078", "1829098469563833654"},
@@ -478,7 +594,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098469558590774"},
 		},
 
+		// Технологии разработки платформенных бизнес-приложений
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Технологии разработки платформенных бизнес-приложений",
 			RegularListIDs:        []string{"1829116820654660918"},
 			BVIListIDs:            []string{"1829116820649418038"},
 			TargetQuotaListIDs:    []string{"1829116820653612342", "1829185474661457206"},
@@ -486,7 +604,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829116820650466614"},
 		},
 
+		// Технологии разработки программного обеспечения полного цикла
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Технологии разработки программного обеспечения полного цикла",
 			RegularListIDs:        []string{"1829098490106486070"},
 			BVIListIDs:            []string{"1829098490094951734"},
 			TargetQuotaListIDs:    []string{"1829098490098097462", "1829098490099146038", "1829098490100194614", "1829098490101243190", "1829098490102291766", "1829098490103340342", "1829098490104388918", "1829098490105437494"},
@@ -494,7 +614,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098490096000310"},
 		},
 
+		// Технологическое предпринимательство
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Технологическое предпринимательство",
 			RegularListIDs:        []string{"1829099010341739830"},
 			BVIListIDs:            []string{"1829099010336496950"},
 			TargetQuotaListIDs:    []string{"1829099010340691254", "1829185998784830774"},
@@ -502,7 +624,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099010337545526"},
 		},
 
+		// Технология художественной обработки материалов
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Технология художественной обработки материалов",
 			RegularListIDs:        []string{"1829099029347179830"},
 			BVIListIDs:            []string{"1829099029342985526"},
 			TargetQuotaListIDs:    []string{"1829184190090845494"},
@@ -510,7 +634,19 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099029344034102"},
 		},
 
+		// Уголовно-правовая
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Уголовно-правовая",
+			RegularListIDs:        []string{},
+			BVIListIDs:            []string{},
+			TargetQuotaListIDs:    []string{},
+			DedicatedQuotaListIDs: []string{},
+			SpecialQuotaListIDs:   []string{},
+		},
+
+		// Управление бизнес-процессами
+		&mirea.HTTPHeadingSource{
+			PrettyName:            "Управление бизнес-процессами",
 			RegularListIDs:        []string{"1829099056144588086"},
 			BVIListIDs:            []string{"1829099056141442358"},
 			TargetQuotaListIDs:    []string{},
@@ -518,7 +654,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099056142490934"},
 		},
 
+		// Управление данными
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Управление данными",
 			RegularListIDs:        []string{"1829098523302305078"},
 			BVIListIDs:            []string{"1829098523298110774"},
 			TargetQuotaListIDs:    []string{"1829098523301256502"},
@@ -526,7 +664,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098523299159350"},
 		},
 
+		// Управление качеством
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Управление качеством",
 			RegularListIDs:        []string{"1829098972660112694"},
 			BVIListIDs:            []string{"1829098972643335478"},
 			TargetQuotaListIDs:    []string{"1829098972646481206", "1829098972647529782", "1829098972648578358", "1829098972649626934", "1829098972650675510", "1829098972651724086", "1829098972652772662", "1829098972653821238", "1829098972654869814", "1829098972655918390", "1829098972656966966", "1829098972658015542", "1829098972659064118"},
@@ -534,7 +674,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098972644384054"},
 		},
 
+		// Управление персоналом организации
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Управление персоналом организации",
 			RegularListIDs:        []string{"1829099063853718838"},
 			BVIListIDs:            []string{"1829099063851621686"},
 			TargetQuotaListIDs:    []string{},
@@ -542,7 +684,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{},
 		},
 
+		// Физика и технологии наносистем
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Физика и технологии наносистем",
 			RegularListIDs:        []string{"1829099019660434742"},
 			BVIListIDs:            []string{"1829099019656240438"},
 			TargetQuotaListIDs:    []string{"1829184175621545270"},
@@ -550,7 +694,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099019657289014"},
 		},
 
+		// Финансовая безопасность цифровой экономики
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Финансовая безопасность цифровой экономики",
 			RegularListIDs:        []string{"1829116694573882678"},
 			BVIListIDs:            []string{"1829116694572834102"},
 			TargetQuotaListIDs:    []string{},
@@ -558,7 +704,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{},
 		},
 
+		// Финансовая разведка
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Финансовая разведка",
 			RegularListIDs:        []string{"1829099038427847990"},
 			BVIListIDs:            []string{"1829099038424702262"},
 			TargetQuotaListIDs:    []string{},
@@ -566,7 +714,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099038425750838"},
 		},
 
+		// Фуллстек разработка
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Фуллстек разработка",
 			RegularListIDs:        []string{"1829098500119338294"},
 			BVIListIDs:            []string{"1829098500110949686"},
 			TargetQuotaListIDs:    []string{"1829098500115143990", "1829098500116192566", "1829098500117241142", "1829098500118289718", "1829185487097568566"},
@@ -574,7 +724,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098500111998262"},
 		},
 
+		// Фундаментальная и прикладная химия
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Фундаментальная и прикладная химия",
 			RegularListIDs:        []string{"1829098330035068214"},
 			BVIListIDs:            []string{"1829098330029825334"},
 			TargetQuotaListIDs:    []string{"1829098330034019638", "1829185341341310262"},
@@ -582,7 +734,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098330030873910"},
 		},
 
+		// Химическая технология органических веществ
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Химическая технология органических веществ",
 			RegularListIDs:        []string{"1829098851832700214"},
 			BVIListIDs:            []string{"1829098851824311606"},
 			TargetQuotaListIDs:    []string{"1829098851828505910", "1829098851829554486", "1829098851830603062", "1829098851831651638", "1829185851031035190"},
@@ -590,7 +744,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098851825360182"},
 		},
 
+		// Химическая технология природных и синтетических полимерных материалов
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Химическая технология природных и синтетических полимерных материалов",
 			RegularListIDs:        []string{"1829116768661019958"},
 			BVIListIDs:            []string{"1829116768652631350"},
 			TargetQuotaListIDs:    []string{"1829116768656825654", "1829116768657874230", "1829116768658922806", "1829116768659971382", "1829185894060399926"},
@@ -598,7 +754,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829116768653679926"},
 		},
 
+		// Химическая технология природных энергоносителей и углеродных материалов
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Химическая технология природных энергоносителей и углеродных материалов",
 			RegularListIDs:        []string{"1829098871332019510"},
 			BVIListIDs:            []string{"1829098871325728054"},
 			TargetQuotaListIDs:    []string{"1829098871329922358", "1829098871330970934", "1829185863905451318"},
@@ -606,7 +764,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098871326776630"},
 		},
 
+		// Химическая технология редких и благородных металлов
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Химическая технология редких и благородных металлов",
 			RegularListIDs:        []string{"1829098881359551798"},
 			BVIListIDs:            []string{"1829098881352211766"},
 			TargetQuotaListIDs:    []string{"1829098881356406070", "1829098881357454646", "1829098881358503222", "1829185933242539318"},
@@ -614,7 +774,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098881353260342"},
 		},
 
+		// Химическая технология редких и редкоземельных металлов
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Химическая технология редких и редкоземельных металлов",
 			RegularListIDs:        []string{"1829098919855922486"},
 			BVIListIDs:            []string{"1829098919852776758"},
 			TargetQuotaListIDs:    []string{},
@@ -622,7 +784,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098919853825334"},
 		},
 
+		// Химическая технология синтетических биологически активных веществ и химико-фармацевтических препаратов
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Химическая технология синтетических биологически активных веществ и химико-фармацевтических препаратов",
 			RegularListIDs:        []string{"1829098891417492790"},
 			BVIListIDs:            []string{"1829098891410152758"},
 			TargetQuotaListIDs:    []string{"1829098891414347062", "1829098891415395638", "1829098891416444214", "1829185876179033398"},
@@ -630,7 +794,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098891411201334"},
 		},
 
+		// Химия гибридных полимерных систем
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Химия гибридных полимерных систем",
 			RegularListIDs:        []string{"1829098339801505078"},
 			BVIListIDs:            []string{"1829098339797310774"},
 			TargetQuotaListIDs:    []string{"1829185370765401398"},
@@ -638,7 +804,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098339798359350"},
 		},
 
+		// Химия и технология функциональных полимеров
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Химия и технология функциональных полимеров",
 			RegularListIDs:        []string{"1829098900757159222"},
 			BVIListIDs:            []string{"1829098900751916342"},
 			TargetQuotaListIDs:    []string{"1829098900756110646", "1829185946062429494"},
@@ -646,7 +814,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098900752964918"},
 		},
 
+		// Цифровая трансформация
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Цифровая трансформация",
 			RegularListIDs:        []string{"1829098535633558838"},
 			BVIListIDs:            []string{"1829098535627267382"},
 			TargetQuotaListIDs:    []string{"1829098535630413110", "1829098535631461686", "1829098535632510262"},
@@ -654,7 +824,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098535628315958"},
 		},
 
+		// Цифровая химическая технология
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Цифровая химическая технология",
 			RegularListIDs:        []string{"1829098910436564278"},
 			BVIListIDs:            []string{"1829098910431321398"},
 			TargetQuotaListIDs:    []string{"1829098910435515702", "1829185960242322742"},
@@ -662,7 +834,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098910432369974"},
 		},
 
+		// Цифровое проектирование радиоэлектронных средств
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Цифровое проектирование радиоэлектронных средств",
 			RegularListIDs:        []string{"1829098734183521590"},
 			BVIListIDs:            []string{"1829098734171987254"},
 			TargetQuotaListIDs:    []string{"1829098734175132982", "1829098734176181558", "1829098734177230134", "1829098734178278710", "1829098734179327286", "1829098734180375862", "1829098734181424438", "1829098734182473014"},
@@ -670,7 +844,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098734173035830"},
 		},
 
+		// Цифровое производство
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Цифровое производство",
 			RegularListIDs:        []string{"1829098821050703158"},
 			BVIListIDs:            []string{"1829098821041265974"},
 			TargetQuotaListIDs:    []string{"1829098821045460278", "1829098821046508854", "1829098821047557430", "1829098821048606006", "1829098821049654582", "1829185838317051190"},
@@ -678,7 +854,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098821042314550"},
 		},
 
+		// Цифровые и аддитивные технологии в машиностроении
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Цифровые и аддитивные технологии в машиностроении",
 			RegularListIDs:        []string{"1829098811032608054"},
 			BVIListIDs:            []string{"1829098811022122294"},
 			TargetQuotaListIDs:    []string{"1829098811025268022", "1829098811026316598", "1829098811027365174", "1829098811028413750", "1829098811029462326", "1829098811030510902", "1829098811031559478"},
@@ -686,7 +864,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098811023170870"},
 		},
 
+		// Цифровые измерительные технологии
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Цифровые измерительные технологии",
 			RegularListIDs:        []string{"1829116745423527222"},
 			BVIListIDs:            []string{"1829116745413041462"},
 			TargetQuotaListIDs:    []string{"1829116745416187190", "1829116745417235766", "1829116745418284342", "1829116745419332918", "1829116745420381494", "1829116745421430070", "1829116745422478646"},
@@ -694,7 +874,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829116745414090038"},
 		},
 
+		// Цифровые комплексы, системы и сети
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Цифровые комплексы, системы и сети",
 			RegularListIDs:        []string{"1829098418061974838"},
 			BVIListIDs:            []string{"1829098418052537654"},
 			TargetQuotaListIDs:    []string{"1829098418055683382", "1829098418056731958", "1829098418057780534", "1829098418058829110", "1829098418059877686", "1829098418060926262"},
@@ -702,7 +884,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829098418053586230"},
 		},
 
+		// Экономика бизнеса
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Экономика бизнеса",
 			RegularListIDs:        []string{"1829099047875517750"},
 			BVIListIDs:            []string{"1829099047871323446"},
 			TargetQuotaListIDs:    []string{"1829099047874469174"},
@@ -710,7 +894,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{"1829099047872372022"},
 		},
 
+		// Экономическая безопасность государства и бизнеса
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Экономическая безопасность государства и бизнеса",
 			RegularListIDs:        []string{"1829101006431984950"},
 			BVIListIDs:            []string{"1829101006430936374"},
 			TargetQuotaListIDs:    []string{},
@@ -718,7 +904,9 @@ func sourcesList() []source.HeadingSource {
 			SpecialQuotaListIDs:   []string{},
 		},
 
+		// Юриспруденция
 		&mirea.HTTPHeadingSource{
+			PrettyName:            "Юриспруденция",
 			RegularListIDs:        []string{"1829100731190222134"},
 			BVIListIDs:            []string{"1829100731189173558"},
 			TargetQuotaListIDs:    []string{},

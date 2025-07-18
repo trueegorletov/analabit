@@ -1,6 +1,7 @@
 package registry
 
 import (
+	"github.com/trueegorletov/analabit/core/registry/fmsmu"
 	"github.com/trueegorletov/analabit/core/registry/hse"
 	"github.com/trueegorletov/analabit/core/registry/itmo"
 	"github.com/trueegorletov/analabit/core/registry/mipt"
@@ -25,4 +26,5 @@ var AllDefinitions = []source.VarsityDefinition{
 	itmo.Varsity,
 	mipt.Varsity,
 	mirea.Varsity,
+	fmsmu.Varsity,
 }

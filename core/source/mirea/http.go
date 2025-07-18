@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"log/slog"
 	"math/rand"
 	"os"
 	"strconv"
@@ -53,6 +52,7 @@ func getMireaRequestDelay() time.Duration {
 
 // HTTPHeadingSource loads MIREA heading data from JSON list IDs.
 type HTTPHeadingSource struct {
+	PrettyName            string
 	RegularListIDs        []string
 	BVIListIDs            []string
 	TargetQuotaListIDs    []string
@@ -111,8 +111,12 @@ func fetchMireaListByID(listID string) (*MireaListResponse, error) {
 		}
 	}
 	if err := json.Unmarshal([]byte(body), &mireaResp); err != nil {
-		slog.Warn("Watafuk? First 5000 characters of response body", "body", body[:5000])
 		return nil, fmt.Errorf("failed to parse JSON response for list %s: %w", listID, err)
+	}
+
+	// Validate the response ID
+	if len(mireaResp.Data) > 0 && mireaResp.Data[0].ID != listID {
+		return nil, fmt.Errorf("ID mismatch: requested %s, but got %s", listID, mireaResp.Data[0].ID)
 	}
 
 	// Apply delay after each request
@@ -121,23 +125,36 @@ func fetchMireaListByID(listID string) (*MireaListResponse, error) {
 	return &mireaResp, nil
 }
 
+
+
 // fetchOrGetCachedMireaList fetches a MIREA list or returns it from cache
 func fetchOrGetCachedMireaList(listID string, cache map[string]*MireaListResponse) (*MireaListResponse, error) {
 	if listID == "" {
 		return nil, nil
 	}
 
+	apiURL := "https://priem.mirea.ru/competitions_api/entrants?competitions[]=" + listID
+
 	// Check cache first
 	if cached, exists := cache[listID]; exists {
-		log.Printf("MIREA: Cache hit for list %s", listID)
+		// Validate cached response
+		if len(cached.Data) > 0 && cached.Data[0].ID != listID {
+			log.Printf("MIREA: Cached ID mismatch for %s (requested: %s, cached: %s), bypassing cache", apiURL, listID, cached.Data[0].ID)
+			// Remove invalid cache entry and fetch fresh
+			delete(cache, listID)
+			resp, err := fetchMireaListByID(listID)
+			if err != nil {
+				return nil, err
+			}
+			cache[listID] = resp
+			return resp, nil
+		}
 		return cached, nil
 	}
 
 	// Not in cache, fetch from API
-	log.Printf("MIREA: Fetching list %s from API", listID)
 	resp, err := fetchMireaListByID(listID)
 	if err != nil {
-		slog.Warn("Watafuk? Error fetching MIREA list", "error", err)
 		return nil, err
 	}
 
@@ -146,54 +163,45 @@ func fetchOrGetCachedMireaList(listID string, cache map[string]*MireaListRespons
 	return resp, nil
 }
 
+// validateListForHeading validates that the list matches the expected heading name
+func validateListForHeading(resp *MireaListResponse, listID string, expectedHeadingName string) error {
+	if resp == nil || len(resp.Data) == 0 {
+		return fmt.Errorf("empty response")
+	}
+
+	apiURL := "https://priem.mirea.ru/competitions_api/entrants?competitions[]=" + listID
+	extractedName := extractHeadingName(resp.Data[0].Title)
+
+	if extractedName != expectedHeadingName {
+		log.Printf("MIREA: Heading name mismatch for %s - expected: '%s', extracted: '%s', skipping list", apiURL, expectedHeadingName, extractedName)
+		return fmt.Errorf("heading name mismatch: expected '%s', got '%s'", expectedHeadingName, extractedName)
+	}
+
+	return nil
+}
+
 // LoadTo implements source.HeadingSource for HTTPHeadingSource.
 func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
-	log.Printf("MIREA: Starting data load")
-
 	// Initialize response cache to avoid duplicate requests
 	listResponseCache := make(map[string]*MireaListResponse)
 
-	// Extract metadata from the first available list
-	var prettyName string
-	var regularCapacity, targetQuotaCapacity, dedicatedQuotaCapacity, specialQuotaCapacity int
-
-	// Try to get metadata from the first available list
-	allListIDGroups := [][]string{
-		s.RegularListIDs,
-		s.BVIListIDs,
-		s.TargetQuotaListIDs,
-		s.DedicatedQuotaListIDs,
-		s.SpecialQuotaListIDs,
-	}
-
-	for _, listGroup := range allListIDGroups {
-		for _, listID := range listGroup {
-			if listID != "" {
-				resp, err := fetchOrGetCachedMireaList(listID, listResponseCache)
-				if err != nil {
-					continue // Try next list
-				}
-				if resp != nil && len(resp.Data) > 0 {
-					prettyName = extractHeadingName(resp.Data[0].Title)
-					break
-				}
-			}
-		}
-		if prettyName != "" {
-			break
-		}
-	}
-
+	// Use the PrettyName from the struct (set during codegen)
+	prettyName := s.PrettyName
 	if prettyName == "" {
-		return fmt.Errorf("could not extract heading name from any available list")
+		return fmt.Errorf("PrettyName not set in HTTPHeadingSource")
 	}
+
+	// Extract metadata deterministically - prioritize Regular lists for consistent heading names
+	var regularCapacity, targetQuotaCapacity, dedicatedQuotaCapacity, specialQuotaCapacity int
 
 	// Calculate capacities
 	// Regular/BVI: use the same capacity value
 	if len(s.RegularListIDs) > 0 && s.RegularListIDs[0] != "" {
 		resp, err := fetchOrGetCachedMireaList(s.RegularListIDs[0], listResponseCache)
 		if err == nil && resp != nil && len(resp.Data) > 0 {
-			regularCapacity = resp.Data[0].Plan
+			if validateListForHeading(resp, s.RegularListIDs[0], prettyName) == nil {
+				regularCapacity = resp.Data[0].Plan
+			}
 		}
 	}
 
@@ -202,7 +210,9 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if listID != "" {
 			resp, err := fetchOrGetCachedMireaList(listID, listResponseCache)
 			if err == nil && resp != nil && len(resp.Data) > 0 {
-				targetQuotaCapacity += resp.Data[0].Plan
+				if validateListForHeading(resp, listID, prettyName) == nil {
+					targetQuotaCapacity += resp.Data[0].Plan
+				}
 			}
 		}
 	}
@@ -212,7 +222,9 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if listID != "" {
 			resp, err := fetchOrGetCachedMireaList(listID, listResponseCache)
 			if err == nil && resp != nil && len(resp.Data) > 0 {
-				dedicatedQuotaCapacity += resp.Data[0].Plan
+				if validateListForHeading(resp, listID, prettyName) == nil {
+					dedicatedQuotaCapacity += resp.Data[0].Plan
+				}
 			}
 		}
 	}
@@ -222,7 +234,9 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if listID != "" {
 			resp, err := fetchOrGetCachedMireaList(listID, listResponseCache)
 			if err == nil && resp != nil && len(resp.Data) > 0 {
-				specialQuotaCapacity += resp.Data[0].Plan
+				if validateListForHeading(resp, listID, prettyName) == nil {
+					specialQuotaCapacity += resp.Data[0].Plan
+				}
 			}
 		}
 	}
@@ -241,8 +255,7 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		PrettyName: prettyName,
 	})
 
-	log.Printf("MIREA: Sent heading data for %s",
-		prettyName)
+	log.Printf("MIREA: Sent MIREA heading %s", prettyName)
 
 	// Process all competition lists
 	// Regular Lists
@@ -256,6 +269,9 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		}
 		if resp == nil || len(resp.Data) == 0 {
 			continue
+		}
+		if validateListForHeading(resp, listID, prettyName) != nil {
+			continue // Skip lists with heading name mismatch
 		}
 		parseAndLoadApplications(resp.Data[0].Entrants, core.CompetitionRegular, headingCode, receiver)
 	}
@@ -272,6 +288,9 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if resp == nil || len(resp.Data) == 0 {
 			continue
 		}
+		if validateListForHeading(resp, listID, prettyName) != nil {
+			continue // Skip lists with heading name mismatch
+		}
 		parseAndLoadApplications(resp.Data[0].Entrants, core.CompetitionBVI, headingCode, receiver)
 	}
 
@@ -286,6 +305,9 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		}
 		if resp == nil || len(resp.Data) == 0 {
 			continue
+		}
+		if validateListForHeading(resp, listID, prettyName) != nil {
+			continue // Skip lists with heading name mismatch
 		}
 		parseAndLoadApplications(resp.Data[0].Entrants, core.CompetitionTargetQuota, headingCode, receiver)
 	}
@@ -302,6 +324,9 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if resp == nil || len(resp.Data) == 0 {
 			continue
 		}
+		if validateListForHeading(resp, listID, prettyName) != nil {
+			continue // Skip lists with heading name mismatch
+		}
 		parseAndLoadApplications(resp.Data[0].Entrants, core.CompetitionDedicatedQuota, headingCode, receiver)
 	}
 
@@ -317,6 +342,9 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if resp == nil || len(resp.Data) == 0 {
 			continue
 		}
+		if validateListForHeading(resp, listID, prettyName) != nil {
+			continue // Skip lists with heading name mismatch
+		}
 		parseAndLoadApplications(resp.Data[0].Entrants, core.CompetitionSpecialQuota, headingCode, receiver)
 	}
 
@@ -324,6 +352,5 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	randomDelay := time.Duration(50+rand.Intn(100)) * time.Millisecond
 	time.Sleep(randomDelay)
 
-	log.Printf("MIREA: Data load completed for %s", prettyName)
 	return nil
 }

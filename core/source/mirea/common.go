@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 
 	"github.com/trueegorletov/analabit/core"
@@ -14,15 +13,17 @@ import (
 
 // MireaApplicationEntry represents a single application entry in the MIREA JSON list.
 type MireaApplicationEntry struct {
-	Spn string `json:"spn"` // Student ID
-	Fm  int    `json:"fm"`  // Scores sum
-	P   int    `json:"p"`   // Rating place
-	Nd  string `json:"nd"`  // Priority (as string)
-	S   string `json:"s"`   // Status
+	Spn string `json:"spn"`           // Student ID
+	Fm  int    `json:"fm"`            // Scores sum
+	P   int    `json:"p"`             // Priority
+	Nd  string `json:"nd,omitempty"`  // Not used in logics
+	S   string `json:"s"`             // Status
+	Acc int    `json:"acc,omitempty"` // Acceptance status
 }
 
 // MireaListMetadata represents metadata for a single list.
 type MireaListMetadata struct {
+	ID       string                  `json:"id"`       // List ID
 	Plan     int                     `json:"plan"`     // Capacity
 	Title    string                  `json:"title"`    // List title
 	Entrants []MireaApplicationEntry `json:"entrants"` // Application entries
@@ -38,17 +39,16 @@ type FetchListFunc func(source string) ([]MireaApplicationEntry, error)
 
 // parseAndLoadApplications parses entries and emits ApplicationData to the receiver.
 func parseAndLoadApplications(entries []MireaApplicationEntry, competitionType core.Competition, headingCode string, receiver source.DataReceiver) {
-	for _, entry := range entries {
-		priority := parsePriority(entry.Nd)
+	for i, entry := range entries {
 
 		receiver.PutApplicationData(&source.ApplicationData{
 			HeadingCode:       headingCode,
 			StudentID:         entry.Spn,
 			ScoresSum:         entry.Fm,
-			RatingPlace:       entry.P,
-			Priority:          priority,
+			RatingPlace:       i + 1,
+			Priority:          entry.P,
 			CompetitionType:   competitionType,
-			OriginalSubmitted: false, // Not available in MIREA format
+			OriginalSubmitted: entry.Acc > 0,
 		})
 	}
 }
@@ -74,24 +74,6 @@ func extractHeadingName(title string) string {
 		return strings.TrimSpace(title[:slashIndex])
 	}
 	return strings.TrimSpace(title)
-}
-
-// parsePriority parses the priority field from string, defaulting to 1 if empty or invalid.
-func parsePriority(priorityStr string) int {
-	if priorityStr == "" {
-		return 1
-	}
-
-	priority, err := strconv.Atoi(priorityStr)
-	if err != nil {
-		return 1
-	}
-
-	if priority <= 0 {
-		return 1
-	}
-
-	return priority
 }
 
 // validateEntry performs basic validation on a MIREA application entry.

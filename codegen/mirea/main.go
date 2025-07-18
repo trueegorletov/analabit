@@ -30,18 +30,18 @@ type RegistryEntry struct {
 
 // HeadingInfo stores information about a heading and its associated lists
 type HeadingInfo struct {
-	Name                   string
-	RegularListIDs         []string
-	BVIListIDs             []string
-	TargetQuotaListIDs     []string
-	DedicatedQuotaListIDs  []string
-	SpecialQuotaListIDs    []string
+	Name                  string
+	RegularListIDs        []string
+	BVIListIDs            []string
+	TargetQuotaListIDs    []string
+	DedicatedQuotaListIDs []string
+	SpecialQuotaListIDs   []string
 }
 
 // extractHeadingName extracts clean heading names by cutting at the first slash
 func extractHeadingName(title string) string {
 	// Cut at first slash as specified in the format reference
-	if slashIndex := strings.Index(title, "/"); slashIndex != -1 {
+	if slashIndex := strings.LastIndex(title, "/"); slashIndex != -1 {
 		return strings.TrimSpace(title[:slashIndex])
 	}
 	return strings.TrimSpace(title)
@@ -107,7 +107,7 @@ func main() {
 	// Process each heading entry
 	for _, entry := range registry {
 		headingName := extractHeadingName(entry.Title)
-		
+
 		if headings[headingName] == nil {
 			headings[headingName] = &HeadingInfo{
 				Name:                  headingName,
@@ -122,7 +122,7 @@ func main() {
 		// Process competitions for this heading
 		for _, competition := range entry.Competitions {
 			totalCompetitions++
-			
+
 			if shouldIgnoreCompetition(competition.CompTypeID) {
 				ignoredCompetitions++
 				continue
@@ -183,7 +183,9 @@ func main() {
 		}
 
 		// Generate HeadingSource definition
+		fmt.Printf("// %s\n", name)
 		fmt.Printf("&mirea.HTTPHeadingSource{\n")
+		fmt.Printf("\tPrettyName: %q,\n", name)
 
 		// Regular lists
 		if len(heading.RegularListIDs) > 0 {

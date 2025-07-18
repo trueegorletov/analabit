@@ -18,17 +18,19 @@ var VarsitySemaphores map[string]*semaphore.Weighted
 var defaultLimits = map[string]int64{
 	"hse":    6,
 	"itmo":   10,
-	"mipt":   6,
-	"mirea":  12, // Increased limit for session-based requests (was 3 for sessionless)
+	"mipt":   1,
+	"mirea":  10, // Increased limit for session-based requests (was 3 for sessionless)
 	"oldhse": 1,
 	"spbstu": 6,
 	"spbsu":  6,
 	"rzgmu":  3,
+	"fmsmu":  24,
+	"rsmu":   6,
 }
 
 // Session-based limits for sources that use FlareSolverr sessions
 var sessionBasedLimits = map[string]int64{
-	"mirea": 12, // Higher limit for session-based requests
+	"mirea": 10, // Higher limit for session-based requests
 }
 
 // Fallback limits for sessionless requests
@@ -45,17 +47,19 @@ var envVars = map[string]string{
 	"spbstu": "SPBSTU_HTTP_MAX_CONCURRENT",
 	"spbsu":  "SPBSU_HTTP_MAX_CONCURRENT",
 	"rzgmu":  "RZGMU_HTTP_MAX_CONCURRENT",
+	"fmsmu":  "FMSMU_HTTP_MAX_CONCURRENT",
+	"rsmu":   "RSMU_HTTP_MAX_CONCURRENT",
 }
 
 // Environment variables for FlareSolverr session management
 var sessionEnvVars = map[string]string{
-	"pool_size":               "FLARESOLVERR_SESSION_POOL_SIZE",
-	"idle_timeout":            "FLARESOLVERR_SESSION_IDLE_TIMEOUT_MINUTES",
+	"pool_size":                "FLARESOLVERR_SESSION_POOL_SIZE",
+	"idle_timeout":             "FLARESOLVERR_SESSION_IDLE_TIMEOUT_MINUTES",
 	"max_requests_per_session": "FLARESOLVERR_SESSION_MAX_REQUESTS",
 	"health_check_interval":    "FLARESOLVERR_SESSION_HEALTH_CHECK_INTERVAL_MINUTES",
 }
 
-const fallbackGlobalLimit = 32
+const fallbackGlobalLimit = 48
 
 func init() {
 	// Load global limit
