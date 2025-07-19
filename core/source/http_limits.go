@@ -18,19 +18,19 @@ var VarsitySemaphores map[string]*semaphore.Weighted
 var defaultLimits = map[string]int64{
 	"hse":    6,
 	"itmo":   10,
-	"mipt":   1,
+	"mipt":   2,
 	"mirea":  5,
 	"oldhse": 1,
 	"spbstu": 6,
 	"spbsu":  6,
 	"rzgmu":  3,
-	"fmsmu":  16,
+	"fmsmu":  3,
 	"rsmu":   6,
 }
 
 // Session-based limits for sources that use FlareSolverr sessions
 var sessionBasedLimits = map[string]int64{
-	"mirea": 4, // Higher limit for session-based requests
+	"mirea": 5, // Higher limit for session-based requests
 }
 
 // Fallback limits for sessionless requests
@@ -57,6 +57,34 @@ var sessionEnvVars = map[string]string{
 	"idle_timeout":             "FLARESOLVERR_SESSION_IDLE_TIMEOUT_MINUTES",
 	"max_requests_per_session": "FLARESOLVERR_SESSION_MAX_REQUESTS",
 	"health_check_interval":    "FLARESOLVERR_SESSION_HEALTH_CHECK_INTERVAL_MINUTES",
+}
+
+// Environment variables for HTTP timeout configuration system
+// This timeout system provides batch-based coordination with micro/main timeouts and randomization.
+// It works alongside the existing semaphore-based rate limiting (above) but serves a different purpose:
+// - Semaphores limit concurrent requests (how many at once)
+// - Timeouts add delays between requests (when to make them)
+// See http_timeouts.go for the actual timeout implementation and coordination logic.
+var timeoutEnvVars = map[string]string{
+	// FMSMU timeout configuration
+	"fmsmu_timeout_enabled":          "FMSMU_HTTP_TIMEOUT_ENABLED",
+	"fmsmu_timeout_batch_size":       "FMSMU_HTTP_TIMEOUT_BATCH_SIZE",
+	"fmsmu_timeout_micro_ms":         "FMSMU_HTTP_TIMEOUT_MICRO_MS",
+	"fmsmu_timeout_main_ms":          "FMSMU_HTTP_TIMEOUT_MAIN_MS",
+	"fmsmu_timeout_micro_ratio_low":  "FMSMU_HTTP_TIMEOUT_MICRO_RATIO_LOW",
+	"fmsmu_timeout_micro_ratio_high": "FMSMU_HTTP_TIMEOUT_MICRO_RATIO_HIGH",
+	"fmsmu_timeout_main_ratio_low":   "FMSMU_HTTP_TIMEOUT_MAIN_RATIO_LOW",
+	"fmsmu_timeout_main_ratio_high":  "FMSMU_HTTP_TIMEOUT_MAIN_RATIO_HIGH",
+
+	// MIPT timeout configuration
+	"mipt_timeout_enabled":          "MIPT_HTTP_TIMEOUT_ENABLED",
+	"mipt_timeout_batch_size":       "MIPT_HTTP_TIMEOUT_BATCH_SIZE",
+	"mipt_timeout_micro_ms":         "MIPT_HTTP_TIMEOUT_MICRO_MS",
+	"mipt_timeout_main_ms":          "MIPT_HTTP_TIMEOUT_MAIN_MS",
+	"mipt_timeout_micro_ratio_low":  "MIPT_HTTP_TIMEOUT_MICRO_RATIO_LOW",
+	"mipt_timeout_micro_ratio_high": "MIPT_HTTP_TIMEOUT_MICRO_RATIO_HIGH",
+	"mipt_timeout_main_ratio_low":   "MIPT_HTTP_TIMEOUT_MAIN_RATIO_LOW",
+	"mipt_timeout_main_ratio_high":  "MIPT_HTTP_TIMEOUT_MAIN_RATIO_HIGH",
 }
 
 const fallbackGlobalLimit = 24

@@ -39,6 +39,11 @@ func fetchMiptListByURL(listURL string, competitionType core.Competition) ([]*so
 	}
 	defer release()
 
+	// Apply timeout coordination before HTTP request
+	if err := source.WaitBeforeHTTPRequest("mipt", ctx); err != nil {
+		return nil, fmt.Errorf("timeout coordination failed for %s: %w", listURL, err)
+	}
+
 	resp, err := http.Get(listURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to download %s: %w", listURL, err)
@@ -102,7 +107,6 @@ func parseApplicationsFromHTML(doc *html.Node, defaultCompetitionType core.Compe
 
 	return applications, nil
 }
-
 
 // LoadTo implements source.HeadingSource for HTTPHeadingSource.
 func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {

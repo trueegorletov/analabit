@@ -167,6 +167,11 @@ func (s *HTTPHeadingSource) fetchListByID(ctx context.Context, listID string, co
 
 // fetchListPage fetches and parses a single page of a FMSMU list
 func (s *HTTPHeadingSource) fetchListPage(ctx context.Context, url string, competitionType core.Competition) ([]*source.ApplicationData, *html.Node, error) {
+	// Apply timeout coordination before making HTTP request
+	if err := source.WaitBeforeHTTPRequest("fmsmu", ctx); err != nil {
+		return nil, nil, fmt.Errorf("timeout coordination failed: %w", err)
+	}
+
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create request: %w", err)
@@ -301,19 +306,19 @@ func (s *HTTPHeadingSource) parseApplicationFromTableRow(row *html.Node, default
 	// Extract BVI basis (3rd column)
 	bviBasis := strings.TrimSpace(getTextContent(cells[1]))
 
-	// Extract scores sum (4th column)
-	scoresSumText := strings.TrimSpace(getTextContent(cells[3]))
+	// Extract scores sum (3rd column)
+	scoresSumText := strings.TrimSpace(getTextContent(cells[2]))
 	scoresSum, err := strconv.Atoi(scoresSumText)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse scores sum '%s': %w", scoresSumText, err)
 	}
 
-	// Extract original submitted (10th column)
-	originalSubmittedText := strings.TrimSpace(getTextContent(cells[9]))
+	// Extract original submitted (13th column)
+	originalSubmittedText := strings.TrimSpace(getTextContent(cells[12]))
 	originalSubmitted := originalSubmittedText == "Да"
 
-	// Extract priority (11th column)
-	priorityText := strings.TrimSpace(getTextContent(cells[10]))
+	// Extract priority (12th column)
+	priorityText := strings.TrimSpace(getTextContent(cells[11]))
 	priority := 1 // Default priority
 	if priorityText != "" {
 		if p, err := strconv.Atoi(priorityText); err == nil {
