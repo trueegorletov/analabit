@@ -12,7 +12,11 @@ func AcquireHTTPSemaphores(ctx context.Context, varsityCode string) (func(), err
 
 	// Acquire per-varsity if exists
 	if sem, ok := VarsitySemaphores[varsityCode]; ok {
-		if err := sem.Acquire(ctx, 1); err != nil {
+		acquireCtx := ctx
+		if varsityCode == "spbsu" {
+			acquireCtx = context.Background()
+		}
+		if err := sem.Acquire(acquireCtx, 1); err != nil {
 			slog.Error("Failed to acquire varsity semaphore", "varsity", varsityCode, "error", err)
 			return nil, err
 		}
@@ -20,7 +24,11 @@ func AcquireHTTPSemaphores(ctx context.Context, varsityCode string) (func(), err
 	}
 
 	// Acquire global
-	if err := GlobalHTTPSemaphore.Acquire(ctx, 1); err != nil {
+	globalAcquireCtx := ctx
+	if varsityCode == "spbsu" {
+		globalAcquireCtx = context.Background()
+	}
+	if err := GlobalHTTPSemaphore.Acquire(globalAcquireCtx, 1); err != nil {
 		slog.Error("Failed to acquire global semaphore", "error", err)
 		// Release any acquired per-varsity
 		for _, rel := range releases {

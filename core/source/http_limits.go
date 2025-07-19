@@ -22,7 +22,7 @@ var defaultLimits = map[string]int64{
 	"mirea":  4,
 	"oldhse": 1,
 	"spbstu": 6,
-	"spbsu":  2,
+	"spbsu":  4,
 	"rzgmu":  3,
 	"fmsmu":  4,
 	"rsmu":   6,

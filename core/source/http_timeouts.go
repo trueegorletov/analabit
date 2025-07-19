@@ -40,9 +40,9 @@ var (
 var defaultTimeoutConfigs = map[string]TimeoutConfig{
 	"fmsmu": {
 		Enabled:        true,
-		BatchSize:      75,
+		BatchSize:      60,
 		MicroTimeout:   40 * time.Millisecond,
-		MainTimeout:    4000 * time.Millisecond,
+		MainTimeout:    4500 * time.Millisecond,
 		MicroRatioLow:  0.8,
 		MicroRatioHigh: 1.2,
 		MainRatioLow:   0.75,
@@ -55,6 +55,20 @@ var defaultTimeoutConfigs = map[string]TimeoutConfig{
 		MainTimeout:    1500 * time.Millisecond,
 		MicroRatioLow:  0.2,
 		MicroRatioHigh: 1.8,
+		MainRatioLow:   0.8,
+		MainRatioHigh:  1.2,
+	},
+	// SPbSU uses both timeout coordination and dedicated rate limiting:
+	// - Timeout system provides baseline request spacing for politeness
+	// - Rate limiter handles 429 errors with exponential backoff (20s, 30s, 60s)
+	// - Rate limiter provides additional protection beyond these timeout values
+	"spbsu": {
+		Enabled:        true,
+		BatchSize:      8,                       // Larger batches reduce main timeout frequency, decreasing log noise
+		MicroTimeout:   100 * time.Millisecond,  // Reduced since rate limiter handles 429 errors
+		MainTimeout:    3333 * time.Millisecond, // Rate limiter provides additional protection
+		MicroRatioLow:  0.8,
+		MicroRatioHigh: 1.2,
 		MainRatioLow:   0.8,
 		MainRatioHigh:  1.2,
 	},
@@ -198,7 +212,7 @@ func WaitBeforeHTTPRequest(varsityCode string, ctx context.Context) error {
 		timeoutDuration = calculateRandomizedTimeout(config.MainTimeout, config.MainRatioLow, config.MainRatioHigh)
 		timeoutType = "main"
 		state.requestCount = 0
-		slog.Info("Applying main timeout after batch completion",
+		slog.Debug("Applying main timeout after batch completion",
 			"varsity", varsityCode,
 			"batch_size", config.BatchSize,
 			"timeout", timeoutDuration)
