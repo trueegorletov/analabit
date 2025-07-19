@@ -167,43 +167,69 @@ func (s *HTTPHeadingSource) fetchListByID(ctx context.Context, listID string, co
 
 // fetchListPage fetches and parses a single page of a FMSMU list
 func (s *HTTPHeadingSource) fetchListPage(ctx context.Context, url string, competitionType core.Competition) ([]*source.ApplicationData, *html.Node, error) {
-	// Apply timeout coordination before making HTTP request
-	if err := source.WaitBeforeHTTPRequest("fmsmu", ctx); err != nil {
-		return nil, nil, fmt.Errorf("timeout coordination failed: %w", err)
+	var lastErr error
+	const maxRetries = 3
+
+	for i := 0; i <= maxRetries; i++ {
+		if i > 0 {
+			log.Printf("Retrying request for %s (attempt %d/%d) after error: %v", url, i, maxRetries, lastErr)
+			time.Sleep(500 * time.Millisecond)
+		}
+
+		// Apply timeout coordination before making HTTP request
+		if err := source.WaitBeforeHTTPRequest("fmsmu", ctx); err != nil {
+			// This is likely a context cancellation or global rate limit issue, not worth retrying.
+			return nil, nil, fmt.Errorf("timeout coordination failed: %w", err)
+		}
+
+		timeout := 30 * time.Second
+		if i > 0 {
+			timeout = 60 * time.Second
+		}
+
+		client := &http.Client{
+			Timeout: timeout,
+		}
+
+		req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to create request: %w", err) // non-recoverable
+		}
+
+		resp, err := client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("failed to download list page: %w", err)
+			continue // retry
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			lastErr = fmt.Errorf("failed to download list page (status code %d)", resp.StatusCode)
+			resp.Body.Close()
+			continue
+		}
+
+		htmlContent, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			lastErr = fmt.Errorf("failed to read HTML content: %w", err)
+			continue // retry, could be a network issue during read
+		}
+
+		doc, err := html.Parse(strings.NewReader(string(htmlContent)))
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to parse HTML: %w", err)
+		}
+
+		// Parse applications from the table
+		applications, err := s.parseApplicationsFromHTML(doc, competitionType)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to parse applications: %w", err)
+		}
+
+		return applications, doc, nil
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create request: %w", err)
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to download list page: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf("failed to download list page (status code %d)", resp.StatusCode)
-	}
-
-	htmlContent, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to read HTML content: %w", err)
-	}
-
-	doc, err := html.Parse(strings.NewReader(string(htmlContent)))
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to parse HTML: %w", err)
-	}
-
-	// Parse applications from the table
-	applications, err := s.parseApplicationsFromHTML(doc, competitionType)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to parse applications: %w", err)
-	}
-
-	return applications, doc, nil
+	return nil, nil, lastErr
 }
 
 // parseApplicationsFromHTML extracts applications from FMSMU HTML document
@@ -266,10 +292,10 @@ func (s *HTTPHeadingSource) findDataRows(table *html.Node) []*html.Node {
 
 // parseApplicationFromTableRow parses a single table row into ApplicationData
 func (s *HTTPHeadingSource) parseApplicationFromTableRow(row *html.Node, defaultCompetitionType core.Competition) (*source.ApplicationData, error) {
-	// Extract all td elements
-	cells := s.extractTableCells(row)
-	if len(cells) < 13 {
-		return nil, fmt.Errorf("insufficient table cells: expected at least 13, got %d", len(cells))
+	// Extract only outer-level td elements to avoid nested table cell offset
+	cells := s.extractOuterTableCells(row)
+	if len(cells) < 11 {
+		return nil, fmt.Errorf("insufficient outer table cells: expected at least 11, got %d", len(cells))
 	}
 
 	// Check status column (last column) - skip if "Отозвано поступающим"
@@ -303,22 +329,35 @@ func (s *HTTPHeadingSource) parseApplicationFromTableRow(row *html.Node, default
 		return nil, fmt.Errorf("empty student ID")
 	}
 
-	// Extract BVI basis (3rd column)
+	// Extract BVI basis (2nd column in outer cells)
 	bviBasis := strings.TrimSpace(getTextContent(cells[1]))
 
-	// Extract scores sum (3rd column)
+	// Extract scores sum (3rd column in outer cells) with robust error handling
 	scoresSumText := strings.TrimSpace(getTextContent(cells[2]))
-	scoresSum, err := strconv.Atoi(scoresSumText)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse scores sum '%s': %w", scoresSumText, err)
+	var scoresSum int
+	if scoresSumText == "—" || scoresSumText == "-" || scoresSumText == "" {
+		scoresSum = 285 // fallback value for non-numeric scores
+		log.Printf("Using fallback score 285 for non-numeric value: '%s' (Student ID: %s)", scoresSumText, studentID)
+	} else {
+		var err error
+		scoresSum, err = strconv.Atoi(scoresSumText)
+		if err != nil {
+			scoresSum = 285 // fallback for any parsing error
+			log.Printf("Using fallback score 285 for parsing error: '%s' (Student ID: %s, Error: %v)", scoresSumText, studentID, err)
+		}
 	}
 
-	// Extract original submitted (13th column)
-	originalSubmittedText := strings.TrimSpace(getTextContent(cells[12]))
+	// Validate score range and log warnings for unexpected values
+	if scoresSum < 0 || scoresSum > 320 {
+		log.Printf("Warning: Score %d outside expected range [0, 320] for Student ID: %s", scoresSum, studentID)
+	}
+
+	// Extract original submitted (11th column in outer cells)
+	originalSubmittedText := strings.TrimSpace(getTextContent(cells[10]))
 	originalSubmitted := originalSubmittedText == "Да"
 
-	// Extract priority (12th column)
-	priorityText := strings.TrimSpace(getTextContent(cells[11]))
+	// Extract priority (10th column in outer cells)
+	priorityText := strings.TrimSpace(getTextContent(cells[9]))
 	priority := 1 // Default priority
 	if priorityText != "" {
 		if p, err := strconv.Atoi(priorityText); err == nil {
@@ -356,6 +395,17 @@ func (s *HTTPHeadingSource) extractTableCells(node *html.Node) []*html.Node {
 		}
 	}
 	find(node)
+	return cells
+}
+
+// extractOuterTableCells extracts only direct td children of a table row, excluding nested table cells
+func (s *HTTPHeadingSource) extractOuterTableCells(row *html.Node) []*html.Node {
+	var cells []*html.Node
+	for c := row.FirstChild; c != nil; c = c.NextSibling {
+		if c.Type == html.ElementNode && c.Data == "td" {
+			cells = append(cells, c)
+		}
+	}
 	return cells
 }
 

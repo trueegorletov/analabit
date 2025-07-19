@@ -24,7 +24,7 @@ var defaultLimits = map[string]int64{
 	"spbstu": 6,
 	"spbsu":  6,
 	"rzgmu":  3,
-	"fmsmu":  3,
+	"fmsmu":  4,
 	"rsmu":   6,
 }
 

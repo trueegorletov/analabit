@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/trueegorletov/analabit/core"
 	"golang.org/x/net/html"
@@ -26,43 +27,67 @@ type SpoilerData struct {
 
 // HeadingGroup represents grouped spoilers by heading name
 type HeadingGroup struct {
-	HeadingName           string
-	RegularListID         string
-	SpecialQuotaListID    string
-	DedicatedQuotaListID  string
-	TargetQuotaListIDs    []string
-	Spoilers              []SpoilerData
-	Capacities            core.Capacities
+	HeadingName          string
+	RegularListID        string
+	SpecialQuotaListID   string
+	DedicatedQuotaListID string
+	TargetQuotaListIDs   []string
+	Spoilers             []SpoilerData
+	Capacities           core.Capacities
 }
 
 // fetchRegistryPage fetches a single registry page
 func fetchRegistryPage(ctx context.Context, pageURL string) (*html.Node, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", pageURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+	var lastErr error
+	const maxRetries = 3
+
+	for i := 0; i <= maxRetries; i++ {
+		if i > 0 {
+			time.Sleep(500 * time.Millisecond)
+		}
+
+		timeout := 30 * time.Second
+		if i > 0 {
+			timeout = 60 * time.Second
+		}
+
+		client := &http.Client{
+			Timeout: timeout,
+		}
+
+		req, err := http.NewRequestWithContext(ctx, "GET", pageURL, nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create request: %w", err)
+		}
+
+		resp, err := client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("failed to fetch registry page: %w", err)
+			continue
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			lastErr = fmt.Errorf("failed to fetch registry page (status code %d)", resp.StatusCode)
+			resp.Body.Close()
+			continue
+		}
+
+		htmlContent, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			lastErr = fmt.Errorf("failed to read HTML content: %w", err)
+			continue
+		}
+
+		doc, err := html.Parse(strings.NewReader(string(htmlContent)))
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse HTML: %w", err)
+		}
+
+		return doc, nil
 	}
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch registry page: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to fetch registry page (status code %d)", resp.StatusCode)
-	}
-
-	htmlContent, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read HTML content: %w", err)
-	}
-
-	doc, err := html.Parse(strings.NewReader(string(htmlContent)))
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse HTML: %w", err)
-	}
-
-	return doc, nil
+	return nil, lastErr
 }
 
 // extractSpoilers extracts spoiler data from a registry page HTML document

@@ -40,9 +40,9 @@ var (
 var defaultTimeoutConfigs = map[string]TimeoutConfig{
 	"fmsmu": {
 		Enabled:        true,
-		BatchSize:      100,
-		MicroTimeout:   20 * time.Millisecond,
-		MainTimeout:    2250 * time.Millisecond,
+		BatchSize:      75,
+		MicroTimeout:   40 * time.Millisecond,
+		MainTimeout:    4000 * time.Millisecond,
 		MicroRatioLow:  0.8,
 		MicroRatioHigh: 1.2,
 		MainRatioLow:   0.75,
