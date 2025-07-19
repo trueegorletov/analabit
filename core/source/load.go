@@ -183,25 +183,38 @@ func (v *Varsity) loadFromCache() map[string]bool {
 func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) ([]*Varsity, map[string]string) {
 	studentOriginals := make(map[string]string) // original StudentID -> Varsity.Code
 	var studentOriginalsMu sync.Mutex
+	var varsityLoadWg sync.WaitGroup
 
-	for idx := range varsities {
-		currentVarsity := varsities[idx] // Operate on the pointer
+	const maxConcurrentLoads = 4
+	sem := make(chan struct{}, maxConcurrentLoads)
 
-		// loadFromSources data for this varsity and get students who submitted originals here
-		submittedInThisVarsity := loadFunc(currentVarsity) // This returns map[originalStudentID]bool
+	for i := range varsities {
+		varsityLoadWg.Add(1)
+		sem <- struct{}{} // Acquire a slot
+		go func(idx int) {
+			defer func() {
+				<-sem // Release the slot
+				varsityLoadWg.Done()
+			}()
+			currentVarsity := varsities[idx] // Operate on the pointer
 
-		studentOriginalsMu.Lock()
-		for studentID := range submittedInThisVarsity { // studentID is original ID
-			if existingVarsityCode, found := studentOriginals[studentID]; found {
-				if existingVarsityCode != currentVarsity.Code { // Log only if different varsity
-					slog.Debug("Student submitted original to multiple varsities", "studentID", studentID, "varsityFirst", existingVarsityCode, "varsitySecond", currentVarsity.Code, "chosen", existingVarsityCode)
+			// loadFromSources data for this varsity and get students who submitted originals here
+			submittedInThisVarsity := loadFunc(currentVarsity) // This returns map[originalStudentID]bool
+
+			studentOriginalsMu.Lock()
+			for studentID := range submittedInThisVarsity { // studentID is original ID
+				if existingVarsityCode, found := studentOriginals[studentID]; found {
+					if existingVarsityCode != currentVarsity.Code { // Log only if different varsity
+						slog.Debug("Student submitted original to multiple varsities", "studentID", studentID, "varsityFirst", existingVarsityCode, "varsitySecond", currentVarsity.Code, "chosen", existingVarsityCode)
+					}
+				} else {
+					studentOriginals[studentID] = currentVarsity.Code
 				}
-			} else {
-				studentOriginals[studentID] = currentVarsity.Code
 			}
-		}
-		studentOriginalsMu.Unlock()
+			studentOriginalsMu.Unlock()
+		}(i)
 	}
+	varsityLoadWg.Wait()
 
 	// Set student.quit status
 	for studentID, varsityCode := range studentOriginals {
@@ -224,11 +237,11 @@ func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) ([]*
 
 func LoadFromDefinitions(defs []VarsityDefinition) []*Varsity {
 	log.Printf("🔍 LOAD DEBUG: LoadFromDefinitions called with %d definitions", len(defs))
-
+	
 	var varsities []*Varsity
 	for i, def := range defs {
 		log.Printf("🔍 LOAD DEBUG: Processing definition %d: Code=%s, Name=%s, Sources=%d", i, def.Code, def.Name, len(def.HeadingSources))
-
+		
 		// Special debug for MIREA
 		if def.Code == "mirea" {
 			log.Printf("🔍 LOAD DEBUG: [MIREA] Found MIREA definition with %d heading sources", len(def.HeadingSources))
@@ -236,7 +249,7 @@ func LoadFromDefinitions(defs []VarsityDefinition) []*Varsity {
 				log.Printf("🔍 LOAD DEBUG: [MIREA] Source %d: %T", j, src)
 			}
 		}
-
+		
 		v := &Varsity{
 			VarsityDefinition: &def,
 			VarsityCalculator: nil,
