@@ -19,7 +19,7 @@ var defaultLimits = map[string]int64{
 	"hse":    6,
 	"itmo":   10,
 	"mipt":   1,
-	"mirea":  4, // Increased limit for session-based requests (was 3 for sessionless)
+	"mirea":  5,
 	"oldhse": 1,
 	"spbstu": 6,
 	"spbsu":  6,
@@ -59,7 +59,7 @@ var sessionEnvVars = map[string]string{
 	"health_check_interval":    "FLARESOLVERR_SESSION_HEALTH_CHECK_INTERVAL_MINUTES",
 }
 
-const fallbackGlobalLimit = 48
+const fallbackGlobalLimit = 24
 
 func init() {
 	// Load global limit

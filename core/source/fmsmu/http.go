@@ -263,8 +263,8 @@ func (s *HTTPHeadingSource) findDataRows(table *html.Node) []*html.Node {
 func (s *HTTPHeadingSource) parseApplicationFromTableRow(row *html.Node, defaultCompetitionType core.Competition) (*source.ApplicationData, error) {
 	// Extract all td elements
 	cells := s.extractTableCells(row)
-	if len(cells) < 12 {
-		return nil, fmt.Errorf("insufficient table cells: expected at least 12, got %d", len(cells))
+	if len(cells) < 13 {
+		return nil, fmt.Errorf("insufficient table cells: expected at least 13, got %d", len(cells))
 	}
 
 	// Check status column (last column) - skip if "Отозвано поступающим"
@@ -302,18 +302,18 @@ func (s *HTTPHeadingSource) parseApplicationFromTableRow(row *html.Node, default
 	bviBasis := strings.TrimSpace(getTextContent(cells[1]))
 
 	// Extract scores sum (4th column)
-	scoresSumText := strings.TrimSpace(getTextContent(cells[2]))
+	scoresSumText := strings.TrimSpace(getTextContent(cells[3]))
 	scoresSum, err := strconv.Atoi(scoresSumText)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse scores sum '%s': %w", scoresSumText, err)
 	}
 
 	// Extract original submitted (10th column)
-	originalSubmittedText := strings.TrimSpace(getTextContent(cells[8]))
+	originalSubmittedText := strings.TrimSpace(getTextContent(cells[9]))
 	originalSubmitted := originalSubmittedText == "Да"
 
 	// Extract priority (11th column)
-	priorityText := strings.TrimSpace(getTextContent(cells[9]))
+	priorityText := strings.TrimSpace(getTextContent(cells[10]))
 	priority := 1 // Default priority
 	if priorityText != "" {
 		if p, err := strconv.Atoi(priorityText); err == nil {

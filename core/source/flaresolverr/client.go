@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -618,31 +619,40 @@ func (sm *SessionManager) healthCheckSessions() {
 // fresh sessions are created and any previous sessions are properly cleaned up.
 // This function is thread-safe and can be called concurrently.
 func StartForIteration() error {
+	var oldSm *SessionManager
+
 	sessionMutex.Lock()
-	defer sessionMutex.Unlock()
-	
-	// If there's an existing session manager, clean it up first
+	// If there's an existing session manager, prepare to shut it down.
 	if sessionManager != nil {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-		
-		if err := sessionManager.Shutdown(ctx); err != nil {
-			return fmt.Errorf("failed to shutdown existing session manager: %w", err)
-		}
+		oldSm = sessionManager
 	}
-	
-	// Reset the singleton state
+
+	// Reset the singleton state and initialize a new manager
 	sessionManager = nil
 	sessionOnce = sync.Once{}
 	clientError = nil
-	
-	// Initialize new session manager
+
 	client, err := GetClient()
 	if err != nil {
+		sessionMutex.Unlock()
 		return fmt.Errorf("failed to get FlareSolverr client: %w", err)
 	}
-	
+
 	sessionManager = initializeSessionManager(client)
+	sessionMutex.Unlock()
+
+	// Shutdown the old manager outside the lock
+	if oldSm != nil {
+		log.Println("WARN: Found existing session manager in StartForIteration. This indicates a previous iteration did not clean up properly. Shutting it down now.")
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+
+		if err := oldSm.Shutdown(ctx); err != nil {
+			// Log this error but don't fail the start of the new iteration
+			log.Printf("ERROR: failed to shutdown previous session manager: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -653,24 +663,26 @@ func StartForIteration() error {
 // guarantee cleanup even if the workflow encounters errors.
 func StopForIteration() error {
 	sessionMutex.Lock()
-	defer sessionMutex.Unlock()
-	
-	if sessionManager == nil {
+	sm := sessionManager
+	if sm == nil {
+		sessionMutex.Unlock()
 		return nil // Nothing to clean up
 	}
-	
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-	
-	if err := sessionManager.Shutdown(ctx); err != nil {
-		return fmt.Errorf("failed to shutdown session manager: %w", err)
-	}
-	
-	// Reset singleton state
+
+	// Reset singleton state immediately to allow new iterations to start
 	sessionManager = nil
 	sessionOnce = sync.Once{}
 	clientError = nil
-	
+	sessionMutex.Unlock()
+
+	// Shutdown the old manager outside the lock
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := sm.Shutdown(ctx); err != nil {
+		return fmt.Errorf("failed to shutdown session manager: %w", err)
+	}
+
 	return nil
 }
 

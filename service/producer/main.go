@@ -5,10 +5,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/caarlos0/env/v11"
 	"github.com/trueegorletov/analabit/service/producer/handler"
 	"github.com/trueegorletov/analabit/service/producer/proto"
-
-	"github.com/caarlos0/env/v11"
 	micro "go-micro.dev/v5"
 )
 
@@ -65,6 +64,9 @@ func main() {
 	if err := env.Parse(&handler.Cfg); err != nil {
 		log.Fatalf("failed to parse env config: %v", err)
 	}
+
+	// The global graceful shutdown is now handled by the iteration-based cleanup.
+	// flaresolverr.InitGracefulShutdown()
 
 	// Create handler instance to be shared
 	producerHandler := new(handler.Producer)
