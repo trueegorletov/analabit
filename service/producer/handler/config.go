@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	CacheDir               string   `env:"CACHE_DIR" envDefault:"./cache"`
-	CacheTTLMinutes        int      `env:"CACHE_TTL_MINUTES" envDefault:"15"`
+	CacheTTLMinutes        int      `env:"CACHE_TTL_MINUTES" envDefault:"30"`
 	DrainStages            []int    `env:"DRAIN_SIM_STAGES" envSeparator:"," envDefault:"16,33,50,66"`
 	DrainIterations        int      `env:"DRAIN_SIM_ITERATIONS" envDefault:"100"`
 	MinioEndpoint          string   `env:"MINIO_ENDPOINT" envDefault:"minio:9000"`
@@ -19,7 +19,7 @@ type Config struct {
 	MinioBucketName        string   `env:"MINIO_BUCKET_NAME" envDefault:"analabit-results"`
 	VarsitiesList          []string `env:"VARSITIES_LIST" envSeparator:"," envDefault:"all"`
 	VarsitiesExcluded      []string `env:"VARSITIES_EXCLUDED" envSeparator:"," envDefault:""`
-	SelfQueryPeriodMinutes int      `env:"SELF_QUERY_PERIOD_MINUTES" envDefault:"30"`
+	SelfQueryPeriodMinutes int      `env:"SELF_QUERY_PERIOD_MINUTES" envDefault:"45"`
 }
 
 var Cfg Config
