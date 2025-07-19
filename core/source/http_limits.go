@@ -19,7 +19,7 @@ var defaultLimits = map[string]int64{
 	"hse":    6,
 	"itmo":   10,
 	"mipt":   2,
-	"mirea":  5,
+	"mirea":  2,
 	"oldhse": 1,
 	"spbstu": 6,
 	"spbsu":  6,
@@ -30,7 +30,7 @@ var defaultLimits = map[string]int64{
 
 // Session-based limits for sources that use FlareSolverr sessions
 var sessionBasedLimits = map[string]int64{
-	"mirea": 5, // Higher limit for session-based requests
+	"mirea": 2, // Higher limit for session-based requests
 }
 
 // Fallback limits for sessionless requests
