@@ -187,12 +187,10 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 
 		log.Printf("Created run %d for bucket %s with %d objects (%s database)", run.ID, bucketName, len(objectNames), dbType)
 
-		// Process each object for the current database connection
-		var payload core.UploadPayload // Reuse this variable
+		// 1. Download and deserialize all payloads from the bucket
+		payloads := make([]*core.UploadPayload, 0, len(objectNames))
 		for _, objectName := range objectNames {
-			log.Printf("Processing object %s for run %d...", objectName, run.ID)
-
-			// 1. Download GOB file
+			log.Printf("Downloading object %s for run %d...", objectName, run.ID)
 			obj, err := minioClient.GetObject(ctx, bucketName, objectName, minio.GetObjectOptions{})
 			if err != nil {
 				err = fmt.Errorf("failed to get object %s: %w", objectName, err)
@@ -200,56 +198,67 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 				continue // Skip to the next object
 			}
 
-			// 2. Deserialize data
-			if err := gob.NewDecoder(obj).Decode(&payload); err != nil {
+			var p core.UploadPayload
+			if err := gob.NewDecoder(obj).Decode(&p); err != nil {
 				obj.Close()
 				err = fmt.Errorf("failed to decode payload from object %s: %w", objectName, err)
 				multierr.AppendInto(&allErrors, err)
 				continue // Skip to the next object
 			}
 			obj.Close()
+			payloads = append(payloads, &p)
+		}
 
-			// 3. Perform the unified upload with runID
-			if err := upload.Primary(ctx, client, run.ID, &payload); err != nil {
-				err = fmt.Errorf("failed to upload payload from object %s with %s database %q: %w", objectName, dbType, connStr, err)
+		// If there were errors downloading/decoding, we might not want to proceed.
+		// For now, we'll continue and let the logic handle potentially empty slices.
+
+		// 2. Consolidate payloads into a single payload to resolve inconsistencies
+		log.Printf("Consolidating %d payloads for run %d...", len(payloads), run.ID)
+		consolidatedPayload := consolidatePayloads(payloads)
+
+		// 3. Perform the unified upload with the consolidated payload
+		if err := upload.Primary(ctx, client, run.ID, consolidatedPayload); err != nil {
+			err = fmt.Errorf("failed to upload consolidated payload with %s database %q: %w", dbType, connStr, err)
+			multierr.AppendInto(&allErrors, err)
+		} else {
+			log.Printf("Successfully uploaded consolidated payload for run %d (%s database)", run.ID, dbType)
+
+			// Build synthetic drained results for stage=0 TODO: move to producer service
+			synthetic := make([]core.DrainedResultDTO, 0, len(consolidatedPayload.Calculations))
+			for _, calc := range consolidatedPayload.Calculations {
+				if len(calc.Admitted) == 0 {
+					continue
+				}
+				last := calc.Admitted[len(calc.Admitted)-1]
+				var passingScore, larp int
+				for _, app := range consolidatedPayload.Applications {
+					if app.HeadingCode == calc.HeadingCode && app.StudentID == last.ID {
+						passingScore = app.Score
+						larp = app.RatingPlace
+						break
+					}
+				}
+				synthetic = append(synthetic, core.DrainedResultDTO{
+					HeadingCode:                calc.HeadingCode,
+					DrainedPercent:             0,
+					AvgPassingScore:            passingScore,
+					AvgLastAdmittedRatingPlace: larp,
+				})
+			}
+
+			// Combine synthetic and simulated drained results
+			var drainedDTOs []core.DrainedResultDTO
+			drainedDTOs = append(drainedDTOs, synthetic...)
+			for _, dtos := range consolidatedPayload.Drained {
+				drainedDTOs = append(drainedDTOs, dtos...)
+			}
+
+			// Upload drained results with runID
+			if err := upload.DrainedResults(ctx, client, run.ID, drainedDTOs); err != nil {
+				err = fmt.Errorf("failed to upload drained results with %s database %q: %w", dbType, connStr, err)
 				multierr.AppendInto(&allErrors, err)
 			} else {
-				log.Printf("Successfully uploaded payload for object %s in run %d (%s database)", objectName, run.ID, dbType)
-				// Build synthetic drained results for stage=0 TODO: move to producer service
-				synthetic := make([]core.DrainedResultDTO, 0, len(payload.Calculations))
-				for _, calc := range payload.Calculations {
-					if len(calc.Admitted) == 0 {
-						continue
-					}
-					last := calc.Admitted[len(calc.Admitted)-1]
-					var passingScore, larp int
-					for _, app := range payload.Applications {
-						if app.HeadingCode == calc.HeadingCode && app.StudentID == last.ID {
-							passingScore = app.Score
-							larp = app.RatingPlace
-							break
-						}
-					}
-					synthetic = append(synthetic, core.DrainedResultDTO{
-						HeadingCode:                calc.HeadingCode,
-						DrainedPercent:             0,
-						AvgPassingScore:            passingScore,
-						AvgLastAdmittedRatingPlace: larp,
-					})
-				}
-				// Combine synthetic and simulated drained results
-				var drainedDTOs []core.DrainedResultDTO
-				drainedDTOs = append(drainedDTOs, synthetic...)
-				for _, dtos := range payload.Drained {
-					drainedDTOs = append(drainedDTOs, dtos...)
-				}
-				// Upload drained results with runID
-				if err := upload.DrainedResults(ctx, client, run.ID, drainedDTOs); err != nil {
-					err = fmt.Errorf("failed to upload drained results from object %s with %s database %q: %w", objectName, dbType, connStr, err)
-					multierr.AppendInto(&allErrors, err)
-				} else {
-					log.Printf("Successfully uploaded drained results for object %s in run %d (%s database)", objectName, run.ID, dbType)
-				}
+				log.Printf("Successfully uploaded drained results for run %d (%s database)", run.ID, dbType)
 			}
 		}
 
@@ -294,4 +303,95 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 	}
 
 	return allErrors
+}
+
+// consolidatePayloads merges multiple UploadPayloads into a single one,
+// resolving inconsistencies like multiple original submissions.
+func consolidatePayloads(payloads []*core.UploadPayload) *core.UploadPayload {
+	if len(payloads) == 0 {
+		return &core.UploadPayload{}
+	}
+
+	// 1. Combine all data and build lookup maps.
+	merged := &core.UploadPayload{
+		VarsityCode:  "consolidated",
+		VarsityName:  "Consolidated",
+		Headings:     make([]core.HeadingDTO, 0),
+		Students:     make([]core.StudentDTO, 0),
+		Applications: make([]core.ApplicationDTO, 0),
+		Calculations: make([]core.CalculationResultDTO, 0),
+		Drained:      make(map[int][]core.DrainedResultDTO),
+	}
+	studentOriginals := make(map[string]string) // studentID -> varsityCode where original is submitted
+	headingToVarsity := make(map[string]string) // headingCode -> varsityCode
+	seenHeadings := make(map[string]struct{})
+	seenStudents := make(map[string]struct{})
+
+	for _, p := range payloads {
+		for _, h := range p.Headings {
+			if _, seen := seenHeadings[h.Code]; !seen {
+				merged.Headings = append(merged.Headings, h)
+				seenHeadings[h.Code] = struct{}{}
+			}
+			headingToVarsity[h.Code] = p.VarsityCode
+		}
+		// The OriginalSubmitted flag on StudentDTO is now the source of truth.
+		for _, s := range p.Students {
+			if _, seen := seenStudents[s.ID]; !seen {
+				merged.Students = append(merged.Students, s)
+				seenStudents[s.ID] = struct{}{}
+			}
+			// Find the single true original submission for each student.
+			if s.OriginalSubmitted {
+				if existingVarsity, ok := studentOriginals[s.ID]; ok {
+					log.Printf("Conflict: Student %s has original submission in both %s and %s. Using first one.", s.ID, existingVarsity, p.VarsityCode)
+				} else {
+					studentOriginals[s.ID] = p.VarsityCode
+				}
+			}
+		}
+
+		merged.Applications = append(merged.Applications, p.Applications...)
+		merged.Calculations = append(merged.Calculations, p.Calculations...)
+		for percent, drainedResults := range p.Drained {
+			merged.Drained[percent] = append(merged.Drained[percent], drainedResults...)
+		}
+	}
+
+	// 2. Correct the OriginalSubmitted flag on all applications for a student.
+	// This ensures that if a student submitted an original to HSE, all their applications
+	// to HSE have OriginalSubmitted = true, and all others have it as false.
+	for i := range merged.Applications {
+		app := &merged.Applications[i]
+		originalVarsity, studentHasOriginal := studentOriginals[app.StudentID]
+		appVarsity := headingToVarsity[app.HeadingCode]
+
+		if studentHasOriginal {
+			app.OriginalSubmitted = (originalVarsity == appVarsity)
+		} else {
+			app.OriginalSubmitted = false
+		}
+	}
+
+	// 3. Filter calculations. A student can only be admitted to a university
+	// where they submitted their original documents (if they submitted one at all).
+	filteredCalculations := make([]core.CalculationResultDTO, 0, len(merged.Calculations))
+	for _, calc := range merged.Calculations {
+		calcVarsity := headingToVarsity[calc.HeadingCode]
+		filteredAdmitted := make([]core.StudentDTO, 0, len(calc.Admitted))
+		for _, student := range calc.Admitted {
+			originalVarsity, hasOriginal := studentOriginals[student.ID]
+			if !hasOriginal || (hasOriginal && originalVarsity == calcVarsity) {
+				// Admit if:
+				// 1. The student has not submitted an original anywhere.
+				// 2. The student's original is at the same university as the calculation.
+				filteredAdmitted = append(filteredAdmitted, student)
+			}
+		}
+		calc.Admitted = filteredAdmitted
+		filteredCalculations = append(filteredCalculations, calc)
+	}
+	merged.Calculations = filteredCalculations
+
+	return merged
 }

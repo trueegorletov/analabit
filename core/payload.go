@@ -19,12 +19,13 @@ type StudentDTO struct {
 
 // ApplicationDTO is a lean version of core.Application.
 type ApplicationDTO struct {
-	StudentID       string      `json:"student_id"`
-	HeadingCode     string      `json:"heading_code"`
-	Priority        int         `json:"priority"`
-	CompetitionType Competition `json:"competition_type"`
-	RatingPlace     int         `json:"rating_place"`
-	Score           int         `json:"score"`
+	StudentID         string      `json:"student_id"`
+	HeadingCode       string      `json:"heading_code"`
+	Priority          int         `json:"priority"`
+	CompetitionType   Competition `json:"competition_type"`
+	RatingPlace       int         `json:"rating_place"`
+	Score             int         `json:"score"`
+	OriginalSubmitted bool        `json:"original_submitted"`
 }
 
 // HeadingDTO carries all essential information about a heading.
@@ -99,12 +100,13 @@ func NewUploadPayloadFromCalculator(vc *VarsityCalculator, results []Calculation
 		// Convert applications for this student
 		for _, app := range student.Applications() {
 			payload.Applications = append(payload.Applications, ApplicationDTO{
-				StudentID:       app.StudentID(),
-				HeadingCode:     app.Heading().FullCode(),
-				Priority:        app.Priority(),
-				CompetitionType: app.CompetitionType(),
-				RatingPlace:     app.RatingPlace(),
-				Score:           app.Score(),
+				StudentID:         app.StudentID(),
+				HeadingCode:       app.Heading().FullCode(),
+				Priority:          app.Priority(),
+				CompetitionType:   app.CompetitionType(),
+				RatingPlace:       app.RatingPlace(),
+				Score:             app.Score(),
+				OriginalSubmitted: student.OriginalSubmitted(),
 			})
 		}
 	}
