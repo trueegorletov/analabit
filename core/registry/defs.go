@@ -27,4 +27,5 @@ var AllDefinitions = []source.VarsityDefinition{
 	mipt.Varsity,
 	mirea.Varsity,
 	fmsmu.Varsity,
+	//mephi.Varsity,
 }
