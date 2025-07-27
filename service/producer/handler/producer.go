@@ -132,17 +132,78 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 	slog.Info("Calculations completed – starting drain simulations")
 	drainedResults := make(map[string]map[int][]drainer.DrainedResult)
 
+	// Initialize drainedResults map
 	for _, v := range varsities {
 		drainedResults[v.Code] = make(map[int][]drainer.DrainedResult)
 	}
+
+	// Define job structure for parallel drainer execution
+	type drainerJob struct {
+		varsity *source.Varsity
+		stage   int
+		code    string
+	}
+
+	// Calculate total jobs and determine worker count
+	totalJobs := len(varsities) * len(params.DrainStages)
+	workerCount := totalJobs
+	if workerCount > 4 {
+		workerCount = 4
+	}
+
+	slog.Info("Starting parallel drain simulations", "totalJobs", totalJobs, "workers", workerCount)
+
+	// Create job channel and populate it
+	jobs := make(chan drainerJob, totalJobs)
 	for _, v := range varsities {
 		for _, stage := range params.DrainStages {
-			drainerInstance := drainer.New(v, stage)
-			drainedResultSlice := drainerInstance.Run(params.DrainIterations)
-
-			drainedResults[v.Code][stage] = drainedResultSlice
+			jobs <- drainerJob{
+				varsity: v,
+				stage:   stage,
+				code:    v.Code,
+			}
 		}
 	}
+	close(jobs)
+
+	// Synchronization primitives
+	var wgDrainer sync.WaitGroup
+	var muDrainer sync.Mutex
+	drainerErrors := make(chan error, totalJobs)
+
+	// Start worker goroutines
+	for i := 0; i < workerCount; i++ {
+		wgDrainer.Add(1)
+		go func(workerID int) {
+			defer wgDrainer.Done()
+			for job := range jobs {
+				// Create drainer instance and run simulation
+				drainerInstance := drainer.New(job.varsity, job.stage)
+				drainedResultSlice := drainerInstance.Run(params.DrainIterations)
+
+				// Safely write results to shared map
+				muDrainer.Lock()
+				drainedResults[job.code][job.stage] = drainedResultSlice
+				muDrainer.Unlock()
+
+				slog.Info("Completed drainer job", "worker", workerID, "varsity", job.code, "stage", job.stage)
+			}
+		}(i)
+	}
+
+	// Wait for all jobs to complete
+	wgDrainer.Wait()
+	close(drainerErrors)
+
+	// Check for any errors during drainer execution
+	var allDrainerErrs error
+	for err := range drainerErrors {
+		allDrainerErrs = multierr.Append(allDrainerErrs, err)
+	}
+	if allDrainerErrs != nil {
+		slog.Error("One or more drainer simulations failed", "errors", allDrainerErrs)
+	}
+
 	slog.Info("Drain simulations completed")
 
 	// --- Per-Varsity Payload Creation and Upload ---

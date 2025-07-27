@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"time"
 
 	"github.com/trueegorletov/analabit/core"
@@ -253,6 +254,8 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 			}
 		}
 
+		slog.Info("Drained results uploading finished, proceeding to cleanup and refresh materialized views...")
+
 		// If no errors occurred for this run, refresh materialized views and mark it as finished
 		if allErrors == nil {
 			// Create database client wrapper for materialized view operations
@@ -272,6 +275,8 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 						multierr.AppendInto(&allErrors, cleanupErr)
 					}
 				}
+
+				slog.Info("Cleanup job finished, proceeding to refresh materialized views...")
 
 				// Refresh materialized views after cleanup
 				if err := upload.RefreshMaterializedViews(ctx, dbClient); err != nil {
