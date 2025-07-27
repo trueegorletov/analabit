@@ -58,6 +58,16 @@ var defaultTimeoutConfigs = map[string]TimeoutConfig{
 		MainRatioLow:   0.8,
 		MainRatioHigh:  1.2,
 	},
+	"mephi": {
+		Enabled:        true,
+		BatchSize:      3,
+		MicroTimeout:   200 * time.Millisecond,
+		MainTimeout:    3311 * time.Millisecond,
+		MicroRatioLow:  0.2,
+		MicroRatioHigh: 1.8,
+		MainRatioLow:   0.5,
+		MainRatioHigh:  1.2,
+	},
 	// SPbSU uses both timeout coordination and dedicated rate limiting:
 	// - Timeout system provides baseline request spacing for politeness
 	// - Rate limiter handles 429 errors with exponential backoff (20s, 30s, 60s)

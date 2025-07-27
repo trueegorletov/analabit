@@ -218,23 +218,23 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 				// Build synthetic drained results for stage=0 TODO: move to producer service
 				synthetic := make([]core.DrainedResultDTO, 0, len(payload.Calculations))
 				for _, calc := range payload.Calculations {
-					if len(calc.Admitted) == 0 {
-						continue
-					}
-					last := calc.Admitted[len(calc.Admitted)-1]
-					var passingScore, larp int
-					for _, app := range payload.Applications {
-						if app.HeadingCode == calc.HeadingCode && app.StudentID == last.ID {
-							passingScore = app.Score
-							larp = app.RatingPlace
-							break
-						}
-					}
+					passingScore := calc.PassingScore
+					larp := calc.LastAdmittedRatingPlace
+					regularsAdmitted := calc.RegularsAdmitted
+
 					synthetic = append(synthetic, core.DrainedResultDTO{
 						HeadingCode:                calc.HeadingCode,
 						DrainedPercent:             0,
 						AvgPassingScore:            passingScore,
+						MinPassingScore:            passingScore,
+						MaxPassingScore:            passingScore,
+						MedPassingScore:            passingScore,
 						AvgLastAdmittedRatingPlace: larp,
+						MinLastAdmittedRatingPlace: larp,
+						MaxLastAdmittedRatingPlace: larp,
+						MedLastAdmittedRatingPlace: larp,
+						RegularsAdmitted:           regularsAdmitted,
+						IsVirtual:                  true,
 					})
 				}
 				// Combine synthetic and simulated drained results

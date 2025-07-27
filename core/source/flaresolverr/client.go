@@ -74,7 +74,7 @@ type SessionPool struct {
 	domain      string
 	sessions    chan *SessionInfo
 	allSessions []*SessionInfo // Keep track of all sessions for cleanup
-	mutex       sync.RWMutex     // To protect allSessions slice
+	mutex       sync.RWMutex   // To protect allSessions slice
 	maxSize     int
 	client      *Client
 }
@@ -101,6 +101,8 @@ var (
 	sessionMutex   sync.RWMutex // Protects sessionManager during iteration transitions
 )
 
+const defaultFlaresolverrTimeoutMs = 211000
+
 // GetClient returns a singleton FlareSolverr client instance
 func GetClient() (*Client, error) {
 	clientOnce.Do(func() {
@@ -113,11 +115,11 @@ func GetClient() (*Client, error) {
 func GetSessionManager() (*SessionManager, error) {
 	sessionMutex.RLock()
 	defer sessionMutex.RUnlock()
-	
+
 	if sessionManager != nil {
 		return sessionManager, nil
 	}
-	
+
 	sessionOnce.Do(func() {
 		client, err := GetClient()
 		if err != nil {
@@ -139,7 +141,7 @@ func initializeClient() (*Client, error) {
 	}
 
 	timeoutStr := os.Getenv("FLARESOLVERR_TIMEOUT_MS")
-	timeoutMs := 60000 // Default timeout
+	timeoutMs := defaultFlaresolverrTimeoutMs // Default timeout
 	if timeoutStr != "" {
 		if parsed, err := strconv.Atoi(timeoutStr); err == nil {
 			timeoutMs = parsed
@@ -150,7 +152,7 @@ func initializeClient() (*Client, error) {
 
 	// Create HTTP client with timeout
 	httpClient := &http.Client{
-		Timeout: timeout + (10 * time.Second), // Add buffer for FlareSolverr overhead
+		Timeout: timeout + (60 * time.Second), // Add buffer for FlareSolverr overhead
 	}
 
 	client := &Client{
@@ -414,11 +416,11 @@ func SafeGetWithHeaders(url string, headers map[string]string) (*GetResponse, er
 func GetWithDomain(url string, headers map[string]string) (*GetResponse, error) {
 	sessionMutex.RLock()
 	defer sessionMutex.RUnlock()
-	
+
 	if sessionManager == nil {
 		return nil, fmt.Errorf("session manager not initialized - call StartForIteration() first")
 	}
-	
+
 	return sessionManager.GetWithDomain(url, headers)
 }
 
@@ -426,11 +428,11 @@ func GetWithDomain(url string, headers map[string]string) (*GetResponse, error) 
 func SafeGetWithDomain(url string, headers map[string]string) (*GetResponse, error) {
 	sessionMutex.RLock()
 	defer sessionMutex.RUnlock()
-	
+
 	if sessionManager == nil {
 		return SafeGetWithHeaders(url, headers)
 	}
-	
+
 	resp, err := sessionManager.GetWithDomain(url, headers)
 	if err != nil && IsFlareSolverrError(err) {
 		return &GetResponse{Error: err}, fmt.Errorf("FlareSolverr unavailable: %w", err)
@@ -762,7 +764,6 @@ func (sp *SessionPool) fillPool() {
 // cleanupIdleSessions is now a no-op as the channel handles idle resources implicitly.
 // We keep the health check logic.
 func (sp *SessionPool) cleanupIdleSessions(idleTimeout time.Duration) {}
-
 
 // healthCheckSessions performs health checks on all sessions in the pool
 func (sp *SessionPool) healthCheckSessions() {

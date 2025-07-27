@@ -1,12 +1,14 @@
 package mephi
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/source/flaresolverr"
 	"github.com/trueegorletov/analabit/core/utils"
 	"golang.org/x/net/html"
 )
@@ -63,29 +65,64 @@ func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	return nil
 }
 
+// getMephiHeaders returns the headers to be used for MEPhI requests
+func getMephiHeaders() map[string]string {
+	return map[string]string{
+		"User-Agent":         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+		"Accept-Language":    "ru-RU,ru;q=0.9,en;q=0.8",
+		"Accept-Encoding":    "gzip, deflate, br",
+		"Cache-Control":      "no-cache",
+		"Pragma":             "no-cache",
+		"Sec-Ch-Ua":          `"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"`,
+		"Sec-Ch-Ua-Mobile":   "?0",
+		"Sec-Ch-Ua-Platform": `"Windows"`,
+		"Sec-Fetch-Dest":     "empty",
+		"Sec-Fetch-Mode":     "cors",
+		"Sec-Fetch-Site":     "same-origin",
+		"Referer":            "https://pk.mephi.ru/",
+	}
+}
+
 // loadApplicationsFromURL fetches and parses applications from a single URL.
 func (s *HTTPHeadingSource) loadApplicationsFromURL(receiver source.DataReceiver, headingCode string, url string, competitionType core.Competition) error {
-	// Fetch the HTML content
-	resp, err := http.Get(url)
+	ctx := context.Background()
+	release, err := source.AcquireHTTPSemaphores(ctx, "mephi")
 	if err != nil {
-		return fmt.Errorf("failed to fetch URL %s: %w", url, err)
+		return fmt.Errorf("failed to acquire semaphores for %s: %w", url, err)
 	}
-	defer resp.Body.Close()
+	defer release()
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("HTTP error %d for URL %s", resp.StatusCode, url)
-	}
-
-	// Parse HTML
-	doc, err := html.Parse(resp.Body)
-	if err != nil {
-		return fmt.Errorf("failed to parse HTML from %s: %w", url, err)
+	if err := source.WaitBeforeHTTPRequest("mephi", ctx); err != nil {
+		return fmt.Errorf("timeout coordination failed for %s: %w", url, err)
 	}
 
-	// Parse applications from the HTML
-	applications, err := ParseApplicationList(doc, competitionType)
+	// Fetch the HTML content using FlareSolverr
+	fsResp, err := flaresolverr.SafeGetWithDomain(url, getMephiHeaders())
 	if err != nil {
-		return fmt.Errorf("failed to parse applications from %s: %w", url, err)
+		return fmt.Errorf("failed to fetch URL %s via FlareSolverr: %w", url, err)
+	}
+
+	if fsResp.StatusCode != http.StatusOK {
+		return fmt.Errorf("HTTP error %d for URL %s", fsResp.StatusCode, url)
+	}
+
+	// Check for "No applications" page
+	body := strings.TrimSpace(fsResp.Body)
+	var applications []*source.ApplicationData
+	if body == "Нет заявлений" {
+		applications = []*source.ApplicationData{}
+	} else {
+		// Parse HTML
+		doc, err := html.Parse(strings.NewReader(fsResp.Body))
+		if err != nil {
+			return fmt.Errorf("failed to parse HTML from %s: %w", url, err)
+		}
+
+		// Parse applications from the HTML
+		applications, err = ParseApplicationList(doc, competitionType)
+		if err != nil {
+			return fmt.Errorf("failed to parse applications from %s: %w", url, err)
+		}
 	}
 
 	// Send applications to the receiver

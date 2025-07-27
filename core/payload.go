@@ -39,8 +39,11 @@ type HeadingDTO struct {
 
 // CalculationResultDTO is a lean version of core.CalculationResult.
 type CalculationResultDTO struct {
-	HeadingCode string       `json:"heading_code"`
-	Admitted    []StudentDTO `json:"admitted"`
+	HeadingCode             string       `json:"heading_code"`
+	Admitted                []StudentDTO `json:"admitted"`
+	RegularsAdmitted        bool         `json:"regulars_admitted"`
+	PassingScore            int          `json:"passing_score"`
+	LastAdmittedRatingPlace int          `json:"last_admitted_rating_place"`
 }
 
 // DrainedResultDTO is a lean version of drainer.DrainedResult.
@@ -56,6 +59,8 @@ type DrainedResultDTO struct {
 	MinLastAdmittedRatingPlace int    `json:"min_last_admitted_rating_place"`
 	MaxLastAdmittedRatingPlace int    `json:"max_last_admitted_rating_place"`
 	MedLastAdmittedRatingPlace int    `json:"med_last_admitted_rating_place"`
+	RegularsAdmitted           bool   `json:"regulars_admitted"`
+	IsVirtual                  bool   `json:"is_virtual"`
 }
 
 // NewUploadPayloadFromCalculator creates an UploadPayload from a VarsityCalculator and its results
@@ -119,9 +124,24 @@ func NewUploadPayloadFromCalculator(vc *VarsityCalculator, results []Calculation
 			})
 		}
 
+		passingScore, err := result.PassingScore()
+
+		if err != nil {
+			passingScore = 999
+		}
+
+		larp, err := result.LastAdmittedRatingPlace()
+
+		if err != nil {
+			larp = 0
+		}
+
 		payload.Calculations = append(payload.Calculations, CalculationResultDTO{
-			HeadingCode: result.Heading.FullCode(),
-			Admitted:    admittedStudents,
+			HeadingCode:             result.Heading.FullCode(),
+			Admitted:                admittedStudents,
+			RegularsAdmitted:        result.CheckRegularsAdmitted(),
+			PassingScore:            passingScore,
+			LastAdmittedRatingPlace: larp,
 		})
 	}
 

@@ -1,4 +1,5 @@
 package spbsu
+
 import (
 	"context"
 	"encoding/json"
@@ -21,10 +22,6 @@ type HttpHeadingSource struct {
 	SpecialQuotaListID   int
 	Capacities           core.Capacities
 }
-
-
-
-
 
 func makeSingleRequest(url string) (*http.Response, error) {
 	var attempt int

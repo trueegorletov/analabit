@@ -30,11 +30,12 @@ const maxComputeGoroutines = 128
 
 func (d *Drainer) Run(iterations int) []DrainedResult {
 	type headingResults struct {
-		prototypeHeading *core.Heading
-		psValues         []int
-		larpValues       []int
-		psSum            int
-		larpSum          int
+		prototypeHeading      *core.Heading
+		psValues              []int
+		larpValues            []int
+		psSum                 int
+		larpSum               int
+		regularsAdmittedCount int
 	}
 
 	codeToResult := make(map[string]headingResults)
@@ -76,11 +77,24 @@ func (d *Drainer) Run(iterations int) []DrainedResult {
 				results.larpValues = make([]int, 0, iterations)
 			}
 
+			hasRegulars := false
+			for _, student := range result.Admitted {
+				app := student.Application(result.Heading)
+				if app.CompetitionType() == core.CompetitionRegular {
+					hasRegulars = true
+					break
+				}
+			}
+
 			passingScore, err := result.PassingScore()
 
 			if err != nil {
 				slog.Debug("Passing score unavailable", "error", err, "heading", code)
 				continue
+			}
+
+			if !hasRegulars {
+				passingScore = 310
 			}
 
 			lastAdmittedRatingPlace, err := result.LastAdmittedRatingPlace()
@@ -94,6 +108,10 @@ func (d *Drainer) Run(iterations int) []DrainedResult {
 			results.larpValues = append(results.larpValues, lastAdmittedRatingPlace)
 			results.psSum += passingScore
 			results.larpSum += lastAdmittedRatingPlace
+
+			if hasRegulars {
+				results.regularsAdmittedCount++
+			}
 
 			codeToResult[code] = results
 		}
@@ -121,6 +139,7 @@ func (d *Drainer) Run(iterations int) []DrainedResult {
 			AvgLastAdmittedRatingPlace: results.larpSum / len(results.larpValues),
 			MedLastAdmittedRatingPlace: median(results.larpValues),
 			DrainedPercent:             d.drainPercent,
+			RegularsAdmitted:           results.regularsAdmittedCount > 0,
 		})
 	}
 

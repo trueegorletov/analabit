@@ -103,6 +103,16 @@ func RunID(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldEQ(FieldRunID, v))
 }
 
+// RegularsAdmitted applies equality check predicate on the "regulars_admitted" field. It's identical to RegularsAdmittedEQ.
+func RegularsAdmitted(v bool) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldRegularsAdmitted, v))
+}
+
+// IsVirtual applies equality check predicate on the "is_virtual" field. It's identical to IsVirtualEQ.
+func IsVirtual(v bool) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldIsVirtual, v))
+}
+
 // DrainedPercentEQ applies the EQ predicate on the "drained_percent" field.
 func DrainedPercentEQ(v int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldEQ(FieldDrainedPercent, v))
@@ -481,6 +491,26 @@ func RunIDIn(vs ...int) predicate.DrainedResult {
 // RunIDNotIn applies the NotIn predicate on the "run_id" field.
 func RunIDNotIn(vs ...int) predicate.DrainedResult {
 	return predicate.DrainedResult(sql.FieldNotIn(FieldRunID, vs...))
+}
+
+// RegularsAdmittedEQ applies the EQ predicate on the "regulars_admitted" field.
+func RegularsAdmittedEQ(v bool) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldRegularsAdmitted, v))
+}
+
+// RegularsAdmittedNEQ applies the NEQ predicate on the "regulars_admitted" field.
+func RegularsAdmittedNEQ(v bool) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldRegularsAdmitted, v))
+}
+
+// IsVirtualEQ applies the EQ predicate on the "is_virtual" field.
+func IsVirtualEQ(v bool) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldEQ(FieldIsVirtual, v))
+}
+
+// IsVirtualNEQ applies the NEQ predicate on the "is_virtual" field.
+func IsVirtualNEQ(v bool) predicate.DrainedResult {
+	return predicate.DrainedResult(sql.FieldNEQ(FieldIsVirtual, v))
 }
 
 // HasHeading applies the HasEdge predicate on the "heading" edge.

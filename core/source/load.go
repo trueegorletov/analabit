@@ -289,7 +289,7 @@ func LoadFromDefinitions(defs []VarsityDefinition) []*Varsity {
 	return vs
 }
 
-func LoadWithCaches(defs []VarsityDefinition, caches []*VarsityDataCache) []*Varsity {
+func LoadWithCaches(defs []VarsityDefinition, caches []*VarsityDataCache) ([]*Varsity, bool) {
 	codeToCache := make(map[string]*VarsityDataCache)
 	for _, cache := range caches {
 		codeToCache[cache.Definition.Code] = cache
@@ -354,5 +354,6 @@ func LoadWithCaches(defs []VarsityDefinition, caches []*VarsityDataCache) []*Var
 		}
 	}
 
-	return append(cached, added...)
+	cacheComplete := len(newVarsities) == 0
+	return append(cached, added...), cacheComplete
 }

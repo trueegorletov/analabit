@@ -17,6 +17,7 @@ func NewDrainedResultDTOs(results []DrainedResult) []core.DrainedResultDTO {
 			MinLastAdmittedRatingPlace: result.MinLastAdmittedRatingPlace,
 			MaxLastAdmittedRatingPlace: result.MaxLastAdmittedRatingPlace,
 			MedLastAdmittedRatingPlace: result.MedLastAdmittedRatingPlace,
+			RegularsAdmitted:           result.RegularsAdmitted,
 		})
 	}
 	return dtos

@@ -26,16 +26,19 @@ var defaultLimits = map[string]int64{
 	"rzgmu":  3,
 	"fmsmu":  4,
 	"rsmu":   6,
+	"mephi":  1,
 }
 
 // Session-based limits for sources that use FlareSolverr sessions
 var sessionBasedLimits = map[string]int64{
-	"mirea": 2, // Higher limit for session-based requests
+	"mirea": 2,
+	"mephi": 1,
 }
 
 // Fallback limits for sessionless requests
 var sessionlessLimits = map[string]int64{
-	"mirea": 2, // Lower limit for sessionless fallback requests
+	"mirea": 2,
+	"mephi": 1,
 }
 
 var envVars = map[string]string{
@@ -49,6 +52,7 @@ var envVars = map[string]string{
 	"rzgmu":  "RZGMU_HTTP_MAX_CONCURRENT",
 	"fmsmu":  "FMSMU_HTTP_MAX_CONCURRENT",
 	"rsmu":   "RSMU_HTTP_MAX_CONCURRENT",
+	"mephi":  "MEPHI_HTTP_MAX_CONCURRENT",
 }
 
 // Environment variables for FlareSolverr session management
@@ -87,7 +91,7 @@ var timeoutEnvVars = map[string]string{
 	"mipt_timeout_main_ratio_high":  "MIPT_HTTP_TIMEOUT_MAIN_RATIO_HIGH",
 }
 
-const fallbackGlobalLimit = 24
+const fallbackGlobalLimit = 36
 
 func init() {
 	// Load global limit

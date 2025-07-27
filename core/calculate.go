@@ -6,7 +6,6 @@ import (
 	"container/list" // Added for O(1) queue operations
 	"encoding/gob"
 	"fmt"
-	"log"
 	"log/slog"
 	"math/rand"
 	"sort"
@@ -161,7 +160,7 @@ func (s *Student) ID() string {
 // It panics if no application is found for the given heading for this student.
 // WARNING: This might not be suitable for all contexts if a student has multiple applications
 // to the same heading with different competition types/priorities and the specific one is needed.
-func (s *Student) application(heading *Heading) *Application {
+func (s *Student) Application(heading *Heading) *Application {
 	for _, app := range s.applications {
 		if app.heading == heading {
 			return app
@@ -313,6 +312,18 @@ type CalculationResult struct {
 	Heading *Heading
 	// List of students admitted to the heading, sorted according to admission criteria (e.g., quota, BVI, Regular, then rating).
 	Admitted []*Student
+}
+
+func (r *CalculationResult) CheckRegularsAdmitted() bool {
+	for _, student := range r.Admitted {
+		for _, app := range student.applications {
+			if app.heading.Code() == r.Heading.Code() && app.competitionType == CompetitionRegular {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func (r *CalculationResult) PassingScore() (int, error) {
@@ -577,9 +588,6 @@ func (v *VarsityCalculator) AddHeading(code string, capacities Capacities, prett
 	code = strings.TrimSpace(code)
 	prettyName = strings.TrimSpace(prettyName)
 
-	if _, ok := v.headings.Load(code); ok {
-		log.Printf("DUPLICATE HEADING CODE: Overwriting heading %s with prettyName %s and capacities %v", code, prettyName, capacities)
-	}
 	heading := &Heading{
 		CodeValue:               code,
 		varsity:                 v, // Link back to varsity

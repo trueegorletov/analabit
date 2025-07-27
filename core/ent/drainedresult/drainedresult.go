@@ -32,6 +32,10 @@ const (
 	FieldMedLastAdmittedRatingPlace = "med_last_admitted_rating_place"
 	// FieldRunID holds the string denoting the run_id field in the database.
 	FieldRunID = "run_id"
+	// FieldRegularsAdmitted holds the string denoting the regulars_admitted field in the database.
+	FieldRegularsAdmitted = "regulars_admitted"
+	// FieldIsVirtual holds the string denoting the is_virtual field in the database.
+	FieldIsVirtual = "is_virtual"
 	// EdgeHeading holds the string denoting the heading edge name in mutations.
 	EdgeHeading = "heading"
 	// EdgeRun holds the string denoting the run edge name in mutations.
@@ -67,6 +71,8 @@ var Columns = []string{
 	FieldMaxLastAdmittedRatingPlace,
 	FieldMedLastAdmittedRatingPlace,
 	FieldRunID,
+	FieldRegularsAdmitted,
+	FieldIsVirtual,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "drained_results"
@@ -89,6 +95,13 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// DefaultRegularsAdmitted holds the default value on creation for the "regulars_admitted" field.
+	DefaultRegularsAdmitted bool
+	// DefaultIsVirtual holds the default value on creation for the "is_virtual" field.
+	DefaultIsVirtual bool
+)
 
 // OrderOption defines the ordering options for the DrainedResult queries.
 type OrderOption func(*sql.Selector)
@@ -146,6 +159,16 @@ func ByMedLastAdmittedRatingPlace(opts ...sql.OrderTermOption) OrderOption {
 // ByRunID orders the results by the run_id field.
 func ByRunID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRunID, opts...).ToFunc()
+}
+
+// ByRegularsAdmitted orders the results by the regulars_admitted field.
+func ByRegularsAdmitted(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRegularsAdmitted, opts...).ToFunc()
+}
+
+// ByIsVirtual orders the results by the is_virtual field.
+func ByIsVirtual(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsVirtual, opts...).ToFunc()
 }
 
 // ByHeadingField orders the results by heading field.

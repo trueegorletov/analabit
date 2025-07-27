@@ -25,6 +25,8 @@ func (DrainedResult) Fields() []ent.Field {
 		field.Int("max_last_admitted_rating_place"),
 		field.Int("med_last_admitted_rating_place"),
 		field.Int("run_id"),
+		field.Bool("regulars_admitted").Default(false),
+		field.Bool("is_virtual").Default(false),
 	}
 }
 

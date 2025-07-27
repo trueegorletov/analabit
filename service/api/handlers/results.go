@@ -1,28 +1,30 @@
 package handlers
 
 import (
-	"github.com/trueegorletov/analabit/core/ent"
-	"github.com/trueegorletov/analabit/core/ent/application"
-	"github.com/trueegorletov/analabit/core/ent/calculation"
-	"github.com/trueegorletov/analabit/core/ent/drainedresult"
-	"github.com/trueegorletov/analabit/core/ent/heading"
-	"github.com/trueegorletov/analabit/core/ent/varsity"
 	"context"
 	"log"
 	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/ent/application"
+	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/drainedresult"
+	"github.com/trueegorletov/analabit/core/ent/heading"
+	"github.com/trueegorletov/analabit/core/ent/varsity"
+
 	"github.com/gofiber/fiber/v3"
 )
 
-// CalculationResultDTO represents one admitted student record.
+// CalculationResultDTO represents common calculations result per heading
 type CalculationResultDTO struct {
 	HeadingID               int    `json:"heading_id"`
 	HeadingCode             string `json:"heading_code"`
 	PassingScore            int    `json:"passing_score"`
 	LastAdmittedRatingPlace int    `json:"last_admitted_rating_place"`
 	RunID                   int    `json:"run_id"`
+	RegularsAdmitted        bool   `json:"regulars_admitted"`
 }
 
 // DrainedResultDTO represents aggregated drained statistics per heading.
@@ -39,6 +41,7 @@ type DrainedResultDTO struct {
 	MaxLastAdmittedRatingPlace int    `json:"max_last_admitted_rating_place"`
 	MedLastAdmittedRatingPlace int    `json:"med_last_admitted_rating_place"`
 	RunID                      int    `json:"run_id"`
+	RegularsAdmitted           bool   `json:"regulars_admitted"`
 }
 
 // ResultsResponse aggregates requested result kinds.
@@ -196,6 +199,7 @@ func GetResults(client *ent.Client) fiber.Handler {
 					PassingScore:            dr.AvgPassingScore,
 					LastAdmittedRatingPlace: dr.AvgLastAdmittedRatingPlace,
 					RunID:                   runID,
+					RegularsAdmitted:        dr.RegularsAdmitted,
 				}
 				primaryMap[hid] = dto
 				coveredHeading[hid] = struct{}{}
@@ -257,6 +261,7 @@ func GetResults(client *ent.Client) fiber.Handler {
 							PassingScore:            passingScore,
 							LastAdmittedRatingPlace: c.AdmittedPlace,
 							RunID:                   runID,
+							RegularsAdmitted:        true, // Legacy, assume true or determine if needed
 						}
 					}
 				}
@@ -334,12 +339,13 @@ func GetResults(client *ent.Client) fiber.Handler {
 						MaxLastAdmittedRatingPlace: chosen.MaxLastAdmittedRatingPlace,
 						MedLastAdmittedRatingPlace: chosen.MedLastAdmittedRatingPlace,
 						RunID:                      runID,
+						RegularsAdmitted:           chosen.RegularsAdmitted,
 					}
 					drainedMap[hid] = []DrainedResultDTO{dto}
 				}
 			} else {
 				for _, dr := range drResults {
-					if dr.Edges.Heading == nil || dr.DrainedPercent <= 0 {
+					if dr.Edges.Heading == nil || dr.DrainedPercent <= 0 || dr.IsVirtual {
 						continue
 					}
 					hid := dr.Edges.Heading.ID
@@ -360,6 +366,7 @@ func GetResults(client *ent.Client) fiber.Handler {
 						MaxLastAdmittedRatingPlace: dr.MaxLastAdmittedRatingPlace,
 						MedLastAdmittedRatingPlace: dr.MedLastAdmittedRatingPlace,
 						RunID:                      runID,
+						RegularsAdmitted:           dr.RegularsAdmitted,
 					}
 					drainedMap[hid] = append(drainedMap[hid], dto)
 				}

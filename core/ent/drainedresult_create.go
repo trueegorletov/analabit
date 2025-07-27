@@ -81,6 +81,34 @@ func (drc *DrainedResultCreate) SetRunID(i int) *DrainedResultCreate {
 	return drc
 }
 
+// SetRegularsAdmitted sets the "regulars_admitted" field.
+func (drc *DrainedResultCreate) SetRegularsAdmitted(b bool) *DrainedResultCreate {
+	drc.mutation.SetRegularsAdmitted(b)
+	return drc
+}
+
+// SetNillableRegularsAdmitted sets the "regulars_admitted" field if the given value is not nil.
+func (drc *DrainedResultCreate) SetNillableRegularsAdmitted(b *bool) *DrainedResultCreate {
+	if b != nil {
+		drc.SetRegularsAdmitted(*b)
+	}
+	return drc
+}
+
+// SetIsVirtual sets the "is_virtual" field.
+func (drc *DrainedResultCreate) SetIsVirtual(b bool) *DrainedResultCreate {
+	drc.mutation.SetIsVirtual(b)
+	return drc
+}
+
+// SetNillableIsVirtual sets the "is_virtual" field if the given value is not nil.
+func (drc *DrainedResultCreate) SetNillableIsVirtual(b *bool) *DrainedResultCreate {
+	if b != nil {
+		drc.SetIsVirtual(*b)
+	}
+	return drc
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by ID.
 func (drc *DrainedResultCreate) SetHeadingID(id int) *DrainedResultCreate {
 	drc.mutation.SetHeadingID(id)
@@ -104,6 +132,7 @@ func (drc *DrainedResultCreate) Mutation() *DrainedResultMutation {
 
 // Save creates the DrainedResult in the database.
 func (drc *DrainedResultCreate) Save(ctx context.Context) (*DrainedResult, error) {
+	drc.defaults()
 	return withHooks(ctx, drc.sqlSave, drc.mutation, drc.hooks)
 }
 
@@ -126,6 +155,18 @@ func (drc *DrainedResultCreate) Exec(ctx context.Context) error {
 func (drc *DrainedResultCreate) ExecX(ctx context.Context) {
 	if err := drc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (drc *DrainedResultCreate) defaults() {
+	if _, ok := drc.mutation.RegularsAdmitted(); !ok {
+		v := drainedresult.DefaultRegularsAdmitted
+		drc.mutation.SetRegularsAdmitted(v)
+	}
+	if _, ok := drc.mutation.IsVirtual(); !ok {
+		v := drainedresult.DefaultIsVirtual
+		drc.mutation.SetIsVirtual(v)
 	}
 }
 
@@ -160,6 +201,12 @@ func (drc *DrainedResultCreate) check() error {
 	}
 	if _, ok := drc.mutation.RunID(); !ok {
 		return &ValidationError{Name: "run_id", err: errors.New(`ent: missing required field "DrainedResult.run_id"`)}
+	}
+	if _, ok := drc.mutation.RegularsAdmitted(); !ok {
+		return &ValidationError{Name: "regulars_admitted", err: errors.New(`ent: missing required field "DrainedResult.regulars_admitted"`)}
+	}
+	if _, ok := drc.mutation.IsVirtual(); !ok {
+		return &ValidationError{Name: "is_virtual", err: errors.New(`ent: missing required field "DrainedResult.is_virtual"`)}
 	}
 	if len(drc.mutation.HeadingIDs()) == 0 {
 		return &ValidationError{Name: "heading", err: errors.New(`ent: missing required edge "DrainedResult.heading"`)}
@@ -229,6 +276,14 @@ func (drc *DrainedResultCreate) createSpec() (*DrainedResult, *sqlgraph.CreateSp
 		_spec.SetField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
 		_node.MedLastAdmittedRatingPlace = value
 	}
+	if value, ok := drc.mutation.RegularsAdmitted(); ok {
+		_spec.SetField(drainedresult.FieldRegularsAdmitted, field.TypeBool, value)
+		_node.RegularsAdmitted = value
+	}
+	if value, ok := drc.mutation.IsVirtual(); ok {
+		_spec.SetField(drainedresult.FieldIsVirtual, field.TypeBool, value)
+		_node.IsVirtual = value
+	}
 	if nodes := drc.mutation.HeadingIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -284,6 +339,7 @@ func (drcb *DrainedResultCreateBulk) Save(ctx context.Context) ([]*DrainedResult
 	for i := range drcb.builders {
 		func(i int, root context.Context) {
 			builder := drcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*DrainedResultMutation)
 				if !ok {

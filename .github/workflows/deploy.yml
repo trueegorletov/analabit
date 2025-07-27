@@ -188,7 +188,6 @@ jobs:
 
           # FlareSolverr configuration
           FLARESOLVERR_URL=http://flaresolverr:8191
-          FLARESOLVERR_TIMEOUT_MS=60000
 
           # Monitoring credentials
           GRAFANA_USER=admin

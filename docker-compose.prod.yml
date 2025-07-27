@@ -97,7 +97,6 @@ services:
       - DATABASE_DBNAME=${ANALABIT_DB_NAME}
       - DATABASE_SSLMODE=disable
       - FLARESOLVERR_URL=http://flaresolverr:8191
-      - FLARESOLVERR_TIMEOUT_MS=60000
     ports:
       - "127.0.0.1:8080:8080"
     restart: unless-stopped
@@ -203,7 +202,6 @@ services:
       - DATABASE_DBNAME=${ANALABIT_DB_NAME}
       - DATABASE_SSLMODE=disable
       - FLARESOLVERR_URL=http://flaresolverr:8191
-      - FLARESOLVERR_TIMEOUT_MS=100000
     volumes:
       - producer_cache:/app/cache
     restart: unless-stopped

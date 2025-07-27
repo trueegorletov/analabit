@@ -7,6 +7,7 @@ import (
 
 	"github.com/trueegorletov/analabit/core/ent/application"
 	"github.com/trueegorletov/analabit/core/ent/calculation"
+	"github.com/trueegorletov/analabit/core/ent/drainedresult"
 	"github.com/trueegorletov/analabit/core/ent/run"
 	"github.com/trueegorletov/analabit/core/ent/schema"
 )
@@ -35,6 +36,16 @@ func init() {
 	calculation.DefaultUpdatedAt = calculationDescUpdatedAt.Default.(func() time.Time)
 	// calculation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	calculation.UpdateDefaultUpdatedAt = calculationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	drainedresultFields := schema.DrainedResult{}.Fields()
+	_ = drainedresultFields
+	// drainedresultDescRegularsAdmitted is the schema descriptor for regulars_admitted field.
+	drainedresultDescRegularsAdmitted := drainedresultFields[10].Descriptor()
+	// drainedresult.DefaultRegularsAdmitted holds the default value on creation for the regulars_admitted field.
+	drainedresult.DefaultRegularsAdmitted = drainedresultDescRegularsAdmitted.Default.(bool)
+	// drainedresultDescIsVirtual is the schema descriptor for is_virtual field.
+	drainedresultDescIsVirtual := drainedresultFields[11].Descriptor()
+	// drainedresult.DefaultIsVirtual holds the default value on creation for the is_virtual field.
+	drainedresult.DefaultIsVirtual = drainedresultDescIsVirtual.Default.(bool)
 	runFields := schema.Run{}.Fields()
 	_ = runFields
 	// runDescTriggeredAt is the schema descriptor for triggered_at field.

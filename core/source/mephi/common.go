@@ -12,7 +12,7 @@ import (
 )
 
 // ParseCapacitiesRegistry parses the MEPhI capacities registry HTML to extract heading names and their KCP values.
-// It handles rowspan attributes to map one KCP value to multiple headings.
+// It handles rowspan attributes to properly divide one KCP value among multiple headings.
 func ParseCapacitiesRegistry(doc *html.Node) (map[string]int, error) {
 	capacities := make(map[string]int)
 
@@ -28,10 +28,15 @@ func ParseCapacitiesRegistry(doc *html.Node) (map[string]int, error) {
 		return nil, fmt.Errorf("tbody not found in capacities table")
 	}
 
-	// Parse rows
+	// Parse rows and collect rowspan groups
 	rows := findAllNodes(tbody, "tr", "", "")
-	var pendingKCP int
-	var pendingRowspan int
+	type rowspanGroup struct {
+		kcpValue int
+		headings []string
+	}
+	var groups []rowspanGroup
+	var currentGroup *rowspanGroup
+	var currentUGSN string
 
 	for _, row := range rows {
 		// Skip header row
@@ -40,39 +45,101 @@ func ParseCapacitiesRegistry(doc *html.Node) (map[string]int, error) {
 		}
 
 		cells := findAllNodes(row, "td", "", "")
-		if len(cells) < 4 {
+		if len(cells) < 1 {
 			continue
 		}
 
-		// Extract heading name from second column
-		headingName := strings.TrimSpace(getTextContent(cells[1]))
+		// Extract heading name - column index depends on number of cells
+		var headingName string
+		if len(cells) >= 5 {
+			currentUGSN = strings.TrimSpace(getTextContent(cells[0]))
+			headingName = strings.TrimSpace(getTextContent(cells[1]))
+		} else if len(cells) >= 3 {
+			firstCellText := strings.TrimSpace(getTextContent(cells[0]))
+			if currentUGSN != "" && firstCellText == currentUGSN {
+				// Repeated UGSN in continuation row, heading in cells[1]
+				if len(cells) < 4 {
+					continue
+				}
+				headingName = strings.TrimSpace(getTextContent(cells[1]))
+			} else {
+				// Standard continuation row: heading in cells[0]
+				headingName = firstCellText
+			}
+		}
+
 		if headingName == "" {
 			continue
 		}
 
+
+
 		// Check if there's a new KCP value in the 4th column ("Оч")
-		kcpText := strings.TrimSpace(getTextContent(cells[3]))
-		if kcpText != "" && kcpText != "&nbsp;" {
-			// Parse KCP value
-			if kcp, err := strconv.Atoi(kcpText); err == nil {
-				pendingKCP = kcp
-				// Check for rowspan
-				if rowspanAttr := getAttr(cells[3], "rowspan"); rowspanAttr != "" {
-					if rowspan, err := strconv.Atoi(rowspanAttr); err == nil {
-						pendingRowspan = rowspan - 1 // -1 because current row is included
+		// Only check if we have enough cells (rowspan rows will have fewer cells)
+		if len(cells) >= 5 {
+			kcpText := strings.TrimSpace(getTextContent(cells[3]))
+			if kcpText != "" && kcpText != "&nbsp;" {
+				// Parse KCP value
+				if kcp, err := strconv.Atoi(kcpText); err == nil {
+					// Finish previous group if exists
+					if currentGroup != nil {
+						groups = append(groups, *currentGroup)
+					}
+
+					// Start new group
+					currentGroup = &rowspanGroup{
+						kcpValue: kcp,
+						headings: []string{headingName},
+					}
+
+					// Check for rowspan to determine if this is a multi-heading group
+					rowspanAttr := getAttr(cells[3], "rowspan")
+					if rowspanAttr == "" || rowspanAttr == "1" {
+						// Single heading, finish group immediately
+						groups = append(groups, *currentGroup)
+						currentGroup = nil
 					}
 				}
+			} else {
+				// No KCP value in this row, add heading to current group if exists
+				if currentGroup != nil {
+					currentGroup.headings = append(currentGroup.headings, headingName)
+				}
+			}
+		} else {
+			// Row has fewer cells (likely part of a rowspan group)
+			if currentGroup != nil {
+				currentGroup.headings = append(currentGroup.headings, headingName)
 			}
 		}
+	}
 
-		// Assign KCP to current heading
-		if pendingKCP > 0 {
-			capacities[headingName] = pendingKCP
-			if pendingRowspan > 0 {
-				pendingRowspan--
-			} else {
-				pendingKCP = 0 // Reset if no more rowspan
+	// Finish last group if exists
+	if currentGroup != nil {
+		groups = append(groups, *currentGroup)
+	}
+
+
+
+	// Distribute capacities within each group
+	for _, group := range groups {
+		headingCount := len(group.headings)
+		if headingCount == 0 {
+			continue
+		}
+
+		// Calculate base capacity per heading
+		baseCapacity := group.kcpValue / headingCount
+		remainder := group.kcpValue % headingCount
+
+		// Distribute capacity with remainder handling
+		for i, heading := range group.headings {
+			capacity := baseCapacity
+			// Give extra to first headings to distribute remainder
+			if i < remainder {
+				capacity++
 			}
+			capacities[heading] = capacity
 		}
 	}
 
@@ -105,6 +172,10 @@ func ParseListLinksRegistry(doc *html.Node) (map[string]map[core.Competition][]s
 			// Extract competition description from first cell
 			competitionDesc := strings.TrimSpace(getTextContent(cells[0]))
 			if competitionDesc == "" || strings.Contains(competitionDesc, "Конкурсная единица") {
+				continue
+			}
+			// Filter out non-budget (paid) entries
+			if strings.Contains(competitionDesc, "Платный") || strings.Contains(competitionDesc, "очно-заочная форма") {
 				continue
 			}
 
@@ -140,13 +211,17 @@ func ParseApplicationList(doc *html.Node, competitionType core.Competition) ([]*
 	// Find the rating table
 	table := findNode(doc, "table", "id", "ratingTable")
 	if table == nil {
-		return nil, fmt.Errorf("rating table not found")
+		return nil, nil
 	}
 
 	tbody := findNode(table, "tbody", "", "")
 	if tbody == nil {
 		return nil, fmt.Errorf("tbody not found in rating table")
 	}
+
+	// Track current section for Regular&BVI lists
+	currentSection := competitionType // Default to provided competition type
+	isRegularBVIList := competitionType == core.CompetitionRegular
 
 	rows := findAllNodes(tbody, "tr", "", "")
 	for _, row := range rows {
@@ -155,13 +230,25 @@ func ParseApplicationList(doc *html.Node, competitionType core.Competition) ([]*
 			continue
 		}
 
+		// Check if this row is a subheader for Regular&BVI lists
+		if isRegularBVIList {
+			rowText := strings.TrimSpace(getTextContent(row))
+			if strings.Contains(rowText, "Без экзаменов") {
+				currentSection = core.CompetitionBVI
+				continue
+			} else if strings.Contains(rowText, "Общий конкурс") {
+				currentSection = core.CompetitionRegular
+				continue
+			}
+		}
+
 		cells := findAllNodes(row, "td", "", "")
 		if len(cells) < 10 {
 			continue
 		}
 
-		// Extract student ID from third cell (№ дела)
-		studentIDText := strings.TrimSpace(getTextContent(cells[2]))
+		// Extract student ID from fourth cell (ID участника на ЕПГУ)
+		studentIDText := strings.TrimSpace(getTextContent(cells[3]))
 		if studentIDText == "" {
 			continue
 		}
@@ -188,15 +275,8 @@ func ParseApplicationList(doc *html.Node, competitionType core.Competition) ([]*
 			}
 		}
 
-		// Determine actual competition type based on scores
-		actualCompetitionType := competitionType
-		if scoresSum == nil && strings.Contains(getTextContent(cells[6]), "-") {
-			// No numeric score, likely BVI (olympiad winner)
-			actualCompetitionType = core.CompetitionBVI
-		} else {
-				// Default to the provided competition type
-				actualCompetitionType = competitionType
-		}
+		// Determine actual competition type
+		actualCompetitionType := currentSection
 
 		// Handle nil pointers
 		scoreValue := 0

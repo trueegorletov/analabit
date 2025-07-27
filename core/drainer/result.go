@@ -16,4 +16,7 @@ type DrainedResult struct {
 	MedLastAdmittedRatingPlace int
 
 	DrainedPercent int
+
+	RegularsAdmitted bool
+	IsVirtual bool
 }

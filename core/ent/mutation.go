@@ -1651,6 +1651,8 @@ type DrainedResultMutation struct {
 	addmax_last_admitted_rating_place *int
 	med_last_admitted_rating_place    *int
 	addmed_last_admitted_rating_place *int
+	regulars_admitted                 *bool
+	is_virtual                        *bool
 	clearedFields                     map[string]struct{}
 	heading                           *int
 	clearedheading                    bool
@@ -2299,6 +2301,78 @@ func (m *DrainedResultMutation) ResetRunID() {
 	m.run = nil
 }
 
+// SetRegularsAdmitted sets the "regulars_admitted" field.
+func (m *DrainedResultMutation) SetRegularsAdmitted(b bool) {
+	m.regulars_admitted = &b
+}
+
+// RegularsAdmitted returns the value of the "regulars_admitted" field in the mutation.
+func (m *DrainedResultMutation) RegularsAdmitted() (r bool, exists bool) {
+	v := m.regulars_admitted
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRegularsAdmitted returns the old "regulars_admitted" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldRegularsAdmitted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRegularsAdmitted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRegularsAdmitted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRegularsAdmitted: %w", err)
+	}
+	return oldValue.RegularsAdmitted, nil
+}
+
+// ResetRegularsAdmitted resets all changes to the "regulars_admitted" field.
+func (m *DrainedResultMutation) ResetRegularsAdmitted() {
+	m.regulars_admitted = nil
+}
+
+// SetIsVirtual sets the "is_virtual" field.
+func (m *DrainedResultMutation) SetIsVirtual(b bool) {
+	m.is_virtual = &b
+}
+
+// IsVirtual returns the value of the "is_virtual" field in the mutation.
+func (m *DrainedResultMutation) IsVirtual() (r bool, exists bool) {
+	v := m.is_virtual
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsVirtual returns the old "is_virtual" field's value of the DrainedResult entity.
+// If the DrainedResult object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DrainedResultMutation) OldIsVirtual(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsVirtual is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsVirtual requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsVirtual: %w", err)
+	}
+	return oldValue.IsVirtual, nil
+}
+
+// ResetIsVirtual resets all changes to the "is_virtual" field.
+func (m *DrainedResultMutation) ResetIsVirtual() {
+	m.is_virtual = nil
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by id.
 func (m *DrainedResultMutation) SetHeadingID(id int) {
 	m.heading = &id
@@ -2399,7 +2473,7 @@ func (m *DrainedResultMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DrainedResultMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.drained_percent != nil {
 		fields = append(fields, drainedresult.FieldDrainedPercent)
 	}
@@ -2430,6 +2504,12 @@ func (m *DrainedResultMutation) Fields() []string {
 	if m.run != nil {
 		fields = append(fields, drainedresult.FieldRunID)
 	}
+	if m.regulars_admitted != nil {
+		fields = append(fields, drainedresult.FieldRegularsAdmitted)
+	}
+	if m.is_virtual != nil {
+		fields = append(fields, drainedresult.FieldIsVirtual)
+	}
 	return fields
 }
 
@@ -2458,6 +2538,10 @@ func (m *DrainedResultMutation) Field(name string) (ent.Value, bool) {
 		return m.MedLastAdmittedRatingPlace()
 	case drainedresult.FieldRunID:
 		return m.RunID()
+	case drainedresult.FieldRegularsAdmitted:
+		return m.RegularsAdmitted()
+	case drainedresult.FieldIsVirtual:
+		return m.IsVirtual()
 	}
 	return nil, false
 }
@@ -2487,6 +2571,10 @@ func (m *DrainedResultMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldMedLastAdmittedRatingPlace(ctx)
 	case drainedresult.FieldRunID:
 		return m.OldRunID(ctx)
+	case drainedresult.FieldRegularsAdmitted:
+		return m.OldRegularsAdmitted(ctx)
+	case drainedresult.FieldIsVirtual:
+		return m.OldIsVirtual(ctx)
 	}
 	return nil, fmt.Errorf("unknown DrainedResult field %s", name)
 }
@@ -2565,6 +2653,20 @@ func (m *DrainedResultMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRunID(v)
+		return nil
+	case drainedresult.FieldRegularsAdmitted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRegularsAdmitted(v)
+		return nil
+	case drainedresult.FieldIsVirtual:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsVirtual(v)
 		return nil
 	}
 	return fmt.Errorf("unknown DrainedResult field %s", name)
@@ -2755,6 +2857,12 @@ func (m *DrainedResultMutation) ResetField(name string) error {
 		return nil
 	case drainedresult.FieldRunID:
 		m.ResetRunID()
+		return nil
+	case drainedresult.FieldRegularsAdmitted:
+		m.ResetRegularsAdmitted()
+		return nil
+	case drainedresult.FieldIsVirtual:
+		m.ResetIsVirtual()
 		return nil
 	}
 	return fmt.Errorf("unknown DrainedResult field %s", name)

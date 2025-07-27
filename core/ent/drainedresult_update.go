@@ -232,6 +232,34 @@ func (dru *DrainedResultUpdate) SetNillableRunID(i *int) *DrainedResultUpdate {
 	return dru
 }
 
+// SetRegularsAdmitted sets the "regulars_admitted" field.
+func (dru *DrainedResultUpdate) SetRegularsAdmitted(b bool) *DrainedResultUpdate {
+	dru.mutation.SetRegularsAdmitted(b)
+	return dru
+}
+
+// SetNillableRegularsAdmitted sets the "regulars_admitted" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableRegularsAdmitted(b *bool) *DrainedResultUpdate {
+	if b != nil {
+		dru.SetRegularsAdmitted(*b)
+	}
+	return dru
+}
+
+// SetIsVirtual sets the "is_virtual" field.
+func (dru *DrainedResultUpdate) SetIsVirtual(b bool) *DrainedResultUpdate {
+	dru.mutation.SetIsVirtual(b)
+	return dru
+}
+
+// SetNillableIsVirtual sets the "is_virtual" field if the given value is not nil.
+func (dru *DrainedResultUpdate) SetNillableIsVirtual(b *bool) *DrainedResultUpdate {
+	if b != nil {
+		dru.SetIsVirtual(*b)
+	}
+	return dru
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by ID.
 func (dru *DrainedResultUpdate) SetHeadingID(id int) *DrainedResultUpdate {
 	dru.mutation.SetHeadingID(id)
@@ -368,6 +396,12 @@ func (dru *DrainedResultUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if value, ok := dru.mutation.AddedMedLastAdmittedRatingPlace(); ok {
 		_spec.AddField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := dru.mutation.RegularsAdmitted(); ok {
+		_spec.SetField(drainedresult.FieldRegularsAdmitted, field.TypeBool, value)
+	}
+	if value, ok := dru.mutation.IsVirtual(); ok {
+		_spec.SetField(drainedresult.FieldIsVirtual, field.TypeBool, value)
 	}
 	if dru.mutation.HeadingCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -650,6 +684,34 @@ func (druo *DrainedResultUpdateOne) SetNillableRunID(i *int) *DrainedResultUpdat
 	return druo
 }
 
+// SetRegularsAdmitted sets the "regulars_admitted" field.
+func (druo *DrainedResultUpdateOne) SetRegularsAdmitted(b bool) *DrainedResultUpdateOne {
+	druo.mutation.SetRegularsAdmitted(b)
+	return druo
+}
+
+// SetNillableRegularsAdmitted sets the "regulars_admitted" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableRegularsAdmitted(b *bool) *DrainedResultUpdateOne {
+	if b != nil {
+		druo.SetRegularsAdmitted(*b)
+	}
+	return druo
+}
+
+// SetIsVirtual sets the "is_virtual" field.
+func (druo *DrainedResultUpdateOne) SetIsVirtual(b bool) *DrainedResultUpdateOne {
+	druo.mutation.SetIsVirtual(b)
+	return druo
+}
+
+// SetNillableIsVirtual sets the "is_virtual" field if the given value is not nil.
+func (druo *DrainedResultUpdateOne) SetNillableIsVirtual(b *bool) *DrainedResultUpdateOne {
+	if b != nil {
+		druo.SetIsVirtual(*b)
+	}
+	return druo
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by ID.
 func (druo *DrainedResultUpdateOne) SetHeadingID(id int) *DrainedResultUpdateOne {
 	druo.mutation.SetHeadingID(id)
@@ -816,6 +878,12 @@ func (druo *DrainedResultUpdateOne) sqlSave(ctx context.Context) (_node *Drained
 	}
 	if value, ok := druo.mutation.AddedMedLastAdmittedRatingPlace(); ok {
 		_spec.AddField(drainedresult.FieldMedLastAdmittedRatingPlace, field.TypeInt, value)
+	}
+	if value, ok := druo.mutation.RegularsAdmitted(); ok {
+		_spec.SetField(drainedresult.FieldRegularsAdmitted, field.TypeBool, value)
+	}
+	if value, ok := druo.mutation.IsVirtual(); ok {
+		_spec.SetField(drainedresult.FieldIsVirtual, field.TypeBool, value)
 	}
 	if druo.mutation.HeadingCleared() {
 		edge := &sqlgraph.EdgeSpec{

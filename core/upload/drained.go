@@ -1,11 +1,12 @@
 package upload
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/ent/heading"
-	"context"
-	"fmt"
 )
 
 const (
@@ -55,6 +56,8 @@ func (u *helper) uploadDrained(ctx context.Context, results []core.DrainedResult
 			SetMinLastAdmittedRatingPlace(result.MinLastAdmittedRatingPlace).
 			SetMaxLastAdmittedRatingPlace(result.MaxLastAdmittedRatingPlace).
 			SetMedLastAdmittedRatingPlace(result.MedLastAdmittedRatingPlace).
+			SetIsVirtual(result.IsVirtual).
+			SetRegularsAdmitted(result.RegularsAdmitted).
 			SetRunID(u.runID).
 			SetHeading(h).
 			Exec(ctx)

@@ -126,6 +126,8 @@ var (
 		{Name: "min_last_admitted_rating_place", Type: field.TypeInt},
 		{Name: "max_last_admitted_rating_place", Type: field.TypeInt},
 		{Name: "med_last_admitted_rating_place", Type: field.TypeInt},
+		{Name: "regulars_admitted", Type: field.TypeBool, Default: false},
+		{Name: "is_virtual", Type: field.TypeBool, Default: false},
 		{Name: "run_id", Type: field.TypeInt},
 		{Name: "heading_drained_results", Type: field.TypeInt},
 	}
@@ -137,13 +139,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "drained_results_runs_run",
-				Columns:    []*schema.Column{DrainedResultsColumns[10]},
+				Columns:    []*schema.Column{DrainedResultsColumns[12]},
 				RefColumns: []*schema.Column{RunsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "drained_results_headings_drained_results",
-				Columns:    []*schema.Column{DrainedResultsColumns[11]},
+				Columns:    []*schema.Column{DrainedResultsColumns[13]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -152,12 +154,12 @@ var (
 			{
 				Name:    "drainedresult_run_id",
 				Unique:  false,
-				Columns: []*schema.Column{DrainedResultsColumns[10]},
+				Columns: []*schema.Column{DrainedResultsColumns[12]},
 			},
 			{
 				Name:    "drainedresult_run_id_drained_percent",
 				Unique:  false,
-				Columns: []*schema.Column{DrainedResultsColumns[10], DrainedResultsColumns[1]},
+				Columns: []*schema.Column{DrainedResultsColumns[12], DrainedResultsColumns[1]},
 			},
 			{
 				Name:    "drainedresult_drained_percent",

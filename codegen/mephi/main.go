@@ -14,12 +14,12 @@ import (
 const baseURL = "https://org.mephi.ru"
 
 type MephiHeading struct {
-	Name                   string
-	Capacities             core.Capacities
-	RegularURLs            []string
-	TargetQuotaURLs        []string
-	DedicatedQuotaURLs     []string
-	SpecialQuotaURLs       []string
+	Name               string
+	Capacities         core.Capacities
+	RegularURLs        []string
+	TargetQuotaURLs    []string
+	DedicatedQuotaURLs []string
+	SpecialQuotaURLs   []string
 }
 
 func main() {
@@ -46,11 +46,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Combine data and generate HTTPHeadingSource structs
-	headings := combineDataAndGenerate(capacities, links)
-
 	// Output Go source code
-	generateGoSourceCode(headings)
+	classifications := combineDataAndGenerate(capacities, links)
+	generateGoSourceCode(classifications.Complete, classifications.Incomplete)
 }
 
 func parseCapacitiesFromFile(filename string) (map[string]int, error) {
@@ -83,8 +81,30 @@ func parseLinksFromFile(filename string) (map[string]map[core.Competition][]stri
 	return mephi.ParseListLinksRegistry(doc)
 }
 
-func combineDataAndGenerate(capacities map[string]int, links map[string]map[core.Competition][]string) []MephiHeading {
-	var headings []MephiHeading
+type HeadingClassification struct {
+	Complete   []MephiHeading
+	Incomplete []MephiHeading
+}
+
+func combineDataAndGenerate(capacities map[string]int, links map[string]map[core.Competition][]string) HeadingClassification {
+	var complete []MephiHeading
+	var incomplete []MephiHeading
+
+	// Manual mapping for differently written heading names
+	// Maps variations to canonical names found in capacities
+	headingNameMapping := map[string]string{
+		"Применение и эксплуатация автоматизированных систем специального назначения специалитет": "Применение и эксплуатация автом. систем специального назначения",
+		"Системный анализ и управление": "Системный анализ  и управление",
+		// Add more mappings here as needed
+	}
+
+	// Helper function to get canonical heading name
+	getCanonicalName := func(name string) string {
+		if canonical, exists := headingNameMapping[name]; exists {
+			return canonical
+		}
+		return name
+	}
 
 	// Create a map to track which headings we've processed
 	processed := make(map[string]bool)
@@ -99,44 +119,52 @@ func combineDataAndGenerate(capacities map[string]int, links map[string]map[core
 	}
 
 	for headingName := range allHeadings {
-		if processed[headingName] {
-			continue
-		}
-
-		// Get total capacity for this heading
+		canonicalName := getCanonicalName(headingName)
 		totalCapacity := capacities[headingName]
 		if totalCapacity == 0 {
-			fmt.Printf("// Warning: No capacity found for heading: %s\n", headingName)
-			continue
+			totalCapacity = capacities[canonicalName]
 		}
-
-		// Calculate capacities using 10% rule
-		caps := calculateCapacities(totalCapacity)
-
-		// Get URLs for this heading
 		headingLinks := links[headingName]
+		if headingLinks == nil {
+			headingLinks = links[canonicalName]
+		}
 		if headingLinks == nil {
 			headingLinks = make(map[core.Competition][]string)
 		}
 
-		// Convert relative URLs to absolute URLs
-		heading := MephiHeading{
-			Name:                   headingName,
-			Capacities:             caps,
-			RegularURLs:            makeAbsoluteURLs(headingLinks[core.CompetitionRegular]),
-			TargetQuotaURLs:        makeAbsoluteURLs(headingLinks[core.CompetitionTargetQuota]),
-			DedicatedQuotaURLs:     makeAbsoluteURLs(headingLinks[core.CompetitionDedicatedQuota]),
-			SpecialQuotaURLs:       makeAbsoluteURLs(headingLinks[core.CompetitionSpecialQuota]),
+		hasLists := len(headingLinks[core.CompetitionRegular]) > 0 || len(headingLinks[core.CompetitionTargetQuota]) > 0 || len(headingLinks[core.CompetitionDedicatedQuota]) > 0 || len(headingLinks[core.CompetitionSpecialQuota]) > 0
+		hasRegular := len(headingLinks[core.CompetitionRegular]) > 0
+
+		var caps core.Capacities
+		if totalCapacity > 0 {
+			caps = calculateCapacities(totalCapacity)
+		} else {
+			caps = core.Capacities{}
 		}
 
-		headings = append(headings, heading)
-		processed[headingName] = true
+		heading := MephiHeading{
+			Name:               headingName,
+			Capacities:         caps,
+			RegularURLs:        makeAbsoluteURLs(headingLinks[core.CompetitionRegular]),
+			TargetQuotaURLs:    makeAbsoluteURLs(headingLinks[core.CompetitionTargetQuota]),
+			DedicatedQuotaURLs: makeAbsoluteURLs(headingLinks[core.CompetitionDedicatedQuota]),
+			SpecialQuotaURLs:   makeAbsoluteURLs(headingLinks[core.CompetitionSpecialQuota]),
+		}
 
-		fmt.Printf("// Generated heading: %s (Total: %d, Regular: %d, Target: %d, Dedicated: %d, Special: %d)\n",
-			headingName, totalCapacity, caps.Regular, caps.TargetQuota, caps.DedicatedQuota, caps.SpecialQuota)
+		if totalCapacity > 0 && hasRegular {
+			complete = append(complete, heading)
+		} else if (totalCapacity > 0 && !hasRegular) || (totalCapacity == 0 && hasLists) {
+			incomplete = append(incomplete, heading)
+		}
+
+		processed[headingName] = true
 	}
 
-	return headings
+	return HeadingClassification{
+		Complete:   complete,
+		Incomplete: incomplete,
+	}
+
 }
 
 func calculateCapacities(total int) core.Capacities {
@@ -178,12 +206,12 @@ func makeAbsoluteURLs(urls []string) []string {
 	return absoluteURLs
 }
 
-func generateGoSourceCode(headings []MephiHeading) {
+func generateGoSourceCode(complete []MephiHeading, incomplete []MephiHeading) {
 	fmt.Println("// Generated MEPhI HTTPHeadingSource structs")
 	fmt.Println("// Copy and paste the following into core/registry/mephi/mephi.go")
 	fmt.Println()
 
-	for i, heading := range headings {
+	for i, heading := range complete {
 		if i > 0 {
 			fmt.Println(",")
 		}
@@ -232,6 +260,56 @@ func generateGoSourceCode(headings []MephiHeading) {
 		fmt.Printf("\t\t}")
 	}
 
+	if len(incomplete) > 0 {
+		fmt.Println("\n// NOT COMPLETE")
+		for _, heading := range incomplete {
+			fmt.Printf("// &mephi.HTTPHeadingSource{\n")
+			fmt.Printf("// \tHeadingName: %q,\n", heading.Name)
+			fmt.Printf("// \tCapacities: core.Capacities{\n")
+			fmt.Printf("// \t\tRegular:        %d,\n", heading.Capacities.Regular)
+			fmt.Printf("// \t\tTargetQuota:    %d,\n", heading.Capacities.TargetQuota)
+			fmt.Printf("// \t\tDedicatedQuota: %d,\n", heading.Capacities.DedicatedQuota)
+			fmt.Printf("// \t\tSpecialQuota:   %d,\n", heading.Capacities.SpecialQuota)
+			fmt.Printf("// \t},\n")
+
+			if len(heading.RegularURLs) > 0 {
+				fmt.Printf("// \tRegularURLs: []string{\n")
+				for _, url := range heading.RegularURLs {
+					fmt.Printf("// \t\t%q,\n", url)
+				}
+				fmt.Printf("// \t},\n")
+			}
+
+			if len(heading.TargetQuotaURLs) > 0 {
+				fmt.Printf("// \tTargetQuotaURLs: []string{\n")
+				for _, url := range heading.TargetQuotaURLs {
+					fmt.Printf("// \t\t%q,\n", url)
+				}
+				fmt.Printf("// \t},\n")
+			}
+
+			if len(heading.DedicatedQuotaURLs) > 0 {
+				fmt.Printf("// \tDedicatedQuotaURLs: []string{\n")
+				for _, url := range heading.DedicatedQuotaURLs {
+					fmt.Printf("// \t\t%q,\n", url)
+				}
+				fmt.Printf("// \t},\n")
+			}
+
+			if len(heading.SpecialQuotaURLs) > 0 {
+				fmt.Printf("// \tSpecialQuotaURLs: []string{\n")
+				for _, url := range heading.SpecialQuotaURLs {
+					fmt.Printf("// \t\t%q,\n", url)
+				}
+				fmt.Printf("// \t},\n")
+			}
+
+			fmt.Printf("// }\n")
+		}
+	}
+
 	fmt.Println()
-	fmt.Printf("\n// Total headings generated: %d\n", len(headings))
+	fmt.Printf("\n// Total complete headings generated: %d", len(complete))
+	fmt.Printf("\n// Total incomplete headings: %d\n", len(incomplete))
+
 }

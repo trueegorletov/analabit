@@ -38,6 +38,10 @@ type DrainedResult struct {
 	MedLastAdmittedRatingPlace int `json:"med_last_admitted_rating_place,omitempty"`
 	// RunID holds the value of the "run_id" field.
 	RunID int `json:"run_id,omitempty"`
+	// RegularsAdmitted holds the value of the "regulars_admitted" field.
+	RegularsAdmitted bool `json:"regulars_admitted,omitempty"`
+	// IsVirtual holds the value of the "is_virtual" field.
+	IsVirtual bool `json:"is_virtual,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DrainedResultQuery when eager-loading is set.
 	Edges                   DrainedResultEdges `json:"edges"`
@@ -83,6 +87,8 @@ func (*DrainedResult) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case drainedresult.FieldRegularsAdmitted, drainedresult.FieldIsVirtual:
+			values[i] = new(sql.NullBool)
 		case drainedresult.FieldID, drainedresult.FieldDrainedPercent, drainedresult.FieldAvgPassingScore, drainedresult.FieldMinPassingScore, drainedresult.FieldMaxPassingScore, drainedresult.FieldMedPassingScore, drainedresult.FieldAvgLastAdmittedRatingPlace, drainedresult.FieldMinLastAdmittedRatingPlace, drainedresult.FieldMaxLastAdmittedRatingPlace, drainedresult.FieldMedLastAdmittedRatingPlace, drainedresult.FieldRunID:
 			values[i] = new(sql.NullInt64)
 		case drainedresult.ForeignKeys[0]: // heading_drained_results
@@ -168,6 +174,18 @@ func (dr *DrainedResult) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				dr.RunID = int(value.Int64)
 			}
+		case drainedresult.FieldRegularsAdmitted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field regulars_admitted", values[i])
+			} else if value.Valid {
+				dr.RegularsAdmitted = value.Bool
+			}
+		case drainedresult.FieldIsVirtual:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_virtual", values[i])
+			} else if value.Valid {
+				dr.IsVirtual = value.Bool
+			}
 		case drainedresult.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field heading_drained_results", value)
@@ -250,6 +268,12 @@ func (dr *DrainedResult) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("run_id=")
 	builder.WriteString(fmt.Sprintf("%v", dr.RunID))
+	builder.WriteString(", ")
+	builder.WriteString("regulars_admitted=")
+	builder.WriteString(fmt.Sprintf("%v", dr.RegularsAdmitted))
+	builder.WriteString(", ")
+	builder.WriteString("is_virtual=")
+	builder.WriteString(fmt.Sprintf("%v", dr.IsVirtual))
 	builder.WriteByte(')')
 	return builder.String()
 }

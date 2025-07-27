@@ -7,7 +7,6 @@ toolchain go1.24.4
 require (
 	entgo.io/ent v0.14.4
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/lib/pq v1.10.9
 	github.com/lithammer/fuzzysearch v1.1.8
 	github.com/prometheus/client_golang v1.22.0
@@ -23,7 +22,6 @@ require (
 require (
 	ariga.io/atlas v0.31.1-0.20250212144724-069be8033e83 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
-	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
