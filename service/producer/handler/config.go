@@ -10,7 +10,7 @@ type Config struct {
 	CacheDir               string   `env:"CACHE_DIR" envDefault:"./cache"`
 	CacheTTLMinutes        int      `env:"CACHE_TTL_MINUTES" envDefault:"30"`
 	DrainStages            []int    `env:"DRAIN_SIM_STAGES" envSeparator:"," envDefault:"16,33,50,66"`
-	DrainIterations        int      `env:"DRAIN_SIM_ITERATIONS" envDefault:"300"`
+	DrainIterations        int      `env:"DRAIN_SIM_ITERATIONS" envDefault:"100"`
 	MinioEndpoint          string   `env:"MINIO_ENDPOINT" envDefault:"minio:9000"`
 	MinioAccessKey         string   `env:"MINIO_ACCESS_KEY_ID" envDefault:"minioadmin"`
 	MinioSecretKey         string   `env:"MINIO_SECRET_ACCESS_KEY" envDefault:"minioadmin"`
