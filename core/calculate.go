@@ -348,16 +348,21 @@ func (r *CalculationResult) LastAdmittedRatingPlace() (int, error) {
 		return 0, fmt.Errorf("no students admitted for heading %s", r.Heading.FullCode())
 	}
 
-	// return ratingPlace of the last admitted student with heading code == r's heading code
-	lastAdmitted := r.Admitted[len(r.Admitted)-1]
+	maxRatingPlaceFound := -1
 
-	for _, app := range lastAdmitted.applications {
-		if app.heading.FullCode() == r.Heading.FullCode() {
-			return app.ratingPlace, nil
+	for _, student := range r.Admitted {
+		for _, app := range student.applications {
+			if app.heading.Code() == r.Heading.Code() {
+				maxRatingPlaceFound = max(maxRatingPlaceFound, app.ratingPlace)
+			}
 		}
 	}
 
-	return 0, fmt.Errorf("no needle application found for last admitted student %s in heading %s", lastAdmitted.ID(), r.Heading.FullCode())
+	if maxRatingPlaceFound > 0 {
+		return maxRatingPlaceFound, nil
+	} else {
+		return 0, fmt.Errorf("no needle application found for any admitted student in heading %s", r.Heading.FullCode())
+	}
 }
 
 // HeadingAdmissionState tracks the admission status for a single heading.
