@@ -56,8 +56,4 @@ func init() {
 	runDescFinished := runFields[2].Descriptor()
 	// run.DefaultFinished holds the default value on creation for the finished field.
 	run.DefaultFinished = runDescFinished.Default.(bool)
-	// runDescFinishedAt is the schema descriptor for finished_at field.
-	runDescFinishedAt := runFields[3].Descriptor()
-	// run.DefaultFinishedAt holds the default value on creation for the finished_at field.
-	run.DefaultFinishedAt = runDescFinishedAt.Default.(func() time.Time)
 }

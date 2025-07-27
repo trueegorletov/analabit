@@ -4275,9 +4275,22 @@ func (m *RunMutation) OldFinishedAt(ctx context.Context) (v time.Time, err error
 	return oldValue.FinishedAt, nil
 }
 
+// ClearFinishedAt clears the value of the "finished_at" field.
+func (m *RunMutation) ClearFinishedAt() {
+	m.finished_at = nil
+	m.clearedFields[run.FieldFinishedAt] = struct{}{}
+}
+
+// FinishedAtCleared returns if the "finished_at" field was cleared in this mutation.
+func (m *RunMutation) FinishedAtCleared() bool {
+	_, ok := m.clearedFields[run.FieldFinishedAt]
+	return ok
+}
+
 // ResetFinishedAt resets all changes to the "finished_at" field.
 func (m *RunMutation) ResetFinishedAt() {
 	m.finished_at = nil
+	delete(m.clearedFields, run.FieldFinishedAt)
 }
 
 // Where appends a list predicates to the RunMutation builder.
@@ -4430,6 +4443,9 @@ func (m *RunMutation) ClearedFields() []string {
 	if m.FieldCleared(run.FieldPayloadMeta) {
 		fields = append(fields, run.FieldPayloadMeta)
 	}
+	if m.FieldCleared(run.FieldFinishedAt) {
+		fields = append(fields, run.FieldFinishedAt)
+	}
 	return fields
 }
 
@@ -4446,6 +4462,9 @@ func (m *RunMutation) ClearField(name string) error {
 	switch name {
 	case run.FieldPayloadMeta:
 		m.ClearPayloadMeta()
+		return nil
+	case run.FieldFinishedAt:
+		m.ClearFinishedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Run nullable field %s", name)

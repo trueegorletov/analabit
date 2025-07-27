@@ -49,8 +49,6 @@ var (
 	DefaultTriggeredAt func() time.Time
 	// DefaultFinished holds the default value on creation for the "finished" field.
 	DefaultFinished bool
-	// DefaultFinishedAt holds the default value on creation for the "finished_at" field.
-	DefaultFinishedAt func() time.Time
 )
 
 // OrderOption defines the ordering options for the Run queries.

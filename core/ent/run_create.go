@@ -111,10 +111,6 @@ func (rc *RunCreate) defaults() {
 		v := run.DefaultFinished
 		rc.mutation.SetFinished(v)
 	}
-	if _, ok := rc.mutation.FinishedAt(); !ok {
-		v := run.DefaultFinishedAt()
-		rc.mutation.SetFinishedAt(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -124,9 +120,6 @@ func (rc *RunCreate) check() error {
 	}
 	if _, ok := rc.mutation.Finished(); !ok {
 		return &ValidationError{Name: "finished", err: errors.New(`ent: missing required field "Run.finished"`)}
-	}
-	if _, ok := rc.mutation.FinishedAt(); !ok {
-		return &ValidationError{Name: "finished_at", err: errors.New(`ent: missing required field "Run.finished_at"`)}
 	}
 	return nil
 }

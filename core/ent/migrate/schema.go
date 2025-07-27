@@ -199,7 +199,7 @@ var (
 		{Name: "triggered_at", Type: field.TypeTime},
 		{Name: "payload_meta", Type: field.TypeJSON, Nullable: true},
 		{Name: "finished", Type: field.TypeBool, Default: false},
-		{Name: "finished_at", Type: field.TypeTime},
+		{Name: "finished_at", Type: field.TypeTime, Nullable: true},
 	}
 	// RunsTable holds the schema information for the "runs" table.
 	RunsTable = &schema.Table{

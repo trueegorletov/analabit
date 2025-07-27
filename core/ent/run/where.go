@@ -169,6 +169,16 @@ func FinishedAtLTE(v time.Time) predicate.Run {
 	return predicate.Run(sql.FieldLTE(FieldFinishedAt, v))
 }
 
+// FinishedAtIsNil applies the IsNil predicate on the "finished_at" field.
+func FinishedAtIsNil() predicate.Run {
+	return predicate.Run(sql.FieldIsNull(FieldFinishedAt))
+}
+
+// FinishedAtNotNil applies the NotNil predicate on the "finished_at" field.
+func FinishedAtNotNil() predicate.Run {
+	return predicate.Run(sql.FieldNotNull(FieldFinishedAt))
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Run) predicate.Run {
 	return predicate.Run(sql.AndPredicates(predicates...))
