@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/ent/application"
@@ -46,9 +47,10 @@ type DrainedResultDTO struct {
 
 // ResultsResponse aggregates requested result kinds.
 type ResultsResponse struct {
-	Steps   map[int][]int                `json:"steps"`
-	Primary map[int]CalculationResultDTO `json:"primary,omitempty"`
-	Drained map[int][]DrainedResultDTO   `json:"drained,omitempty"`
+	Steps         map[int][]int                `json:"steps"`
+	Primary       map[int]CalculationResultDTO `json:"primary,omitempty"`
+	Drained       map[int][]DrainedResultDTO   `json:"drained,omitempty"`
+	RunFinishedAt time.Time                    `json:"run_finished_at"`
 }
 
 // GetResults returns calculation and/or drained results with optional batching.
@@ -78,6 +80,13 @@ func GetResults(client *ent.Client) fiber.Handler {
 		if err != nil {
 			log.Printf("error resolving run from parameter '%s': %v", runParam, err)
 			return fiber.NewError(fiber.StatusBadRequest, "invalid run parameter")
+		}
+
+		// Fetch the run entity to get finished_at
+		run, err := client.Run.Get(ctx, runResolution.RunID)
+		if err != nil {
+			log.Printf("error fetching run %d: %v", runResolution.RunID, err)
+			return fiber.ErrInternalServerError
 		}
 
 		// Presence of the `primary` query parameter (any value) toggles primary results.
@@ -373,6 +382,9 @@ func GetResults(client *ent.Client) fiber.Handler {
 			}
 			resp.Drained = drainedMap
 		}
+
+		// Set the run finished_at timestamp
+		resp.RunFinishedAt = run.FinishedAt
 
 		return c.JSON(resp)
 	}

@@ -64,6 +64,11 @@ func Finished(v bool) predicate.Run {
 	return predicate.Run(sql.FieldEQ(FieldFinished, v))
 }
 
+// FinishedAt applies equality check predicate on the "finished_at" field. It's identical to FinishedAtEQ.
+func FinishedAt(v time.Time) predicate.Run {
+	return predicate.Run(sql.FieldEQ(FieldFinishedAt, v))
+}
+
 // TriggeredAtEQ applies the EQ predicate on the "triggered_at" field.
 func TriggeredAtEQ(v time.Time) predicate.Run {
 	return predicate.Run(sql.FieldEQ(FieldTriggeredAt, v))
@@ -122,6 +127,46 @@ func FinishedEQ(v bool) predicate.Run {
 // FinishedNEQ applies the NEQ predicate on the "finished" field.
 func FinishedNEQ(v bool) predicate.Run {
 	return predicate.Run(sql.FieldNEQ(FieldFinished, v))
+}
+
+// FinishedAtEQ applies the EQ predicate on the "finished_at" field.
+func FinishedAtEQ(v time.Time) predicate.Run {
+	return predicate.Run(sql.FieldEQ(FieldFinishedAt, v))
+}
+
+// FinishedAtNEQ applies the NEQ predicate on the "finished_at" field.
+func FinishedAtNEQ(v time.Time) predicate.Run {
+	return predicate.Run(sql.FieldNEQ(FieldFinishedAt, v))
+}
+
+// FinishedAtIn applies the In predicate on the "finished_at" field.
+func FinishedAtIn(vs ...time.Time) predicate.Run {
+	return predicate.Run(sql.FieldIn(FieldFinishedAt, vs...))
+}
+
+// FinishedAtNotIn applies the NotIn predicate on the "finished_at" field.
+func FinishedAtNotIn(vs ...time.Time) predicate.Run {
+	return predicate.Run(sql.FieldNotIn(FieldFinishedAt, vs...))
+}
+
+// FinishedAtGT applies the GT predicate on the "finished_at" field.
+func FinishedAtGT(v time.Time) predicate.Run {
+	return predicate.Run(sql.FieldGT(FieldFinishedAt, v))
+}
+
+// FinishedAtGTE applies the GTE predicate on the "finished_at" field.
+func FinishedAtGTE(v time.Time) predicate.Run {
+	return predicate.Run(sql.FieldGTE(FieldFinishedAt, v))
+}
+
+// FinishedAtLT applies the LT predicate on the "finished_at" field.
+func FinishedAtLT(v time.Time) predicate.Run {
+	return predicate.Run(sql.FieldLT(FieldFinishedAt, v))
+}
+
+// FinishedAtLTE applies the LTE predicate on the "finished_at" field.
+func FinishedAtLTE(v time.Time) predicate.Run {
+	return predicate.Run(sql.FieldLTE(FieldFinishedAt, v))
 }
 
 // And groups predicates with the AND operator between them.

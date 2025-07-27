@@ -284,7 +284,7 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 					multierr.AppendInto(&allErrors, err)
 				} else {
 					// Mark run as finished only after successful view refresh
-					_, updateErr := client.Run.UpdateOneID(run.ID).SetFinished(true).Save(ctx)
+					_, updateErr := client.Run.UpdateOneID(run.ID).SetFinished(true).SetFinishedAt(time.Now()).Save(ctx)
 					if updateErr != nil {
 						err = fmt.Errorf("failed to mark run %d as finished: %w", run.ID, updateErr)
 						multierr.AppendInto(&allErrors, err)

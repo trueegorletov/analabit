@@ -68,6 +68,20 @@ func (ru *RunUpdate) SetNillableFinished(b *bool) *RunUpdate {
 	return ru
 }
 
+// SetFinishedAt sets the "finished_at" field.
+func (ru *RunUpdate) SetFinishedAt(t time.Time) *RunUpdate {
+	ru.mutation.SetFinishedAt(t)
+	return ru
+}
+
+// SetNillableFinishedAt sets the "finished_at" field if the given value is not nil.
+func (ru *RunUpdate) SetNillableFinishedAt(t *time.Time) *RunUpdate {
+	if t != nil {
+		ru.SetFinishedAt(*t)
+	}
+	return ru
+}
+
 // Mutation returns the RunMutation object of the builder.
 func (ru *RunUpdate) Mutation() *RunMutation {
 	return ru.mutation
@@ -120,6 +134,9 @@ func (ru *RunUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.Finished(); ok {
 		_spec.SetField(run.FieldFinished, field.TypeBool, value)
+	}
+	if value, ok := ru.mutation.FinishedAt(); ok {
+		_spec.SetField(run.FieldFinishedAt, field.TypeTime, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -177,6 +194,20 @@ func (ruo *RunUpdateOne) SetFinished(b bool) *RunUpdateOne {
 func (ruo *RunUpdateOne) SetNillableFinished(b *bool) *RunUpdateOne {
 	if b != nil {
 		ruo.SetFinished(*b)
+	}
+	return ruo
+}
+
+// SetFinishedAt sets the "finished_at" field.
+func (ruo *RunUpdateOne) SetFinishedAt(t time.Time) *RunUpdateOne {
+	ruo.mutation.SetFinishedAt(t)
+	return ruo
+}
+
+// SetNillableFinishedAt sets the "finished_at" field if the given value is not nil.
+func (ruo *RunUpdateOne) SetNillableFinishedAt(t *time.Time) *RunUpdateOne {
+	if t != nil {
+		ruo.SetFinishedAt(*t)
 	}
 	return ruo
 }
@@ -263,6 +294,9 @@ func (ruo *RunUpdateOne) sqlSave(ctx context.Context) (_node *Run, err error) {
 	}
 	if value, ok := ruo.mutation.Finished(); ok {
 		_spec.SetField(run.FieldFinished, field.TypeBool, value)
+	}
+	if value, ok := ruo.mutation.FinishedAt(); ok {
+		_spec.SetField(run.FieldFinishedAt, field.TypeTime, value)
 	}
 	_node = &Run{config: ruo.config}
 	_spec.Assign = _node.assignValues

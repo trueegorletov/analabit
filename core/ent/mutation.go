@@ -4018,6 +4018,7 @@ type RunMutation struct {
 	triggered_at  *time.Time
 	payload_meta  *map[string]interface{}
 	finished      *bool
+	finished_at   *time.Time
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Run, error)
@@ -4243,6 +4244,42 @@ func (m *RunMutation) ResetFinished() {
 	m.finished = nil
 }
 
+// SetFinishedAt sets the "finished_at" field.
+func (m *RunMutation) SetFinishedAt(t time.Time) {
+	m.finished_at = &t
+}
+
+// FinishedAt returns the value of the "finished_at" field in the mutation.
+func (m *RunMutation) FinishedAt() (r time.Time, exists bool) {
+	v := m.finished_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFinishedAt returns the old "finished_at" field's value of the Run entity.
+// If the Run object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RunMutation) OldFinishedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFinishedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFinishedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFinishedAt: %w", err)
+	}
+	return oldValue.FinishedAt, nil
+}
+
+// ResetFinishedAt resets all changes to the "finished_at" field.
+func (m *RunMutation) ResetFinishedAt() {
+	m.finished_at = nil
+}
+
 // Where appends a list predicates to the RunMutation builder.
 func (m *RunMutation) Where(ps ...predicate.Run) {
 	m.predicates = append(m.predicates, ps...)
@@ -4277,7 +4314,7 @@ func (m *RunMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RunMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.triggered_at != nil {
 		fields = append(fields, run.FieldTriggeredAt)
 	}
@@ -4286,6 +4323,9 @@ func (m *RunMutation) Fields() []string {
 	}
 	if m.finished != nil {
 		fields = append(fields, run.FieldFinished)
+	}
+	if m.finished_at != nil {
+		fields = append(fields, run.FieldFinishedAt)
 	}
 	return fields
 }
@@ -4301,6 +4341,8 @@ func (m *RunMutation) Field(name string) (ent.Value, bool) {
 		return m.PayloadMeta()
 	case run.FieldFinished:
 		return m.Finished()
+	case run.FieldFinishedAt:
+		return m.FinishedAt()
 	}
 	return nil, false
 }
@@ -4316,6 +4358,8 @@ func (m *RunMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldPayloadMeta(ctx)
 	case run.FieldFinished:
 		return m.OldFinished(ctx)
+	case run.FieldFinishedAt:
+		return m.OldFinishedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Run field %s", name)
 }
@@ -4345,6 +4389,13 @@ func (m *RunMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetFinished(v)
+		return nil
+	case run.FieldFinishedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFinishedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Run field %s", name)
@@ -4412,6 +4463,9 @@ func (m *RunMutation) ResetField(name string) error {
 		return nil
 	case run.FieldFinished:
 		m.ResetFinished()
+		return nil
+	case run.FieldFinishedAt:
+		m.ResetFinishedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Run field %s", name)
