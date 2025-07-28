@@ -1,246 +1,176 @@
-// Package rzgmu provides support for loading RZGMU (Рязанский государственный медицинский университет) admission data.
-// RZGMU admission lists are provided in PDF format and are parsed using rsc.io/pdf for text extraction.
 package rzgmu
 
 import (
-	"bytes"
-	"context"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
-	"os/exec"
+	"strconv"
 	"strings"
-	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/source"
 	"github.com/trueegorletov/analabit/core/utils"
-
-	"rsc.io/pdf"
 )
 
-// HTTPHeadingSource defines how to load RZGMU heading data from a PDF file URL.
-// RZGMU provides admission lists in PDF format that are parsed using rsc.io/pdf.
+// HTTPHeadingSource loads RZGMU admission data from HTML pages
 type HTTPHeadingSource struct {
-	URL         string           // URL to the PDF file containing the admission list
-	ProgramName string           // Name of the educational program (if empty, will use default)
-	Capacities  *core.Capacities // Capacities for this heading. If nil, will be extracted from PDF
+	ProgramName string
+	Capacities  core.Capacities // Required: pre-defined capacities for each competition type
 }
 
-// LoadTo loads data from HTTP source, downloading PDF, extracting text with rsc.io/pdf,
-// and sending HeadingData and ApplicationData to the provided receiver.
-func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
-	if s.URL == "" {
-		return fmt.Errorf("URL is required for RZGMU HTTPHeadingSource")
+// LoadTo downloads and parses all four RZGMU HTML pages, filtering for the specified program
+func (h *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
+	client := &http.Client{}
+	
+	// Generate consistent heading code based on program name
+	headingCode := utils.GenerateHeadingCode(h.ProgramName)
+	
+	// Use pre-defined capacities directly from the struct
+	totalCapacities := h.Capacities
+	
+	// Emit single heading data with combined capacities
+	headingData := &source.HeadingData{
+		Code:       headingCode,
+		Capacities: totalCapacities,
+		PrettyName: h.ProgramName,
 	}
-
-	log.Printf("Processing RZGMU admission list from: %s", s.URL)
-
-	// Acquire a semaphore slot, respecting context cancellation
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
-
-	release, err := source.AcquireHTTPSemaphores(ctx, "rzgmu")
-	if err != nil {
-		return fmt.Errorf("failed to acquire semaphores for RZGMU list from %s: %w", s.URL, err)
-	}
-	defer release()
-
-	// Download PDF to temporary file
-	tempPDFPath, err := downloadPDFToTemp(ctx, s.URL)
-	if err != nil {
-		return fmt.Errorf("failed to download RZGMU PDF from %s: %w", s.URL, err)
-	}
-	defer func() {
-		if removeErr := os.Remove(tempPDFPath); removeErr != nil {
-			log.Printf("Warning: failed to remove temporary PDF file %s: %v", tempPDFPath, removeErr)
+	receiver.PutHeadingData(headingData)
+	
+	// Parse application data from all pages
+	for _, pageInfo := range pageURLs {
+		resp, err := client.Get(pageInfo.URL)
+		if err != nil {
+			return fmt.Errorf("failed to fetch %s: %w", pageInfo.URL, err)
 		}
-	}()
-
-	// Extract text data using rsc.io/pdf
-	textData, err := extractTextWithRscPDF(tempPDFPath)
-	if err != nil {
-		return fmt.Errorf("failed to extract text from RZGMU PDF %s: %w", s.URL, err)
-	}
-
-	// Parse the text data
-	programs, err := parseRZGMUTextData(textData)
-	if err != nil {
-		return fmt.Errorf("failed to parse RZGMU data from %s: %w", s.URL, err)
-	}
-
-	// Process each program found in the data (usually just one per PDF)
-	for _, program := range programs {
-		// Use specified program name if provided, otherwise use extracted name
-		programName := s.ProgramName
-		if programName == "" {
-			programName = program.PrettyName
+		defer resp.Body.Close()
+		
+		if resp.StatusCode != http.StatusOK {
+			return fmt.Errorf("HTTP %d for %s", resp.StatusCode, pageInfo.URL)
 		}
-
-		capacities := s.Capacities
-		if capacities == nil {
-			// Use extracted capacities from the program data
-			capacities = &program.ExtractedCapacities
+		
+		doc, err := goquery.NewDocumentFromReader(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to parse HTML from %s: %w", pageInfo.URL, err)
 		}
-
-		headingCode := utils.GenerateHeadingCode(programName)
-
-		// Send HeadingData to the receiver
-		receiver.PutHeadingData(&source.HeadingData{
-			Code:       headingCode,
-			Capacities: *capacities,
-			PrettyName: programName,
-		})
-
-		log.Printf("Sent RZGMU heading: %s (Code: %s, Caps: %v)", programName, headingCode, *capacities)
-
-		// Send ApplicationData for each application in this program
-		for _, app := range program.Applications {
-			app.HeadingCode = headingCode
-			receiver.PutApplicationData(app)
+		
+		if err := h.parsePage(doc, pageInfo.Competition, headingCode, receiver); err != nil {
+			return fmt.Errorf("failed to parse page %s: %w", pageInfo.URL, err)
 		}
-
-		log.Printf("Sent %d applications for RZGMU heading %s", len(program.Applications), programName)
 	}
-
-	log.Printf("Successfully processed RZGMU heading(s) from %s", s.URL)
+	
 	return nil
 }
 
-// downloadPDFToTemp downloads a PDF from the given URL to a temporary file
-func downloadPDFToTemp(ctx context.Context, url string) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-	if err != nil {
-		return "", fmt.Errorf("failed to create request: %w", err)
-	}
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("failed to download PDF: %w", err)
-	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to download PDF (status code %d)", resp.StatusCode)
-	}
-
-	// Create temporary file
-	tempFile, err := os.CreateTemp("", "rzgmu_*.pdf")
-	if err != nil {
-		return "", fmt.Errorf("failed to create temporary file: %w", err)
-	}
-	defer tempFile.Close()
-
-	// Copy response body to temporary file
-	_, err = tempFile.ReadFrom(resp.Body)
-	if err != nil {
-		os.Remove(tempFile.Name())
-		return "", fmt.Errorf("failed to write PDF to temporary file: %w", err)
-	}
-
-	return tempFile.Name(), nil
-}
-
-// extractTextWithRscPDF uses pdftotext (if available) or rsc.io/pdf to extract text from a PDF file
-func extractTextWithRscPDF(pdfPath string) (string, error) {
-	// Try pdftotext first with layout preservation (better handling of font encoding and structure)
-	if text, err := extractTextWithPDFToTextHTTP(pdfPath); err == nil {
-		log.Printf("Successfully extracted text using pdftotext from %s", pdfPath)
-		return text, nil
-	} else {
-		log.Printf("pdftotext failed (%v), falling back to rsc.io/pdf for %s", err, pdfPath)
-	}
-
-	// Fallback to rsc.io/pdf
-	return extractTextWithRscPDFInternal(pdfPath)
-}
-
-// extractTextWithPDFToTextHTTP uses the pdftotext command-line utility to extract text with layout preservation
-func extractTextWithPDFToTextHTTP(pdfPath string) (string, error) {
-	// Check if pdftotext is available
-	if _, err := exec.LookPath("pdftotext"); err != nil {
-		return "", fmt.Errorf("pdftotext not available: %w", err)
-	}
-
-	// Create temporary output file
-	tempFile, err := os.CreateTemp("", "rzgmu_text_*.txt")
-	if err != nil {
-		return "", fmt.Errorf("failed to create temporary file: %w", err)
-	}
-	defer os.Remove(tempFile.Name())
-	tempFile.Close()
-
-	// Run pdftotext with layout preservation and UTF-8 encoding
-	cmd := exec.Command("pdftotext", "-layout", "-enc", "UTF-8", pdfPath, tempFile.Name())
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("pdftotext command failed: %w", err)
-	}
-
-	// Read the extracted text
-	textBytes, err := os.ReadFile(tempFile.Name())
-	if err != nil {
-		return "", fmt.Errorf("failed to read extracted text: %w", err)
-	}
-
-	return string(textBytes), nil
-}
-
-// extractTextWithRscPDFInternal uses rsc.io/pdf to extract text from a PDF file (fallback method)
-func extractTextWithRscPDFInternal(pdfPath string) (string, error) {
-	f, err := pdf.Open(pdfPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to open PDF with rsc.io/pdf: %w", err)
-	}
-
-	var buf bytes.Buffer
-	numPages := f.NumPage()
-
-	for i := 1; i <= numPages; i++ {
-		page := f.Page(i)
-		content := page.Content()
-
-		// Group text elements by position to reconstruct lines
-		var currentLine bytes.Buffer
-		var lastY float64 = -1
-
-		for _, t := range content.Text {
-			// If Y position changed significantly, we're on a new line
-			if lastY != -1 && (lastY-t.Y) > 5 {
-				if currentLine.Len() > 0 {
-					buf.WriteString(strings.TrimSpace(currentLine.String()))
-					buf.WriteString("\n")
-					currentLine.Reset()
-				}
+// parsePage extracts application data for the target program from a single HTML page
+func (h *HTTPHeadingSource) parsePage(doc *goquery.Document, competition core.Competition, headingCode string, receiver source.DataReceiver) error {
+	var foundTargetProgram bool
+	
+	// Look for program headings and tables
+	doc.Find("h3, h4, h5, table").Each(func(i int, s *goquery.Selection) {
+		tagName := goquery.NodeName(s)
+		
+		if strings.HasPrefix(tagName, "h") {
+			// This is a heading - check if it's our target program
+			headingText := strings.TrimSpace(s.Text())
+			
+			if matchesProgram(headingText, h.ProgramName) {
+				foundTargetProgram = true
+			} else {
+				// Different program - reset state
+				foundTargetProgram = false
 			}
+		} else if tagName == "table" && foundTargetProgram {
+			// This is a table following our target program heading
+			h.parseTable(s, headingCode, competition, receiver)
+		}
+	})
+	
+	return nil
+}
 
-			// Add text to current line
-			currentLine.WriteString(t.S)
-			if t.S != "" && t.S != " " {
-				currentLine.WriteString(" ")
+// parseTable extracts application data from a table
+func (h *HTTPHeadingSource) parseTable(table *goquery.Selection, headingCode string, competition core.Competition, receiver source.DataReceiver) {
+	table.Find("tr").Each(func(i int, row *goquery.Selection) {
+		cells := row.Find("td")
+		if cells.Length() < 7 { // Need at least 7 columns based on the sample data
+			return
+		}
+		
+		// Extract data from table cells
+		// Based on sample: Position | StudentID | ScoresSum | Subjects | OriginalSubmitted | SpecialRight | Priority | ...
+		positionText := strings.TrimSpace(cells.Eq(0).Text())
+		studentIDText := strings.TrimSpace(cells.Eq(1).Text())
+		scoreText := strings.TrimSpace(cells.Eq(2).Text())
+		originalText := strings.TrimSpace(cells.Eq(4).Text())
+		priorityText := strings.TrimSpace(cells.Eq(6).Text())
+		
+		// Skip header rows or empty rows
+		if positionText == "" || studentIDText == "" {
+			return
+		}
+		
+		// Parse position
+		position, err := strconv.Atoi(positionText)
+		if err != nil {
+			return // Skip non-numeric positions (likely header)
+		}
+		
+		// Parse student ID
+		studentID, err := strconv.Atoi(studentIDText)
+		if err != nil {
+			return // Skip invalid student IDs
+		}
+		
+		// Parse scores sum (extract number from bold text like "<b>144</b>")
+		scoreHTML, _ := cells.Eq(2).Html()
+		var scoresSum int
+		var actualCompetitionType = competition
+		
+		if isBVI(scoreHTML) {
+			scoresSum = 0 // BVI candidates don't have numeric scores
+			// Override competition type to BVI only if original competition is Regular
+			if competition == core.CompetitionRegular {
+				actualCompetitionType = core.CompetitionBVI
 			}
-
-			lastY = t.Y
+		} else {
+			// Extract numeric score from bold text
+			if strings.Contains(scoreHTML, "<b>") {
+				scoreText = strings.TrimSpace(cells.Eq(2).Text())
+			}
+			if scoresSum, err = strconv.Atoi(scoreText); err != nil {
+				return // Skip rows with invalid scores
+			}
 		}
-
-		// Add the last line
-		if currentLine.Len() > 0 {
-			buf.WriteString(strings.TrimSpace(currentLine.String()))
-			buf.WriteString("\n")
+		
+		// Parse original submitted (0 or positive integer)
+		originalSubmitted := 0
+		if originalText != "" {
+			if val, err := strconv.Atoi(originalText); err == nil {
+				originalSubmitted = val
+			}
 		}
-	}
-
-	result := buf.String()
-
-	// Clean up extra spaces and empty lines
-	lines := strings.Split(result, "\n")
-	var cleanLines []string
-	for _, line := range lines {
-		cleaned := strings.TrimSpace(line)
-		if cleaned != "" {
-			cleanLines = append(cleanLines, cleaned)
+		
+		// Parse priority (0 or positive integer)
+		priority := 0
+		if priorityText != "" {
+			if val, err := strconv.Atoi(priorityText); err == nil {
+				priority = val
+			}
 		}
-	}
-
-	return strings.Join(cleanLines, "\n"), nil
+		
+		// Create application data
+		appData := &source.ApplicationData{
+			HeadingCode:       headingCode,
+			StudentID:         strconv.Itoa(studentID),
+			ScoresSum:         scoresSum,
+			RatingPlace:       position,
+			Priority:          priority,
+			CompetitionType:   actualCompetitionType,
+			OriginalSubmitted: originalSubmitted > 0,
+		}
+		
+		receiver.PutApplicationData(appData)
+	})
 }

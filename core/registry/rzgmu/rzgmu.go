@@ -1,6 +1,7 @@
 package rzgmu
 
 import (
+	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/source"
 	"github.com/trueegorletov/analabit/core/source/rzgmu"
 )
@@ -14,28 +15,58 @@ var Varsity = source.VarsityDefinition{
 func sourcesList() []source.HeadingSource {
 	return []source.HeadingSource{
 		&rzgmu.HTTPHeadingSource{
-			URL:         "https://rzgmu.ru/images/upload/priem/2025/hod/l_b.pdf",
 			ProgramName: "Лечебное дело",
+			Capacities: core.Capacities{
+				Regular:        19,
+				TargetQuota:    237,
+				DedicatedQuota: 33,
+				SpecialQuota:   33,
+			},
 		},
 		&rzgmu.HTTPHeadingSource{
-			URL:         "https://rzgmu.ru/images/upload/priem/2025/hod/s_b.pdf",
 			ProgramName: "Стоматология",
+			Capacities: core.Capacities{
+				Regular:        3,
+				TargetQuota:    15,
+				DedicatedQuota: 3,
+				SpecialQuota:   3,
+			},
 		},
 		&rzgmu.HTTPHeadingSource{
-			URL:         "https://rzgmu.ru/images/upload/priem/2025/hod/p_b.pdf",
 			ProgramName: "Педиатрия",
+			Capacities: core.Capacities{
+				Regular:        5,
+				TargetQuota:    62,
+				DedicatedQuota: 9,
+				SpecialQuota:   9,
+			},
 		},
 		&rzgmu.HTTPHeadingSource{
-			URL:         "https://rzgmu.ru/images/upload/priem/2025/hod/m_b.pdf",
 			ProgramName: "Медико-профилактическое дело",
+			Capacities: core.Capacities{
+				Regular:        9,
+				TargetQuota:    23,
+				DedicatedQuota: 4,
+				SpecialQuota:   4,
+			},
 		},
 		&rzgmu.HTTPHeadingSource{
-			URL:         "https://rzgmu.ru/images/upload/priem/2025/hod/f_b.pdf",
 			ProgramName: "Фармация",
+			Capacities: core.Capacities{
+				Regular:        10,
+				TargetQuota:    9,
+				DedicatedQuota: 3,
+				SpecialQuota:   3,
+			},
 		},
 		&rzgmu.HTTPHeadingSource{
-			URL:         "https://rzgmu.ru/images/upload/priem/2025/hod/kp_b.pdf",
 			ProgramName: "Клиническая психология",
+			Capacities: core.Capacities{
+				Regular:        19,
+				TargetQuota:    6,
+				DedicatedQuota: 4,
+				SpecialQuota:   4,
+			},
 		},
 	}
 }

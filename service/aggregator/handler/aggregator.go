@@ -12,6 +12,7 @@ import (
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/database"
 	"github.com/trueegorletov/analabit/core/ent"
+	"github.com/trueegorletov/analabit/core/migrations"
 	"github.com/trueegorletov/analabit/core/upload"
 
 	"github.com/minio/minio-go/v7"
@@ -170,6 +171,24 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 		}
 		log.Printf("Schema check complete for %s database.", dbType)
 
+		// Run database migrations after schema creation
+		dbClient, err := database.NewClient(client)
+		if err != nil {
+			err = fmt.Errorf("failed to create database client for migrations on %s database %q: %w", dbType, connStr, err)
+			multierr.AppendInto(&allErrors, err)
+			client.Close()
+			continue
+		}
+
+		migrationRunner := migrations.NewMigrationRunner(dbClient)
+		if err := migrationRunner.Run(ctx); err != nil {
+			err = fmt.Errorf("failed to run migrations for %s database %q: %w", dbType, connStr, err)
+			multierr.AppendInto(&allErrors, err)
+			client.Close()
+			continue
+		}
+		log.Printf("Migrations complete for %s database.", dbType)
+
 		// Create one Run per RabbitMQ notification before processing objects
 		run, err := client.Run.Create().
 			SetPayloadMeta(map[string]any{
@@ -258,12 +277,8 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 
 		// If no errors occurred for this run, refresh materialized views and mark it as finished
 		if allErrors == nil {
-			// Create database client wrapper for materialized view operations
-			dbClient, err := database.NewClient(client)
-			if err != nil {
-				err = fmt.Errorf("failed to create database client for run %d: %w", run.ID, err)
-				multierr.AppendInto(&allErrors, err)
-			} else {
+			// Reuse the dbClient created earlier for migrations
+			if dbClient != nil {
 				// Run cleanup job first
 				if cleanupErr := dbClient.PerformBackupAndCleanup(ctx, cfg.CleanupRetentionRuns, cfg.CleanupBackupDir); cleanupErr != nil {
 					if database.IsBackupError(cleanupErr) {

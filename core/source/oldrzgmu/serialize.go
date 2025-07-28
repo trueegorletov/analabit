@@ -1,4 +1,4 @@
-package rzgmu
+package oldrzgmu
 
 import (
 	"encoding/gob"
@@ -6,4 +6,5 @@ import (
 
 func init() {
 	gob.RegisterName("RzgmuHttpHeadingSource", &HTTPHeadingSource{})
+	gob.RegisterName("RzgmuFileHeadingSource", &FileHeadingSource{})
 }

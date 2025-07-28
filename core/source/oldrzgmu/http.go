@@ -1,48 +1,73 @@
 // Package rzgmu provides support for loading RZGMU (Рязанский государственный медицинский университет) admission data.
 // RZGMU admission lists are provided in PDF format and are parsed using rsc.io/pdf for text extraction.
-package rzgmu
+package oldrzgmu
 
 import (
-	"github.com/trueegorletov/analabit/core"
-	"github.com/trueegorletov/analabit/core/source"
-	"github.com/trueegorletov/analabit/core/utils"
 	"bytes"
+	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
+
+	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/utils"
 
 	"rsc.io/pdf"
 )
 
-// FileHeadingSource defines how to load RZGMU heading data from a local PDF file.
+// HTTPHeadingSource defines how to load RZGMU heading data from a PDF file URL.
 // RZGMU provides admission lists in PDF format that are parsed using rsc.io/pdf.
-type FileHeadingSource struct {
-	Path        string           // Path to the PDF file containing the admission list
+type HTTPHeadingSource struct {
+	URL         string           // URL to the PDF file containing the admission list
 	ProgramName string           // Name of the educational program (if empty, will use default)
 	Capacities  *core.Capacities // Capacities for this heading. If nil, will be extracted from PDF
 }
 
-// LoadTo loads data from file source, extracting text with rsc.io/pdf,
+// LoadTo loads data from HTTP source, downloading PDF, extracting text with rsc.io/pdf,
 // and sending HeadingData and ApplicationData to the provided receiver.
-func (s *FileHeadingSource) LoadTo(receiver source.DataReceiver) error {
-	if s.Path == "" {
-		return fmt.Errorf("Path is required for RZGMU FileHeadingSource")
+func (s *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
+	if s.URL == "" {
+		return fmt.Errorf("URL is required for RZGMU HTTPHeadingSource")
 	}
 
-	log.Printf("Processing RZGMU admission list from file: %s", s.Path)
+	log.Printf("Processing RZGMU admission list from: %s", s.URL)
+
+	// Acquire a semaphore slot, respecting context cancellation
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	release, err := source.AcquireHTTPSemaphores(ctx, "rzgmu")
+	if err != nil {
+		return fmt.Errorf("failed to acquire semaphores for RZGMU list from %s: %w", s.URL, err)
+	}
+	defer release()
+
+	// Download PDF to temporary file
+	tempPDFPath, err := downloadPDFToTemp(ctx, s.URL)
+	if err != nil {
+		return fmt.Errorf("failed to download RZGMU PDF from %s: %w", s.URL, err)
+	}
+	defer func() {
+		if removeErr := os.Remove(tempPDFPath); removeErr != nil {
+			log.Printf("Warning: failed to remove temporary PDF file %s: %v", tempPDFPath, removeErr)
+		}
+	}()
 
 	// Extract text data using rsc.io/pdf
-	textData, err := extractTextFromPDFFile(s.Path)
+	textData, err := extractTextWithRscPDF(tempPDFPath)
 	if err != nil {
-		return fmt.Errorf("failed to extract text from RZGMU PDF %s: %w", s.Path, err)
+		return fmt.Errorf("failed to extract text from RZGMU PDF %s: %w", s.URL, err)
 	}
 
 	// Parse the text data
 	programs, err := parseRZGMUTextData(textData)
 	if err != nil {
-		return fmt.Errorf("failed to parse RZGMU data from %s: %w", s.Path, err)
+		return fmt.Errorf("failed to parse RZGMU data from %s: %w", s.URL, err)
 	}
 
 	// Process each program found in the data (usually just one per PDF)
@@ -79,14 +104,48 @@ func (s *FileHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		log.Printf("Sent %d applications for RZGMU heading %s", len(program.Applications), programName)
 	}
 
-	log.Printf("Successfully processed RZGMU heading(s) from %s", s.Path)
+	log.Printf("Successfully processed RZGMU heading(s) from %s", s.URL)
 	return nil
 }
 
-// extractTextFromPDFFile uses pdftotext (if available) or rsc.io/pdf to extract text from a PDF file
-func extractTextFromPDFFile(pdfPath string) (string, error) {
+// downloadPDFToTemp downloads a PDF from the given URL to a temporary file
+func downloadPDFToTemp(ctx context.Context, url string) (string, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to download PDF: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to download PDF (status code %d)", resp.StatusCode)
+	}
+
+	// Create temporary file
+	tempFile, err := os.CreateTemp("", "rzgmu_*.pdf")
+	if err != nil {
+		return "", fmt.Errorf("failed to create temporary file: %w", err)
+	}
+	defer tempFile.Close()
+
+	// Copy response body to temporary file
+	_, err = tempFile.ReadFrom(resp.Body)
+	if err != nil {
+		os.Remove(tempFile.Name())
+		return "", fmt.Errorf("failed to write PDF to temporary file: %w", err)
+	}
+
+	return tempFile.Name(), nil
+}
+
+// extractTextWithRscPDF uses pdftotext (if available) or rsc.io/pdf to extract text from a PDF file
+func extractTextWithRscPDF(pdfPath string) (string, error) {
 	// Try pdftotext first with layout preservation (better handling of font encoding and structure)
-	if text, err := extractTextWithPDFToText(pdfPath); err == nil {
+	if text, err := extractTextWithPDFToTextHTTP(pdfPath); err == nil {
 		log.Printf("Successfully extracted text using pdftotext from %s", pdfPath)
 		return text, nil
 	} else {
@@ -94,11 +153,11 @@ func extractTextFromPDFFile(pdfPath string) (string, error) {
 	}
 
 	// Fallback to rsc.io/pdf
-	return extractTextWithRscPDFFile(pdfPath)
+	return extractTextWithRscPDFInternal(pdfPath)
 }
 
-// extractTextWithPDFToText uses the pdftotext command-line utility to extract text with layout preservation
-func extractTextWithPDFToText(pdfPath string) (string, error) {
+// extractTextWithPDFToTextHTTP uses the pdftotext command-line utility to extract text with layout preservation
+func extractTextWithPDFToTextHTTP(pdfPath string) (string, error) {
 	// Check if pdftotext is available
 	if _, err := exec.LookPath("pdftotext"); err != nil {
 		return "", fmt.Errorf("pdftotext not available: %w", err)
@@ -127,8 +186,8 @@ func extractTextWithPDFToText(pdfPath string) (string, error) {
 	return string(textBytes), nil
 }
 
-// extractTextWithRscPDFFile uses rsc.io/pdf to extract text from a PDF file (fallback method)
-func extractTextWithRscPDFFile(pdfPath string) (string, error) {
+// extractTextWithRscPDFInternal uses rsc.io/pdf to extract text from a PDF file (fallback method)
+func extractTextWithRscPDFInternal(pdfPath string) (string, error) {
 	f, err := pdf.Open(pdfPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to open PDF with rsc.io/pdf: %w", err)

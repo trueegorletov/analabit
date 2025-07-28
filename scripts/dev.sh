@@ -47,8 +47,8 @@ export DATABASE_DBNAME="postgres"
 export DATABASE_SSLMODE="disable"
 export CACHE_TTL_MINUTES="6000"
 export SELF_QUERY_PERIOD_MINUTES="1500"
-export DRAIN_SIM_ITERATIONS="50"
-export VARSITIES_LIST="mephi,itmo,hse_spb"
+export DRAIN_SIM_ITERATIONS="10"
+export VARSITIES_LIST="itmo,hse_spb,rzgmu"
 
 # FlareSolverr configuration for bypassing DDoS-Guard protection
 export FLARESOLVERR_URL="http://localhost:8191"

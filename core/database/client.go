@@ -216,6 +216,7 @@ func (c *Client) BackupDataToBeDeleted(ctx context.Context, backupDir string, th
 
 // PerformBackupAndCleanup performs database backup and cleans up old runs
 // Returns a BackupError if only backup fails, allowing cleanup to continue
+// Gracefully handles the case where no finished runs exist yet (first run scenario)
 func (c *Client) PerformBackupAndCleanup(ctx context.Context, retention int, backupDir string) error {
 	// Find the most recent finished run
 	latestRun, err := c.Client.Run.Query().
@@ -223,6 +224,11 @@ func (c *Client) PerformBackupAndCleanup(ctx context.Context, retention int, bac
 		Order(ent.Desc(run.FieldID)).
 		First(ctx)
 	if err != nil {
+		// Check if this is a "not found" error (first run scenario)
+		if ent.IsNotFound(err) {
+			// No finished runs exist yet, skip cleanup gracefully
+			return nil
+		}
 		return fmt.Errorf("failed to find latest finished run: %w", err)
 	}
 

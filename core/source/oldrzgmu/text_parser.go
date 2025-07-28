@@ -1,4 +1,4 @@
-package rzgmu
+package oldrzgmu
 
 import (
 	"github.com/trueegorletov/analabit/core"
