@@ -1,7 +1,7 @@
 package main
 
 import (
-	"analabit/cli/cmd"
+	"github.com/trueegorletov/analabit/cli/cmd"
 	"fmt"
 	"log"
 	"os"

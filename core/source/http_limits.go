@@ -20,6 +20,7 @@ var defaultLimits = map[string]int64{
 	"itmo":   10,
 	"mipt":   2,
 	"mirea":  4,
+	"msu":    12, // Higher limit due to large number of heading sources (50+)
 	"oldhse": 1,
 	"spbstu": 6,
 	"spbsu":  4,
@@ -46,6 +47,7 @@ var envVars = map[string]string{
 	"itmo":   "ITMO_HTTP_MAX_CONCURRENT",
 	"mipt":   "MIPT_HTTP_MAX_CONCURRENT",
 	"mirea":  "MIREA_HTTP_MAX_CONCURRENT",
+	"msu":    "MSU_HTTP_MAX_CONCURRENT",
 	"oldhse": "OLDHSE_HTTP_MAX_CONCURRENT",
 	"spbstu": "SPBSTU_HTTP_MAX_CONCURRENT",
 	"spbsu":  "SPBSU_HTTP_MAX_CONCURRENT",

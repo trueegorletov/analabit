@@ -9,6 +9,9 @@ import (
 	"github.com/trueegorletov/analabit/service/producer/handler"
 	"github.com/trueegorletov/analabit/service/producer/proto"
 	micro "go-micro.dev/v5"
+
+	// Import MSU package to trigger init() and register IDMSU client
+	_ "github.com/trueegorletov/analabit/core/source/msu"
 )
 
 // startSelfQuery contains the logic for the self-triggering mechanism.

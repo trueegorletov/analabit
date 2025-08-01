@@ -1,4 +1,5 @@
 api: cd service/api && $(go env GOPATH)/bin/air -c ../../.air.toml
 aggregator: cd service/aggregator && $(go env GOPATH)/bin/air -c ../../.air.toml
 producer: cd service/producer && $(go env GOPATH)/bin/air -c ../../.air.toml
+idmsu: cd service/idmsu && $(go env GOPATH)/bin/air -c ../../.air.toml
 

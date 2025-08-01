@@ -1080,40 +1080,6 @@ func (h *GeneralApplicationHeap) Peek() *Application {
 	return h.applications[0]
 }
 
-// processStudentApplications, tryAdmitQuota, tryAdmitGeneral, canAdmit, admissionInfo
-// are no longer needed with the Gale-Shapley implementation.
-/*
-// processStudentApplications processes a single student's applications.
-func (v *VarsityCalculator) processStudentApplications(
-// ... (omitted old implementation)
-}
-
-// Returns true if admitted, the displaced student (if any), and the displaced application (if any).
-func (v *VarsityCalculator) tryAdmitQuota(
-// ... (omitted old implementation)
-}
-
-// tryAdmitGeneral attempts to admit a student to general competition (Regular or BVI).
-// Returns true if admitted, the displaced student (if any), and the displaced application (if any).
-func (v *VarsityCalculator) tryAdmitGeneral(
-// ... (omitted old implementation)
-}
-
-// canAdmit checks if a student can be admitted to a heading based on their current best placement.
-// A student can be admitted if the new application's heading has higher priority than their current best,
-// or if they have no current best placement.
-func (v *VarsityCalculator) canAdmit(
-// ... (omitted old implementation)
-}
-
-// This struct was assumed by the logging I added. It needs to be defined.
-// It stores information about a student's admission to a particular heading.
-type admissionInfo struct {
-	app          Application            // The specific application that led to admission
-	headingState *HeadingAdmissionState // The state of the heading they were admitted to
-}
-*/
-
 // SimulateOriginalsDrain drains randomly selected drainPercent% of students who DID not submit their original but
 // who hasn't already quit the varsity.
 func (v *VarsityCalculator) SimulateOriginalsDrain(drainPercent int) {

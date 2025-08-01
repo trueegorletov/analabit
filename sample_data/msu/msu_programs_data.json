@@ -1,0 +1,1052 @@
+[
+  {
+    "name": "Астрономия",
+    "regular_bvi_url": "/vuznavigator/specialties/1.03.05.01/3/1214/1/83909/-/applicants/193244",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.03.05.01/3/1214/1/83909/-/applicants/193246",
+    "special_quota_url": "/vuznavigator/specialties/1.03.05.01/3/1214/1/83909/-/applicants/193245",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Фундаментальная и прикладная химия",
+    "regular_bvi_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83911/-/applicants/193254",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83911/-/applicants/193257",
+    "special_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83911/-/applicants/193255",
+    "target_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83911/-/applicants/193256"
+  },
+  {
+    "name": "Фундаментальная физико-химическая инженерия",
+    "regular_bvi_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83963/-/applicants/193460",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83963/-/applicants/193463",
+    "special_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83963/-/applicants/193461",
+    "target_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83963/-/applicants/193462"
+  },
+  {
+    "name": "Физико-химическая биология. Общая биология",
+    "regular_bvi_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83912/-/applicants/193259",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83912/-/applicants/193262",
+    "special_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83912/-/applicants/193260",
+    "target_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83912/-/applicants/193261"
+  },
+  {
+    "name": "Биоинженерия и биотехнология, биофизика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83913/-/applicants/193264",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83913/-/applicants/193267",
+    "special_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83913/-/applicants/193265",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Социология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83955/-/applicants/193423",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83955/-/applicants/193426",
+    "special_quota_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83955/-/applicants/193424",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Социология, общий профиль",
+    "regular_bvi_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83968/-/applicants/193485",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83968/-/applicants/193488",
+    "special_quota_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83968/-/applicants/193486",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Государственный и муниципальный аудит",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83965/-/applicants/193470",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83965/-/applicants/193473",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83965/-/applicants/193471",
+    "target_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83965/-/applicants/193472"
+  },
+  {
+    "name": "Экономика",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83944/-/applicants/193378",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83944/-/applicants/193381",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83944/-/applicants/193379",
+    "target_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83944/-/applicants/193380"
+  },
+  {
+    "name": "Экономика, профиль экономическая теория и аналитика",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Биотехнология",
+    "regular_bvi_url": "/vuznavigator/specialties/2.19.03.01/2/1214/1/84038/-/applicants/193562",
+    "dedicated_quota_url": "/vuznavigator/specialties/2.19.03.01/2/1214/1/84038/-/applicants/193565",
+    "special_quota_url": "/vuznavigator/specialties/2.19.03.01/2/1214/1/84038/-/applicants/193563",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Регионоведение России",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.02/2/1214/1/83960/-/applicants/193445",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.02/2/1214/1/83960/-/applicants/193447",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.02/2/1214/1/83960/-/applicants/193446",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Многопрофильный конкурс География, Картография и геоинформатика , Гидрометеорология, Экология и природопользование",
+    "regular_bvi_url": "/vuznavigator/specialties/1.05.00.00/2/1214/1/83918/-/applicants/388983",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.05.00.00/2/1214/1/83918/-/applicants/388985",
+    "special_quota_url": "/vuznavigator/specialties/1.05.00.00/2/1214/1/83918/-/applicants/388984",
+    "target_quota_url": "/vuznavigator/specialties/1.05.00.00/2/1214/1/83918/-/applicants/388986"
+  },
+  {
+    "name": "Образовательная программа \"Развитие стран Азии и Африки\"",
+    "regular_bvi_url": "/vuznavigator/specialties/5.58.03.01/2/1214/1/46526/-/applicants/389021",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.58.03.01/2/1214/1/46526/-/applicants/389024",
+    "special_quota_url": "/vuznavigator/specialties/5.58.03.01/2/1214/1/46526/-/applicants/389022",
+    "target_quota_url": "/vuznavigator/specialties/5.58.03.01/2/1214/1/46526/-/applicants/390502"
+  },
+  {
+    "name": "Юриспруденция (финансово-правовой профиль, профиль Расследование экономических преступлений)",
+    "regular_bvi_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83966/-/applicants/193475",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83966/-/applicants/193478",
+    "special_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83966/-/applicants/193476",
+    "target_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83966/-/applicants/193477"
+  },
+  {
+    "name": "Юриспруденция (государственно-правовой, гражданско-правовой, уголовно-правовой профили)",
+    "regular_bvi_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83946/-/applicants/193388",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83946/-/applicants/193391",
+    "special_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83946/-/applicants/193389",
+    "target_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83946/-/applicants/193390"
+  },
+  {
+    "name": "Международно-правовая (международно-правовой профиль)",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Менеджмент",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.02/2/1214/1/83945/-/applicants/193382",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.02/2/1214/1/83945/-/applicants/193385",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.02/2/1214/1/83945/-/applicants/193383",
+    "target_quota_url": "/vuznavigator/specialties/5.38.03.02/2/1214/1/83945/-/applicants/193646"
+  },
+  {
+    "name": "Менеджмент, общий профиль",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Менеджмент в культуре",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Менеджмент в спорте",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Музейный и галерейный менеджмент",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Менеджмент и маркетинг в сфере культуры и культурный туризм",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Менеджмент, профиль управление эффективностью и развитием бизнеса",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Управление бизнесом и предпринимательство",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Государственный и муниципальный аудит",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83965/-/applicants/193470",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83965/-/applicants/193473",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83965/-/applicants/193471",
+    "target_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83965/-/applicants/193472"
+  },
+  {
+    "name": "Экономика",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83944/-/applicants/193378",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83944/-/applicants/193381",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83944/-/applicants/193379",
+    "target_quota_url": "/vuznavigator/specialties/5.38.03.01/2/1214/1/83944/-/applicants/193380"
+  },
+  {
+    "name": "Экономика, профиль экономическая теория и аналитика",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Государственное и муниципальное управление",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.04/2/1214/1/84026/-/applicants/193523",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.04/2/1214/1/84026/-/applicants/193526",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.04/2/1214/1/84026/-/applicants/193524",
+    "target_quota_url": "/vuznavigator/specialties/5.38.03.04/2/1214/1/84026/-/applicants/193525"
+  },
+  {
+    "name": "Биоинженерия и биоинформатика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.06.05.01/3/1214/1/83962/-/applicants/193455",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.06.05.01/3/1214/1/83962/-/applicants/193458",
+    "special_quota_url": "/vuznavigator/specialties/1.06.05.01/3/1214/1/83962/-/applicants/193456",
+    "target_quota_url": "/vuznavigator/specialties/1.06.05.01/3/1214/1/83962/-/applicants/193652"
+  },
+  {
+    "name": "Философия",
+    "regular_bvi_url": "/vuznavigator/specialties/7.47.03.01/2/1214/1/83939/-/applicants/193359",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.47.03.01/2/1214/1/83939/-/applicants/193362",
+    "special_quota_url": "/vuznavigator/specialties/7.47.03.01/2/1214/1/83939/-/applicants/193360",
+    "target_quota_url": "/vuznavigator/specialties/7.47.03.01/2/1214/1/83939/-/applicants/193361"
+  },
+  {
+    "name": "Экология и природопользование",
+    "regular_bvi_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83914/-/applicants/193269",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83914/-/applicants/193272",
+    "special_quota_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83914/-/applicants/193270",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Экология и природопользование, экологический менеджмент и экобезопасность. Радиоэкология, управление земельными ресурсами и биологический контроль окружающей среды",
+    "regular_bvi_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83916/-/applicants/193278",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83916/-/applicants/193281",
+    "special_quota_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83916/-/applicants/193279",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Биология почв. Химия почв. Земельные ресурсы и функционирование почв. Физика, мелиорация и эрозия почв. Агрохимия и агроэкология",
+    "regular_bvi_url": "/vuznavigator/specialties/1.06.03.02/2/1214/1/83915/-/applicants/193274",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.06.03.02/2/1214/1/83915/-/applicants/193277",
+    "special_quota_url": "/vuznavigator/specialties/1.06.03.02/2/1214/1/83915/-/applicants/193275",
+    "target_quota_url": "/vuznavigator/specialties/1.06.03.02/2/1214/1/83915/-/applicants/193276"
+  },
+  {
+    "name": "Геология",
+    "regular_bvi_url": "/vuznavigator/specialties/1.05.03.01/2/1214/1/83917/-/applicants/193284",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.05.03.01/2/1214/1/83917/-/applicants/193287",
+    "special_quota_url": "/vuznavigator/specialties/1.05.03.01/2/1214/1/83917/-/applicants/193285",
+    "target_quota_url": "/vuznavigator/specialties/1.05.03.01/2/1214/1/83917/-/applicants/193286"
+  },
+  {
+    "name": "Туризм",
+    "regular_bvi_url": "/vuznavigator/specialties/5.43.03.02/2/1214/1/83919/-/applicants/193289",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.43.03.02/2/1214/1/83919/-/applicants/193292",
+    "special_quota_url": "/vuznavigator/specialties/5.43.03.02/2/1214/1/83919/-/applicants/193290",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Фармация",
+    "regular_bvi_url": "/vuznavigator/specialties/3.33.05.01/3/1214/1/83926/-/applicants/193304",
+    "dedicated_quota_url": "/vuznavigator/specialties/3.33.05.01/3/1214/1/83926/-/applicants/193307",
+    "special_quota_url": "/vuznavigator/specialties/3.33.05.01/3/1214/1/83926/-/applicants/193305",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Фармация",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Математика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193310",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193313",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193311",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193312"
+  },
+  {
+    "name": "Механика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193314",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193317",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193315",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/391190"
+  },
+  {
+    "name": "Фундаментальная математика и математическая физика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193318",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193321",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193319",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Космические исследования и космонавтика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193567",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193570",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193568",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193569"
+  },
+  {
+    "name": "История",
+    "regular_bvi_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83932/-/applicants/193325",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83932/-/applicants/193328",
+    "special_quota_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83932/-/applicants/193326",
+    "target_quota_url": ""
+  },
+  {
+    "name": "История международных отношений",
+    "regular_bvi_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83933/-/applicants/193329",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83933/-/applicants/193332",
+    "special_quota_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83933/-/applicants/193330",
+    "target_quota_url": ""
+  },
+  {
+    "name": "История",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "История",
+    "regular_bvi_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83932/-/applicants/193325",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83932/-/applicants/193328",
+    "special_quota_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83932/-/applicants/193326",
+    "target_quota_url": ""
+  },
+  {
+    "name": "История международных отношений",
+    "regular_bvi_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83933/-/applicants/193329",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83933/-/applicants/193332",
+    "special_quota_url": "/vuznavigator/specialties/7.46.03.01/2/1214/1/83933/-/applicants/193330",
+    "target_quota_url": ""
+  },
+  {
+    "name": "История",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "СЛАВЯНСКАЯ ГРЕЧЕСКАЯ И КЛАССИЧЕСКАЯ ФИЛОЛОГИЯ",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193347",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193350",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193348",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Русский язык и литература",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193339",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193342",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193340",
+    "target_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193341"
+  },
+  {
+    "name": "Зарубежная филология",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193343",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193346",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193344",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Фундаментальная и прикладная лингвистика",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.03/2/1214/1/83938/-/applicants/193351",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.03/2/1214/1/83938/-/applicants/193354",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.03/2/1214/1/83938/-/applicants/193352",
+    "target_quota_url": "/vuznavigator/specialties/7.45.03.03/2/1214/1/83938/-/applicants/193353"
+  },
+  {
+    "name": "Религиоведение",
+    "regular_bvi_url": "/vuznavigator/specialties/7.47.03.03/2/1214/1/83940/-/applicants/193363",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.47.03.03/2/1214/1/83940/-/applicants/193366",
+    "special_quota_url": "/vuznavigator/specialties/7.47.03.03/2/1214/1/83940/-/applicants/193364",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Реклама и связи с общественностью",
+    "regular_bvi_url": "/vuznavigator/specialties/5.42.03.01/2/1214/1/83941/-/applicants/193367",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.42.03.01/2/1214/1/83941/-/applicants/193370",
+    "special_quota_url": "/vuznavigator/specialties/5.42.03.01/2/1214/1/83941/-/applicants/193368",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Журналистика",
+    "regular_bvi_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83949/-/applicants/193394",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83949/-/applicants/193397",
+    "special_quota_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83949/-/applicants/193395",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Международная журналистика",
+    "regular_bvi_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83950/-/applicants/193398",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83950/-/applicants/193401",
+    "special_quota_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83950/-/applicants/193399",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Журналистика",
+    "regular_bvi_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83949/-/applicants/193394",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83949/-/applicants/193397",
+    "special_quota_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83949/-/applicants/193395",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Международная журналистика",
+    "regular_bvi_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83950/-/applicants/193398",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83950/-/applicants/193401",
+    "special_quota_url": "/vuznavigator/specialties/5.42.03.02/2/1214/1/83950/-/applicants/193399",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Медиакоммуникации",
+    "regular_bvi_url": "/vuznavigator/specialties/5.42.03.05/2/1214/1/83951/-/applicants/193402",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.42.03.05/2/1214/1/83951/-/applicants/193405",
+    "special_quota_url": "/vuznavigator/specialties/5.42.03.05/2/1214/1/83951/-/applicants/193403",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Психология служебной деятельности",
+    "regular_bvi_url": "/vuznavigator/specialties/5.37.05.02/3/1214/1/83953/-/applicants/193413",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.37.05.02/3/1214/1/83953/-/applicants/193415",
+    "special_quota_url": "/vuznavigator/specialties/5.37.05.02/3/1214/1/83953/-/applicants/193414",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Психология служебной деятельности",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Педагогика и психология девиантного поведения",
+    "regular_bvi_url": "/vuznavigator/specialties/6.44.05.01/3/1214/1/83954/-/applicants/193416",
+    "dedicated_quota_url": "/vuznavigator/specialties/6.44.05.01/3/1214/1/83954/-/applicants/193419",
+    "special_quota_url": "/vuznavigator/specialties/6.44.05.01/3/1214/1/83954/-/applicants/193417",
+    "target_quota_url": "/vuznavigator/specialties/6.44.05.01/3/1214/1/83954/-/applicants/193418"
+  },
+  {
+    "name": "Педагогика и психология девиантного поведения",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Фундаментальная и прикладная химия",
+    "regular_bvi_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83911/-/applicants/193254",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83911/-/applicants/193257",
+    "special_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83911/-/applicants/193255",
+    "target_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83911/-/applicants/193256"
+  },
+  {
+    "name": "Фундаментальная физико-химическая инженерия",
+    "regular_bvi_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83963/-/applicants/193460",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83963/-/applicants/193463",
+    "special_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83963/-/applicants/193461",
+    "target_quota_url": "/vuznavigator/specialties/1.04.05.01/3/1214/1/83963/-/applicants/193462"
+  },
+  {
+    "name": "Прикладные математика и физика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.03.03.01/2/1214/1/83964/-/applicants/193465",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.03.03.01/2/1214/1/83964/-/applicants/193468",
+    "special_quota_url": "/vuznavigator/specialties/1.03.03.01/2/1214/1/83964/-/applicants/193466",
+    "target_quota_url": "/vuznavigator/specialties/1.03.03.01/2/1214/1/83964/-/applicants/391193"
+  },
+  {
+    "name": "Социология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83955/-/applicants/193423",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83955/-/applicants/193426",
+    "special_quota_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83955/-/applicants/193424",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Социология, общий профиль",
+    "regular_bvi_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83968/-/applicants/193485",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83968/-/applicants/193488",
+    "special_quota_url": "/vuznavigator/specialties/5.39.03.01/2/1214/1/83968/-/applicants/193486",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Общая политология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193496",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193499",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193497",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Политический менеджмент и связи с общественностью",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193501",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193503",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193502",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Политология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193528",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193531",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193529",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Общая политология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193496",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193499",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193497",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Политический менеджмент и связи с общественностью",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193501",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193503",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193502",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Политология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193528",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193531",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193529",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Продюсерство",
+    "regular_bvi_url": "/vuznavigator/specialties/8.55.05.04/3/1214/1/84020/-/applicants/193510",
+    "dedicated_quota_url": "/vuznavigator/specialties/8.55.05.04/3/1214/1/84020/-/applicants/193512",
+    "special_quota_url": "/vuznavigator/specialties/8.55.05.04/3/1214/1/84020/-/applicants/193511",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Общая политология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193496",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193499",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/83971/-/applicants/193497",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Политический менеджмент и связи с общественностью",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193501",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193503",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84018/-/applicants/193502",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Политология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193528",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193531",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.04/2/1214/1/84027/-/applicants/193529",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Математика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193310",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193313",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193311",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193312"
+  },
+  {
+    "name": "Механика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193314",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193317",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193315",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/391190"
+  },
+  {
+    "name": "Фундаментальная математика и математическая физика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193318",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193321",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193319",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Космические исследования и космонавтика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193567",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193570",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193568",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193569"
+  },
+  {
+    "name": "Математические и компьютерные методы решения задач естествознания",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.03.02/2/1214/1/83905/-/applicants/193230",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.03.02/2/1214/1/83905/-/applicants/193233",
+    "special_quota_url": "/vuznavigator/specialties/1.01.03.02/2/1214/1/83905/-/applicants/193231",
+    "target_quota_url": "/vuznavigator/specialties/1.01.03.02/2/1214/1/83905/-/applicants/193232"
+  },
+  {
+    "name": "Управление персоналом, общий профиль",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/83970/-/applicants/193491",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/83970/-/applicants/193494",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/83970/-/applicants/193492",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Управление персоналом, профиль стратегическое управление человеческими ресурсами",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/84025/-/applicants/193518",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/84025/-/applicants/193521",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/84025/-/applicants/193519",
+    "target_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/84025/-/applicants/193520"
+  },
+  {
+    "name": "Управление персоналом, общий профиль",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/83970/-/applicants/193491",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/83970/-/applicants/193494",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/83970/-/applicants/193492",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Управление персоналом, профиль стратегическое управление человеческими ресурсами",
+    "regular_bvi_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/84025/-/applicants/193518",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/84025/-/applicants/193521",
+    "special_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/84025/-/applicants/193519",
+    "target_quota_url": "/vuznavigator/specialties/5.38.03.03/2/1214/1/84025/-/applicants/193520"
+  },
+  {
+    "name": "Фундаментальная и прикладная физика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83908/-/applicants/193240",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83908/-/applicants/193242",
+    "special_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83908/-/applicants/193241",
+    "target_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83908/-/applicants/193243"
+  },
+  {
+    "name": "Физика частиц и экстремальных состояний материи",
+    "regular_bvi_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83910/-/applicants/193249",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83910/-/applicants/193251",
+    "special_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83910/-/applicants/193250",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Физико-химическая биология. Общая биология",
+    "regular_bvi_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83912/-/applicants/193259",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83912/-/applicants/193262",
+    "special_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83912/-/applicants/193260",
+    "target_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83912/-/applicants/193261"
+  },
+  {
+    "name": "Биоинженерия и биотехнология, биофизика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83913/-/applicants/193264",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83913/-/applicants/193267",
+    "special_quota_url": "/vuznavigator/specialties/1.06.05.02/3/1214/1/83913/-/applicants/193265",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Экология и природопользование",
+    "regular_bvi_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83914/-/applicants/193269",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83914/-/applicants/193272",
+    "special_quota_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83914/-/applicants/193270",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Экология и природопользование, экологический менеджмент и экобезопасность. Радиоэкология, управление земельными ресурсами и биологический контроль окружающей среды",
+    "regular_bvi_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83916/-/applicants/193278",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83916/-/applicants/193281",
+    "special_quota_url": "/vuznavigator/specialties/1.05.03.06/2/1214/1/83916/-/applicants/193279",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Математика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193310",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193313",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193311",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193312"
+  },
+  {
+    "name": "Механика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193314",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193317",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193315",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/391190"
+  },
+  {
+    "name": "Фундаментальная математика и математическая физика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193318",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193321",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193319",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Космические исследования и космонавтика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193567",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193570",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193568",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193569"
+  },
+  {
+    "name": "История искусств",
+    "regular_bvi_url": "/vuznavigator/specialties/8.50.03.03/2/1214/1/83934/-/applicants/193333",
+    "dedicated_quota_url": "/vuznavigator/specialties/8.50.03.03/2/1214/1/83934/-/applicants/193335",
+    "special_quota_url": "/vuznavigator/specialties/8.50.03.03/2/1214/1/83934/-/applicants/193334",
+    "target_quota_url": ""
+  },
+  {
+    "name": "История искусств",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "СЛАВЯНСКАЯ ГРЕЧЕСКАЯ И КЛАССИЧЕСКАЯ ФИЛОЛОГИЯ",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193347",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193350",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193348",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Русский язык и литература",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193339",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193342",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193340",
+    "target_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193341"
+  },
+  {
+    "name": "Зарубежная филология",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193343",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193346",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193344",
+    "target_quota_url": ""
+  },
+  {
+    "name": "СЛАВЯНСКАЯ ГРЕЧЕСКАЯ И КЛАССИЧЕСКАЯ ФИЛОЛОГИЯ",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193347",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193350",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83937/-/applicants/193348",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Русский язык и литература",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193339",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193342",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193340",
+    "target_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83935/-/applicants/193341"
+  },
+  {
+    "name": "Зарубежная филология",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193343",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193346",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.01/2/1214/1/83936/-/applicants/193344",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Культурология, прагматика и менеджмент культуры",
+    "regular_bvi_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83942/-/applicants/193371",
+    "dedicated_quota_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83942/-/applicants/193373",
+    "special_quota_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83942/-/applicants/193372",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Культурология",
+    "regular_bvi_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83961/-/applicants/193448",
+    "dedicated_quota_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83961/-/applicants/193450",
+    "special_quota_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83961/-/applicants/193449",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Юриспруденция (финансово-правовой профиль, профиль Расследование экономических преступлений)",
+    "regular_bvi_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83966/-/applicants/193475",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83966/-/applicants/193478",
+    "special_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83966/-/applicants/193476",
+    "target_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83966/-/applicants/193477"
+  },
+  {
+    "name": "Юриспруденция (государственно-правовой, гражданско-правовой, уголовно-правовой профили)",
+    "regular_bvi_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83946/-/applicants/193388",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83946/-/applicants/193391",
+    "special_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83946/-/applicants/193389",
+    "target_quota_url": "/vuznavigator/specialties/5.40.03.01/2/1214/1/83946/-/applicants/193390"
+  },
+  {
+    "name": "Международно-правовая (международно-правовой профиль)",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Клиническая психология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.37.05.01/3/1214/1/83952/-/applicants/193409",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.37.05.01/3/1214/1/83952/-/applicants/193412",
+    "special_quota_url": "/vuznavigator/specialties/5.37.05.01/3/1214/1/83952/-/applicants/193410",
+    "target_quota_url": "/vuznavigator/specialties/5.37.05.01/3/1214/1/83952/-/applicants/193411"
+  },
+  {
+    "name": "Клиническая психология",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Экспертная деятельность в управлении социально-политическими проектами",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.06/2/1214/1/83956/-/applicants/193427",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.06/2/1214/1/83956/-/applicants/193430",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.06/2/1214/1/83956/-/applicants/193428",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Специальный перевод. Лингвистическое обеспечение межгосударственных отношений",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/83957/-/applicants/193433",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/83957/-/applicants/193435",
+    "special_quota_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/83957/-/applicants/193434",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Перевод и переводоведение",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/84035/-/applicants/193556",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/84035/-/applicants/193558",
+    "special_quota_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/84035/-/applicants/193557",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Группа программ Европейские исследования, Американские исследования",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.01/2/1214/1/83959/-/applicants/193441",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.01/2/1214/1/83959/-/applicants/193444",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.01/2/1214/1/83959/-/applicants/193442",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Культурология, прагматика и менеджмент культуры",
+    "regular_bvi_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83942/-/applicants/193371",
+    "dedicated_quota_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83942/-/applicants/193373",
+    "special_quota_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83942/-/applicants/193372",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Культурология",
+    "regular_bvi_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83961/-/applicants/193448",
+    "dedicated_quota_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83961/-/applicants/193450",
+    "special_quota_url": "/vuznavigator/specialties/8.51.03.01/2/1214/1/83961/-/applicants/193449",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Телевидение",
+    "regular_bvi_url": "/vuznavigator/specialties/5.42.03.04/2/1214/1/83967/-/applicants/193480",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.42.03.04/2/1214/1/83967/-/applicants/193483",
+    "special_quota_url": "/vuznavigator/specialties/5.42.03.04/2/1214/1/83967/-/applicants/193481",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Конфликтология",
+    "regular_bvi_url": "/vuznavigator/specialties/5.37.03.02/2/1214/1/84019/-/applicants/193505",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.37.03.02/2/1214/1/84019/-/applicants/193508",
+    "special_quota_url": "/vuznavigator/specialties/5.37.03.02/2/1214/1/84019/-/applicants/193506",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Международные отношения",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193535",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193538",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193536",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Глобальные политические процессы и дипломатия",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193541",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193544",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193542",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Глобальная экономика и управление. Глобальная энергетика и международный бизнес",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193546",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193549",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193547",
+    "target_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/390499"
+  },
+  {
+    "name": "Международное гуманитарное сотрудничество",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193551",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193554",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193552",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Международные отношения",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193535",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193538",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193536",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Глобальные политические процессы и дипломатия",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193541",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193544",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193542",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Глобальная экономика и управление. Глобальная энергетика и международный бизнес",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193546",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193549",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193547",
+    "target_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/390499"
+  },
+  {
+    "name": "Международное гуманитарное сотрудничество",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193551",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193554",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193552",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Международные отношения",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193535",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193538",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193536",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Глобальные политические процессы и дипломатия",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193541",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193544",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193542",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Глобальная экономика и управление. Глобальная энергетика и международный бизнес",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193546",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193549",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193547",
+    "target_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/390499"
+  },
+  {
+    "name": "Международное гуманитарное сотрудничество",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193551",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193554",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193552",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Международные отношения",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193535",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193538",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84030/-/applicants/193536",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Глобальные политические процессы и дипломатия",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193541",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193544",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84032/-/applicants/193542",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Глобальная экономика и управление. Глобальная энергетика и международный бизнес",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193546",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193549",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/193547",
+    "target_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84033/-/applicants/390499"
+  },
+  {
+    "name": "Международное гуманитарное сотрудничество",
+    "regular_bvi_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193551",
+    "dedicated_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193554",
+    "special_quota_url": "/vuznavigator/specialties/5.41.03.05/2/1214/1/84034/-/applicants/193552",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Специальный перевод. Лингвистическое обеспечение межгосударственных отношений",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/83957/-/applicants/193433",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/83957/-/applicants/193435",
+    "special_quota_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/83957/-/applicants/193434",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Перевод и переводоведение",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/84035/-/applicants/193556",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/84035/-/applicants/193558",
+    "special_quota_url": "/vuznavigator/specialties/7.45.05.01/3/1214/1/84035/-/applicants/193557",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Математика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193310",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193313",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193311",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83929/-/applicants/193312"
+  },
+  {
+    "name": "Механика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193314",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193317",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/193315",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83930/-/applicants/391190"
+  },
+  {
+    "name": "Фундаментальная математика и математическая физика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193318",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193321",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/83931/-/applicants/193319",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Космические исследования и космонавтика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193567",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193570",
+    "special_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193568",
+    "target_quota_url": "/vuznavigator/specialties/1.01.05.01/3/1214/1/84039/-/applicants/193569"
+  },
+  {
+    "name": "Фундаментальная информатика и информационные технологии",
+    "regular_bvi_url": "/vuznavigator/specialties/1.02.03.02/2/1214/1/83906/-/applicants/193234",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.02.03.02/2/1214/1/83906/-/applicants/193237",
+    "special_quota_url": "/vuznavigator/specialties/1.02.03.02/2/1214/1/83906/-/applicants/193235",
+    "target_quota_url": "/vuznavigator/specialties/1.02.03.02/2/1214/1/83906/-/applicants/193236"
+  },
+  {
+    "name": "Химия, физика и механика материалов",
+    "regular_bvi_url": "/vuznavigator/specialties/1.04.03.02/2/1214/1/46523/-/applicants/193294",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.04.03.02/2/1214/1/46523/-/applicants/193297",
+    "special_quota_url": "/vuznavigator/specialties/1.04.03.02/2/1214/1/46523/-/applicants/193295",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Лечебное дело",
+    "regular_bvi_url": "/vuznavigator/specialties/3.31.05.01/3/1214/1/83920/-/applicants/193299",
+    "dedicated_quota_url": "/vuznavigator/specialties/3.31.05.01/3/1214/1/83920/-/applicants/193303",
+    "special_quota_url": "/vuznavigator/specialties/3.31.05.01/3/1214/1/83920/-/applicants/193300",
+    "target_quota_url": "/vuznavigator/specialties/3.31.05.01/3/1214/1/83920/-/applicants/193301"
+  },
+  {
+    "name": "Лечебное дело",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Лингвистика",
+    "regular_bvi_url": "",
+    "dedicated_quota_url": "",
+    "special_quota_url": "",
+    "target_quota_url": ""
+  },
+  {
+    "name": "Группа программ Межкультурная коммуникация, Теория и методика преподавания иностранных языков",
+    "regular_bvi_url": "/vuznavigator/specialties/7.45.03.02/2/1214/1/83958/-/applicants/193437",
+    "dedicated_quota_url": "/vuznavigator/specialties/7.45.03.02/2/1214/1/83958/-/applicants/193440",
+    "special_quota_url": "/vuznavigator/specialties/7.45.03.02/2/1214/1/83958/-/applicants/193438",
+    "target_quota_url": "/vuznavigator/specialties/7.45.03.02/2/1214/1/83958/-/applicants/193439"
+  },
+  {
+    "name": "Фундаментальная и прикладная физика",
+    "regular_bvi_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83908/-/applicants/193240",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83908/-/applicants/193242",
+    "special_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83908/-/applicants/193241",
+    "target_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83908/-/applicants/193243"
+  },
+  {
+    "name": "Физика частиц и экстремальных состояний материи",
+    "regular_bvi_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83910/-/applicants/193249",
+    "dedicated_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83910/-/applicants/193251",
+    "special_quota_url": "/vuznavigator/specialties/1.03.05.02/3/1214/1/83910/-/applicants/193250",
+    "target_quota_url": ""
+  }
+]

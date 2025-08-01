@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"analabit/cli/config"
-	"analabit/cli/corestate"
+	"github.com/trueegorletov/analabit/cli/config"
+	"github.com/trueegorletov/analabit/cli/corestate"
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/database"
 	"github.com/trueegorletov/analabit/core/ent"

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"analabit/service/api/config"
-	"analabit/service/api/handlers"
+	"github.com/trueegorletov/analabit/service/api/config"
+	"github.com/trueegorletov/analabit/service/api/handlers"
 	"context"
 	"fmt"
 	"log"

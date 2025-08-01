@@ -38,20 +38,24 @@ export ANALABIT_MINIO_USE_SSL="false"
 export MINIO_BUCKET_NAME="analabit-results"
 export ANALABIT_MINIO_BUCKET_NAME="$MINIO_BUCKET_NAME"
 
-export POSTGRES_CONN_STRINGS="host=192.168.0.103 port=5433 user=postgres password=postgres dbname=postgres sslmode=disable"
-export DATABASE_HOST="192.168.0.103"
+export DATABASE_HOST="192.168.0.107"
 export DATABASE_PORT="5433"
 export DATABASE_USER="postgres"
 export DATABASE_PASSWORD="postgres"
 export DATABASE_DBNAME="postgres"
 export DATABASE_SSLMODE="disable"
-export CACHE_TTL_MINUTES="6000"
-export SELF_QUERY_PERIOD_MINUTES="1500"
+export CACHE_TTL_MINUTES="-1"
+export SELF_QUERY_PERIOD_MINUTES="112"
 export DRAIN_SIM_ITERATIONS="10"
-export VARSITIES_LIST="itmo,hse_spb,rzgmu"
+export VARSITIES_LIST="msu"
 
 # FlareSolverr configuration for bypassing DDoS-Guard protection
 export FLARESOLVERR_URL="http://localhost:8191"
+
+# IDMSU service configuration
+export IDMSU_PORT="8081"
+export IDMSU_URL="http://localhost:8081"
+export USE_IDMSU_SERVICE="true"
 
 # Launch all Go micro-services with live reload
 goreman -f Procfile.dev start

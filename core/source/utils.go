@@ -3,6 +3,8 @@ package source
 import (
 	"context"
 	"log/slog"
+	"net"
+	"strings"
 	"time"
 )
 
@@ -55,7 +57,19 @@ func Retry(operation func() error, maxAttempts int, backoff func(attempt int) ti
 		}
 		if attempt < maxAttempts {
 			sleepDuration := backoff(attempt)
-			slog.Warn("Retry attempt failed, retrying after backoff", "attempt", attempt, "error", err, "backoff", sleepDuration)
+			// Enhanced logging with error type classification
+			errorType := "unknown"
+			if isTimeoutError(err) {
+				errorType = "timeout"
+			} else if isNetworkError(err) {
+				errorType = "network"
+			}
+			slog.Warn("Retry attempt failed, retrying after backoff", 
+				"attempt", attempt, 
+				"max_attempts", maxAttempts,
+				"error", err, 
+				"error_type", errorType,
+				"backoff", sleepDuration)
 			time.Sleep(sleepDuration)
 		} else {
 			slog.Error("Operation failed after max retries", "attempts", maxAttempts, "error", err)
@@ -63,4 +77,30 @@ func Retry(operation func() error, maxAttempts int, backoff func(attempt int) ti
 		}
 	}
 	return nil // Unreachable, but for completeness
+}
+
+// isTimeoutError checks if the error is a timeout-related error
+func isTimeoutError(err error) bool {
+	if err == nil {
+		return false
+	}
+	errorStr := err.Error()
+	return strings.Contains(errorStr, "timeout") || 
+		   strings.Contains(errorStr, "i/o timeout") ||
+		   strings.Contains(errorStr, "context deadline exceeded")
+}
+
+// isNetworkError checks if the error is a network-related error
+func isNetworkError(err error) bool {
+	if err == nil {
+		return false
+	}
+	// Check for net.Error interface
+	if netErr, ok := err.(net.Error); ok {
+		return netErr.Timeout() || netErr.Temporary()
+	}
+	errorStr := err.Error()
+	return strings.Contains(errorStr, "connection refused") ||
+		   strings.Contains(errorStr, "no such host") ||
+		   strings.Contains(errorStr, "network unreachable")
 }

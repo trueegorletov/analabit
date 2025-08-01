@@ -7,6 +7,7 @@ import (
 	"github.com/trueegorletov/analabit/core/registry/mephi"
 	"github.com/trueegorletov/analabit/core/registry/mipt"
 	"github.com/trueegorletov/analabit/core/registry/mirea"
+	"github.com/trueegorletov/analabit/core/registry/msu"
 	"github.com/trueegorletov/analabit/core/registry/rsmu"
 	"github.com/trueegorletov/analabit/core/registry/rzgmu"
 	"github.com/trueegorletov/analabit/core/registry/spbstu"
@@ -29,4 +30,5 @@ var AllDefinitions = []source.VarsityDefinition{
 	mipt.Varsity,
 	fmsmu.Varsity,
 	mephi.Varsity,
+	msu.Varsity,
 }

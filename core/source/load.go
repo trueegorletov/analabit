@@ -1,6 +1,7 @@
 package source
 
 import (
+	"context"
 	"log"
 	"log/slog"
 	"math"
@@ -99,71 +100,113 @@ func (v *Varsity) loadFromSources() map[string]bool {
 	var processingWg sync.WaitGroup
 
 	processingWg.Add(1)
-go func() {
-	defer processingWg.Done()
-	var headings []*HeadingData
-	var applications []*ApplicationData
-	for {
-		select {
-		case hd, ok := <-headingDataChan:
-			if !ok {
-				headingDataChan = nil
-			} else {
-				headings = append(headings, hd)
+	go func() {
+		defer processingWg.Done()
+		var headings []*HeadingData
+		var applications []*ApplicationData
+		for {
+			select {
+			case hd, ok := <-headingDataChan:
+				if !ok {
+					headingDataChan = nil
+				} else {
+					headings = append(headings, hd)
+				}
+			case ad, ok := <-applicationDataChan:
+				if !ok {
+					applicationDataChan = nil
+				} else {
+					applications = append(applications, ad)
+				}
 			}
-		case ad, ok := <-applicationDataChan:
-			if !ok {
-				applicationDataChan = nil
-			} else {
-				applications = append(applications, ad)
+			if headingDataChan == nil && applicationDataChan == nil {
+				break
 			}
 		}
-		if headingDataChan == nil && applicationDataChan == nil {
-			break
+		// Process headings first
+		for _, hd := range headings {
+			v.SaveHeadingData(hd)
+			v.AddHeading(hd)
 		}
-	}
-	// Process headings first
-	for _, hd := range headings {
-		v.SaveHeadingData(hd)
-		v.AddHeading(hd)
-	}
-	// Then process applications
-	for _, ad := range applications {
-		v.SaveApplicationData(ad)
-		v.AddApplication(ad)
-		if ad.OriginalSubmitted {
-			submittedOriginalsMu.Lock()
-			submittedOriginals[ad.StudentID] = true
-			submittedOriginalsMu.Unlock()
+		// Then process applications
+		for _, ad := range applications {
+			v.SaveApplicationData(ad)
+			v.AddApplication(ad)
+			if ad.OriginalSubmitted {
+				submittedOriginalsMu.Lock()
+				submittedOriginals[ad.StudentID] = true
+				submittedOriginalsMu.Unlock()
+			}
 		}
-	}
-}()
+	}()
 
-	if v.Code == "spbsu" {
-	for _, hs := range v.HeadingSources {
-		err := Retry(func() error { return hs.LoadTo(receiver) }, 3, func(attempt int) time.Duration {
-			return time.Duration(math.Pow(2, float64(attempt-1))) * 10 * time.Second
-		})
-		if err != nil {
-			slog.Error("Failed to load source after retries", "error", err)
+	// Special handling for MSU with buffered receiver for ID resolution
+	if v.Code == "msu" {
+		// Create MSU buffered receiver
+		msuReceiver := MSUFactory.CreateMSUReceiver(receiver)
+
+		// Load all MSU sources into the buffered receiver with enhanced retry logic
+		for _, hs := range v.HeadingSources {
+			sourceWg.Add(1)
+			go func(s HeadingSource) {
+				defer sourceWg.Done()
+				// Enhanced retry strategy for MSU network issues
+				// 7 attempts with longer backoff delays: 10s, 30s, 60s, 120s, 240s, 300s
+				err := Retry(func() error { return s.LoadTo(msuReceiver) }, 7, func(attempt int) time.Duration {
+					switch attempt {
+					case 1:
+						return 10 * time.Second
+					case 2:
+						return 30 * time.Second
+					case 3:
+						return 60 * time.Second
+					case 4:
+						return 120 * time.Second
+					case 5:
+						return 240 * time.Second
+					default:
+						return 300 * time.Second
+					}
+				})
+				if err != nil {
+					slog.Error("Failed to load MSU source after enhanced retries", "error", err, "attempts", 7)
+				}
+			}(hs)
 		}
-	}
-} else {
-	for _, hs := range v.HeadingSources {
-		sourceWg.Add(1)
-		go func(s HeadingSource) {
-			defer sourceWg.Done()
-			err := Retry(func() error { return s.LoadTo(receiver) }, 3, func(attempt int) time.Duration {
+
+		// Wait for all MSU sources to finish, then finalize ID resolution
+		sourceWg.Wait()
+		if err := msuReceiver.Finalize(context.Background()); err != nil {
+			slog.Error("Failed to finalize MSU ID resolution", "error", err)
+		}
+	} else if v.Code == "spbsu" {
+		for _, hs := range v.HeadingSources {
+			err := Retry(func() error { return hs.LoadTo(receiver) }, 3, func(attempt int) time.Duration {
 				return time.Duration(math.Pow(2, float64(attempt-1))) * 10 * time.Second
 			})
 			if err != nil {
 				slog.Error("Failed to load source after retries", "error", err)
 			}
-		}(hs)
+		}
+	} else {
+		for _, hs := range v.HeadingSources {
+			sourceWg.Add(1)
+			go func(s HeadingSource) {
+				defer sourceWg.Done()
+				err := Retry(func() error { return s.LoadTo(receiver) }, 3, func(attempt int) time.Duration {
+					return time.Duration(math.Pow(2, float64(attempt-1))) * 10 * time.Second
+				})
+				if err != nil {
+					slog.Error("Failed to load source after retries", "error", err)
+				}
+			}(hs)
+		}
 	}
-}
 
-	sourceWg.Wait()            // Wait for all sources to finish sending data
+	// For non-MSU sources, wait for completion here
+	if v.Code != "msu" {
+		sourceWg.Wait() // Wait for all sources to finish sending data
+	}
 	close(headingDataChan)     // Close data channels
 	close(applicationDataChan) //
 	processingWg.Wait()        // Wait for the processor goroutine to finish all writes
@@ -262,11 +305,11 @@ func loadAll(varsities []*Varsity, loadFunc func(*Varsity) map[string]bool) ([]*
 
 func LoadFromDefinitions(defs []VarsityDefinition) []*Varsity {
 	log.Printf("🔍 LOAD DEBUG: LoadFromDefinitions called with %d definitions", len(defs))
-	
+
 	var varsities []*Varsity
 	for i, def := range defs {
 		log.Printf("🔍 LOAD DEBUG: Processing definition %d: Code=%s, Name=%s, Sources=%d", i, def.Code, def.Name, len(def.HeadingSources))
-		
+
 		// Special debug for MIREA
 		if def.Code == "mirea" {
 			log.Printf("🔍 LOAD DEBUG: [MIREA] Found MIREA definition with %d heading sources", len(def.HeadingSources))
@@ -274,7 +317,7 @@ func LoadFromDefinitions(defs []VarsityDefinition) []*Varsity {
 				log.Printf("🔍 LOAD DEBUG: [MIREA] Source %d: %T", j, src)
 			}
 		}
-		
+
 		v := &Varsity{
 			VarsityDefinition: &def,
 			VarsityCalculator: nil,

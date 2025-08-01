@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"analabit/cli/corestate"
+	"github.com/trueegorletov/analabit/cli/corestate"
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/source"
 	"fmt"

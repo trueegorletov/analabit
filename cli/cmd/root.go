@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"analabit/cli/config"
-	"analabit/cli/corestate"
-	"analabit/cli/shell"
+	"github.com/trueegorletov/analabit/cli/config"
+	"github.com/trueegorletov/analabit/cli/corestate"
+	"github.com/trueegorletov/analabit/cli/shell"
 	"github.com/trueegorletov/analabit/core/drainer"
 	"github.com/trueegorletov/analabit/core/registry"
 	"github.com/trueegorletov/analabit/core/source"
@@ -14,6 +14,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
+	_ "github.com/trueegorletov/analabit/core/source/msu" // Initialize MSU support
 	"github.com/spf13/cobra"
 )
 
@@ -42,6 +43,9 @@ var rootCmd = &cobra.Command{
 			return corestate.InitError
 		}
 		log.Println("Configuration loaded.")
+
+		// MSU support is automatically initialized via init() function
+		log.Println("MSU support initialized.")
 
 		if err := performCrawling(); err != nil {
 			corestate.InitError = fmt.Errorf("failed during crawling: %w", err)
