@@ -38,7 +38,8 @@ export ANALABIT_MINIO_USE_SSL="false"
 export MINIO_BUCKET_NAME="analabit-results"
 export ANALABIT_MINIO_BUCKET_NAME="$MINIO_BUCKET_NAME"
 
-export DATABASE_HOST="192.168.0.107"
+# Use the first IP from `hostname -I` for local DB access
+export DATABASE_HOST="$(hostname -I | awk '{print $1}')"
 export DATABASE_PORT="5433"
 export DATABASE_USER="postgres"
 export DATABASE_PASSWORD="postgres"

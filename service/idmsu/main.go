@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"net/http"
+	"log/slog"
 	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,73 +15,84 @@ import (
 )
 
 func main() {
-	log.Println("Starting idmsu service...")
+	slog.Info("Starting sophisticated IDMSU service with persistent caching...")
 
-	// Initialize cache
-	cacheClient, err := cache.NewPostgresCache()
+	// Build database connection string
+	dbHost := getEnvOrDefault("DATABASE_HOST", "localhost")
+	dbPort := getEnvOrDefault("DATABASE_PORT", "5433")
+	dbUser := getEnvOrDefault("DATABASE_USER", "postgres")
+	dbPassword := getEnvOrDefault("DATABASE_PASSWORD", "postgres")
+	dbName := getEnvOrDefault("DATABASE_DBNAME", "postgres")
+	dbSSLMode := getEnvOrDefault("DATABASE_SSLMODE", "disable")
+
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLMode)
+
+	// Initialize database store
+	dbStore, err := cache.NewDatabaseStore(connStr)
 	if err != nil {
-		log.Fatalf("Failed to initialize cache: %v", err)
+		log.Fatalf("Failed to initialize database store: %v", err)
 	}
-	defer cacheClient.Close()
+	defer dbStore.Close()
 
-	// Ensure database tables exist with proper schema
-	if err := cacheClient.EnsureTables(); err != nil {
-		log.Fatalf("Failed to ensure database tables: %v", err)
+	// Test database connection
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := dbStore.Health(ctx); err != nil {
+		log.Fatalf("Database health check failed: %v", err)
 	}
+	slog.Info("Database connection established")
 
-	// Initialize resolver
-	resolver := resolver.NewMSUResolver(cacheClient)
+	// Initialize layered cache with database persistence
+	memCache := cache.NewMemoryCache(30 * time.Minute)
+	layered := cache.NewLayeredCache(memCache, dbStore)
 
-	// Initialize handler
-	handler := handler.NewHandler(resolver)
-
-	// Setup router
-	router := gin.Default()
-	v1 := router.Group("/api/v1")
-	{
-		v1.POST("/resolve", handler.ResolveBatch)
-		v1.GET("/health", handler.Health)
-		v1.GET("/ready", handler.Ready)
-	}
+	// Initialize resolver with both caches
+	res := resolver.NewMSUResolver(layered, dbStore)
+	h := handler.NewHandler(res, res.HasRecentData)
 
 	// Start background fetcher
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	fetchCtx, fetchCancel := context.WithCancel(context.Background())
+	defer fetchCancel()
+	res.StartBackgroundFetcher(fetchCtx)
 
-	go resolver.StartBackgroundFetcher(ctx)
+	// Setup Gin router
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
 
-	// Start server
-	port := os.Getenv("IDMSU_PORT")
-	if port == "" {
-		port = "8080"
+	// Add request logging middleware
+	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+		return fmt.Sprintf("[IDMSU] %s - %s \"%s %s %s\" %d %s\n",
+			param.TimeStamp.Format("2006/01/02 15:04:05"),
+			param.ClientIP,
+			param.Method,
+			param.Path,
+			param.Request.Proto,
+			param.StatusCode,
+			param.Latency,
+		)
+	}))
+
+	// Wire API routes
+	v1 := r.Group("/api/v1")
+	{
+		v1.POST("/resolve", h.ResolveBatch)
+		v1.GET("/health", h.Health)
+		v1.GET("/ready", h.Ready)
+		v1.GET("/wait", h.Wait)
 	}
 
-	srv := &http.Server{
-		Addr:    ":" + port,
-		Handler: router,
+	port := getEnvOrDefault("IDMSU_PORT", "8081")
+	slog.Info("Starting IDMSU server", "port", port)
+
+	if err := r.Run(":" + port); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
 	}
+}
 
-	go func() {
-		log.Printf("idmsu service listening on port %s", port)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Failed to start server: %v", err)
-		}
-	}()
-
-	// Wait for interrupt signal
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-
-	log.Println("Shutting down idmsu service...")
-
-	// Graceful shutdown
-	ctx, cancel = context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Printf("Server forced to shutdown: %v", err)
+func getEnvOrDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
 	}
-
-	log.Println("idmsu service stopped")
+	return defaultValue
 }

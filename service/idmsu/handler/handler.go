@@ -1,105 +1,96 @@
 package handler
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/trueegorletov/analabit/core/idresolver"
-	"github.com/trueegorletov/analabit/service/idmsu/resolver"
 )
 
+// Handler aggregates all HTTP handlers of idmsu.
+// It is designed to be thin; business logic resides in the resolver package.
+
 type Handler struct {
-	resolver resolver.MSUResolver
+	res        idresolver.StudentIDResolver
+	readyCheck func() bool
 }
 
-type ResolveBatchRequest struct {
-	Items []idresolver.ResolveRequestItem `json:"items"`
+func NewHandler(res idresolver.StudentIDResolver, readyCheck func() bool) *Handler {
+	return &Handler{res: res, readyCheck: readyCheck}
 }
 
-type ResolveBatchResponse struct {
-	Results []idresolver.ResolveResponseItem `json:"results"`
-}
-
-type HealthResponse struct {
-	Status    string    `json:"status"`
-	Timestamp time.Time `json:"timestamp"`
-	Version   string    `json:"version"`
-}
-
-type ReadinessResponse struct {
-	Ready     bool      `json:"ready"`
-	Timestamp time.Time `json:"timestamp"`
-	Message   string    `json:"message"`
-}
-
-func NewHandler(resolver resolver.MSUResolver) *Handler {
-	return &Handler{
-		resolver: resolver,
-	}
-}
-
+// ResolveBatch handles POST /api/v1/resolve.
+// It supports the same contract as the legacy service but is currently a stub.
 func (h *Handler) ResolveBatch(c *gin.Context) {
-    if !h.resolver.HasRecentData(c.Request.Context()) {
-        c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Service is initializing - please wait"})
-        return
-    }
-	var req ResolveBatchRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format", "details": err.Error()})
+	if h.readyCheck != nil && !h.readyCheck() {
+		c.Header("Retry-After", "30")
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "service not ready"})
 		return
 	}
 
-	if len(req.Items) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No items to resolve"})
-		return
-	}
-
-	if len(req.Items) > 1000 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Too many items, maximum 1000 allowed"})
-		return
-	}
-
-	results, err := h.resolver.ResolveBatch(c.Request.Context(), req.Items)
+	// Read entire body once
+	raw, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to resolve IDs", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "unable to read request body", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, results)
+	// Attempt legacy format {"items": [...]}
+	var legacyWrapper struct {
+		Items []idresolver.ResolveRequestItem `json:"items"`
+	}
+	if err := json.Unmarshal(raw, &legacyWrapper); err == nil && len(legacyWrapper.Items) > 0 {
+		h.processResolve(c, legacyWrapper.Items)
+		return
+	}
+
+	// Attempt direct array format
+	var req []idresolver.ResolveRequestItem
+	if err := json.Unmarshal(raw, &req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request format", "details": err.Error()})
+		return
+	}
+
+	h.processResolve(c, req)
 }
 
+// processResolve handles the actual ID resolution using the sophisticated algorithm
+func (h *Handler) processResolve(c *gin.Context, req []idresolver.ResolveRequestItem) {
+	// Call the resolver to perform the actual matching
+	resp, err := h.res.ResolveBatch(c.Request.Context(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "resolution failed",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+// Health returns liveness status.
 func (h *Handler) Health(c *gin.Context) {
-	response := HealthResponse{
-		Status:    "healthy",
-		Timestamp: time.Now(),
-		Version:   "1.0.0",
-	}
-
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
+// Ready indicates readiness; currently always false until background cache populated.
 func (h *Handler) Ready(c *gin.Context) {
-	hasRecentData := h.resolver.HasRecentData(c.Request.Context())
-	
-	var response ReadinessResponse
-	var statusCode int
-	
-	if hasRecentData {
-		response = ReadinessResponse{
-			Ready:     true,
-			Timestamp: time.Now(),
-			Message:   "Service is ready with recent Gosuslugi data",
-		}
-		statusCode = http.StatusOK
-	} else {
-		response = ReadinessResponse{
-			Ready:     false,
-			Timestamp: time.Now(),
-			Message:   "Service is not ready - no recent Gosuslugi data available",
-		}
-		statusCode = http.StatusServiceUnavailable
+	if h.readyCheck != nil && h.readyCheck() {
+		c.JSON(http.StatusOK, gin.H{"status": "ready"})
+		return
 	}
+	c.JSON(http.StatusServiceUnavailable, gin.H{"status": "initializing"})
+}
 
-	c.JSON(statusCode, response)
+// Wait provides asynchronous readiness wait endpoint following 202 + Retry-After semantics.
+func (h *Handler) Wait(c *gin.Context) {
+	if h.readyCheck != nil && h.readyCheck() {
+		c.JSON(http.StatusOK, gin.H{"status": "ready"})
+		return
+	}
+	c.Header("Retry-After", "30")
+	c.JSON(http.StatusAccepted, gin.H{"status": "processing"})
 }

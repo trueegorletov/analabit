@@ -158,12 +158,12 @@ func (r *MSUBufferedReceiver) Finalize(ctx context.Context) error {
 		resolveApps := make([]idresolver.MSUAppDetails, len(apps))
 		for i, app := range apps {
 			resolveApps[i] = idresolver.MSUAppDetails{
-			PrettyName:  app.prettyName,
-			ScoreSum:    app.scoreSum,
-			RatingPlace: app.ratingPlace,
-			Priority:    app.priority,
-			DVIScore:    app.dviScore,
-			EGEScores:   app.egeScores,
+				PrettyName:  app.prettyName,
+				ScoreSum:    app.scoreSum,
+				RatingPlace: app.ratingPlace,
+				Priority:    app.priority,
+				DVIScore:    app.dviScore,
+				EGEScores:   app.egeScores,
 			}
 		}
 		request = append(request, idresolver.ResolveRequestItem{
@@ -307,17 +307,18 @@ func (r *MSUBufferedReceiver) createFallbackID(internalID string) string {
 // parseCompetitionType converts string back to Competition enum
 func parseCompetitionType(competitionStr string) core.Competition {
 	switch competitionStr {
-	case "CompetitionRegular":
+	case "Regular":
 		return core.CompetitionRegular
-	case "CompetitionBVI":
+	case "BVI":
 		return core.CompetitionBVI
-	case "CompetitionTargetQuota":
+	case "TargetQuota":
 		return core.CompetitionTargetQuota
-	case "CompetitionDedicatedQuota":
+	case "DedicatedQuota":
 		return core.CompetitionDedicatedQuota
-	case "CompetitionSpecialQuota":
+	case "SpecialQuota":
 		return core.CompetitionSpecialQuota
 	default:
+		slog.Warn("Unknown competition type, defaulting to Regular", "competitionStr", competitionStr)
 		return core.CompetitionRegular
 	}
 }

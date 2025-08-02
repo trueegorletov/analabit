@@ -96,7 +96,7 @@ func (hs *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 	if err != nil {
 		return fmt.Errorf("msu: failed to create request for %s: %w", hs.FacultyURL, err)
 	}
-	
+
 	// Add diagnostic logging for network attempts
 	slog.Info("MSU: Attempting to fetch faculty page", "url", hs.FacultyURL, "program", hs.PrettyName)
 	resp, err := client.Do(req)
@@ -152,7 +152,7 @@ func (hs *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 		if h4sel.Length() == 0 {
 			// Enhanced debugging: log missing anchors and show available anchors
 			slog.Warn("MSU: Anchor not found on page", "url", hs.FacultyURL, "program", hs.PrettyName, "missingAnchor", ld.anchor, "competition", ld.competition.String())
-			
+
 			// Debug: show all available h4 anchors on the page
 			availableAnchors := make([]string, 0)
 			doc.Find("h4[id]").Each(func(i int, s *goquery.Selection) {
@@ -194,11 +194,11 @@ func (hs *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 				// no ID means a malformed row
 				return
 			}
-			// original / consent submitted
+			// original / consent submitted (3rd column contains "Да" or "Нет")
 			originalSubmitted := false
 			if cells.Length() > 2 {
 				val := strings.TrimSpace(cells.Eq(2).Text())
-				if val == "оригинал" || val == "согласие" {
+				if val == "Да" {
 					originalSubmitted = true
 				}
 			}

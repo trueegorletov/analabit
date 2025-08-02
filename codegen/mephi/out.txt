@@ -1,0 +1,1801 @@
+// Generated MEPhI HTTPHeadingSource structs
+// Copy and paste the following into core/registry/mephi/mephi.go
+
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Системный анализ и управление",
+			Capacities: core.Capacities{
+				Regular:        26,
+				TargetQuota:    3,
+				DedicatedQuota: 3,
+				SpecialQuota:   3,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12754/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12754/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13233/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13233/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12782/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12782/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13259/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13259/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13565/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13565/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13196/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13196/original/no",
+			},
+			DedicatedQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13246/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13246/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Фотоника и оптоинформатика",
+			Capacities: core.Capacities{
+				Regular:        14,
+				TargetQuota:    2,
+				DedicatedQuota: 2,
+				SpecialQuota:   2,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12772/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12772/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13525/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13525/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13526/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13526/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13186/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13186/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Материаловедение и технологии материалов",
+			Capacities: core.Capacities{
+				Regular:        14,
+				TargetQuota:    2,
+				DedicatedQuota: 2,
+				SpecialQuota:   2,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12781/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12781/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13195/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13195/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Применение и эксплуатация автоматизированных систем специального назначения специалитет",
+			Capacities: core.Capacities{
+				Regular:        12,
+				TargetQuota:    1,
+				DedicatedQuota: 1,
+				SpecialQuota:   1,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12757/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12757/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13262/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13262/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13267/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13267/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13547/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13547/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13546/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13546/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13608/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13608/original/no",
+			},
+			DedicatedQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13272/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13272/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Электроника и наноэлектроника",
+			Capacities: core.Capacities{
+				Regular:        38,
+				TargetQuota:    5,
+				DedicatedQuota: 5,
+				SpecialQuota:   5,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12748/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12748/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13127/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13127/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12770/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12770/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13521/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13521/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13253/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13253/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13520/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13520/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13184/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13184/original/no",
+			},
+			DedicatedQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13240/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13240/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Прикладные математика и физика",
+			Capacities: core.Capacities{
+				Regular:        44,
+				TargetQuota:    6,
+				DedicatedQuota: 6,
+				SpecialQuota:   6,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12765/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12765/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13484/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13484/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13483/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13483/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13477/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13477/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13179/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13179/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Лазерная техника и лазерные технологии",
+			Capacities: core.Capacities{
+				Regular:        14,
+				TargetQuota:    2,
+				DedicatedQuota: 2,
+				SpecialQuota:   2,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12774/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12774/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13254/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13254/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13533/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13533/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13188/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13188/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13581/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13581/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Экономика",
+			Capacities: core.Capacities{
+				Regular:        14,
+				TargetQuota:    1,
+				DedicatedQuota: 1,
+				SpecialQuota:   1,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12783/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12783/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13567/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13567/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13566/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13566/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13197/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13197/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Менеджмент",
+			Capacities: core.Capacities{
+				Regular:        14,
+				TargetQuota:    1,
+				DedicatedQuota: 1,
+				SpecialQuota:   1,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12784/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12784/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13568/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13568/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13198/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13198/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Биотехнические системы и технологии",
+			Capacities: core.Capacities{
+				Regular:        14,
+				TargetQuota:    2,
+				DedicatedQuota: 2,
+				SpecialQuota:   2,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12773/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12773/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13530/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13530/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13529/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13529/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13527/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13527/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13187/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13187/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Физика",
+			Capacities: core.Capacities{
+				Regular:        43,
+				TargetQuota:    6,
+				DedicatedQuota: 6,
+				SpecialQuota:   6,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12766/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12766/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13250/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13250/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13486/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13486/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13485/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13485/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13180/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13180/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Международные отношения",
+			Capacities: core.Capacities{
+				Regular:        21,
+				TargetQuota:    3,
+				DedicatedQuota: 3,
+				SpecialQuota:   3,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12787/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12787/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13201/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13201/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13596/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13596/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Информационная безопасность",
+			Capacities: core.Capacities{
+				Regular:        68,
+				TargetQuota:    9,
+				DedicatedQuota: 9,
+				SpecialQuota:   9,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12747/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12747/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13126/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13126/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12769/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12769/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13516/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13516/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13514/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13514/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13515/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13515/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13518/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13518/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13517/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13517/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13513/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13513/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13252/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13252/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13602/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13602/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13519/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13519/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13580/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13580/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13183/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13183/original/no",
+			},
+			DedicatedQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13239/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13239/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Приборостроение",
+			Capacities: core.Capacities{
+				Regular:        14,
+				TargetQuota:    2,
+				DedicatedQuota: 2,
+				SpecialQuota:   2,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12771/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12771/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13523/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13523/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13524/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13524/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13185/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13185/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Высокотехнологические плазменные и энергетические установки",
+			Capacities: core.Capacities{
+				Regular:        14,
+				TargetQuota:    2,
+				DedicatedQuota: 2,
+				SpecialQuota:   2,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12779/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12779/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13556/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13556/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13257/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13257/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13595/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13595/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13193/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13193/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Прикладная математика и информатика",
+			Capacities: core.Capacities{
+				Regular:        40,
+				TargetQuota:    5,
+				DedicatedQuota: 5,
+				SpecialQuota:   5,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12744/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12744/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13123/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13123/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13476/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13476/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13474/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13474/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13249/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13249/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13601/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13601/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13178/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13178/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13177/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13177/original/no",
+			},
+			DedicatedQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13236/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13236/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Бизнес-информатика",
+			Capacities: core.Capacities{
+				Regular:        13,
+				TargetQuota:    1,
+				DedicatedQuota: 1,
+				SpecialQuota:   1,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12786/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12786/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13260/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13260/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13570/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13570/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13569/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13569/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13200/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13200/original/no",
+			},
+		},
+		&mephi.HTTPHeadingSource{
+			HeadingName: "Мехатроника и робототехника",
+			Capacities: core.Capacities{
+				Regular:        35,
+				TargetQuota:    5,
+				DedicatedQuota: 5,
+				SpecialQuota:   5,
+			},
+			RegularURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12751/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12751/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13230/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13230/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12778/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/12778/original/no",
+			},
+			TargetQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13256/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13256/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13548/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13548/original/no",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13192/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13192/original/no",
+			},
+			DedicatedQuotaURLs: []string{
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13243/original/yes",
+				"https://org.mephi.ru/pupil-rating/get-rating/entity/13243/original/no",
+			},
+		}
+// NOT COMPLETE
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Информационно-аналитические системы безопасности 10.05.04",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13544/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13544/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13605/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13605/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Техническая физика",
+// 	Capacities: core.Capacities{
+// 		Regular:        15,
+// 		TargetQuota:    2,
+// 		DedicatedQuota: 2,
+// 		SpecialQuota:   2,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13555/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13555/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Безопасность информационных технологий в правоохранительной сфере",
+// 	Capacities: core.Capacities{
+// 		Regular:        18,
+// 		TargetQuota:    2,
+// 		DedicatedQuota: 2,
+// 		SpecialQuota:   2,
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.3.3 Автоматизация и управление технологическими процессами и производствами",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12803/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12803/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13211/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13211/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.3.4 Управление в организационных системах",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12804/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12804/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13212/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13212/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Информатика и вычислительная техника /направления 09.03.01 и 09.03.04/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12746/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12746/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13125/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13125/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13238/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13238/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "5.2.3 Региональная и отраслевая экономика /ФБИУКС/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12812/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12812/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13223/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13223/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Безопасность информационных технологий в правоохранительной сфере 10.05.05",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13268/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13268/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.2.12 Приборы",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12801/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12801/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13209/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13209/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Прикладная математика и информатика ИИКС",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12764/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12764/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Ядерные реакторы и материалы 14.05.01",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13606/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13606/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13551/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13551/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13550/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13550/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13553/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13553/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13554/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13554/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13552/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13552/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13269/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13269/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Экономическая безопасность специалитет",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12761/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12761/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13266/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13266/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13271/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13271/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13607/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13607/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13276/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13276/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.4.6 Теоретическая и прикладная теплотехника",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13219/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13219/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.8 Физика конденсированного состояния",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13587/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13587/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.3.6 Методы и системы защиты информации",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12806/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12806/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13214/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13214/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Ядерная физика и атомная энергетика /направления 14.03.01 и 14.03.02/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12750/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12750/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13229/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13229/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13242/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13242/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Materials for nuclear application",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12949/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12949/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.3.2 Вычислительные системы и их элементы",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12802/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12802/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13210/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13210/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Информационные системы и технологии",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12768/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12768/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13579/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13579/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13182/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13182/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.3.8 Информатика и информационные процессы /ИФТЭБ/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12807/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12807/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13215/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13215/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.2 Приборы и методы экспериментальной физики",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13591/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13591/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Электроника и автоматика физ установок",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13571/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13571/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13572/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13572/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Информационно-аналитические системы безопасности",
+// 	Capacities: core.Capacities{
+// 		Regular:        18,
+// 		TargetQuota:    2,
+// 		DedicatedQuota: 2,
+// 		SpecialQuota:   2,
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Государственное и муниципальное управление",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12785/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12785/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13199/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13199/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.15 Физика атомных ядер и элементарных частиц",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13593/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13593/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Лазерные технологии и фотоника /направления 12.03.01",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12749/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12749/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13128/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13128/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13241/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13241/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Ядерная физика и атомная энергетика /направления 14.04.01 и 14.04.02/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12775/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12775/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "High energy physics and astrophysics",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12947/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12947/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.4.9 Ядерные энергетические установки",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13598/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13598/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Экономическая безопасность",
+// 	Capacities: core.Capacities{
+// 		Regular:        21,
+// 		TargetQuota:    2,
+// 		DedicatedQuota: 2,
+// 		SpecialQuota:   2,
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Информатика и вычислительная техника",
+// 	Capacities: core.Capacities{
+// 		Regular:        38,
+// 		TargetQuota:    5,
+// 		DedicatedQuota: 5,
+// 		SpecialQuota:   5,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13494/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13494/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13251/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13251/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13487/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13487/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13489/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13489/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13493/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13493/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13604/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13604/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13498/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13498/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13575/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13575/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13574/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13574/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13573/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13573/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.3.5 Математическое и программное обеспечение вычислительных систем",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12870/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12870/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13217/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13217/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Информатика и вычислительная техника /направления 09.04.01 и 09.04.04/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12767/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12767/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Международные отношения бакалавриат",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12756/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12756/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13235/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13235/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13261/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13261/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13248/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13248/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Атомные станции проектир",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13563/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13563/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13561/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13561/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13564/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13564/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "5.2.3 Региональная и отраслевая экономика /ИФТЭБ/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12813/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12813/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13224/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13224/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.13 Электрофизика",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13590/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13590/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "5.2.2 Математические",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12811/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12811/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13222/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13222/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Nuclear engineering",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12950/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12950/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Химическая технология",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12780/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12780/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13194/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13194/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "3.3.6 Фармакология",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12810/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12810/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13220/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13220/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.2.3 Технология и оборудование для производства материалов и приборов электронной техники",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13597/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13597/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Атомные станции проектирование",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13560/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13560/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13562/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13562/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13559/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13559/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13558/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13558/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13549/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13549/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.3.8 Информатика и информационные процессы /ИМО/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12808/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12808/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13218/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13218/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Прикладная математика и информатика ЛАПЛАЗ",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12763/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12763/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3 Физические науки",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12796/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12796/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.5.22 Клеточная биология",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12794/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12794/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13225/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13225/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Nuclear Power Engineering",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12944/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12944/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.17 Химическая физика",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13204/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13204/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.2.11 Информационно-измерительные и управляющие системы",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12800/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12800/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13208/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13208/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.3.1. Системный анализ",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12869/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12869/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12805/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12805/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13216/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13216/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13213/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13213/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Физика и астрономия /направления 03.03.01 и 03.03.02/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12745/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12745/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13124/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13124/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13237/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13237/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Ядерная энергетика и теплофизика",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13538/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13538/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13537/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13537/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13536/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13536/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13539/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13539/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13582/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13582/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13583/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13583/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Controlled Fusion and Plasma Technologies",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12948/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12948/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.1.2 Дифференциальные уравнения и математическая физика",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12793/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12793/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13202/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13202/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Физико-технические науки и технологии /направления 16.03.01 и 16.03.02/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12752/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12752/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13231/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13231/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13244/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13244/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.2.2 Математическое моделирование",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12816/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12816/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13203/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13203/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.2 Электроника и приборостроение",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12799/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12799/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Автоматизация технологических процессов и производств",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12776/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12776/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13190/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13190/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.9 Физика плазмы",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13589/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13589/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Применение и эксплуатация автом. систем специального назначения",
+// 	Capacities: core.Capacities{
+// 		Regular:        12,
+// 		TargetQuota:    1,
+// 		DedicatedQuota: 1,
+// 		SpecialQuota:   1,
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Ядерные физика и технологии",
+// 	Capacities: core.Capacities{
+// 		Regular:        42,
+// 		TargetQuota:    6,
+// 		DedicatedQuota: 6,
+// 		SpecialQuota:   6,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13255/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13255/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13540/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13540/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13541/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13541/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13543/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13543/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13542/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13542/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13545/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13545/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13603/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13603/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13584/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13584/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13585/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13585/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13586/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13586/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13189/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13189/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Программная инженерия",
+// 	Capacities: core.Capacities{
+// 		Regular:        37,
+// 		TargetQuota:    5,
+// 		DedicatedQuota: 5,
+// 		SpecialQuota:   5,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13501/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13501/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13502/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13502/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13490/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13490/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13500/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13500/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13576/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13576/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13577/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13577/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13578/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13578/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13181/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13181/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.3 Теоретическая физика",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13592/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13592/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Информационно-аналитические системы безопасности /специальности 10.05.04 и 10.05.05/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12758/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12758/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13263/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13263/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13273/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13273/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "General Medicine",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12814/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12814/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Электроника и автоматика физических установок*",
+// 	Capacities: core.Capacities{
+// 		Regular:        42,
+// 		TargetQuota:    5,
+// 		DedicatedQuota: 5,
+// 		SpecialQuota:   5,
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "3.4.2. Фармацевтическая химия",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12818/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12818/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13221/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13221/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Экономика и управление /направления 38.03.01",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12755/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12755/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13234/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13234/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13247/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13247/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Конструкторско-технологическое обеспечение машиностроительных производств",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12777/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12777/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13191/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13191/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Biomedical technologies",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12946/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12946/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Атомные станции и ядерные энергетические установки /специальности 14.05.01 и 14.05.02/",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12759/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12759/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13264/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13264/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13274/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13274/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Материаловедение и технологии материалов бакалавриат",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12753/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12753/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13232/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13232/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13557/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13557/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13258/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13258/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13245/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13245/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Системный анализ\u00a0 и управление",
+// 	Capacities: core.Capacities{
+// 		Regular:        26,
+// 		TargetQuota:    3,
+// 		DedicatedQuota: 3,
+// 		SpecialQuota:   3,
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.4 Ядерная энергетика",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12809/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12809/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.4.4 Физическая химия",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12797/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12797/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13205/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13205/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Электроника и автоматика физических установок",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12760/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12760/original/no",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13265/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13265/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13270/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13270/original/no",
+// 	},
+// 	DedicatedQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13275/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13275/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.5.1 Радиобиология",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12798/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12798/original/no",
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13206/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13206/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.19 Лазерная физика",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13594/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13594/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Ядерные энергетика и теплофизика",
+// 	Capacities: core.Capacities{
+// 		Regular:        42,
+// 		TargetQuota:    6,
+// 		DedicatedQuota: 6,
+// 		SpecialQuota:   6,
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "Materials design and engineering",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	RegularURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12945/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/12945/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "1.3.18 Физика пучков заряженных частиц и ускорительная техника",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13588/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13588/original/no",
+// 	},
+// }
+// &mephi.HTTPHeadingSource{
+// 	HeadingName: "2.2.2 Электронная компонентная база микро- и наноэлектроники",
+// 	Capacities: core.Capacities{
+// 		Regular:        0,
+// 		TargetQuota:    0,
+// 		DedicatedQuota: 0,
+// 		SpecialQuota:   0,
+// 	},
+// 	TargetQuotaURLs: []string{
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13207/original/yes",
+// 		"https://org.mephi.ru/pupil-rating/get-rating/entity/13207/original/no",
+// 	},
+// }
+
+
+// Total complete headings generated: 18
+// Total incomplete headings: 83

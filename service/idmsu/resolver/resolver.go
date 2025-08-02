@@ -6,611 +6,747 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	"sort"
-	"strings"
+	"sync"
 	"time"
 
 	"github.com/trueegorletov/analabit/core/idresolver"
-	"github.com/trueegorletov/analabit/core/utils"
 	"github.com/trueegorletov/analabit/service/idmsu/cache"
+	"github.com/trueegorletov/analabit/service/idmsu/matcher"
 )
 
-type MSUResolver interface {
-	ResolveBatch(ctx context.Context, req []idresolver.ResolveRequestItem) ([]idresolver.ResolveResponseItem, error)
-	StartBackgroundFetcher(ctx context.Context)
-	HasRecentData(ctx context.Context) bool
+// MSUResolver implements idresolver.StudentIDResolver interface for MSU applicants.
+// It maintains a background goroutine to fetch and update data from Gosuslugi API.
+type MSUResolver struct {
+	cache               *cache.LayeredCache
+	dbStore             *cache.DatabaseStore
+	fetcherStarted      bool
+	lastSuccessfulFetch time.Time
+	mu                  sync.RWMutex
+	fetchInProgress     bool
 }
 
-type msuResolver struct {
-	cache cache.Cache
-	// programMapping removed - now using PrettyName directly
+// NewMSUResolver creates a new MSUResolver with the provided cache and database store.
+func NewMSUResolver(cache *cache.LayeredCache, dbStore *cache.DatabaseStore) *MSUResolver {
+	resolver := &MSUResolver{
+		cache:   cache,
+		dbStore: dbStore,
+	}
+
+	// Restore last fetch time from database
+	if lastFetch, err := dbStore.GetLastSuccessfulFetch(); err == nil && !lastFetch.IsZero() {
+		resolver.lastSuccessfulFetch = lastFetch
+		slog.Info("Restored last fetch time from database", "lastFetch", lastFetch)
+	}
+
+	return resolver
 }
 
-type GosuslugiEntry = cache.GosuslugiEntry
+// ResolveBatch implements idresolver.StudentIDResolver.ResolveBatch.
+// It performs sophisticated matching using the new algorithm and persistent caching.
+func (r *MSUResolver) ResolveBatch(ctx context.Context, req []idresolver.ResolveRequestItem) ([]idresolver.ResolveResponseItem, error) {
+	slog.Info("Starting batch resolution", "requestCount", len(req))
 
-// debugInternalID is used to emit detailed logs for a specific student during matching.
-const debugInternalID = "025928"
-
-type GosuslugiAPIResponse struct {
-	UpdateDate string           `json:"updateDate"`
-	Applicants []GosuslugiEntry `json:"applicants"`
-}
-
-// MSU competition list IDs for different programs and quota types
-// Real IDs extracted from MSU admissions data
-var msuCompetitionIDs = getMSUCompetitionIDs()
-
-func NewMSUResolver(cache cache.Cache) MSUResolver {
-	return &msuResolver{
-		cache: cache,
-	}
-}
-
-// restoreCacheFromLatestRun restores the cache from the latest completed run
-func (r *msuResolver) restoreCacheFromLatestRun(ctx context.Context) error {
-	latestRun, err := r.cache.GetLatestCompletedRun(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to get latest completed run: %w", err)
+	// Check if data is stale and trigger fetch if needed
+	if stale, err := r.dbStore.IsDataStale(time.Hour); err == nil && stale {
+		slog.Info("Data is stale, checking for fresh data fetch")
+		r.triggerFetchIfNeeded(ctx)
 	}
 
-	if latestRun == nil {
-		log.Println("No completed runs found, skipping cache restoration")
-		return nil
-	}
-
-	// Check if the run is recent (within 2 hours)
-	if time.Since(*latestRun.FinishedAt) > 2*time.Hour {
-		log.Printf("Latest run %d is too old (%v), skipping cache restoration", latestRun.ID, latestRun.FinishedAt)
-		return nil
-	}
-
-	log.Printf("Restoring cache from run %d (finished at %v)", latestRun.ID, latestRun.FinishedAt)
-
-	if err := r.cache.RestoreCacheFromRun(ctx, latestRun.ID); err != nil {
-		return fmt.Errorf("failed to restore cache from run %d: %w", latestRun.ID, err)
-	}
-
-	log.Printf("Successfully restored cache from run %d", latestRun.ID)
-	return nil
-}
-
-// HasRecentData checks if there's recent data available (for readiness check)
-func (r *msuResolver) HasRecentData(ctx context.Context) bool {
-	// First, ensure we have at least one completed fetch run and that it is recent.
-	latestRun, err := r.cache.GetLatestCompletedRun(ctx)
-	if err != nil {
-		log.Printf("Failed to check for recent data: %v", err)
-		return false
-	}
-
-	if latestRun == nil {
-		return false
-	}
-
-	// Require the run itself to be completed within the last two hours.
-	if time.Since(*latestRun.FinishedAt) > 2*time.Hour {
-		return false
-	}
-
-	// Additionally, verify that cached data is fresh for every configured programme.
-	// If any programme cache is stale (or an error occurs while checking), the service
-	// should be considered not ready so that callers will retry later.
-	if r.isGlobalCacheStale(ctx, 30*time.Minute) {
-		return false
-	}
-
-	return true
-}
-
-// isGlobalCacheStale checks every MSU programme id in msuCompetitionIDs; if ANY of them is older
-// than the given threshold (or an error occurs while checking) the cache is considered incomplete.
-func (r *msuResolver) isGlobalCacheStale(ctx context.Context, threshold time.Duration) bool {
-	for program := range msuCompetitionIDs {
-		_, err := r.cache.IsCacheStale(ctx, program, threshold)
-		if err != nil {
-			log.Printf("Error checking cache freshness for program %s: %v", program, err)
-			return true // fail-safe – treat unknown state as stale
-		}
-		// if stale {
-		//     log.Printf("Cache is stale for program %s (global check)", program)
-		//     return true
-		// }
-	}
-	return false
-}
-
-func (r *msuResolver) ResolveBatch(ctx context.Context, req []idresolver.ResolveRequestItem) ([]idresolver.ResolveResponseItem, error) {
-	results := make([]idresolver.ResolveResponseItem, 0, len(req))
+	// First, try to get cached results
+	cachedResults := make(map[string]idresolver.ResolveResponseItem)
+	var uncachedRequests []idresolver.ResolveRequestItem
 
 	for _, item := range req {
-		result := r.resolveStudent(ctx, item)
-		results = append(results, result)
-	}
-
-	return results, nil
-}
-
-func (r *msuResolver) resolveStudent(ctx context.Context, item idresolver.ResolveRequestItem) idresolver.ResolveResponseItem {
-	// Get relevant programs
-	programs := r.extractPrograms(item.Apps)
-	if item.InternalID == debugInternalID {
-		log.Printf("[DEBUG] Resolving InternalID %s with programs: %v", item.InternalID, programs)
-	}
-
-	// Check for stale cache before fetching candidates
-	for _, program := range programs {
-		stale, err := r.cache.IsCacheStale(ctx, program, 6*time.Hour)
-		if err != nil {
-			log.Printf("Error checking cache freshness for program %s: %v", program, err)
-			// Decide how to handle error, e.g., proceed with potentially stale data or fail
-			// For now, we'll log and continue, but you might want to return an error response
-		}
-		if stale {
-			if item.InternalID == debugInternalID {
-				log.Printf("[DEBUG] Cache is stale for program %s, but continuing with existing data", program)
+		if canonicalID, confidence, found := r.dbStore.GetMatchCache(item.InternalID); found {
+			cachedResults[item.InternalID] = idresolver.ResolveResponseItem{
+				InternalID:  item.InternalID,
+				CanonicalID: canonicalID,
+				Confidence:  confidence,
 			}
-			// Proceed despite stale cache
-		}
-	}
-
-	// Get cached Gosuslugi data for relevant programs
-	candidates := r.getCandidates(ctx, programs)
-
-	// Group candidates by their internal ID (last 6 digits of IDApplication)
-	groupedCandidates := r.groupCandidatesByInternalID(candidates)
-	if item.InternalID == debugInternalID {
-		log.Printf("[DEBUG] Candidate groups for %s: %d groups", item.InternalID, len(groupedCandidates))
-	}
-
-	// Try to match the student
-	bestMatch, confidence := r.findBestMatch(item, groupedCandidates)
-	if item.InternalID == debugInternalID {
-		if bestMatch != nil {
-			log.Printf("[DEBUG] Best match for %s: %+v (confidence %.2f)", item.InternalID, *bestMatch, confidence)
 		} else {
-			log.Printf("[DEBUG] No match found for %s, confidence %.2f", item.InternalID, confidence)
+			uncachedRequests = append(uncachedRequests, item)
 		}
 	}
 
-	if confidence >= 0.5 { // Lowered threshold for more matches
-		canonicalID, _ := utils.PrepareStudentID(bestMatch.IDApplication.String())
-		return idresolver.ResolveResponseItem{
-			InternalID:  item.InternalID,
-			CanonicalID: canonicalID,
-			Confidence:  confidence,
-		}
-	}
+	slog.Info("Cache lookup results",
+		"cachedResults", len(cachedResults),
+		"uncachedRequests", len(uncachedRequests))
 
-	// No good match found, generate fallback ID
-	fallbackID := r.generateFallbackID(item.InternalID)
-	return idresolver.ResolveResponseItem{
-		InternalID:  item.InternalID,
-		CanonicalID: fallbackID,
-		Confidence:  0.0,
-	}
-}
+	// If we have uncached requests, perform sophisticated matching
+	var newResults []matcher.MatchResult
+	if len(uncachedRequests) > 0 {
+		// Get all cached Gosuslugi data
+		gosuslugiData := r.getAllCachedGosuslugiData()
 
-// New function to group candidates by internal ID (last 6 digits)
-func (r *msuResolver) groupCandidatesByInternalID(candidates []GosuslugiEntry) map[string][]GosuslugiEntry {
-	grouped := make(map[string][]GosuslugiEntry)
-	for _, cand := range candidates {
-		idStr := cand.IDApplication.String()
-		var internalID string
-		if len(idStr) >= 6 {
-			internalID = idStr[len(idStr)-6:]
+		if len(gosuslugiData) == 0 {
+			slog.Warn("No Gosuslugi data available, using fallback for all uncached requests")
+			newResults = r.createFallbackResults(uncachedRequests)
 		} else {
-			// Pad with leading zeros to ensure 6-digit alignment
-			internalID = fmt.Sprintf("%06s", idStr)
-		}
-		grouped[internalID] = append(grouped[internalID], cand)
-	}
-	return grouped
-}
-
-func (r *msuResolver) findBestMatch(item idresolver.ResolveRequestItem, groupedCandidates map[string][]GosuslugiEntry) (*GosuslugiEntry, float64) {
-	var bestMatch *GosuslugiEntry
-	var bestConfidence float64
-
-	for _, group := range groupedCandidates {
-		confidence := r.calculateMatchConfidence(item, group)
-		if confidence > bestConfidence {
-			bestConfidence = confidence
-			// Select the first entry in the group as representative
-			bestMatch = &group[0]
-		}
-	}
-
-	return bestMatch, bestConfidence
-}
-
-func (r *msuResolver) calculateMatchConfidence(item idresolver.ResolveRequestItem, candidateGroup []GosuslugiEntry) float64 {
-	bestRatio := 0.0
-
-	// Iterate through each MSU application for the student
-	for _, msuApp := range item.Apps {
-		msuScores := r.extractMSUEGEScores(msuApp)
-		if len(msuScores) == 0 {
-			continue
+			// Execute sophisticated matching algorithm
+			engine := matcher.NewMatchingEngine()
+			newResults = engine.ExecuteMatching(uncachedRequests, gosuslugiData)
 		}
 
-		for _, candidateApp := range candidateGroup {
-			candidateScores := r.extractEGEScores(candidateApp)
-			overlap := r.scoreOverlapCount(msuScores, candidateScores, 0) // exact score match
-			ratio := float64(overlap) / float64(len(msuScores))
-			if item.InternalID == debugInternalID {
-				log.Printf("[DEBUG] Comparing MSU %v with candidate %v -> overlap %d, ratio %.2f", msuScores, candidateScores, overlap, ratio)
-			}
-			if ratio > bestRatio {
-				bestRatio = ratio
-			}
-		}
-	}
-
-	switch {
-	case bestRatio >= 1.0:
-		return 1.0 // Perfect match
-	case bestRatio >= 0.8:
-		return 0.8 // Very high confidence
-	case bestRatio >= 0.6:
-		return 0.6 // Medium confidence
-	case bestRatio >= 0.4:
-		return 0.4 // Low confidence but still plausible
-	default:
-		return 0.0 // No reliable match
-	}
-}
-
-// scoreOverlapCount returns how many scores in scores1 can be matched with scores2 within the given tolerance.
-func (r *msuResolver) scoreOverlapCount(scores1, scores2 []int, tolerance int) int {
-	matched := 0
-	used := make([]bool, len(scores2))
-
-	for _, s1 := range scores1 {
-		for j, s2 := range scores2 {
-			if used[j] {
-				continue
-			}
-			if absInt(s1-s2) <= tolerance {
-				matched++
-				used[j] = true
-				break
-			}
-		}
-	}
-
-	return matched
-}
-
-// absInt returns the absolute value of an int.
-func absInt(a int) int {
-	if a < 0 {
-		return -a
-	}
-	return a
-}
-
-func (r *msuResolver) extractMSUEGEScores(app idresolver.MSUAppDetails) []int {
-	scores := make([]int, 0, len(app.EGEScores))
-
-	// Add only positive EGE scores, explicitly excluding DVI and zeroes
-	for _, score := range app.EGEScores {
-		if score > 0 {
-			scores = append(scores, score)
-		}
-	}
-
-	// Sort scores for consistent comparison
-	sort.Ints(scores)
-	return scores
-}
-
-// For Gosuslugi, assume Results are EGE scores; filtering out zero scores and sorting
-func (r *msuResolver) extractEGEScores(candidate GosuslugiEntry) []int {
-	var scores []int
-	results := []*float64{candidate.Result1, candidate.Result2, candidate.Result3, candidate.Result4,
-		candidate.Result5, candidate.Result6, candidate.Result7, candidate.Result8}
-
-	// Only include positive scores (filter out nulls and zeroes)
-	for _, result := range results {
-		if result != nil && *result > 0 {
-			scores = append(scores, int(*result))
-		}
-	}
-
-	// Sort scores for consistent comparison
-	sort.Ints(scores)
-	return scores
-}
-
-func (r *msuResolver) scoresMatch(scores1, scores2 []int, tolerance int) bool {
-	if len(scores1) != len(scores2) {
-		return false
-	}
-
-	for i := range scores1 {
-		diff := scores1[i] - scores2[i]
-		if diff < 0 {
-			diff = -diff
-		}
-		if diff > tolerance {
-			return false
-		}
-	}
-
-	return true
-}
-
-// extractPrograms collects unique program names from MSU applications ensuring we at least attempt resolution even if mapping is missing.
-func (r *msuResolver) extractPrograms(apps []idresolver.MSUAppDetails) []string {
-	programSet := make(map[string]struct{})
-	for _, app := range apps {
-		programSet[app.PrettyName] = struct{}{}
-		if _, ok := GetCompetitionIDsForProgram(app.PrettyName); !ok {
-			// log.Printf("WARNING: No competition IDs found for MSU program: %s", app.PrettyName)
-		}
-	}
-	programs := make([]string, 0, len(programSet))
-	for p := range programSet {
-		programs = append(programs, p)
-	}
-	return programs
-}
-
-// getCandidates retrieves cached Gosuslugi entries for provided programs.
-func (r *msuResolver) getCandidates(ctx context.Context, programs []string) []GosuslugiEntry {
-	var all []GosuslugiEntry
-	for _, program := range programs {
-		compIDs, ok := msuCompetitionIDs[program]
-		if !ok {
-			continue
-		}
-		ids := []string{compIDs.RegularBVI, compIDs.DedicatedQuota, compIDs.SpecialQuota, compIDs.TargetQuota}
-		for _, cid := range ids {
-			if cid == "" {
-				continue
-			}
-			cacheKey := fmt.Sprintf("%s:%s", program, cid)
-			cands, err := r.cache.GetCandidates(ctx, cacheKey)
+		// Cache the new results
+		for _, result := range newResults {
+			err := r.dbStore.SetMatchCache(
+				result.InternalID,
+				result.CanonicalID,
+				result.Confidence,
+				result.ProgramName,
+				result.CompetitionType,
+			)
 			if err != nil {
-				log.Printf("Error getting candidates for %s: %v", cacheKey, err)
+				slog.Error("Failed to cache match result", "error", err, "internalID", result.InternalID)
+			}
+		}
+	}
+
+	// Combine cached and new results
+	resp := make([]idresolver.ResolveResponseItem, len(req))
+	for i, item := range req {
+		if cached, exists := cachedResults[item.InternalID]; exists {
+			resp[i] = cached
+		} else {
+			// Find in new results
+			found := false
+			for _, result := range newResults {
+				if result.InternalID == item.InternalID {
+					resp[i] = idresolver.ResolveResponseItem{
+						InternalID:  result.InternalID,
+						CanonicalID: result.CanonicalID,
+						Confidence:  result.Confidence,
+					}
+					found = true
+					break
+				}
+			}
+			if !found {
+				// Fallback
+				resp[i] = idresolver.ResolveResponseItem{
+					InternalID:  item.InternalID,
+					CanonicalID: r.generateFallbackID(item.InternalID),
+					Confidence:  0.0,
+				}
+			}
+		}
+	}
+
+	slog.Info("Batch resolution completed",
+		"totalRequests", len(req),
+		"cachedResults", len(cachedResults),
+		"newResults", len(newResults))
+
+	return resp, nil
+}
+
+// StartBackgroundFetcher starts the background data fetching process.
+// It performs an immediate fetch and then sets up periodic fetching every 2 hours.
+func (r *MSUResolver) StartBackgroundFetcher(ctx context.Context) {
+	r.mu.Lock()
+	if r.fetcherStarted {
+		r.mu.Unlock()
+		return
+	}
+	r.fetcherStarted = true
+	r.mu.Unlock()
+
+	slog.Info("Starting background fetcher...")
+
+	go func() {
+		// Perform immediate fetch only if data is stale (older than 2 hours)
+		if time.Since(r.lastSuccessfulFetch) > 2*time.Hour {
+			slog.Info("Data is stale, performing initial fetch")
+			if err := r.fetchGosuslugiDataWithRun(ctx); err != nil {
+				slog.Error("Initial fetch failed", "error", err)
+			}
+		} else {
+			slog.Info("Data is fresh, skipping initial fetch",
+				"lastFetch", r.lastSuccessfulFetch,
+				"age", time.Since(r.lastSuccessfulFetch))
+		}
+
+		// Set up periodic fetching every 2 hours
+		ticker := time.NewTicker(2 * time.Hour)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				slog.Info("Background fetcher stopped")
+				return
+			case <-ticker.C:
+				slog.Info("Performing periodic fetch")
+				if err := r.fetchGosuslugiDataWithRun(ctx); err != nil {
+					slog.Error("Periodic fetch failed", "error", err)
+				}
+			}
+		}
+	}()
+}
+
+// GosuslugiAPIResponse represents the response from Gosuslugi API
+type GosuslugiAPIResponse struct {
+	UpdateDate string               `json:"updateDate"`
+	Applicants []GosuslugiApplicant `json:"applicants"`
+}
+
+// GosuslugiApplicant represents an applicant from the Gosuslugi API
+type GosuslugiApplicant struct {
+	Rating                   int     `json:"rating"`
+	Priority                 int     `json:"priority"`
+	Consent                  string  `json:"consent"`
+	ConsentDate              string  `json:"consentDate"`
+	SumMark                  float64 `json:"sumMark"`
+	WithoutTests             bool    `json:"withoutTests"`
+	Result1                  float64 `json:"result1"`
+	Result2                  float64 `json:"result2"`
+	Result3                  float64 `json:"result3"`
+	Result4                  float64 `json:"result4"`
+	Result5                  float64 `json:"result5"`
+	Result6                  float64 `json:"result6"`
+	Result7                  float64 `json:"result7"`
+	Result8                  float64 `json:"result8"`
+	AchievementsMark         float64 `json:"achievementsMark"`
+	StatusID                 int     `json:"statusId"`
+	StatusName               string  `json:"statusName"`
+	IDApplication            int     `json:"idApplication"`
+	CompetitionSelectionDate string  `json:"competitionSelectionDate"`
+
+	OfferPlace             *int        `json:"offerPlace"`
+	OfferOrganization      interface{} `json:"offerOrganization"`
+	TargetAchievementsMark float64     `json:"targetAchievementsMark"`
+	PaidContract           bool        `json:"paidContract"`
+}
+
+// fetchGosuslugiDataWithRun fetches data from Gosuslugi API and stores it with run tracking
+func (r *MSUResolver) fetchGosuslugiDataWithRun(ctx context.Context) error {
+	// Prevent concurrent fetches
+	r.mu.Lock()
+	if r.fetchInProgress {
+		r.mu.Unlock()
+		slog.Info("Fetch already in progress, skipping")
+		return nil
+	}
+	r.fetchInProgress = true
+	r.mu.Unlock()
+
+	defer func() {
+		r.mu.Lock()
+		r.fetchInProgress = false
+		r.mu.Unlock()
+	}()
+
+	slog.Info("Starting Gosuslugi data fetch...")
+
+	// Get competition IDs for all programs
+	competitionIDs := getMSUCompetitionIDs()
+	totalPrograms := len(competitionIDs)
+
+	// Start a fetch run
+	runID, err := r.dbStore.StartFetchRun(totalPrograms)
+	if err != nil {
+		return fmt.Errorf("failed to start fetch run: %w", err)
+	}
+
+	processedPrograms := 0
+	var fetchErrors []string
+
+	// Fetch data for each program
+	for programName, programIDs := range competitionIDs {
+		processedPrograms++
+		slog.Info("Processing program",
+			"progress", fmt.Sprintf("%d/%d", processedPrograms, totalPrograms),
+			"name", programName)
+
+		// Update progress
+		if err := r.dbStore.UpdateFetchRun(runID, processedPrograms); err != nil {
+			slog.Error("Failed to update fetch run progress", "error", err)
+		}
+
+		// Fetch data for each quota type
+		for quotaType, competitionID := range map[string]string{
+			"RegularBVI":     programIDs.RegularBVI,
+			"DedicatedQuota": programIDs.DedicatedQuota,
+			"SpecialQuota":   programIDs.SpecialQuota,
+			"TargetQuota":    programIDs.TargetQuota,
+		} {
+			if competitionID == "" {
+				continue // Skip empty competition IDs
+			}
+
+			slog.Debug("Fetching competition data",
+				"quotaType", quotaType,
+				"competitionID", competitionID)
+
+			if err := r.fetchCompetitionData(ctx, competitionID, programName, quotaType); err != nil {
+				errorMsg := fmt.Sprintf("Failed to fetch %s for %s (ID: %s): %v", quotaType, programName, competitionID, err)
+				fetchErrors = append(fetchErrors, errorMsg)
+				slog.Error("Competition data fetch failed", "error", err, "quotaType", quotaType, "competitionID", competitionID)
 				continue
 			}
-			for _, cand := range cands {
-				all = append(all, GosuslugiEntry(cand))
-			}
-		}
-	}
-	return r.filterValidCandidates(all)
-}
 
-// filterValidCandidates drops excluded entries.
-func (r *msuResolver) filterValidCandidates(cands []GosuslugiEntry) []GosuslugiEntry {
-	var valid []GosuslugiEntry
-	for _, c := range cands {
-		if c.StatusID != nil && *c.StatusID == 4 {
-			continue
-		}
-		valid = append(valid, c)
-	}
-	return valid
-}
-
-// generateFallbackID converts last 6 digits of internal ID into canonical placeholder.
-func (r *msuResolver) generateFallbackID(internalID string) string {
-	if len(internalID) >= 6 {
-		lastSix := internalID[len(internalID)-6:]
-		return fmt.Sprintf("MSU-%s", strings.Repeat("0", 7-len(lastSix))+lastSix)
-	}
-	return fmt.Sprintf("MSU-%06s", internalID)
-}
-
-func (r *msuResolver) StartBackgroundFetcher(ctx context.Context) {
-	log.Println("Starting background fetcher for Gosuslugi data...")
-
-	// Try to restore cache from latest completed run on startup
-	if err := r.restoreCacheFromLatestRun(ctx); err != nil {
-		log.Printf("Failed to restore cache from latest run: %v", err)
-	}
-
-	// Fetch data immediately on startup
-	if err := r.fetchGosuslugiDataWithRun(ctx); err != nil {
-		log.Printf("Initial fetch failed: %v", err)
-	}
-
-	// Set up periodic fetching every 30 minutes
-	ticker := time.NewTicker(30 * time.Minute)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			log.Println("Background fetcher stopped")
-			return
-		case <-ticker.C:
-			if err := r.fetchGosuslugiDataWithRun(ctx); err != nil {
-				log.Printf("Periodic fetch failed: %v", err)
-			}
-		}
-	}
-}
-
-func (r *msuResolver) fetchGosuslugiDataWithRun(ctx context.Context) error {
-	log.Println("Starting new Gosuslugi data fetch run...")
-
-	// Create a new run
-	runID, err := r.cache.CreateRun(ctx, map[string]interface{}{
-		"source": "gosuslugi",
-		"type":   "periodic_fetch",
-	})
-	if err != nil {
-		return fmt.Errorf("failed to create run: %w", err)
-	}
-
-	log.Printf("Created run %d for Gosuslugi data fetch", runID)
-
-	totalFetched := 0
-	totalErrors := 0
-
-	// Fetch data for all configured competition IDs
-	for program, competitionIDs := range msuCompetitionIDs {
-		// Get all competition IDs from the struct
-		compIDs := []string{}
-		if competitionIDs.RegularBVI != "" {
-			compIDs = append(compIDs, competitionIDs.RegularBVI)
-		}
-		if competitionIDs.DedicatedQuota != "" {
-			compIDs = append(compIDs, competitionIDs.DedicatedQuota)
-		}
-		if competitionIDs.SpecialQuota != "" {
-			compIDs = append(compIDs, competitionIDs.SpecialQuota)
-		}
-		if competitionIDs.TargetQuota != "" {
-			compIDs = append(compIDs, competitionIDs.TargetQuota)
+			// Add delay between requests to avoid overwhelming the API and reduce network issues
+			time.Sleep(200 * time.Millisecond)
 		}
 
-		for _, competitionID := range compIDs {
-			if err := r.fetchCompetitionData(ctx, runID, program, competitionID); err != nil {
-				log.Printf("Error fetching competition %s for program %s: %v", competitionID, program, err)
-				totalErrors++
-			} else {
-				totalFetched++
-			}
-
-			// Add delay between requests to avoid rate limiting
-			time.Sleep(1 * time.Second)
-		}
+		// Add longer delay between programs to reduce network stress
+		time.Sleep(1 * time.Second)
 	}
 
-	// Mark run as finished
-	if err := r.cache.FinishRun(ctx, runID); err != nil {
-		log.Printf("Failed to finish run %d: %v", runID, err)
-		return err
+	// Complete the fetch run
+	status := "completed"
+	errorMessage := ""
+	if len(fetchErrors) > 0 {
+		status = "partial"
+		errorMessage = fmt.Sprintf("Some fetches failed: %v", fetchErrors)
+		slog.Warn("Fetch completed with errors", "errorCount", len(fetchErrors))
 	}
 
-	log.Printf("Gosuslugi data fetch run %d completed: %d successful, %d errors", runID, totalFetched, totalErrors)
+	if err := r.dbStore.CompleteFetchRun(runID, status, errorMessage); err != nil {
+		slog.Error("Failed to complete fetch run", "error", err)
+	}
+
+	// Clear match cache since we have new data
+	if err := r.dbStore.ClearMatchCache(); err != nil {
+		slog.Error("Failed to clear match cache", "error", err)
+	} else {
+		slog.Info("Match cache cleared for fresh matching")
+	}
+
+	// Store last fetch time
+	r.mu.Lock()
+	r.lastSuccessfulFetch = time.Now()
+	r.mu.Unlock()
+
+	slog.Info("Gosuslugi data fetch completed",
+		"totalPrograms", totalPrograms,
+		"processedPrograms", processedPrograms,
+		"errors", len(fetchErrors),
+		"status", status)
+
 	return nil
 }
 
-// extractJSONFromResponse handles both raw JSON and HTML-wrapped JSON responses
-func extractJSONFromResponse(responseBody string) string {
-	// Check if response is HTML-wrapped
-	if strings.HasPrefix(strings.TrimSpace(responseBody), "<html>") {
-		// Find the content within <pre> tags
-		preStart := strings.Index(responseBody, "<pre>")
-		if preStart == -1 {
-			return responseBody // No <pre> tag found, return original
-		}
-		preStart += len("<pre>")
+// fetchCompetitionData fetches data for a specific competition from Gosuslugi API with retry logic
+func (r *MSUResolver) fetchCompetitionData(ctx context.Context, competitionID, programName, quotaType string) error {
+	const maxRetries = 3
+	const baseDelay = 1 * time.Second
 
-		preEnd := strings.Index(responseBody[preStart:], "</pre>")
-		if preEnd == -1 {
-			return responseBody // No closing </pre> tag found, return original
+	var lastErr error
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		if attempt > 0 {
+			// Exponential backoff with jitter
+			delay := baseDelay * time.Duration(1<<attempt)
+			if delay > 10*time.Second {
+				delay = 10 * time.Second
+			}
+
+			slog.Debug("Retrying request after delay",
+				"attempt", attempt+1,
+				"maxRetries", maxRetries,
+				"delay", delay,
+				"competitionID", competitionID)
+
+			// Don't let parent context cancellation interrupt retry delays
+			// Use a simple sleep instead of context-aware sleep
+			time.Sleep(delay)
 		}
 
-		// Extract JSON content from within <pre> tags
-		jsonContent := responseBody[preStart : preStart+preEnd]
-		return strings.TrimSpace(jsonContent)
+		err := r.fetchCompetitionDataWithTimeout(competitionID, programName, quotaType)
+		if err == nil {
+			if attempt > 0 {
+				slog.Info("Request succeeded after retry",
+					"attempt", attempt+1,
+					"competitionID", competitionID)
+			}
+			return nil
+		}
+
+		lastErr = err
+		slog.Warn("Request failed, will retry if attempts remain",
+			"attempt", attempt+1,
+			"maxRetries", maxRetries,
+			"error", err,
+			"competitionID", competitionID)
 	}
 
-	// Not HTML-wrapped, return as-is
-	return responseBody
+	return fmt.Errorf("failed after %d attempts: %w", maxRetries, lastErr)
 }
 
-func (r *msuResolver) fetchCompetitionData(ctx context.Context, runID int, program, competitionID string) error {
-	// Construct Gosuslugi API URL
-	apiURL := fmt.Sprintf("https://www.gosuslugi.ru/api/university/v1/public/competition/%s/applicants", competitionID)
+// fetchCompetitionDataWithTimeout performs a single attempt to fetch competition data with extended timeout
+func (r *MSUResolver) fetchCompetitionDataWithTimeout(competitionID, programName, quotaType string) error {
+	// Create a completely independent context with longer timeout for this specific request
+	// This prevents any parent context cancellation from affecting individual requests
+	requestCtx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
 
-	// Create HTTP request
-	req, err := http.NewRequestWithContext(ctx, "GET", apiURL, nil)
+	// Construct the Gosuslugi API URL
+	url := fmt.Sprintf("https://www.gosuslugi.ru/api/university/v1/public/competition/%s/applicants", competitionID)
+
+	// Create HTTP request with the request-specific context
+	req, err := http.NewRequestWithContext(requestCtx, "GET", url, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
-	// Set headers to mimic browser request
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-	req.Header.Set("Accept", "application/json, text/plain, */*")
-	req.Header.Set("Accept-Language", "ru-RU,ru;q=0.9,en;q=0.8")
-	req.Header.Set("Referer", "https://www.gosuslugi.ru/")
+	// Set headers
+	req.Header.Set("User-Agent", "MSU-Resolver/1.0")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Connection", "close") // Prevent connection reuse issues
 
-	// Create HTTP client with timeout
+	// Create HTTP client with extended timeout and no connection reuse
 	client := &http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: 90 * time.Second, // Longer timeout for unreliable networks
+		Transport: &http.Transport{
+			DisableKeepAlives:     true, // Prevent connection reuse issues
+			DisableCompression:    false,
+			MaxIdleConns:          0,
+			MaxIdleConnsPerHost:   0,
+			IdleConnTimeout:       0,
+			ResponseHeaderTimeout: 30 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+		},
 	}
 
 	// Make the request
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to make HTTP request: %w", err)
+		return fmt.Errorf("failed to make request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	// Check status code
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("API returned status %d", resp.StatusCode)
 	}
 
 	// Read response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
+		return fmt.Errorf("failed to read response: %w", err)
 	}
-
-	responseBody := string(body)
-
-	// Extract JSON from response (handles both raw JSON and HTML-wrapped JSON)
-	jsonContent := extractJSONFromResponse(responseBody)
 
 	// Parse JSON response
-	var apiResponse GosuslugiAPIResponse
-	if err := json.Unmarshal([]byte(jsonContent), &apiResponse); err != nil {
-		// Log additional debug info when JSON parsing fails
-		previewLen := 500
-		if len(jsonContent) < previewLen {
-			previewLen = len(jsonContent)
-		}
-		log.Printf("ERROR: JSON parsing failed for competition %s. Extracted JSON preview (%d chars): %s", competitionID, previewLen, jsonContent[:previewLen])
-		return fmt.Errorf("failed to parse JSON response: %w", err)
+	var apiResp GosuslugiAPIResponse
+	if err := json.Unmarshal(body, &apiResp); err != nil {
+		return fmt.Errorf("failed to parse JSON: %w", err)
 	}
 
-	// Convert API response entries to cache entries and store
-	cacheEntries := make([]cache.GosuslugiEntry, 0, len(apiResponse.Applicants))
-	for _, applicant := range apiResponse.Applicants {
-		if applicant.IDApplication.String() == "" {
-			continue // Skip entries without ID
-		}
+	// Store data in cache with a composite key
+	cacheKey := fmt.Sprintf("%s:%s:%s", programName, quotaType, competitionID)
+	r.cache.Set(cacheKey, apiResp.Applicants)
 
-		// Convert to cache entry format
-		cacheEntry := cache.GosuslugiEntry{
-			IDApplication: applicant.IDApplication,
-			ProgramName:   program,       // Use the program name as identifier
-			ListType:      competitionID, // Store competition ID in ListType field
-			Result1:       applicant.Result1,
-			Result2:       applicant.Result2,
-			Result3:       applicant.Result3,
-			Result4:       applicant.Result4,
-			Result5:       applicant.Result5,
-			Result6:       applicant.Result6,
-			Result7:       applicant.Result7,
-			Result8:       applicant.Result8,
-			SumMark:       applicant.SumMark,
-			Rating:        applicant.Rating,
-			WithoutTests:  applicant.WithoutTests,
-			StatusID:      applicant.StatusID,
-		}
-		cacheEntries = append(cacheEntries, cacheEntry)
-	}
-
-	// Store entries in run data
-	cacheKey := fmt.Sprintf("%s:%s", program, competitionID)
-	if err := r.cache.StoreCandidatesForRun(ctx, runID, cacheKey, cacheEntries); err != nil {
-		return fmt.Errorf("failed to store candidates for run: %w", err)
-	}
-
-	// Store all entries for this program/competition combination in current cache
-	if err := r.cache.StoreCandidates(ctx, cacheKey, cacheEntries); err != nil {
-		return fmt.Errorf("failed to store candidates in cache: %w", err)
-	}
-
-	log.Printf("Cached %d applicants for program %s, competition %s (run %d)", len(cacheEntries), program, competitionID, runID)
+	log.Printf("[idmsu] Stored %d applicants for competition %s", len(apiResp.Applicants), competitionID)
 	return nil
+}
+
+// HasRecentData returns true if data has been fetched recently.
+func (r *MSUResolver) HasRecentData() bool {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	// Data is considered recent if it's been fetched in the last 2 hours
+	return !r.lastSuccessfulFetch.IsZero() && time.Since(r.lastSuccessfulFetch) < 2*time.Hour
+}
+
+// triggerFetchIfNeeded triggers a fetch if data is stale and no fetch is in progress
+func (r *MSUResolver) triggerFetchIfNeeded(ctx context.Context) {
+	r.mu.RLock()
+	inProgress := r.fetchInProgress
+	r.mu.RUnlock()
+
+	if !inProgress {
+		go func() {
+			// Create a new independent context for the fetch operation
+			// This prevents the fetch from being cancelled when the incoming request times out
+			fetchCtx := context.Background()
+			if err := r.fetchGosuslugiDataWithRun(fetchCtx); err != nil {
+				slog.Error("Triggered fetch failed", "error", err)
+			}
+		}()
+	}
+}
+
+// getAllCachedGosuslugiData retrieves all cached Gosuslugi data organized by program and competition type
+func (r *MSUResolver) getAllCachedGosuslugiData() map[string]map[string][]matcher.GosuslugiApplicant {
+	result := make(map[string]map[string][]matcher.GosuslugiApplicant)
+
+	// Get all competition IDs
+	competitionIDs := getMSUCompetitionIDs()
+
+	for programName, programIDs := range competitionIDs {
+		programData := make(map[string][]matcher.GosuslugiApplicant)
+
+		// Try to get data for each competition type using the correct cache key format
+		for _, quotaType := range []string{"RegularBVI", "DedicatedQuota", "SpecialQuota", "TargetQuota"} {
+			var competitionID string
+			switch quotaType {
+			case "RegularBVI":
+				competitionID = programIDs.RegularBVI
+			case "DedicatedQuota":
+				competitionID = programIDs.DedicatedQuota
+			case "SpecialQuota":
+				competitionID = programIDs.SpecialQuota
+			case "TargetQuota":
+				competitionID = programIDs.TargetQuota
+			}
+
+			if competitionID == "" {
+				continue // Skip empty competition IDs
+			}
+
+			cacheKey := fmt.Sprintf("%s:%s:%s", programName, quotaType, competitionID)
+			if cached, exists := r.cache.Get(cacheKey); exists {
+				if applicants, ok := cached.([]GosuslugiApplicant); ok {
+					// Convert to matcher format
+					matcherApplicants := make([]matcher.GosuslugiApplicant, len(applicants))
+					for i, app := range applicants {
+						matcherApplicants[i] = matcher.GosuslugiApplicant{
+							Rating:                   app.Rating,
+							Priority:                 app.Priority,
+							Consent:                  app.Consent,
+							ConsentDate:              app.ConsentDate,
+							SumMark:                  app.SumMark,
+							WithoutTests:             app.WithoutTests,
+							Result1:                  app.Result1,
+							Result2:                  app.Result2,
+							Result3:                  app.Result3,
+							Result4:                  app.Result4,
+							Result5:                  app.Result5,
+							Result6:                  app.Result6,
+							Result7:                  app.Result7,
+							Result8:                  app.Result8,
+							AchievementsMark:         app.AchievementsMark,
+							StatusID:                 app.StatusID,
+							StatusName:               app.StatusName,
+							IDApplication:            app.IDApplication,
+							CompetitionSelectionDate: app.CompetitionSelectionDate,
+							OfferPlace:               app.OfferPlace,
+							OfferOrganization:        app.OfferOrganization,
+							TargetAchievementsMark:   app.TargetAchievementsMark,
+							PaidContract:             app.PaidContract,
+						}
+					}
+					programData[quotaType] = matcherApplicants
+				}
+			}
+		}
+
+		if len(programData) > 0 {
+			result[programName] = programData
+		}
+	}
+
+	slog.Debug("Retrieved cached Gosuslugi data", "programCount", len(result))
+	return result
+}
+
+// createFallbackResults creates fallback results for requests when no Gosuslugi data is available
+func (r *MSUResolver) createFallbackResults(requests []idresolver.ResolveRequestItem) []matcher.MatchResult {
+	results := make([]matcher.MatchResult, len(requests))
+	for i, req := range requests {
+		results[i] = matcher.MatchResult{
+			InternalID:      req.InternalID,
+			CanonicalID:     r.generateFallbackID(req.InternalID),
+			Confidence:      0.0,
+			MatchType:       "Fallback",
+			ProgramName:     "Unknown",
+			CompetitionType: "Unknown",
+		}
+	}
+	return results
+}
+
+// findBestMatch attempts to find the best matching canonical ID for the given internal ID
+// by comparing the applicant's data with cached Gosuslugi entries
+func (r *MSUResolver) findBestMatch(internalID string, apps []idresolver.MSUAppDetails) (string, float64) {
+	if len(apps) == 0 {
+		return r.generateFallbackID(internalID), 0.0
+	}
+
+	bestCanonicalID := ""
+	bestConfidence := 0.0
+
+	// Try to find matches for each application
+	for _, app := range apps {
+		// Get cached candidates for this program
+		candidates := r.getCachedCandidates(app.PrettyName)
+		if len(candidates) == 0 {
+			continue
+		}
+
+		// Find the best match among candidates
+		for _, candidate := range candidates {
+			confidence := r.calculateMatchConfidence(app, candidate)
+			if confidence > bestConfidence {
+				bestConfidence = confidence
+				bestCanonicalID = fmt.Sprintf("%d", candidate.IDApplication)
+			}
+		}
+	}
+
+	// If no good match found, return fallback
+	if bestConfidence < 0.5 {
+		return r.generateFallbackID(internalID), bestConfidence
+	}
+
+	return bestCanonicalID, bestConfidence
+}
+
+// getCachedCandidates retrieves cached Gosuslugi entries for a given program name
+func (r *MSUResolver) getCachedCandidates(programName string) []GosuslugiApplicant {
+	var candidates []GosuslugiApplicant
+
+	// Get all cached keys and filter for this program
+	if cachedData, exists := r.cache.Get(fmt.Sprintf("%s:RegularBVI", programName)); exists {
+		if applicants, ok := cachedData.([]GosuslugiApplicant); ok {
+			candidates = append(candidates, applicants...)
+		}
+	}
+
+	if cachedData, exists := r.cache.Get(fmt.Sprintf("%s:DedicatedQuota", programName)); exists {
+		if applicants, ok := cachedData.([]GosuslugiApplicant); ok {
+			candidates = append(candidates, applicants...)
+		}
+	}
+
+	if cachedData, exists := r.cache.Get(fmt.Sprintf("%s:SpecialQuota", programName)); exists {
+		if applicants, ok := cachedData.([]GosuslugiApplicant); ok {
+			candidates = append(candidates, applicants...)
+		}
+	}
+
+	if cachedData, exists := r.cache.Get(fmt.Sprintf("%s:TargetQuota", programName)); exists {
+		if applicants, ok := cachedData.([]GosuslugiApplicant); ok {
+			candidates = append(candidates, applicants...)
+		}
+	}
+
+	return candidates
+}
+
+// calculateMatchConfidence calculates how well an MSU app matches a Gosuslugi candidate
+func (r *MSUResolver) calculateMatchConfidence(app idresolver.MSUAppDetails, candidate GosuslugiApplicant) float64 {
+	confidence := 0.0
+
+	// Skip excluded candidates
+	if candidate.StatusID == 4 {
+		return 0.0
+	}
+
+	// Score matching (most important factor)
+	if app.ScoreSum > 0 {
+		// Parse candidate's total score
+		candidateScore := r.parseTotalScore(candidate)
+		if candidateScore > 0 {
+			scoreDiff := abs(app.ScoreSum - candidateScore)
+			if scoreDiff <= 2 {
+				confidence += 0.6 // Exact or very close score match
+			} else if scoreDiff <= 5 {
+				confidence += 0.4 // Close score match
+			} else if scoreDiff <= 10 {
+				confidence += 0.2 // Reasonable score match
+			}
+		}
+	}
+
+	// EGE scores matching (if available)
+	if len(app.EGEScores) > 0 {
+		egeMatch := r.compareEGEScores(app.EGEScores, candidate)
+		confidence += egeMatch * 0.3
+	}
+
+	// Priority matching (if meaningful)
+	if app.Priority > 0 {
+		confidence += 0.1 // Small bonus for having priority info
+	}
+
+	return confidence
+}
+
+// parseTotalScore extracts the total score from a Gosuslugi candidate
+func (r *MSUResolver) parseTotalScore(candidate GosuslugiApplicant) int {
+	// Use SumMark as the total score, convert from float64 to int
+	return int(candidate.SumMark)
+}
+
+// parseScoreString converts a score string to integer
+func (r *MSUResolver) parseScoreString(scoreStr string) int {
+	if scoreStr == "" {
+		return 0
+	}
+	// Simple parsing - in real implementation might need more robust parsing
+	var score int
+	if _, err := fmt.Sscanf(scoreStr, "%d", &score); err == nil {
+		return score
+	}
+	return 0
+}
+
+// compareEGEScores compares EGE scores between MSU app and Gosuslugi candidate
+func (r *MSUResolver) compareEGEScores(msuScores []int, candidate GosuslugiApplicant) float64 {
+	// Extract EGE scores from candidate
+	candidateScores := r.extractEGEScores(candidate)
+	if len(candidateScores) == 0 || len(msuScores) == 0 {
+		return 0.0
+	}
+
+	// Sort both score arrays for comparison
+	msuSorted := make([]int, len(msuScores))
+	copy(msuSorted, msuScores)
+	sort.Ints(msuSorted)
+
+	candidateSorted := make([]int, len(candidateScores))
+	copy(candidateSorted, candidateScores)
+	sort.Ints(candidateSorted)
+
+	// Compare sorted scores
+	matches := 0
+	minLen := len(msuSorted)
+	if len(candidateSorted) < minLen {
+		minLen = len(candidateSorted)
+	}
+
+	for i := 0; i < minLen; i++ {
+		if abs(msuSorted[i]-candidateSorted[i]) <= 2 {
+			matches++
+		}
+	}
+
+	if minLen == 0 {
+		return 0.0
+	}
+	return float64(matches) / float64(minLen)
+}
+
+// extractEGEScores extracts EGE scores from Gosuslugi candidate
+func (r *MSUResolver) extractEGEScores(candidate GosuslugiApplicant) []int {
+	var scores []int
+
+	// Extract individual test results, convert from float64 to int
+	results := []float64{candidate.Result1, candidate.Result2, candidate.Result3, candidate.Result4, candidate.Result5, candidate.Result6, candidate.Result7, candidate.Result8}
+
+	for _, result := range results {
+		if result > 0 {
+			scores = append(scores, int(result))
+		}
+	}
+
+	return scores
+}
+
+// generateFallbackID creates a fallback canonical ID for unmatched internal IDs
+func (r *MSUResolver) generateFallbackID(internalID string) string {
+	return fmt.Sprintf("MSU-%s", internalID)
+}
+
+// abs returns the absolute value of an integer
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }
