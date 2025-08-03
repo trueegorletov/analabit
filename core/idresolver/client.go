@@ -28,7 +28,7 @@ func NewIDMSUClient() *IDMSUClient {
 	return &IDMSUClient{
 		baseURL: baseURL,
 		httpClient: &http.Client{
-			Timeout: 15 * time.Minute,
+			Timeout: 45 * time.Minute,
 		},
 	}
 }

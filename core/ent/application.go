@@ -36,6 +36,8 @@ type Application struct {
 	OriginalSubmitted bool `json:"original_submitted,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// MsuInternalID holds the value of the "msu_internal_id" field.
+	MsuInternalID *string `json:"msu_internal_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ApplicationQuery when eager-loading is set.
 	Edges                ApplicationEdges `json:"edges"`
@@ -85,7 +87,7 @@ func (*Application) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case application.FieldID, application.FieldPriority, application.FieldCompetitionType, application.FieldRatingPlace, application.FieldScore, application.FieldRunID:
 			values[i] = new(sql.NullInt64)
-		case application.FieldStudentID:
+		case application.FieldStudentID, application.FieldMsuInternalID:
 			values[i] = new(sql.NullString)
 		case application.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -159,6 +161,13 @@ func (a *Application) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				a.UpdatedAt = value.Time
+			}
+		case application.FieldMsuInternalID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field msu_internal_id", values[i])
+			} else if value.Valid {
+				a.MsuInternalID = new(string)
+				*a.MsuInternalID = value.String
 			}
 		case application.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -236,6 +245,11 @@ func (a *Application) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	if v := a.MsuInternalID; v != nil {
+		builder.WriteString("msu_internal_id=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

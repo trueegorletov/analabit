@@ -1,8 +1,9 @@
 package schema
 
 import (
-	"github.com/trueegorletov/analabit/core"
 	"time"
+
+	"github.com/trueegorletov/analabit/core"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -28,6 +29,9 @@ func (Application) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
+		field.String("msu_internal_id").
+			Optional().
+			Nillable(),
 	}
 }
 

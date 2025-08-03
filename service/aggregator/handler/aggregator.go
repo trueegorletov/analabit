@@ -123,6 +123,31 @@ func (a *Aggregator) processBucket(ctx context.Context, bucketName string, objec
 		return fmt.Errorf("failed to parse env config: %w", err)
 	}
 
+	// SPbSTU fallback logic: always use the fallback gob file when enabled
+	if cfg.SpbstuFallbackEnabled {
+		// Check if there's already a spbstu gob in the objectNames
+		hasSpbstuGob := false
+		spbstuGobIndex := -1
+		for i, objName := range objectNames {
+			// Check if the filename contains "spbstu" (case-insensitive check)
+			if len(objName) >= 13 && objName[8:14] == "spbstu" { // "payload_spbstu_" format
+				hasSpbstuGob = true
+				spbstuGobIndex = i
+				break
+			}
+		}
+
+		if hasSpbstuGob {
+			// Replace the existing spbstu gob with the fallback
+			log.Printf("SPbSTU fallback enabled: replacing existing spbstu gob '%s' with fallback: %s", objectNames[spbstuGobIndex], cfg.SpbstuFallbackGobName)
+			objectNames[spbstuGobIndex] = cfg.SpbstuFallbackGobName
+		} else {
+			// Add the fallback gob since no spbstu gob was found
+			log.Printf("SPbSTU fallback enabled: no spbstu gob found in notification, adding fallback: %s", cfg.SpbstuFallbackGobName)
+			objectNames = append(objectNames, cfg.SpbstuFallbackGobName)
+		}
+	}
+
 	endpoint := cfg.MinioEndpoint
 	accessKeyID := cfg.MinioAccessKey
 	secretAccessKey := cfg.MinioSecretKey

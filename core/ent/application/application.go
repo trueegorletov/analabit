@@ -30,6 +30,8 @@ const (
 	FieldOriginalSubmitted = "original_submitted"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldMsuInternalID holds the string denoting the msu_internal_id field in the database.
+	FieldMsuInternalID = "msu_internal_id"
 	// EdgeHeading holds the string denoting the heading edge name in mutations.
 	EdgeHeading = "heading"
 	// EdgeRun holds the string denoting the run edge name in mutations.
@@ -63,6 +65,7 @@ var Columns = []string{
 	FieldRunID,
 	FieldOriginalSubmitted,
 	FieldUpdatedAt,
+	FieldMsuInternalID,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "applications"
@@ -141,6 +144,11 @@ func ByOriginalSubmitted(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByMsuInternalID orders the results by the msu_internal_id field.
+func ByMsuInternalID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMsuInternalID, opts...).ToFunc()
 }
 
 // ByHeadingField orders the results by heading field.

@@ -71,6 +71,8 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 	return p.runProduceWorkflow(ctx, req, rsp)
 }
 
+const maxWorkerCount = 8
+
 // runProduceWorkflow contains the core logic for crawling, calculating, and uploading results.
 // This can be called either by the public RPC endpoint or an internal ticker.
 func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceRequest, rsp *proto.ProduceResponse) error {
@@ -147,8 +149,8 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 	// Calculate total jobs and determine worker count
 	totalJobs := len(varsities) * len(params.DrainStages)
 	workerCount := totalJobs
-	if workerCount > 4 {
-		workerCount = 4
+	if workerCount > maxWorkerCount {
+		workerCount = maxWorkerCount
 	}
 
 	slog.Info("Starting parallel drain simulations", "totalJobs", totalJobs, "workers", workerCount)
@@ -247,7 +249,7 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 			}
 
 			// 2. Create Payload
-			payload := core.NewUploadPayloadFromCalculator(v.VarsityCalculator, primaryResults[v.Code], drainedDTOs)
+			payload := core.NewUploadPayloadFromCalculator(v.VarsityCalculator, primaryResults[v.Code], drainedDTOs, v.MSUInternalIDs)
 
 			// 3. Encode Payload
 			var payloadBuf bytes.Buffer

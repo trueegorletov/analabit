@@ -92,7 +92,7 @@ func (u *helper) uploadApplications(ctx context.Context, applications []core.App
 
 		originalSubmitted := studentOriginalMap[app.StudentID]
 
-		err = u.client.Application.Create().
+		createApp := u.client.Application.Create().
 			SetStudentID(app.StudentID).
 			SetPriority(app.Priority).
 			SetCompetitionType(app.CompetitionType).
@@ -100,8 +100,13 @@ func (u *helper) uploadApplications(ctx context.Context, applications []core.App
 			SetScore(app.Score).
 			SetOriginalSubmitted(originalSubmitted).
 			SetRunID(u.runID).
-			SetHeading(h).
-			Exec(ctx)
+			SetHeading(h)
+
+		if app.MSUInternalID != nil {
+			createApp = createApp.SetMsuInternalID(*app.MSUInternalID)
+		}
+
+		err = createApp.Exec(ctx)
 
 		if err != nil {
 			return fmt.Errorf("failed to create application for student %s: %w", app.StudentID, err)

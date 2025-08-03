@@ -37,6 +37,7 @@ type ApplicationResponse struct {
 	PassingNow            bool      `json:"passing_now"`
 	PassingToMorePriority bool      `json:"passing_to_more_priority"`
 	AnotherVarsitiesCount int       `json:"another_varsities_count"`
+	MSUInternalID         *string   `json:"msu_internal_id,omitempty"`
 }
 
 // GetApplications retrieves a list of applications with cursor-based pagination.
@@ -62,13 +63,39 @@ func GetApplications(client *ent.Client) fiber.Handler {
 
 		// Validate and prepare student ID if provided
 		var studentID string
+		var msuInternalID string
 		if studentIDRaw != "" {
-			preparedID, err := utils.PrepareStudentID(studentIDRaw)
-			if err != nil {
-				log.Printf("invalid student ID parameter '%s': %v", studentIDRaw, err)
-				return fiber.NewError(fiber.StatusBadRequest, "invalid student ID parameter")
+			// Check if it's an MSU internal ID query (prefixed with @)
+			if strings.HasPrefix(studentIDRaw, "@") {
+				rawMsuID := strings.TrimPrefix(studentIDRaw, "@")
+				if rawMsuID == "" {
+					log.Printf("empty MSU internal ID parameter '%s'", studentIDRaw)
+					return fiber.NewError(fiber.StatusBadRequest, "empty MSU internal ID parameter")
+				}
+				// Remove leading zeros and then prepare the ID
+				trimmedMsuID := strings.TrimLeft(rawMsuID, "0")
+				if trimmedMsuID == "" {
+					trimmedMsuID = "0" // preserve at least one digit
+				}
+				preparedMsuID, err := utils.PrepareStudentID(trimmedMsuID)
+				if err != nil {
+					log.Printf("invalid MSU internal ID parameter '%s': %v", studentIDRaw, err)
+					return fiber.NewError(fiber.StatusBadRequest, "invalid MSU internal ID parameter")
+				}
+				msuInternalID = preparedMsuID
+			} else {
+				// Remove leading zeros from regular student ID before preparing
+				trimmedStudentID := strings.TrimLeft(studentIDRaw, "0")
+				if trimmedStudentID == "" {
+					trimmedStudentID = "0" // preserve at least one digit
+				}
+				preparedID, err := utils.PrepareStudentID(trimmedStudentID)
+				if err != nil {
+					log.Printf("invalid student ID parameter '%s': %v", studentIDRaw, err)
+					return fiber.NewError(fiber.StatusBadRequest, "invalid student ID parameter")
+				}
+				studentID = preparedID
 			}
-			studentID = preparedID
 		}
 
 		// Resolve the run ID from the parameter
@@ -83,6 +110,10 @@ func GetApplications(client *ent.Client) fiber.Handler {
 
 		if studentID != "" {
 			q = q.Where(application.StudentID(studentID))
+		}
+
+		if msuInternalID != "" {
+			q = q.Where(application.MsuInternalID(msuInternalID))
 		}
 
 		if varsityCode != "" {
@@ -188,6 +219,7 @@ func GetApplications(client *ent.Client) fiber.Handler {
 				PassingNow:            flags.PassingNow,
 				PassingToMorePriority: flags.PassingToMorePriority,
 				AnotherVarsitiesCount: flags.AnotherVarsitiesCount,
+				MSUInternalID:         app.MsuInternalID,
 			}
 			cursorStr := fmt.Sprintf("%d:%d", app.RatingPlace, app.ID)
 			edges[i] = ApplicationEdge{

@@ -163,6 +163,26 @@ func (au *ApplicationUpdate) SetUpdatedAt(t time.Time) *ApplicationUpdate {
 	return au
 }
 
+// SetMsuInternalID sets the "msu_internal_id" field.
+func (au *ApplicationUpdate) SetMsuInternalID(s string) *ApplicationUpdate {
+	au.mutation.SetMsuInternalID(s)
+	return au
+}
+
+// SetNillableMsuInternalID sets the "msu_internal_id" field if the given value is not nil.
+func (au *ApplicationUpdate) SetNillableMsuInternalID(s *string) *ApplicationUpdate {
+	if s != nil {
+		au.SetMsuInternalID(*s)
+	}
+	return au
+}
+
+// ClearMsuInternalID clears the value of the "msu_internal_id" field.
+func (au *ApplicationUpdate) ClearMsuInternalID() *ApplicationUpdate {
+	au.mutation.ClearMsuInternalID()
+	return au
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by ID.
 func (au *ApplicationUpdate) SetHeadingID(id int) *ApplicationUpdate {
 	au.mutation.SetHeadingID(id)
@@ -287,6 +307,12 @@ func (au *ApplicationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := au.mutation.MsuInternalID(); ok {
+		_spec.SetField(application.FieldMsuInternalID, field.TypeString, value)
+	}
+	if au.mutation.MsuInternalIDCleared() {
+		_spec.ClearField(application.FieldMsuInternalID, field.TypeString)
 	}
 	if au.mutation.HeadingCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -498,6 +524,26 @@ func (auo *ApplicationUpdateOne) SetUpdatedAt(t time.Time) *ApplicationUpdateOne
 	return auo
 }
 
+// SetMsuInternalID sets the "msu_internal_id" field.
+func (auo *ApplicationUpdateOne) SetMsuInternalID(s string) *ApplicationUpdateOne {
+	auo.mutation.SetMsuInternalID(s)
+	return auo
+}
+
+// SetNillableMsuInternalID sets the "msu_internal_id" field if the given value is not nil.
+func (auo *ApplicationUpdateOne) SetNillableMsuInternalID(s *string) *ApplicationUpdateOne {
+	if s != nil {
+		auo.SetMsuInternalID(*s)
+	}
+	return auo
+}
+
+// ClearMsuInternalID clears the value of the "msu_internal_id" field.
+func (auo *ApplicationUpdateOne) ClearMsuInternalID() *ApplicationUpdateOne {
+	auo.mutation.ClearMsuInternalID()
+	return auo
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by ID.
 func (auo *ApplicationUpdateOne) SetHeadingID(id int) *ApplicationUpdateOne {
 	auo.mutation.SetHeadingID(id)
@@ -652,6 +698,12 @@ func (auo *ApplicationUpdateOne) sqlSave(ctx context.Context) (_node *Applicatio
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := auo.mutation.MsuInternalID(); ok {
+		_spec.SetField(application.FieldMsuInternalID, field.TypeString, value)
+	}
+	if auo.mutation.MsuInternalIDCleared() {
+		_spec.ClearField(application.FieldMsuInternalID, field.TypeString)
 	}
 	if auo.mutation.HeadingCleared() {
 		edge := &sqlgraph.EdgeSpec{

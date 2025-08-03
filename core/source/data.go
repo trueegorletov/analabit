@@ -13,9 +13,10 @@ type ApplicationData struct {
 	CompetitionType   core.Competition
 	OriginalSubmitted bool
 	// MSU-specific fields for ID resolution
-	DVIScore          int   // DVI (additional entrance exam) score, 0 if not applicable
-	EGEScores         []int // Individual EGE scores, empty if not available
-	HeadingName       string // MSU-specific field for pretty name
+	DVIScore      int    // DVI (additional entrance exam) score, 0 if not applicable
+	EGEScores     []int  // Individual EGE scores, empty if not available
+	HeadingName   string // MSU-specific field for pretty name
+	MSUInternalID *string
 }
 
 // HeadingData mirrors the data needed for core.VarsityCalculator.AddHeading.

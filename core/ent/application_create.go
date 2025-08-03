@@ -87,6 +87,20 @@ func (ac *ApplicationCreate) SetNillableUpdatedAt(t *time.Time) *ApplicationCrea
 	return ac
 }
 
+// SetMsuInternalID sets the "msu_internal_id" field.
+func (ac *ApplicationCreate) SetMsuInternalID(s string) *ApplicationCreate {
+	ac.mutation.SetMsuInternalID(s)
+	return ac
+}
+
+// SetNillableMsuInternalID sets the "msu_internal_id" field if the given value is not nil.
+func (ac *ApplicationCreate) SetNillableMsuInternalID(s *string) *ApplicationCreate {
+	if s != nil {
+		ac.SetMsuInternalID(*s)
+	}
+	return ac
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by ID.
 func (ac *ApplicationCreate) SetHeadingID(id int) *ApplicationCreate {
 	ac.mutation.SetHeadingID(id)
@@ -233,6 +247,10 @@ func (ac *ApplicationCreate) createSpec() (*Application, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.UpdatedAt(); ok {
 		_spec.SetField(application.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := ac.mutation.MsuInternalID(); ok {
+		_spec.SetField(application.FieldMsuInternalID, field.TypeString, value)
+		_node.MsuInternalID = &value
 	}
 	if nodes := ac.mutation.HeadingIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

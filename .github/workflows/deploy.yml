@@ -57,9 +57,11 @@ jobs:
       api-tag: ${{ steps.meta-api.outputs.tags }}
       aggregator-tag: ${{ steps.meta-aggregator.outputs.tags }}
       producer-tag: ${{ steps.meta-producer.outputs.tags }}
+      idmsu-tag: ${{ steps.meta-idmsu.outputs.tags }}
       api-digest: ${{ steps.build-api.outputs.digest }}
       aggregator-digest: ${{ steps.build-aggregator.outputs.digest }}
       producer-digest: ${{ steps.build-producer.outputs.digest }}
+      idmsu-digest: ${{ steps.build-idmsu.outputs.digest }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -101,6 +103,14 @@ jobs:
         images: ${{ env.REGISTRY }}/${{ github.actor }}/analabit-producer
         tags: |
           type=sha,prefix={{branch}}-
+          
+    - name: Extract metadata for IDMSU
+      id: meta-idmsu
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.actor }}/analabit-idmsu
+        tags: |
+          type=sha,prefix={{branch}}-
     
     - name: Build and push Producer
       id: build-producer
@@ -135,6 +145,18 @@ jobs:
         push: true
         tags: ${{ steps.meta-aggregator.outputs.tags }}
         labels: ${{ steps.meta-aggregator.outputs.labels }}
+        no-cache: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push IDMSU
+      id: build-idmsu
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./service/idmsu/Dockerfile
+        push: true
+        tags: ${{ steps.meta-idmsu.outputs.tags }}
+        labels: ${{ steps.meta-idmsu.outputs.labels }}
         no-cache: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -233,6 +255,7 @@ jobs:
           API_IMAGE=${{ needs.build.outputs.api-tag }}
           AGGREGATOR_IMAGE=${{ needs.build.outputs.aggregator-tag }}
           PRODUCER_IMAGE=${{ needs.build.outputs.producer-tag }}
+          IDMSU_IMAGE=${{ needs.build.outputs.idmsu-tag }}
           EOT
           
           # Login to container registry

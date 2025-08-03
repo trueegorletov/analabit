@@ -56,6 +56,7 @@ type MSUAppData struct {
 	dviScore          int
 	egeScores         []int
 	rawStudentID      string // Original ID from MSU site
+	msuInternalID     *string
 }
 
 // NewMSUBufferedReceiver creates a new MSU buffered receiver
@@ -81,6 +82,8 @@ func (r *MSUBufferedReceiver) PutApplicationData(application *source.Application
 	// Extract internal ID according to MSU rules from the plan
 	internalID := r.extractInternalID(application.StudentID, application.CompetitionType.String())
 
+	msuInternalID, _ := utils.PrepareStudentID(internalID)
+
 	// Create MSU app data
 	appData := &MSUAppData{
 		prettyName:        application.HeadingName, // Use HeadingName for MSU-specific pretty name
@@ -92,6 +95,7 @@ func (r *MSUBufferedReceiver) PutApplicationData(application *source.Application
 		dviScore:          application.DVIScore,
 		egeScores:         application.EGEScores,
 		rawStudentID:      application.StudentID,
+		msuInternalID:     &msuInternalID,
 	}
 
 	// Lock to protect buffer from concurrent writes
@@ -229,6 +233,7 @@ func (r *MSUBufferedReceiver) Finalize(ctx context.Context) error {
 				DVIScore:          app.dviScore,
 				EGEScores:         app.egeScores,
 				HeadingName:       app.prettyName,
+				MSUInternalID:     app.msuInternalID,
 			}
 			r.downstream.PutApplicationData(applicationData)
 		}

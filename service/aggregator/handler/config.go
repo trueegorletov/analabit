@@ -30,6 +30,10 @@ type config struct {
 	// Cleanup configuration
 	CleanupRetentionRuns int    `env:"CLEANUP_RETENTION_RUNS" envDefault:"5"`
 	CleanupBackupDir     string `env:"CLEANUP_BACKUP_DIR" envDefault:"./backups"`
+
+	// SPbSTU fallback configuration
+	SpbstuFallbackEnabled bool   `env:"SPBSTU_FALLBACK_ENABLED" envDefault:"false"`
+	SpbstuFallbackGobName string `env:"SPBSTU_FALLBACK_GOB_NAME" envDefault:"payload_spbstu_a9dc55c5-addd-4269-a3b9-b40b175dfa52.gob"`
 }
 
 // GetPrimaryConnString builds the primary database connection string from individual components

@@ -21,7 +21,7 @@ func TestNewUploadPayloadFromCalculator(t *testing.T) {
 	results := vc.CalculateAdmissions()
 
 	// Convert to UploadPayload
-	payload := NewUploadPayloadFromCalculator(vc, results, nil)
+	payload := NewUploadPayloadFromCalculator(vc, results, nil, nil)
 
 	// Verify basic structure
 	if payload.VarsityCode != "test_varsity" {
@@ -114,5 +114,66 @@ func TestApplicationDTO(t *testing.T) {
 
 	if dto.CompetitionType != CompetitionRegular {
 		t.Errorf("Expected CompetitionType Regular, got %v", dto.CompetitionType)
+	}
+}
+
+func TestNewUploadPayloadFromCalculatorWithMSUInternalIDs(t *testing.T) {
+	// Create a VarsityCalculator with test data
+	vc := NewVarsityCalculator("msu", "Moscow State University")
+
+	// Add a heading
+	capacities := Capacities{Regular: 5, TargetQuota: 1, DedicatedQuota: 1, SpecialQuota: 1}
+	vc.AddHeading("MATH01", capacities, "Mathematics")
+
+	// Add students and applications
+	vc.AddApplication("MATH01", "202310001234", 1, 1, CompetitionRegular, 95)
+	vc.AddApplication("MATH01", "202310005678", 2, 1, CompetitionRegular, 90)
+	vc.SetOriginalSubmitted("202310001234")
+
+	// Calculate admissions
+	results := vc.CalculateAdmissions()
+
+	// Create MSU internal IDs map (VarsityCalculator prepends "0" to student IDs)
+	msuInternalIDs := map[string]string{
+		"0202310001234": "001234", // Last 6 digits
+		"0202310005678": "005678", // Last 6 digits
+	}
+
+	// Convert to UploadPayload with MSU internal IDs
+	payload := NewUploadPayloadFromCalculator(vc, results, nil, msuInternalIDs)
+
+	// Debug: Print all applications
+	t.Logf("Total applications in payload: %d", len(payload.Applications))
+	for i, app := range payload.Applications {
+		t.Logf("Application %d: StudentID=%s, HeadingCode=%s", i, app.StudentID, app.HeadingCode)
+	}
+
+	// Verify applications have MSU internal IDs
+	foundApp1 := false
+	foundApp2 := false
+	for _, app := range payload.Applications {
+		if app.StudentID == "0202310001234" { // Note: VarsityCalculator prepends "0"
+			foundApp1 = true
+			if app.MSUInternalID == nil {
+				t.Error("Expected MSU internal ID for student 0202310001234, got nil")
+			} else if *app.MSUInternalID != "001234" {
+				t.Errorf("Expected MSU internal ID '001234', got '%s'", *app.MSUInternalID)
+			}
+		}
+		if app.StudentID == "0202310005678" { // Note: VarsityCalculator prepends "0"
+			foundApp2 = true
+			if app.MSUInternalID == nil {
+				t.Error("Expected MSU internal ID for student 0202310005678, got nil")
+			} else if *app.MSUInternalID != "005678" {
+				t.Errorf("Expected MSU internal ID '005678', got '%s'", *app.MSUInternalID)
+			}
+		}
+	}
+
+	if !foundApp1 {
+		t.Error("Application for student 0202310001234 not found")
+	}
+	if !foundApp2 {
+		t.Error("Application for student 0202310005678 not found")
 	}
 }

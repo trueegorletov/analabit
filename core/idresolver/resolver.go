@@ -4,12 +4,13 @@ import "context"
 
 // MSUAppDetails contains the details of a single MSU application needed for ID resolution
 type MSUAppDetails struct {
-	PrettyName  string // Program name (e.g., "Математика", "Физика")
-	ScoreSum    int
-	RatingPlace int
-	Priority    int
-	DVIScore    int
-	EGEScores   []int
+	PrettyName        string // Program name (e.g., "Математика", "Физика")
+	ScoreSum          int
+	RatingPlace       int
+	Priority          int
+	DVIScore          int
+	EGEScores         []int
+	AchievementsScore int
 }
 
 // ResolveRequestItem represents a single internal ID with all its applications

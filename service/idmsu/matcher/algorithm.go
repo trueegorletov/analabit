@@ -311,7 +311,7 @@ func (me *MatchingEngine) performTwoPassMatching(
 	me.performWeakMatching(requests, candidates, usedCandidates, programName, competitionType)
 }
 
-// performWeakMatching implements the weak matching pass
+// performWeakMatching implements the weak matching pass with best-available-match search
 func (me *MatchingEngine) performWeakMatching(
 	requests []idresolver.ResolveRequestItem,
 	candidates []GosuslugiApplicant,
@@ -319,6 +319,8 @@ func (me *MatchingEngine) performWeakMatching(
 	programName string,
 	competitionType string,
 ) {
+	const minWeakMatchScore = 0.5 // Define configurable threshold
+
 	// Collect unmatched requests
 	var unmatchedRequests []idresolver.ResolveRequestItem
 	for _, req := range requests {
@@ -330,11 +332,6 @@ func (me *MatchingEngine) performWeakMatching(
 	if len(unmatchedRequests) == 0 {
 		return
 	}
-
-	// Sort unmatched by rating place (ascending)
-	sort.Slice(unmatchedRequests, func(i, j int) bool {
-		return unmatchedRequests[i].Apps[0].RatingPlace < unmatchedRequests[j].Apps[0].RatingPlace
-	})
 
 	// Collect available candidates (not used and respect mapping rules)
 	var availableCandidates []struct {
@@ -355,53 +352,72 @@ func (me *MatchingEngine) performWeakMatching(
 		}{candidate, i})
 	}
 
-	// Sort available candidates by rating (preserve order)
-	sort.Slice(availableCandidates, func(i, j int) bool {
-		return availableCandidates[i].candidate.Rating < availableCandidates[j].candidate.Rating
-	})
-
-	// Weak matching: maintain rating order
-	matches := min(len(unmatchedRequests), len(availableCandidates))
-	for i := 0; i < matches; i++ {
-		req := unmatchedRequests[i]
-		candidateInfo := availableCandidates[i]
-		candidate := candidateInfo.candidate
-
-		// Apply weak matching heuristics for tie-breaking
-		confidence := me.calculateWeakMatchConfidence(req.Apps[0], candidate)
-		canonicalID := fmt.Sprintf("%d", candidate.IDApplication)
-
-		match := MatchResult{
-			InternalID:      req.InternalID,
-			CanonicalID:     canonicalID,
-			Confidence:      confidence,
-			MatchType:       "Weak",
-			ProgramName:     programName,
-			CompetitionType: competitionType,
+	// For each unmatched request, find the best available candidate
+	for _, req := range unmatchedRequests {
+		// Skip if already matched in this process by another competition type
+		if _, exists := me.globalMatches[req.InternalID]; exists {
+			continue
 		}
 
-		usedCandidates[candidateInfo.index] = true
-		me.addGlobalMatch(req.InternalID, match)
+		bestCandidateIdx := -1
+		bestScore := 0.0
 
-		slog.Debug("Weak match found",
-			"internalID", req.InternalID,
-			"canonicalID", canonicalID,
-			"confidence", confidence,
-			"competitionType", competitionType)
+		for i, candidateInfo := range availableCandidates {
+			if usedCandidates[candidateInfo.index] {
+				continue
+			}
+
+			// Ensure canonical ID can be used according to mapping rules
+			if !me.canUseCanonicalID(fmt.Sprintf("%d", candidateInfo.candidate.IDApplication), competitionType) {
+				continue
+			}
+
+			score := me.calculateWeakMatchScore(req.Apps[0], candidateInfo.candidate)
+
+			if score > bestScore {
+				bestScore = score
+				bestCandidateIdx = i
+			}
+		}
+
+		if bestScore >= minWeakMatchScore {
+			candidateInfo := availableCandidates[bestCandidateIdx]
+			candidate := candidateInfo.candidate
+			canonicalID := fmt.Sprintf("%d", candidate.IDApplication)
+
+			match := MatchResult{
+				InternalID:      req.InternalID,
+				CanonicalID:     canonicalID,
+				Confidence:      bestScore,
+				MatchType:       "Weak",
+				ProgramName:     programName,
+				CompetitionType: competitionType,
+			}
+
+			usedCandidates[candidateInfo.index] = true
+			me.addGlobalMatch(req.InternalID, match)
+
+			slog.Debug("Weak match found",
+				"internalID", req.InternalID,
+				"canonicalID", canonicalID,
+				"confidence", bestScore,
+				"competitionType", competitionType)
+		}
 	}
 
-	// Fallback for remaining unmatched
-	for i := matches; i < len(unmatchedRequests); i++ {
-		req := unmatchedRequests[i]
-		match := MatchResult{
-			InternalID:      req.InternalID,
-			CanonicalID:     me.generateFallbackID(req.InternalID),
-			Confidence:      0.0,
-			MatchType:       "Fallback",
-			ProgramName:     programName,
-			CompetitionType: competitionType,
+	// Fallback for remaining unmatched requests
+	for _, req := range unmatchedRequests {
+		if _, exists := me.globalMatches[req.InternalID]; !exists {
+			match := MatchResult{
+				InternalID:      req.InternalID,
+				CanonicalID:     me.generateFallbackID(req.InternalID),
+				Confidence:      0.0,
+				MatchType:       "Fallback",
+				ProgramName:     programName,
+				CompetitionType: competitionType,
+			}
+			me.addGlobalMatch(req.InternalID, match)
 		}
-		me.addGlobalMatch(req.InternalID, match)
 	}
 }
 
@@ -449,6 +465,89 @@ func (me *MatchingEngine) calculateWeakMatchConfidence(
 	}
 
 	return confidence
+}
+
+// calculateWeakMatchScore calculates a detailed score for weak matches with granular scoring
+func (me *MatchingEngine) calculateWeakMatchScore(
+	msuApp idresolver.MSUAppDetails,
+	candidate GosuslugiApplicant,
+) float64 {
+	score := 0.4 // Base confidence
+
+	// EGE Score Similarity (up to +0.25)
+	egeBonus := me.calculateEGEScoreSimilarity(msuApp.EGEScores, candidate)
+	score += egeBonus
+
+	// Total Score Proximity (up to +0.2)
+	delta := float64(msuApp.ScoreSum) - candidate.SumMark
+	if delta < 0 {
+		delta = -delta // Absolute value
+	}
+	if delta <= 1 {
+		score += 0.2
+	} else if delta <= 3 {
+		score += 0.1
+	} else if delta <= 5 {
+		score += 0.05
+	}
+
+	// Priority Match (up to +0.1)
+	if msuApp.Priority == candidate.Priority {
+		score += 0.1
+	}
+
+	// Individual Achievements Proximity (up to +0.05)
+	if float64(msuApp.AchievementsScore) == candidate.AchievementsMark && msuApp.AchievementsScore > 0 {
+		score += 0.05
+	}
+
+	return score
+}
+
+// calculateEGEScoreSimilarity calculates EGE score similarity bonus
+func (me *MatchingEngine) calculateEGEScoreSimilarity(msuScores []int, candidate GosuslugiApplicant) float64 {
+	candidateScores := me.extractEGEScores(candidate)
+
+	// Check for identical sets (order-agnostic)
+	if me.egeScoresMatch(msuScores, candidate) {
+		return 0.25
+	}
+
+	// Check for significant overlap
+	if len(msuScores) > 0 && len(candidateScores) > 0 {
+		matches := me.countEGEScoreMatches(msuScores, candidateScores)
+		total := len(msuScores)
+
+		// If 2 out of 3 or similar ratio match
+		if total >= 3 && matches >= 2 {
+			return 0.1
+		}
+		// For smaller sets, require at least half to match
+		if total >= 2 && matches >= total/2 {
+			return 0.1
+		}
+	}
+
+	return 0.0
+}
+
+// countEGEScoreMatches counts how many EGE scores match between two sets
+func (me *MatchingEngine) countEGEScoreMatches(msuScores []int, candidateScores []int) int {
+	// Create a map for faster lookup
+	candidateSet := make(map[int]int)
+	for _, score := range candidateScores {
+		candidateSet[score]++
+	}
+
+	matches := 0
+	for _, score := range msuScores {
+		if candidateSet[score] > 0 {
+			matches++
+			candidateSet[score]-- // Handle duplicates correctly
+		}
+	}
+
+	return matches
 }
 
 // Helper functions

@@ -25,6 +25,7 @@ type ApplicationDTO struct {
 	CompetitionType Competition `json:"competition_type"`
 	RatingPlace     int         `json:"rating_place"`
 	Score           int         `json:"score"`
+	MSUInternalID   *string     `json:"msu_internal_id,omitempty"`
 }
 
 // HeadingDTO carries all essential information about a heading.
@@ -65,7 +66,9 @@ type DrainedResultDTO struct {
 
 // NewUploadPayloadFromCalculator creates an UploadPayload from a VarsityCalculator and its results
 // Note: drainedResults parameter should be map[int][]drainer.DrainedResult but we avoid the import cycle
-func NewUploadPayloadFromCalculator(vc *VarsityCalculator, results []CalculationResult, drainedDTOs map[int][]DrainedResultDTO) *UploadPayload {
+// msuInternalIDs parameter is optional map of studentID -> msuInternalID for MSU-specific data
+func NewUploadPayloadFromCalculator(vc *VarsityCalculator, results []CalculationResult, drainedDTOs map[int][]DrainedResultDTO, msuInternalIDs map[string]string) *UploadPayload {
+
 	payload := &UploadPayload{
 		VarsityCode:  vc.code,
 		VarsityName:  vc.prettyName,
@@ -103,6 +106,12 @@ func NewUploadPayloadFromCalculator(vc *VarsityCalculator, results []Calculation
 
 		// Convert applications for this student
 		for _, app := range student.Applications() {
+			// Get MSU internal ID if available
+			var msuInternalID *string
+			if internalID, exists := msuInternalIDs[app.StudentID()]; exists {
+				msuInternalID = &internalID
+			}
+
 			payload.Applications = append(payload.Applications, ApplicationDTO{
 				StudentID:       app.StudentID(),
 				HeadingCode:     app.Heading().FullCode(),
@@ -110,6 +119,7 @@ func NewUploadPayloadFromCalculator(vc *VarsityCalculator, results []Calculation
 				CompetitionType: app.CompetitionType(),
 				RatingPlace:     app.RatingPlace(),
 				Score:           app.Score(),
+				MSUInternalID:   msuInternalID,
 			})
 		}
 	}

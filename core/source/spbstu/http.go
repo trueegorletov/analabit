@@ -1,16 +1,18 @@
 package spbstu
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
+	"os"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/source"
+	"github.com/trueegorletov/analabit/core/source/flaresolverr"
 	"github.com/trueegorletov/analabit/core/utils"
 )
 
@@ -29,78 +31,165 @@ type SpbstuCapacityResponse struct {
 	Places int `json:"places"`
 }
 
-// fetchSpbstuListByID fetches and decodes the SPbSTU list from a list ID.
+// getSpbstuHeaders returns the headers to be used for SPbSTU requests
+func getSpbstuHeaders() map[string]string {
+	return map[string]string{
+		"User-Agent":         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+		"Accept-Language":    "ru-RU,ru;q=0.9,en;q=0.8",
+		"Accept-Encoding":    "gzip, deflate, br",
+		"Cache-Control":      "no-cache",
+		"Pragma":             "no-cache",
+		"Sec-Ch-Ua":          `"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"`,
+		"Sec-Ch-Ua-Mobile":   "?0",
+		"Sec-Ch-Ua-Platform": `"Windows"`,
+		"Sec-Fetch-Dest":     "empty",
+		"Sec-Fetch-Mode":     "cors",
+		"Sec-Fetch-Site":     "same-origin",
+		"Referer":            "https://my.spbstu.ru/",
+	}
+}
+
+// getSpbstuRequestDelay returns the configured delay for SPbSTU requests
+func getSpbstuRequestDelay() time.Duration {
+	if envDelay := os.Getenv("SPBSTU_REQUEST_DELAY_SECONDS"); envDelay != "" {
+		if seconds, err := strconv.Atoi(envDelay); err == nil && seconds > 0 {
+			return time.Duration(seconds) * time.Second
+		}
+	}
+	return 100 * time.Millisecond // Default delay
+}
+
+// fetchSpbstuListByID fetches and decodes the SPbSTU list from a list ID using FlareSolverr
 func fetchSpbstuListByID(listID int, competitionFilter int) ([]SpbstuApplicationEntry, error) {
 	if listID == -1 {
 		return nil, nil
 	}
 	url := fmt.Sprintf("https://my.spbstu.ru/home/get-abit-list?filter_1=2&filter_2=%d&filter_3=%d&education_level=bachelor", competitionFilter, listID)
 
+	// Create context with timeout to prevent deadlocks
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	// Acquire semaphore for rate limiting
 	release, err := source.AcquireHTTPSemaphores(ctx, "spbstu")
 	if err != nil {
 		return nil, fmt.Errorf("failed to acquire semaphores for %s: %w", url, err)
 	}
 	defer release()
 
-	resp, err := http.Get(url)
+	// Make HTTP request through FlareSolverr with session management
+	resp, err := flaresolverr.SafeGetWithDomain(url, getSpbstuHeaders())
 	if err != nil {
-		return nil, fmt.Errorf("failed to download %s: %w", url, err)
+		if flaresolverr.IsFlareSolverrError(err) {
+			return nil, fmt.Errorf("FlareSolverr unavailable for %s: %w", url, err)
+		}
+		return nil, fmt.Errorf("failed to download %s via FlareSolverr: %w", url, err)
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("failed to download %s (status code %d)", url, resp.StatusCode)
 	}
 
-	return decodeSpbstuList(resp.Body)
+	// Extract JSON from HTML wrapper if present
+	body := resp.Body
+	if start := strings.Index(body, "<pre>"); start != -1 {
+		if end := strings.LastIndex(body, "</pre>"); end != -1 && end > start {
+			body = body[start+len("<pre>") : end]
+		}
+	}
+	// Fallback: extract JSON by locating the first '{' and last '}'
+	if !strings.HasPrefix(strings.TrimSpace(body), "{") && !strings.HasPrefix(strings.TrimSpace(body), "[") {
+		if start := strings.Index(body, "{"); start != -1 {
+			if end := strings.LastIndex(body, "}"); end != -1 && end > start {
+				body = body[start : end+1]
+			}
+		} else if start := strings.Index(body, "["); start != -1 {
+			if end := strings.LastIndex(body, "]"); end != -1 && end > start {
+				body = body[start : end+1]
+			}
+		}
+	}
+
+	// Parse JSON response using existing decode function
+	entries, err := decodeSpbstuList(strings.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse JSON response for %s: %w", url, err)
+	}
+
+	// Apply delay after each request
+	time.Sleep(getSpbstuRequestDelay())
+
+	return entries, nil
 }
 
-// fetchSpbstuCapacity fetches capacity data for a specific list ID.
+// fetchSpbstuCapacity fetches capacity data for a specific list ID using FlareSolverr
 func fetchSpbstuCapacity(listID int) (int, error) {
 	if listID == -1 {
 		return 0, nil
 	}
 
 	url := "https://my.spbstu.ru/home/get-direction-info"
-	payload := map[string]string{
+	postData := map[string]interface{}{
+		"condition":       "1",
 		"id_3":            strconv.Itoa(listID),
 		"education_level": "bachelor",
 	}
 
-	jsonPayload, err := json.Marshal(payload)
-	if err != nil {
-		return 0, fmt.Errorf("failed to marshal capacity request payload: %w", err)
-	}
-
+	// Create context with timeout to prevent deadlocks
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	// Acquire semaphore for rate limiting
 	release, err := source.AcquireHTTPSemaphores(ctx, "spbstu")
 	if err != nil {
 		return 0, fmt.Errorf("failed to acquire semaphores for %s: %w", url, err)
 	}
 	defer release()
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonPayload))
-	if err != nil {
-		return 0, fmt.Errorf("failed to fetch capacity from %s: %w", url, err)
-	}
-	defer resp.Body.Close()
+	// Set headers for POST request
+	headers := getSpbstuHeaders()
+	headers["Content-Type"] = "application/json"
 
-	if resp.StatusCode != http.StatusOK {
+	// Make HTTP POST request through FlareSolverr
+	resp, err := flaresolverr.SafePostWithData(url, postData, headers)
+	if err != nil {
+		if flaresolverr.IsFlareSolverrError(err) {
+			return 0, fmt.Errorf("FlareSolverr unavailable for capacity request %s: %w", url, err)
+		}
+		return 0, fmt.Errorf("failed to fetch capacity from %s via FlareSolverr: %w", url, err)
+	}
+
+	if resp.StatusCode != 200 {
 		return 0, fmt.Errorf("failed to fetch capacity from %s (status code %d)", url, resp.StatusCode)
 	}
 
+	// Extract JSON from HTML wrapper if present
+	body := resp.Body
+	if start := strings.Index(body, "<pre>"); start != -1 {
+		if end := strings.LastIndex(body, "</pre>"); end != -1 && end > start {
+			body = body[start+len("<pre>") : end]
+		}
+	}
+	// Fallback: extract JSON by locating the first '[' and last ']'
+	if !strings.HasPrefix(strings.TrimSpace(body), "[") {
+		if start := strings.Index(body, "["); start != -1 {
+			if end := strings.LastIndex(body, "]"); end != -1 && end > start {
+				body = body[start : end+1]
+			}
+		}
+	}
+
 	var responses []SpbstuCapacityResponse
-	dec := json.NewDecoder(resp.Body)
-	if err := dec.Decode(&responses); err != nil {
+	if err := json.Unmarshal([]byte(body), &responses); err != nil {
 		return 0, fmt.Errorf("failed to decode capacity response: %w", err)
 	}
 
 	if len(responses) == 0 {
 		return 0, fmt.Errorf("empty capacity response")
 	}
+
+	// Apply delay after each request
+	time.Sleep(getSpbstuRequestDelay())
 
 	return responses[0].Places, nil
 }

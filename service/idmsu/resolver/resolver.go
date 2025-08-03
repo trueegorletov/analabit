@@ -158,7 +158,7 @@ func (r *MSUResolver) StartBackgroundFetcher(ctx context.Context) {
 
 	go func() {
 		// Perform immediate fetch only if data is stale (older than 2 hours)
-		if time.Since(r.lastSuccessfulFetch) > 2*time.Hour {
+		if time.Since(r.lastSuccessfulFetch) > 1*time.Hour {
 			slog.Info("Data is stale, performing initial fetch")
 			if err := r.fetchGosuslugiDataWithRun(ctx); err != nil {
 				slog.Error("Initial fetch failed", "error", err)
@@ -170,7 +170,7 @@ func (r *MSUResolver) StartBackgroundFetcher(ctx context.Context) {
 		}
 
 		// Set up periodic fetching every 2 hours
-		ticker := time.NewTicker(2 * time.Hour)
+		ticker := time.NewTicker(45 * time.Minute)
 		defer ticker.Stop()
 		for {
 			select {
@@ -448,8 +448,21 @@ func (r *MSUResolver) HasRecentData() bool {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	// Data is considered recent if it's been fetched in the last 2 hours
-	return !r.lastSuccessfulFetch.IsZero() && time.Since(r.lastSuccessfulFetch) < 2*time.Hour
+	// Data is considered recent if it's been fetched in the last 45 minutes
+	has := !r.lastSuccessfulFetch.IsZero() && time.Since(r.lastSuccessfulFetch) < 45*time.Minute
+
+	if len(r.getAllCachedGosuslugiData()) == 0 {
+		go func() {
+			fetchCtx := context.Background()
+			if err := r.fetchGosuslugiDataWithRun(fetchCtx); err != nil {
+				slog.Error("Triggered fetch failed", "error", err)
+			}
+		}()
+
+		return false
+	}
+
+	return has
 }
 
 // triggerFetchIfNeeded triggers a fetch if data is stale and no fetch is in progress

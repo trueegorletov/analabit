@@ -44,7 +44,7 @@ func main() {
 	slog.Info("Database connection established")
 
 	// Initialize layered cache with database persistence
-	memCache := cache.NewMemoryCache(30 * time.Minute)
+	memCache := cache.NewMemoryCache(25 * time.Minute)
 	layered := cache.NewLayeredCache(memCache, dbStore)
 
 	// Initialize resolver with both caches

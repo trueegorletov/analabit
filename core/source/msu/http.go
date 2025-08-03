@@ -244,6 +244,13 @@ func (hs *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 				}
 			}
 
+			// extract MSU internal ID from student ID (last 6 digits)
+			var msuInternalID *string
+			if len(studentID) >= 6 {
+				inner, _ := utils.PrepareStudentID(studentID[len(studentID)-6:])
+				msuInternalID = &inner
+			}
+
 			// create and send application data
 			ad := &source.ApplicationData{
 				HeadingCode:       headingCode,
@@ -256,6 +263,7 @@ func (hs *HTTPHeadingSource) LoadTo(receiver source.DataReceiver) error {
 				DVIScore:          dviScore,
 				EGEScores:         egeScores,
 				HeadingName:       hs.PrettyName,
+				MSUInternalID:     msuInternalID,
 			}
 			receiver.PutApplicationData(ad)
 		})

@@ -1,14 +1,14 @@
 package cmd
 
 import (
+	"context"
+	"fmt"
 	"github.com/trueegorletov/analabit/cli/config"
 	"github.com/trueegorletov/analabit/cli/corestate"
 	"github.com/trueegorletov/analabit/core"
 	"github.com/trueegorletov/analabit/core/database"
 	"github.com/trueegorletov/analabit/core/ent"
 	"github.com/trueegorletov/analabit/core/upload"
-	"context"
-	"fmt"
 	"log"
 
 	"github.com/trueegorletov/analabit/core/drainer"
@@ -63,9 +63,11 @@ var uploadCmd = &cobra.Command{
 		corestate.ResultsMutex.RLock() // Ensure read lock while accessing results
 		for varsityCode, results := range corestate.PrimaryResults {
 			var targetVarsityCalculator *core.VarsityCalculator
+			var targetVarsity *source.Varsity
 			for _, v := range corestate.LoadedVarsities {
 				if v.Code == varsityCode {
 					targetVarsityCalculator = v.VarsityCalculator // This is the original calculator from loading phase
+					targetVarsity = v
 					break
 				}
 			}
@@ -88,7 +90,13 @@ var uploadCmd = &cobra.Command{
 			}
 			corestate.ResultsMutex.RUnlock()
 
-			payload := core.NewUploadPayloadFromCalculator(targetVarsityCalculator, results, drainedDTOs)
+			// Pass MSU internal IDs from the loaded varsity
+			var msuInternalIDs map[string]string
+			if targetVarsity != nil {
+				msuInternalIDs = targetVarsity.MSUInternalIDs
+			}
+
+			payload := core.NewUploadPayloadFromCalculator(targetVarsityCalculator, results, drainedDTOs, msuInternalIDs)
 
 			// Call the updated upload.Primary function with runID and payload
 			if err := upload.Primary(ctx, client, run.ID, payload); err != nil {
@@ -137,7 +145,7 @@ var uploadCmd = &cobra.Command{
 			if err := upload.RefreshMaterializedViews(ctx, dbClient); err != nil {
 				log.Printf("Warning: Failed to refresh materialized views: %v", err)
 			} else {
-			fmt.Println("Materialized views refreshed successfully.")
+				fmt.Println("Materialized views refreshed successfully.")
 			}
 		}
 

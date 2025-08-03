@@ -268,6 +268,39 @@ func (c *Client) GetWithHeaders(url string, headers map[string]string) (*GetResp
 	}, nil
 }
 
+// PostWithData performs a POST request with JSON data through FlareSolverr
+func (c *Client) PostWithData(url string, postData map[string]interface{}, headers map[string]string) (*GetResponse, error) {
+	request := Request{
+		Cmd:        "request.post",
+		URL:        url,
+		MaxTimeout: int(c.timeout.Milliseconds()),
+		Headers:    headers,
+		PostData:   postData,
+	}
+
+	response, err := c.sendRequest(request)
+	if err != nil {
+		return &GetResponse{Error: err}, err
+	}
+
+	if response.Status != "ok" {
+		err := fmt.Errorf("FlareSolverr error: %s", response.Message)
+		return &GetResponse{Error: err}, err
+	}
+
+	if response.Solution == nil {
+		err := fmt.Errorf("no solution in FlareSolverr response")
+		return &GetResponse{Error: err}, err
+	}
+
+	return &GetResponse{
+		StatusCode: response.Solution.Status,
+		Body:       response.Solution.Response,
+		Headers:    response.Solution.Headers,
+		URL:        response.Solution.URL,
+	}, nil
+}
+
 // GetWithSession performs a GET request using a specific session
 func (c *Client) GetWithSession(url string, sessionID string, headers map[string]string) (*GetResponse, error) {
 	request := Request{
@@ -409,6 +442,16 @@ func SafeGetWithHeaders(url string, headers map[string]string) (*GetResponse, er
 	}
 
 	return client.GetWithHeaders(url, headers)
+}
+
+// SafePostWithData performs a POST request with JSON data and graceful fallback handling
+func SafePostWithData(url string, postData map[string]interface{}, headers map[string]string) (*GetResponse, error) {
+	client, err := GetClient()
+	if err != nil {
+		return &GetResponse{Error: err}, fmt.Errorf("FlareSolverr unavailable: %w", err)
+	}
+
+	return client.PostWithData(url, postData, headers)
 }
 
 // GetWithDomain performs a GET request using domain-specific session management

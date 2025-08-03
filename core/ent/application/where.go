@@ -97,6 +97,11 @@ func UpdatedAt(v time.Time) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// MsuInternalID applies equality check predicate on the "msu_internal_id" field. It's identical to MsuInternalIDEQ.
+func MsuInternalID(v string) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldMsuInternalID, v))
+}
+
 // StudentIDEQ applies the EQ predicate on the "student_id" field.
 func StudentIDEQ(v string) predicate.Application {
 	return predicate.Application(sql.FieldEQ(FieldStudentID, v))
@@ -404,6 +409,81 @@ func UpdatedAtLT(v time.Time) predicate.Application {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Application {
 	return predicate.Application(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// MsuInternalIDEQ applies the EQ predicate on the "msu_internal_id" field.
+func MsuInternalIDEQ(v string) predicate.Application {
+	return predicate.Application(sql.FieldEQ(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDNEQ applies the NEQ predicate on the "msu_internal_id" field.
+func MsuInternalIDNEQ(v string) predicate.Application {
+	return predicate.Application(sql.FieldNEQ(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDIn applies the In predicate on the "msu_internal_id" field.
+func MsuInternalIDIn(vs ...string) predicate.Application {
+	return predicate.Application(sql.FieldIn(FieldMsuInternalID, vs...))
+}
+
+// MsuInternalIDNotIn applies the NotIn predicate on the "msu_internal_id" field.
+func MsuInternalIDNotIn(vs ...string) predicate.Application {
+	return predicate.Application(sql.FieldNotIn(FieldMsuInternalID, vs...))
+}
+
+// MsuInternalIDGT applies the GT predicate on the "msu_internal_id" field.
+func MsuInternalIDGT(v string) predicate.Application {
+	return predicate.Application(sql.FieldGT(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDGTE applies the GTE predicate on the "msu_internal_id" field.
+func MsuInternalIDGTE(v string) predicate.Application {
+	return predicate.Application(sql.FieldGTE(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDLT applies the LT predicate on the "msu_internal_id" field.
+func MsuInternalIDLT(v string) predicate.Application {
+	return predicate.Application(sql.FieldLT(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDLTE applies the LTE predicate on the "msu_internal_id" field.
+func MsuInternalIDLTE(v string) predicate.Application {
+	return predicate.Application(sql.FieldLTE(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDContains applies the Contains predicate on the "msu_internal_id" field.
+func MsuInternalIDContains(v string) predicate.Application {
+	return predicate.Application(sql.FieldContains(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDHasPrefix applies the HasPrefix predicate on the "msu_internal_id" field.
+func MsuInternalIDHasPrefix(v string) predicate.Application {
+	return predicate.Application(sql.FieldHasPrefix(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDHasSuffix applies the HasSuffix predicate on the "msu_internal_id" field.
+func MsuInternalIDHasSuffix(v string) predicate.Application {
+	return predicate.Application(sql.FieldHasSuffix(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDIsNil applies the IsNil predicate on the "msu_internal_id" field.
+func MsuInternalIDIsNil() predicate.Application {
+	return predicate.Application(sql.FieldIsNull(FieldMsuInternalID))
+}
+
+// MsuInternalIDNotNil applies the NotNil predicate on the "msu_internal_id" field.
+func MsuInternalIDNotNil() predicate.Application {
+	return predicate.Application(sql.FieldNotNull(FieldMsuInternalID))
+}
+
+// MsuInternalIDEqualFold applies the EqualFold predicate on the "msu_internal_id" field.
+func MsuInternalIDEqualFold(v string) predicate.Application {
+	return predicate.Application(sql.FieldEqualFold(FieldMsuInternalID, v))
+}
+
+// MsuInternalIDContainsFold applies the ContainsFold predicate on the "msu_internal_id" field.
+func MsuInternalIDContainsFold(v string) predicate.Application {
+	return predicate.Application(sql.FieldContainsFold(FieldMsuInternalID, v))
 }
 
 // HasHeading applies the HasEdge predicate on the "heading" edge.

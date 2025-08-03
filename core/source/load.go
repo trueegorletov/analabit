@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/trueegorletov/analabit/core"
+	"github.com/trueegorletov/analabit/core/utils"
 )
 
 type VarsityDefinition struct {
@@ -21,10 +22,13 @@ type Varsity struct {
 	*VarsityDefinition
 	*core.VarsityCalculator
 	*VarsityDataCache
+	// MSUInternalIDs holds MSU internal ID mapping: studentID -> msuInternalID
+	MSUInternalIDs map[string]string
 }
 
 func (v *Varsity) Prepare() {
 	v.VarsityCalculator = core.NewVarsityCalculator(v.Code, v.Name)
+	v.MSUInternalIDs = make(map[string]string)
 
 	if v.VarsityDataCache == nil {
 		v.VarsityDataCache = NewVarsityDataCache(v.VarsityDefinition)
@@ -36,8 +40,17 @@ func (v *Varsity) Clone() *Varsity {
 		panic("trying to copy an unloaded varsity")
 	}
 
+	// Copy MSU internal IDs map
+	msuIDsCopy := make(map[string]string)
+	for k, v := range v.MSUInternalIDs {
+		msuIDsCopy[k] = v
+	}
+
 	clone := Varsity{
-		v.VarsityDefinition, nil, v.VarsityDataCache,
+		VarsityDefinition: v.VarsityDefinition,
+		VarsityCalculator: nil,
+		VarsityDataCache:  v.VarsityDataCache,
+		MSUInternalIDs:    msuIDsCopy,
 	}
 	clone.loadFromCache()
 
@@ -72,6 +85,14 @@ func (v *Varsity) AddHeading(hd *HeadingData) {
 func (v *Varsity) AddApplication(ad *ApplicationData) {
 	if ad.CompetitionType > core.CompetitionBVI && !ad.OriginalSubmitted {
 		return // Most of the quota guys never submit their originals, so consider only those who did
+	}
+
+	if ad.MSUInternalID != nil {
+		k, err := utils.PrepareStudentID(ad.StudentID)
+
+		if err == nil {
+			v.MSUInternalIDs[k] = *ad.MSUInternalID
+		}
 	}
 
 	v.VarsityCalculator.AddApplication(ad.HeadingCode, ad.StudentID, ad.RatingPlace, ad.Priority, ad.CompetitionType, ad.ScoresSum)

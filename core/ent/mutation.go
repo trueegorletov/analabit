@@ -55,6 +55,7 @@ type ApplicationMutation struct {
 	addscore            *int
 	original_submitted  *bool
 	updated_at          *time.Time
+	msu_internal_id     *string
 	clearedFields       map[string]struct{}
 	heading             *int
 	clearedheading      bool
@@ -531,6 +532,55 @@ func (m *ApplicationMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetMsuInternalID sets the "msu_internal_id" field.
+func (m *ApplicationMutation) SetMsuInternalID(s string) {
+	m.msu_internal_id = &s
+}
+
+// MsuInternalID returns the value of the "msu_internal_id" field in the mutation.
+func (m *ApplicationMutation) MsuInternalID() (r string, exists bool) {
+	v := m.msu_internal_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMsuInternalID returns the old "msu_internal_id" field's value of the Application entity.
+// If the Application object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApplicationMutation) OldMsuInternalID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMsuInternalID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMsuInternalID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMsuInternalID: %w", err)
+	}
+	return oldValue.MsuInternalID, nil
+}
+
+// ClearMsuInternalID clears the value of the "msu_internal_id" field.
+func (m *ApplicationMutation) ClearMsuInternalID() {
+	m.msu_internal_id = nil
+	m.clearedFields[application.FieldMsuInternalID] = struct{}{}
+}
+
+// MsuInternalIDCleared returns if the "msu_internal_id" field was cleared in this mutation.
+func (m *ApplicationMutation) MsuInternalIDCleared() bool {
+	_, ok := m.clearedFields[application.FieldMsuInternalID]
+	return ok
+}
+
+// ResetMsuInternalID resets all changes to the "msu_internal_id" field.
+func (m *ApplicationMutation) ResetMsuInternalID() {
+	m.msu_internal_id = nil
+	delete(m.clearedFields, application.FieldMsuInternalID)
+}
+
 // SetHeadingID sets the "heading" edge to the Heading entity by id.
 func (m *ApplicationMutation) SetHeadingID(id int) {
 	m.heading = &id
@@ -631,7 +681,7 @@ func (m *ApplicationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ApplicationMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.student_id != nil {
 		fields = append(fields, application.FieldStudentID)
 	}
@@ -655,6 +705,9 @@ func (m *ApplicationMutation) Fields() []string {
 	}
 	if m.updated_at != nil {
 		fields = append(fields, application.FieldUpdatedAt)
+	}
+	if m.msu_internal_id != nil {
+		fields = append(fields, application.FieldMsuInternalID)
 	}
 	return fields
 }
@@ -680,6 +733,8 @@ func (m *ApplicationMutation) Field(name string) (ent.Value, bool) {
 		return m.OriginalSubmitted()
 	case application.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case application.FieldMsuInternalID:
+		return m.MsuInternalID()
 	}
 	return nil, false
 }
@@ -705,6 +760,8 @@ func (m *ApplicationMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldOriginalSubmitted(ctx)
 	case application.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case application.FieldMsuInternalID:
+		return m.OldMsuInternalID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Application field %s", name)
 }
@@ -769,6 +826,13 @@ func (m *ApplicationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case application.FieldMsuInternalID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMsuInternalID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Application field %s", name)
@@ -850,7 +914,11 @@ func (m *ApplicationMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ApplicationMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(application.FieldMsuInternalID) {
+		fields = append(fields, application.FieldMsuInternalID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -863,6 +931,11 @@ func (m *ApplicationMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ApplicationMutation) ClearField(name string) error {
+	switch name {
+	case application.FieldMsuInternalID:
+		m.ClearMsuInternalID()
+		return nil
+	}
 	return fmt.Errorf("unknown Application nullable field %s", name)
 }
 
@@ -893,6 +966,9 @@ func (m *ApplicationMutation) ResetField(name string) error {
 		return nil
 	case application.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case application.FieldMsuInternalID:
+		m.ResetMsuInternalID()
 		return nil
 	}
 	return fmt.Errorf("unknown Application field %s", name)

@@ -18,6 +18,7 @@ var (
 		{Name: "score", Type: field.TypeInt},
 		{Name: "original_submitted", Type: field.TypeBool, Default: false},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "msu_internal_id", Type: field.TypeString, Nullable: true},
 		{Name: "run_id", Type: field.TypeInt},
 		{Name: "heading_applications", Type: field.TypeInt},
 	}
@@ -29,13 +30,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "applications_runs_run",
-				Columns:    []*schema.Column{ApplicationsColumns[8]},
+				Columns:    []*schema.Column{ApplicationsColumns[9]},
 				RefColumns: []*schema.Column{RunsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "applications_headings_applications",
-				Columns:    []*schema.Column{ApplicationsColumns[9]},
+				Columns:    []*schema.Column{ApplicationsColumns[10]},
 				RefColumns: []*schema.Column{HeadingsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -44,12 +45,12 @@ var (
 			{
 				Name:    "application_run_id",
 				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[8]},
+				Columns: []*schema.Column{ApplicationsColumns[9]},
 			},
 			{
 				Name:    "application_run_id_student_id",
 				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[8], ApplicationsColumns[1]},
+				Columns: []*schema.Column{ApplicationsColumns[9], ApplicationsColumns[1]},
 			},
 			{
 				Name:    "application_original_submitted",
@@ -59,12 +60,12 @@ var (
 			{
 				Name:    "application_run_id_rating_place",
 				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[8], ApplicationsColumns[4]},
+				Columns: []*schema.Column{ApplicationsColumns[9], ApplicationsColumns[4]},
 			},
 			{
 				Name:    "application_run_id_student_id_heading_applications",
 				Unique:  false,
-				Columns: []*schema.Column{ApplicationsColumns[8], ApplicationsColumns[1], ApplicationsColumns[9]},
+				Columns: []*schema.Column{ApplicationsColumns[9], ApplicationsColumns[1], ApplicationsColumns[10]},
 			},
 		},
 	}

@@ -17,6 +17,7 @@ import (
 
 var AllDefinitions = []source.VarsityDefinition{
 	mirea.Varsity,
+	msu.Varsity,
 	hse.VarsityMsk,
 	hse.VarsitySpb,
 	hse.VarsityNn,
@@ -27,8 +28,7 @@ var AllDefinitions = []source.VarsityDefinition{
 	rsmu.Varsity,
 	rzgmu.Varsity,
 	itmo.Varsity,
-	mipt.Varsity,
 	fmsmu.Varsity,
 	mephi.Varsity,
-	msu.Varsity,
+	mipt.Varsity,
 }
