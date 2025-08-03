@@ -20,6 +20,7 @@ COPY go.work go.mod go.sum ./
 # Copy service modules to proper locations
 COPY service/aggregator/go.mod service/aggregator/go.sum service/aggregator/
 COPY service/api/go.mod service/api/go.sum service/api/
+COPY service/idmsu/go.mod service/idmsu/go.sum service/idmsu/
 COPY service/producer/go.mod service/producer/go.sum service/producer/
 # Sync workspace build list to modules
 RUN go work sync
