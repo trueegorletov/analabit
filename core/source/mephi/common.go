@@ -72,8 +72,6 @@ func ParseCapacitiesRegistry(doc *html.Node) (map[string]int, error) {
 			continue
 		}
 
-
-
 		// Check if there's a new KCP value in the 4th column ("Оч")
 		// Only check if we have enough cells (rowspan rows will have fewer cells)
 		if len(cells) >= 5 {
@@ -118,8 +116,6 @@ func ParseCapacitiesRegistry(doc *html.Node) (map[string]int, error) {
 	if currentGroup != nil {
 		groups = append(groups, *currentGroup)
 	}
-
-
 
 	// Distribute capacities within each group
 	for _, group := range groups {
@@ -224,6 +220,8 @@ func ParseApplicationList(doc *html.Node, competitionType core.Competition) ([]*
 	isRegularBVIList := competitionType == core.CompetitionRegular
 
 	rows := findAllNodes(tbody, "tr", "", "")
+	ratingPlace := 0
+
 	for _, row := range rows {
 		// Skip header rows
 		if hasClass(row, "throw") {
@@ -288,12 +286,14 @@ func ParseApplicationList(doc *html.Node, competitionType core.Competition) ([]*
 			priorityValue = *priority
 		}
 
+		ratingPlace += 1
 		application := &source.ApplicationData{
 			StudentID:         studentIDText,
 			ScoresSum:         scoreValue,
 			Priority:          priorityValue,
 			OriginalSubmitted: originalSubmitted,
 			CompetitionType:   actualCompetitionType,
+			RatingPlace:       ratingPlace,
 		}
 		applications = append(applications, application)
 	}

@@ -48,7 +48,7 @@ export DATABASE_SSLMODE="disable"
 export CACHE_TTL_MINUTES="-1"
 export SELF_QUERY_PERIOD_MINUTES="112"
 export DRAIN_SIM_ITERATIONS="10"
-export VARSITIES_LIST="msu"
+export VARSITIES_LIST="mephi"
 
 # FlareSolverr configuration for bypassing DDoS-Guard protection
 export FLARESOLVERR_URL="http://localhost:8191"
