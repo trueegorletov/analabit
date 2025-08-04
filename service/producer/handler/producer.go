@@ -166,7 +166,7 @@ func (p *Producer) Produce(ctx context.Context, req *proto.ProduceRequest, rsp *
 	return p.runProduceWorkflow(ctx, req, rsp)
 }
 
-const maxWorkerCount = 8
+const maxWorkerCount = 1
 
 // runProduceWorkflow contains the core logic for crawling, calculating, and uploading results.
 // This can be called either by the public RPC endpoint or an internal ticker.
