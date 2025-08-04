@@ -113,7 +113,24 @@ func GetApplications(client *ent.Client) fiber.Handler {
 		}
 
 		if msuInternalID != "" {
-			q = q.Where(application.MsuInternalID(msuInternalID))
+			// First, find an application with the MSU internal ID to get the student ID
+			appWithMsuID, err := client.Application.Query().
+				Where(application.And(
+					application.RunIDEQ(runResolution.RunID),
+					application.MsuInternalID(msuInternalID),
+				)).
+				First(ctx)
+			if err != nil {
+				if ent.IsNotFound(err) {
+					log.Printf("no application found with MSU internal ID '%s' in run %d", msuInternalID, runResolution.RunID)
+					return fiber.NewError(fiber.StatusNotFound, "no application found with the specified MSU internal ID")
+				}
+				log.Printf("error finding application with MSU internal ID '%s': %v", msuInternalID, err)
+				return fiber.ErrInternalServerError
+			}
+			
+			// Now query for all applications with the same student ID
+			q = q.Where(application.StudentID(appWithMsuID.StudentID))
 		}
 
 		if varsityCode != "" {
