@@ -47,10 +47,17 @@ func loadSpbstuFromPayload(minioClient *minio.Client, bucketName, objectName str
 		return nil, fmt.Errorf("failed to decode SPbSTU fallback payload from object %s: %w", objectName, err)
 	}
 
-	// Create a new VarsityCalculator
-	vc := core.NewVarsityCalculator(payload.VarsityCode, payload.VarsityName)
+	// Create VarsityDefinition for SPbSTU
+	def := source.VarsityDefinition{
+		Code:           "spbstu",
+		Name:           payload.VarsityName,
+		HeadingSources: []source.HeadingSource{}, // Empty since we're loading from fallback
+	}
 
-	// Add headings
+	// Create VarsityDataCache and populate it from the payload
+	cache := source.NewVarsityDataCache(&def)
+	
+	// Populate cache with headings first (ensuring headings come before applications)
 	for _, headingDTO := range payload.Headings {
 		// Parse the FullCode to extract just the heading code (remove "spbstu:" prefix)
 		headingCode := headingDTO.Code
@@ -64,10 +71,16 @@ func loadSpbstuFromPayload(minioClient *minio.Client, bucketName, objectName str
 			DedicatedQuota: headingDTO.DedicatedQuotaCapacity,
 			SpecialQuota:   headingDTO.SpecialQuotaCapacity,
 		}
-		vc.AddHeading(headingCode, capacities, headingDTO.Name)
+		
+		headingData := &source.HeadingData{
+			Code:       headingCode,
+			Capacities: capacities,
+			PrettyName: headingDTO.Name,
+		}
+		cache.SaveHeadingData(headingData)
 	}
-
-	// Add applications
+	
+	// Populate cache with applications
 	for _, appDTO := range payload.Applications {
 		// Parse the heading code from FullCode
 		headingCode := appDTO.HeadingCode
@@ -75,39 +88,37 @@ func loadSpbstuFromPayload(minioClient *minio.Client, bucketName, objectName str
 			headingCode = headingCode[7:]
 		}
 
-		vc.AddApplication(
-			headingCode,
-			appDTO.StudentID,
-			appDTO.RatingPlace,
-			appDTO.Priority,
-			appDTO.CompetitionType,
-			appDTO.Score,
-		)
-	}
-
-	// Set original submitted status for students
-	for _, studentDTO := range payload.Students {
-		if studentDTO.OriginalSubmitted {
-			vc.SetOriginalSubmitted(studentDTO.ID)
+		appData := &source.ApplicationData{
+			HeadingCode:       headingCode,
+			StudentID:         appDTO.StudentID,
+			ScoresSum:         appDTO.Score,
+			RatingPlace:       appDTO.RatingPlace,
+			Priority:          appDTO.Priority,
+			CompetitionType:   appDTO.CompetitionType,
+			OriginalSubmitted: false, // Will be set below for specific students
 		}
+		
+		// Check if this student submitted originals
+		for _, studentDTO := range payload.Students {
+			if studentDTO.ID == appDTO.StudentID && studentDTO.OriginalSubmitted {
+				appData.OriginalSubmitted = true
+				break
+			}
+		}
+		
+		cache.SaveApplicationData(appData)
 	}
 
-	// Normalize applications after loading all data
-	vc.NormalizeApplications()
-
-	// Create a dummy VarsityDefinition for SPbSTU
-	def := source.VarsityDefinition{
-		Code:           "spbstu",
-		Name:           payload.VarsityName,
-		HeadingSources: []source.HeadingSource{}, // Empty since we're loading from fallback
-	}
-
-	// Create Varsity with the loaded calculator
+	// Create Varsity with cache and use LoadFromCache to populate VarsityCalculator
 	varsity := &source.Varsity{
 		VarsityDefinition: &def,
-		VarsityCalculator: vc,
+		VarsityCalculator: nil, // Will be created by LoadFromCache
+		VarsityDataCache:  cache,
 		MSUInternalIDs:    make(map[string]string), // Empty for SPbSTU
 	}
+	
+	// Load VarsityCalculator from cache - this handles all the proper initialization
+	varsity.LoadFromCache()
 
 	slog.Info("Successfully loaded SPbSTU fallback", "headings", len(payload.Headings), "students", len(payload.Students), "applications", len(payload.Applications))
 	return varsity, nil

@@ -52,7 +52,7 @@ func (v *Varsity) Clone() *Varsity {
 		VarsityDataCache:  v.VarsityDataCache,
 		MSUInternalIDs:    msuIDsCopy,
 	}
-	clone.loadFromCache()
+	clone.LoadFromCache()
 
 	vc := clone.VarsityCalculator
 	v.VarsityCalculator.ForEachQuit(func(studentID string) {
@@ -238,7 +238,7 @@ func (v *Varsity) loadFromSources() map[string]bool {
 	return submittedOriginals
 }
 
-func (v *Varsity) loadFromCache() map[string]bool {
+func (v *Varsity) LoadFromCache() map[string]bool {
 	v.Prepare()
 
 	submittedOriginals := make(map[string]bool)
@@ -377,7 +377,7 @@ func LoadWithCaches(defs []VarsityDefinition, caches []*VarsityDataCache) ([]*Va
 	}
 
 	cached, cachedOrigs := loadAll(cacheVarsities, func(v *Varsity) map[string]bool {
-		return v.loadFromCache()
+		return v.LoadFromCache()
 	})
 
 	added, addedOrigs := loadAll(newVarsities, func(v *Varsity) map[string]bool {
