@@ -129,7 +129,7 @@ services:
       - DATABASE_SSLMODE=disable
       - CLEANUP_RETENTION_RUNS=5
       - CLEANUP_BACKUP_DIR=./backups
-      - SPBSTU_FALLBACK_ENABLED=true
+      - SPBSTU_FALLBACK_ENABLED=false
       - SPBSTU_FALLBACK_GOB_NAME=payload_spbstu_a9dc55c5-addd-4269-a3b9-b40b175dfa52.gob
     volumes:
       - backups:/app/backups
@@ -228,6 +228,8 @@ services:
       - DATABASE_SSLMODE=disable
       - FLARESOLVERR_URL=http://flaresolverr:8191
       - IDMSU_URL=http://idmsu:8081
+      - SPBSTU_FALLBACK_ENABLED=true
+      - SPBSTU_FALLBACK_GOB_NAME=payload_spbstu_a9dc55c5-addd-4269-a3b9-b40b175dfa52.gob
     volumes:
       - producer_cache:/app/cache
     restart: unless-stopped

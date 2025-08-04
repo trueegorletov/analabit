@@ -20,6 +20,9 @@ type Config struct {
 	VarsitiesList          []string `env:"VARSITIES_LIST" envSeparator:"," envDefault:"all"`
 	VarsitiesExcluded      []string `env:"VARSITIES_EXCLUDED" envSeparator:"," envDefault:"spbstu"`
 	SelfQueryPeriodMinutes int      `env:"SELF_QUERY_PERIOD_MINUTES" envDefault:"45"`
+	// SPbSTU fallback configuration
+	SpbstuFallbackEnabled bool   `env:"SPBSTU_FALLBACK_ENABLED" envDefault:"false"`
+	SpbstuFallbackGobName string `env:"SPBSTU_FALLBACK_GOB_NAME" envDefault:"payload_spbstu_a9dc55c5-addd-4269-a3b9-b40b175dfa52.gob"`
 }
 
 var Cfg Config

@@ -29,6 +29,90 @@ import (
 
 type Producer struct{}
 
+// loadSpbstuFromPayload loads SPbSTU data from a pre-serialized UploadPayload gob file
+// and converts it back to a VarsityCalculator for use in calculations
+func loadSpbstuFromPayload(minioClient *minio.Client, bucketName, objectName string, ctx context.Context) (*source.Varsity, error) {
+	slog.Info("Loading SPbSTU fallback from payload", "objectName", objectName)
+
+	// Download the gob file from MinIO
+	obj, err := minioClient.GetObject(ctx, bucketName, objectName, minio.GetObjectOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get SPbSTU fallback object %s: %w", objectName, err)
+	}
+	defer obj.Close()
+
+	// Deserialize the UploadPayload
+	var payload core.UploadPayload
+	if err := gob.NewDecoder(obj).Decode(&payload); err != nil {
+		return nil, fmt.Errorf("failed to decode SPbSTU fallback payload from object %s: %w", objectName, err)
+	}
+
+	// Create a new VarsityCalculator
+	vc := core.NewVarsityCalculator(payload.VarsityCode, payload.VarsityName)
+
+	// Add headings
+	for _, headingDTO := range payload.Headings {
+		// Parse the FullCode to extract just the heading code (remove "spbstu:" prefix)
+		headingCode := headingDTO.Code
+		if len(headingCode) > 7 && headingCode[:7] == "spbstu:" {
+			headingCode = headingCode[7:]
+		}
+
+		capacities := core.Capacities{
+			Regular:        headingDTO.RegularCapacity,
+			TargetQuota:    headingDTO.TargetQuotaCapacity,
+			DedicatedQuota: headingDTO.DedicatedQuotaCapacity,
+			SpecialQuota:   headingDTO.SpecialQuotaCapacity,
+		}
+		vc.AddHeading(headingCode, capacities, headingDTO.Name)
+	}
+
+	// Add applications
+	for _, appDTO := range payload.Applications {
+		// Parse the heading code from FullCode
+		headingCode := appDTO.HeadingCode
+		if len(headingCode) > 7 && headingCode[:7] == "spbstu:" {
+			headingCode = headingCode[7:]
+		}
+
+		vc.AddApplication(
+			headingCode,
+			appDTO.StudentID,
+			appDTO.RatingPlace,
+			appDTO.Priority,
+			appDTO.CompetitionType,
+			appDTO.Score,
+		)
+	}
+
+	// Set original submitted status for students
+	for _, studentDTO := range payload.Students {
+		if studentDTO.OriginalSubmitted {
+			vc.SetOriginalSubmitted(studentDTO.ID)
+		}
+	}
+
+	// Normalize applications after loading all data
+	vc.NormalizeApplications()
+
+	// Create a dummy VarsityDefinition for SPbSTU
+	def := source.VarsityDefinition{
+		Code:           "spbstu",
+		Name:           payload.VarsityName,
+		HeadingSources: []source.HeadingSource{}, // Empty since we're loading from fallback
+	}
+
+	// Create Varsity with the loaded calculator
+	varsity := &source.Varsity{
+		VarsityDefinition: &def,
+		VarsityCalculator: vc,
+		MSUInternalIDs:    make(map[string]string), // Empty for SPbSTU
+	}
+
+	slog.Info("Successfully loaded SPbSTU fallback", "headings", len(payload.Headings), "students", len(payload.Students), "applications", len(payload.Applications))
+	return varsity, nil
+}
+
 // concurrency guard to ensure only one Produce execution at a time per service instance
 var (
 	produceRunning int32 // 0 = not running, 1 = running (atomic flag)
@@ -117,6 +201,42 @@ func (p *Producer) runProduceWorkflow(ctx context.Context, req *proto.ProduceReq
 	}
 	varsities := result.LoadedVarsities
 	slog.Info("Crawl completed", "varsitiesLoaded", len(varsities))
+
+	// SPbSTU fallback logic: if enabled and SPbSTU is not in loaded varsities, load it from fallback
+	if Cfg.SpbstuFallbackEnabled {
+		spbstuFound := false
+		for _, v := range varsities {
+			if v.Code == "spbstu" {
+				spbstuFound = true
+				break
+			}
+		}
+
+		if !spbstuFound {
+			slog.Info("SPbSTU fallback enabled and SPbSTU not found in loaded varsities, loading from fallback")
+
+			// Initialize MinIO client for fallback loading
+			minioClient, err := minio.New(Cfg.MinioEndpoint, &minio.Options{
+				Creds:  credentials.NewStaticV4(Cfg.MinioAccessKey, Cfg.MinioSecretKey, ""),
+				Secure: Cfg.MinioUseSSL,
+			})
+			if err != nil {
+				slog.Warn("Failed to initialize MinIO client for SPbSTU fallback", "error", err)
+			} else {
+				// Load SPbSTU from fallback gob file
+				spbstuVarsity, err := loadSpbstuFromPayload(minioClient, Cfg.MinioBucketName, Cfg.SpbstuFallbackGobName, ctx)
+				if err != nil {
+					slog.Warn("Failed to load SPbSTU from fallback, continuing without it", "error", err)
+				} else {
+					// Add SPbSTU to the varsities list
+					varsities = append(varsities, spbstuVarsity)
+					slog.Info("Successfully added SPbSTU from fallback to varsities list")
+				}
+			}
+		} else {
+			slog.Info("SPbSTU fallback enabled but SPbSTU was found in loaded varsities, using normally loaded version")
+		}
+	}
 
 	loadedVarsityCodes := make([]string, len(varsities))
 	for i, v := range varsities {
