@@ -267,3 +267,33 @@ func (ds *DatabaseStore) Close() error {
 func (ds *DatabaseStore) Health(ctx context.Context) error {
 	return ds.db.PingContext(ctx)
 }
+
+// RepairLastFetch updates the last successful fetch run to current time if it exists and is outdated
+func (ds *DatabaseStore) RepairLastFetch() (bool, error) {
+    var runID int64
+    var completedAt time.Time
+    err := ds.db.QueryRow(`SELECT id, completed_at FROM idmsu_fetch_runs WHERE status = 'completed' ORDER BY completed_at DESC LIMIT 1`).Scan(&runID, &completedAt)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return false, nil
+        }
+        return false, err
+    }
+    if time.Since(completedAt) <= 16*time.Hour {
+        return false, nil // Not outdated
+    }
+    _, err = ds.db.Exec(`UPDATE idmsu_fetch_runs SET completed_at = NOW(), updated_at = NOW() WHERE id = $1`, runID)
+    return err == nil, err
+}
+
+// CreateRepairRun creates a repair fetch run if cache data exists
+func (ds *DatabaseStore) CreateRepairRun() (bool, error) {
+    var count int
+    err := ds.db.QueryRow(`SELECT COUNT(*) FROM idmsu_cache`).Scan(&count)
+    if err != nil || count == 0 {
+        return false, err
+    }
+    var repairID int64
+    err = ds.db.QueryRow(`INSERT INTO idmsu_fetch_runs (started_at, completed_at, status, programs_processed, total_programs, updated_at) VALUES (NOW(), NOW(), 'repaired', 0, 0, NOW()) RETURNING id`).Scan(&repairID)
+    return err == nil, err
+}

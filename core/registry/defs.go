@@ -18,12 +18,12 @@ import (
 var AllDefinitions = []source.VarsityDefinition{
 	mirea.Varsity,
 	msu.Varsity,
+	spbsu.Varsity,
 	hse.VarsityMsk,
 	hse.VarsitySpb,
 	hse.VarsityNn,
 	hse.VarsityPerm,
 
-	spbsu.Varsity,
 	spbstu.Varsity,
 	rsmu.Varsity,
 	rzgmu.Varsity,

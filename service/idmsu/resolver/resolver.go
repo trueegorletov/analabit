@@ -36,9 +36,30 @@ func NewMSUResolver(cache *cache.LayeredCache, dbStore *cache.DatabaseStore) *MS
 	}
 
 	// Restore last fetch time from database
-	if lastFetch, err := dbStore.GetLastSuccessfulFetch(); err == nil && !lastFetch.IsZero() {
+	var lastFetch time.Time
+	if lf, err := dbStore.GetLastSuccessfulFetch(); err == nil && !lf.IsZero() {
+		lastFetch = lf
 		resolver.lastSuccessfulFetch = lastFetch
 		slog.Info("Restored last fetch time from database", "lastFetch", lastFetch)
+	}
+
+	// Repair logic for existing cache
+	if !lastFetch.IsZero() && time.Since(lastFetch) > 16*time.Hour {
+	    repaired, err := dbStore.RepairLastFetch()
+	    if err != nil {
+	        slog.Error("Failed to repair last fetch", "error", err)
+	    } else if repaired {
+	        resolver.lastSuccessfulFetch = time.Now()
+	        slog.Info("Repaired last successful fetch")
+	    }
+	} else if lastFetch.IsZero() {
+	    created, err := dbStore.CreateRepairRun()
+	    if err != nil {
+	        slog.Error("Failed to create repair run", "error", err)
+	    } else if created {
+	        resolver.lastSuccessfulFetch = time.Now()
+	        slog.Info("Created repair fetch run")
+	    }
 	}
 
 	return resolver
