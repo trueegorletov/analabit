@@ -1,0 +1,3 @@
+# Exclude HTML files from GitHub Linguist language statistics
+# This prevents *.html files from affecting the repository's language breakdown
+*.html linguist-detectable=false
