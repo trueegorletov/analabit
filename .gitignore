@@ -43,3 +43,4 @@ aggregator_*.remote
 .remote/
 .env*
 .trae/
+.CLAUDE.md
