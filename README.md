@@ -8,9 +8,10 @@ This repository contains the backend core powering analabit.ru: data ingestion, 
 
 - Core: reusable domain logic and data processing (see `core/`, `ent/`, and supporting packages under `core/*`).
 - Services: production services built on the core (see `service/aggregator`, `service/api`, `service/idmsu`, `service/producer`).
-- CLI: tooling for maintenance and data operations (see `cli/`).
+- CLI: basic command-line interface for playing with calculation/drain-sim logics (see `cli/`).
+- Codegen: scripts for generating lists of headings definitions or extract another data for each universities (see `codegen/`, `sample_data`)
 
-Looking for the UI? There’s only the web interface for using the backend, built above the analabit core.
+Looking for the UI? There’s the web interface for using the backend, built above the analabit core API service.
 
 ➡️ Frontend (Web UI): https://github.com/trueegorletov/analabit-webui
 
@@ -24,3 +25,6 @@ There is some images of how does it feel when using through web UI.
 ![Educational program dashboard](https://raw.githubusercontent.com/trueegorletov/analabit-webui/refs/heads/main/.github/assets/3.png)
 ![Abiturient details popup](https://raw.githubusercontent.com/trueegorletov/analabit-webui/refs/heads/main/.github/assets/2.png)
 
+
+
+License: See `LICENSE`. 
