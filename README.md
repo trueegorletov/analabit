@@ -11,7 +11,13 @@ This repository contains the backend core powering analabit.ru: data ingestion, 
 - CLI: basic command-line interface for playing with calculation/drain-sim logics (see `cli/`).
 - Codegen: scripts for generating lists of headings definitions or extract another data for each one of supported universities (see `codegen/`, `sample_data/`)
 
-Looking for the UI? There’s the web interface for using the backend, built above the analabit core API service.
+## Supported universities
+
+Currently, there is implemented support for such universities: HSE (ВШЭ), all campuses; ITMO (ИТМО); MIREA (МИРЭА); MSU (МГУ); SPbSU (СПбГУ); SPbPU (СПбПУ); RSMU (РНИМУ); RyazGMU (РязГМУ); FMSMU (ПМГМУ); MEPhI (МИФИ); MIPT (МФТИ).
+
+## Usage
+
+Looking for the UI? There’s the web interface for using the backend, built above the analabit core API service (was hosted at analabit.ru).
 
 ➡️ Frontend (Web UI): https://github.com/trueegorletov/analabit-webui
 
